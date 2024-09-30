@@ -1,6 +1,8 @@
+import dayjs from 'dayjs'
+
 export const greetingString = (name: string): string => {
-    const date = new Date()
-    const hours = date.getHours()
+    const date = dayjs()
+    const hours = date.hour()
     let greet
 
     if (hours < 12) greet = 'morning'
