@@ -7,6 +7,7 @@ import AuthLayout from './layouts/AuthLayout'
 import ThemeWrapper from './features/theme/ThemeWrapper'
 import PreferenceSelector from './components/PreferenceSelector'
 import NotFoundPage from './pages/NotFoundPage'
+import CreateFirstProject from './pages/accountSetup/CreateFirstProject'
 
 const App = () => {
     const router = createBrowserRouter(
@@ -24,6 +25,8 @@ const App = () => {
                         element={<ForgotPasswordPage />}
                     />
                 </Route>
+
+                <Route path='worklenz/setup' element={<CreateFirstProject />}/>
 
                 {/* not found pages */}
                 <Route path="*" element={<NotFoundPage />} />
