@@ -14,7 +14,7 @@ import { useAppSelector } from '../../hooks/useAppSelector'
 
 const RecentAndFavouriteProjecList = () => {
     const projectsList = useAppSelector(
-        (state) => state.projectReducer.projects
+        (state) => state.createProjectReducer.projects
     )
     const [projectSegment, setProjectSegment] = useState<
         'Recent' | 'Favourites'
