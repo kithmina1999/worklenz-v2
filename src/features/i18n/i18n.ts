@@ -8,6 +8,7 @@ import loginPageEn from './locales/en/loginPage.json'
 import signupPageEn from './locales/en/signupPage.json'
 import forgotPasswordPageEn from './locales/en/forgotPasswordPage.json'
 import notFoundPageEn from './locales/en/notFoundPage.json'
+import navbarEn from './locales/en/navbar.json'
 
 const resources = {
     en: {
@@ -15,6 +16,7 @@ const resources = {
         signupPage: signupPageEn,
         forgotPasswordPage: forgotPasswordPageEn,
         notFoundPage: notFoundPageEn,
+        navbar: navbarEn,
     },
 }
 
