@@ -3,7 +3,7 @@ import themeReducer from '../features/theme/themeSlice'
 import localesReducer from '../features/i18n/localesSlice'
 import todoReducer from '../features/todo/todoSlice'
 import dateReducer from '../features/date/dateSlice'
-import projectReducer from '../features/projects/projectSlice'
+import createProjectReducer from '../features/projects/createProject/createProjectSlice'
 
 export const store = configureStore({
     reducer: {
@@ -11,7 +11,7 @@ export const store = configureStore({
         localesReducer: localesReducer,
         todoReducer: todoReducer,
         dateReducer: dateReducer,
-        projectReducer: projectReducer,
+        createProjectReducer: createProjectReducer,
     },
 })
 
