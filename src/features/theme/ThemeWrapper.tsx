@@ -33,7 +33,14 @@ const ThemeWrapper = ({ children }: ChildrenProp) => {
                     },
                     Button: {
                         colorBgContainer: colors.transparent,
+                        textHoverBg: colors.transparent,
                     },
+                    Table: {
+                        rowHoverBg: themeMode === 'dark' ? '#000' : '#edebf0',
+                    },
+                },
+                token: {
+                    borderRadius: 4,
                 },
             }}
         >
