@@ -18,10 +18,3 @@
 ::-webkit-scrollbar {
     display: none;
 }
-
-/* antdesign styles override */
-/* .ant-input,
-.ant-alert,
-.ant-button {
-    border-radius: 4px !important;
-} */
