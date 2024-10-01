@@ -5,6 +5,8 @@ import TodoList from './TodoList'
 import RecentAndFavouriteProjecList from './RecentAndFavouriteProjecList'
 import { Col } from 'antd'
 import { useMediaQuery } from 'react-responsive'
+import CreateProjectDrawer from '../../features/projects/createProject/CreateProjectDrawer'
+import CreateProjectButton from '../../features/projects/createProject/CreateProjectButton'
 
 const Homepage = () => {
     // media queries from react-responsive package
@@ -12,7 +14,17 @@ const Homepage = () => {
 
     return (
         <div style={{ marginBlock: 96, minHeight: '90vh' }}>
-            <UserGreetingWithTime />
+            <Col style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                <UserGreetingWithTime />
+                {isDesktop ? (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2">
+                        {/* tailwind css used to position this button  */}
+                        <CreateProjectButton />
+                    </div>
+                ) : (
+                    <CreateProjectButton />
+                )}
+            </Col>
 
             {isDesktop ? (
                 <Col style={{ display: 'flex', gap: 24, marginBlockStart: 48 }}>
@@ -37,7 +49,7 @@ const Homepage = () => {
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 24,
-                        marginBlockStart: 48,
+                        marginBlockStart: 24,
                     }}
                 >
                     <TasksList />
@@ -45,6 +57,10 @@ const Homepage = () => {
                     <RecentAndFavouriteProjecList />
                 </Col>
             )}
+
+            {/* drawers */}
+            {/* create project drawer  */}
+            <CreateProjectDrawer />
         </div>
     )
 }
