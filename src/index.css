@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* antdesign override imports  */
+@import url('./styles/homeTable.css');
 *,
 *::before,
 *::after {
@@ -16,3 +18,10 @@
 ::-webkit-scrollbar {
     display: none;
 }
+
+/* antdesign styles override */
+/* .ant-input,
+.ant-alert,
+.ant-button {
+    border-radius: 4px !important;
+} */
