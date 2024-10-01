@@ -6,12 +6,13 @@ import {
     Flex,
     Form,
     Input,
+    InputRef,
     Skeleton,
     Table,
     TableProps,
     Typography,
 } from 'antd'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useAppSelector } from '../../hooks/useAppSelector'
 import { TodoType } from '../../types/todo'
 import { useAppDispatch } from '../../hooks/useAppDispatch'
@@ -28,6 +29,9 @@ const TodoList = () => {
     const [isAlertShowing, setIsAlertShowing] = useState(false)
     const [form] = Form.useForm()
 
+    // ref for todo input field
+    const todoInputRef = useRef<InputRef | null>(null)
+
     // function for handle refresh
     const handleRefresh = () => {
         setIsLoading(true)
@@ -41,9 +45,18 @@ const TodoList = () => {
             name: values.name,
             isCompleted: false,
         }
-        form.resetFields()
         setIsAlertShowing(false)
         dispatch(addTodo(newTodo))
+        form.resetFields()
+
+        // there is an issue (input field focused but can't type) occurs when immediately focus the input, so this timeout fuction held to create a small delay
+        setTimeout(() => {
+            if (todoInputRef.current) {
+                todoInputRef.current.focus({
+                    cursor: 'start',
+                })
+            }
+        }, 100)
     }
 
     // table columns
@@ -89,6 +102,7 @@ const TodoList = () => {
                         <Form.Item name="name">
                             <Flex vertical gap={4}>
                                 <Input
+                                    ref={todoInputRef}
                                     placeholder="+ Add Task"
                                     onChange={(e) => {
                                         const inputValue = e.currentTarget.value
