@@ -1,0 +1,12 @@
+.homepage-table table tr:nth-child(even) {
+    background: #f8f7f9;
+}
+
+.homepage-table table tr {
+    border-radius: 4px !important;
+}
+
+.homepage-table table tr td {
+    border-bottom: none !important;
+    padding: 6px 0 !important;
+}
