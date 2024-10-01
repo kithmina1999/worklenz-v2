@@ -1,78 +1,31 @@
 import React, { useState } from 'react'
 import logo from '../../assets/images/logo.png'
-import { Button, Form, Input, Space, Steps, Typography } from 'antd'
+import { Space, Steps, Typography } from 'antd'
+import OrganizationNameForm from '../../components/accountSetup/OrgnizationNameForm'
+import CreateFirstProjectForm from '../../components/accountSetup/CreateFirstProjectForm'
 
 const { Title } = Typography
 
 const CreateFirstProject: React.FC = () => {
     const [current, setCurrent] = useState(0)
-    const [inputValue, setInputValue] = useState('')
-    const [isButtonDisabled, setIsButtonDisabled] = useState(true)
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value
-        setInputValue(value)
-
-        if (value.trim() === '') {
-            setIsButtonDisabled(true)
-        } else {
-            setIsButtonDisabled(false)
-        }
-    }
 
     const steps = [
         {
             title: '',
             content: (
-                <Form
-                    style={{
-                        width: '600px',
-                        paddingBottom: '1rem',
-                        marginBottom: '3rem',
-                        marginTop: '3rem',
-                    }}
-                >
-                    <Form.Item>
-                        <Title level={2} style={{ marginBottom: '1rem' }}>
-                            Name your organization.
-                        </Title>
-                    </Form.Item>
-                    <Form.Item
-                        layout="vertical"
-                        rules={[{ required: true }]}
-                        label={
-                            <span
-                                style={{ color: '#00000073', fontWeight: 500 }}
-                            >
-                                Pick a name for your Worklenz account.
-                            </span>
-                        }
-                    >
-                        <Input
-                            placeholder="e.g., test01's Team"
-                            value={inputValue}
-                            onChange={handleInputChange}
-                        />
-                    </Form.Item>
-                    <div style={{ display: 'flex', marginTop: '5rem' }}></div>
-                    <Form.Item
-                        style={{ display: 'flex', justifyContent: 'flex-end' }}
-                    >
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            disabled={isButtonDisabled}
-                            onClick={() => setCurrent(current + 1)}
-                        >
-                            Continue
-                        </Button>
-                    </Form.Item>
-                </Form>
+                <OrganizationNameForm 
+                onContinue={() => setCurrent(current + 1)}
+                />
             ),
         },
         {
             title: '',
-            content: 'Second-content',
+            content: (
+                <CreateFirstProjectForm 
+                onContinue={() => setCurrent(current + 1)}
+                onGoBack={() => setCurrent(current - 1)}
+                />
+            ),
         },
         {
             title: '',
