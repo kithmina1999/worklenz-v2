@@ -1,35 +1,41 @@
 import React, { useState } from 'react'
 import logo from '../../assets/images/logo.png'
 import { Space, Steps, Typography } from 'antd'
-import OrganizationNameForm from '../../components/accountSetup/OrgnizationNameForm'
-import CreateFirstProjectForm from '../../components/accountSetup/CreateFirstProjectForm'
+import OrganizationNameForm from '../../components/accountSetup/organizationName/OrgnizationNameForm'
+import CreateFirstProjectForm from '../../components/accountSetup/createFirstProject/CreateFirstProjectForm'
+import CreateFirstTasks from '../../components/accountSetup/createFirstTasks/CreateFirstTasks'
 
 const { Title } = Typography
 
 const CreateFirstProject: React.FC = () => {
-    const [current, setCurrent] = useState(1)
+    const [current, setCurrent] = useState(0)
 
     const steps = [
         {
             title: '',
             content: (
-                <OrganizationNameForm 
-                onContinue={() => setCurrent(current + 1)}
+                <OrganizationNameForm
+                    onContinue={() => setCurrent(current + 1)}
                 />
             ),
         },
         {
             title: '',
             content: (
-                <CreateFirstProjectForm 
-                onContinue={() => setCurrent(current + 1)}
-                onGoBack={() => setCurrent(current - 1)}
+                <CreateFirstProjectForm
+                    onContinue={() => setCurrent(current + 1)}
+                    onGoBack={() => setCurrent(current - 1)}
                 />
             ),
         },
         {
             title: '',
-            content: 'Last-content',
+            content: (
+                <CreateFirstTasks
+                    onContinue={() => setCurrent(current + 1)}
+                    onGoBack={() => setCurrent(current - 1)}
+                />
+            ),
         },
         {
             title: '',
@@ -41,7 +47,6 @@ const CreateFirstProject: React.FC = () => {
         <div
             style={{
                 width: '100vw',
-                height: '100vh',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -72,6 +77,9 @@ const CreateFirstProject: React.FC = () => {
                     marginLeft: 'auto',
                     width: '100%',
                     maxWidth: '66.66667%',
+                    maxHeight: '100vh',
+                    display: 'flex',
+                    flexDirection: 'column',
                 }}
             >
                 <Space
@@ -81,6 +89,8 @@ const CreateFirstProject: React.FC = () => {
                         flexDirection: 'column',
                         alignItems: 'center',
                         gap: '0',
+                        flexGrow: 1,
+                        width: '100%',
                     }}
                 >
                     <Steps
@@ -92,7 +102,9 @@ const CreateFirstProject: React.FC = () => {
                             width: '600px',
                         }}
                     />
-                    <div>{steps[current].content}</div>
+                    <div style={{ flexGrow: 1, width: '100%' }}>
+                        {steps[current].content}
+                    </div>
                 </Space>
             </div>
         </div>

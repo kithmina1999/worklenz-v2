@@ -1,8 +1,8 @@
-import { Divider, List, Tabs, Tag, Typography } from "antd";
+import { List, Tabs, Tag, Typography } from "antd";
 import React from "react";
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
-import '../../styles/accountSetup/TemplateDrawer.css'
+import './TemplateDrawer.css'
 
 const { Title, Text } = Typography
 

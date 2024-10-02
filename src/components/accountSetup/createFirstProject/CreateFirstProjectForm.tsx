@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Drawer, Form, Input, Typography } from 'antd'
-import '../../styles/accountSetup/CreateFirstProjectForm.css'
-import TemplateDrawer from './TemplateDrawer'
+import './CreateFirstProjectForm.css'
+import TemplateDrawer from '../templateDrawer/TemplateDrawer'
 
 const { Title } = Typography
 
@@ -16,7 +16,7 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
 }) => {
     const [inputValue, setInputValue] = useState('')
     const [isButtonDisabled, setIsButtonDisabled] = useState(true)
-    const [open, setOpen] = useState(true)
+    const [open, setOpen] = useState(false)
 
     const openTemplateSelector = () => {
         setOpen(true)
@@ -100,8 +100,19 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
                     onClose={closeTemplateSelector}
                     open={open}
                     footer={
-                        <div style={{display: 'flex', justifyContent: 'right', padding: '10px 16px 10px 16px'}}>
-                            <Button style={{marginRight: '8px'}}>Cancel</Button>
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'right',
+                                padding: '10px 16px 10px 16px',
+                            }}
+                        >
+                            <Button
+                                style={{ marginRight: '8px' }}
+                                onClick={closeTemplateSelector}
+                            >
+                                Cancel
+                            </Button>
                             <Button type="primary">Create</Button>
                         </div>
                     }
