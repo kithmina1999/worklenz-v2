@@ -6,6 +6,9 @@
 
 /* antdesign override imports  */
 @import url('./styles/homeTable.css');
+/* navbar custom css  */
+@import url('./features/navbar/navbar.css');
+
 *,
 *::before,
 *::after {
