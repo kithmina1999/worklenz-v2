@@ -1,6 +1,7 @@
 import { Input, Table, Tabs } from 'antd'
 import React from 'react'
 import EmptyListPlaceholder from '../../../components/EmptyListPlaceholder'
+import AddTaskInlineForm from './AddTaskInlineForm'
 
 const ListView = () => {
     const tasksList: string[] = []
@@ -10,12 +11,7 @@ const ListView = () => {
         {
             key: 'all',
             label: `All (0)`,
-            children: (
-                <Input
-                    placeholder="+ Add Task"
-                    style={{ width: '100%', maxWidth: 300 }}
-                />
-            ),
+            children: <AddTaskInlineForm />,
         },
         {
             key: 'today',
