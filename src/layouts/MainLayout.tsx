@@ -1,7 +1,7 @@
 import { Col, Layout } from 'antd'
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import Navbar from '../components/navbar/Navbar'
+import Navbar from '../features/navbar/Navbar'
 import { useAppSelector } from '../hooks/useAppSelector'
 
 const MainLayout = () => {
