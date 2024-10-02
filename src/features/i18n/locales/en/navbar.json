@@ -5,6 +5,7 @@
     "schedules": "Schedules",
     "reporting": "Reporting",
     "upgradePlan": "Upgrade Plan",
+    "upgradePlanTooltip": "Upgrade Plan",
     "invite": "Invite",
     "inviteTooltip": "Invite team members to join",
     "switchTeamTooltip": "Switch team",
