@@ -7,7 +7,7 @@ import CreateFirstProjectForm from '../../components/accountSetup/CreateFirstPro
 const { Title } = Typography
 
 const CreateFirstProject: React.FC = () => {
-    const [current, setCurrent] = useState(0)
+    const [current, setCurrent] = useState(1)
 
     const steps = [
         {

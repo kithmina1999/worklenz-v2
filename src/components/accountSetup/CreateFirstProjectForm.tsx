@@ -16,7 +16,7 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
 }) => {
     const [inputValue, setInputValue] = useState('')
     const [isButtonDisabled, setIsButtonDisabled] = useState(true)
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(true)
 
     const openTemplateSelector = () => {
         setOpen(true)
@@ -100,7 +100,7 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
                     onClose={closeTemplateSelector}
                     open={open}
                     footer={
-                        <div style={{display: 'flex', justifyContent: 'right'}}>
+                        <div style={{display: 'flex', justifyContent: 'right', padding: '10px 16px 10px 16px'}}>
                             <Button style={{marginRight: '8px'}}>Cancel</Button>
                             <Button type="primary">Create</Button>
                         </div>
