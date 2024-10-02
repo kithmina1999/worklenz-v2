@@ -6,11 +6,14 @@ import {
     Flex,
     Segmented,
     Skeleton,
+    Table,
+    TableProps,
     Tooltip,
     Typography,
 } from 'antd'
 import React, { useState } from 'react'
 import { useAppSelector } from '../../hooks/useAppSelector'
+import { ProjectType } from '../../types/project'
 
 const RecentAndFavouriteProjecList = () => {
     const projectsList = useAppSelector(
@@ -37,6 +40,25 @@ const RecentAndFavouriteProjecList = () => {
             handleRefresh()
         }
     }
+
+    // table columns
+    const columns: TableProps<ProjectType>['columns'] = [
+        {
+            key: 'completeBtn',
+            width: 24,
+            render: (record: ProjectType) => <StarFilled />,
+        },
+        {
+            key: 'name',
+            render: (record: ProjectType) => (
+                <Typography.Paragraph
+                    style={{ margin: 0, paddingInlineEnd: 6 }}
+                >
+                    {record.name}
+                </Typography.Paragraph>
+            ),
+        },
+    ]
 
     return (
         <Card
@@ -83,23 +105,13 @@ const RecentAndFavouriteProjecList = () => {
                             }
                         />
                     ) : (
-                        <div>
-                            {projectsList.map((project, index) => (
-                                <Flex key={index} gap={8} align="center">
-                                    <Tooltip title={'Add to favourites'}>
-                                        <StarFilled
-                                            style={{
-                                                fontSize: 20,
-                                                color: '#5f5f5f7f',
-                                            }}
-                                        />
-                                    </Tooltip>
-                                    <Typography.Text>
-                                        {project.name}
-                                    </Typography.Text>
-                                </Flex>
-                            ))}
-                        </div>
+                        <Table
+                            className="homepage-table"
+                            dataSource={projectsList}
+                            columns={columns}
+                            showHeader={false}
+                            pagination={false}
+                        />
                     )}
                 </div>
             )}
