@@ -1,5 +1,6 @@
 .custom-dropdown .ant-dropdown-menu {
     padding: 0 !important;
+    margin-top: 16px !important;
 }
 
 .custom-dropdown .ant-dropdown-menu-item {
@@ -11,15 +12,17 @@
 }
 
 .custom-card .ant-card-body {
-    padding: 0 0;
+    padding: 4px 0;
 }
 
-.custom-card .ant-card-body p {
+.custom-card .ant-card-body a {
+    display: block;
     margin: 0;
     padding: 10px 15px;
 }
 
-.custom-card .ant-card-body p:hover {
+.custom-card .ant-card-body a:hover {
+    color: #1890ff !important;
     background-color: #edebf0 !important;
     box-sizing: border-box;
 }
