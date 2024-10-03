@@ -10,7 +10,7 @@ const HelpButton = () => {
     return (
         <Tooltip title={t('help')}>
             <Button
-                className="navbar-action-btn"
+                className="borderless-icon-btn"
                 icon={<QuestionCircleOutlined style={{ fontSize: 20 }} />}
             />
         </Tooltip>
