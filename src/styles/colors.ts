@@ -1,3 +1,4 @@
+// colors.ts
 export const colors = {
     white: '#fff',
     darkGray: '#181818',
@@ -8,4 +9,11 @@ export const colors = {
     vibrantOrange: '#f56a00',
     limeGreen: '#52c41a',
     transparent: 'transparent',
-} as const
+} as const;
+
+export const applyCssVariables = () => {
+    const root = document.documentElement;
+    Object.entries(colors).forEach(([key, value]) => {
+        root.style.setProperty(`--color-${key}`, value);
+    });
+};

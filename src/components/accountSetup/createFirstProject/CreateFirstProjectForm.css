@@ -1,0 +1,25 @@
+.vert-text {
+    max-width: 40px;
+    background-color: #fff;
+    position: relative;
+    z-index: 99;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+  
+  .vert-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    content: '';
+    height: 2px;
+    background-color: #00000047;
+    bottom: 0;
+    top: 0;
+    margin-bottom: auto;
+    margin-top: auto;
+  }
