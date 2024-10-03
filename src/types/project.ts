@@ -1,5 +1,6 @@
 export type ProjectType = {
-    name: string
+    projectId: string
+    projectName: string
     isFavourite: boolean
-    color: string
+    projectColor: string
 }
