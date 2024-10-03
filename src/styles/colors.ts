@@ -8,12 +8,13 @@ export const colors = {
     paleBlue: '#e6f7ff',
     vibrantOrange: '#f56a00',
     limeGreen: '#52c41a',
+    yellow: '#f8d914',
     transparent: 'transparent',
-} as const;
+} as const
 
 export const applyCssVariables = () => {
-    const root = document.documentElement;
+    const root = document.documentElement
     Object.entries(colors).forEach(([key, value]) => {
-        root.style.setProperty(`--color-${key}`, value);
-    });
-};
+        root.style.setProperty(`--color-${key}`, value)
+    })
+}
