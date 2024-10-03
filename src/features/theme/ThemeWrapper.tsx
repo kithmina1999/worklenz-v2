@@ -31,9 +31,12 @@ const ThemeWrapper = ({ children }: ChildrenProp) => {
                     Menu: {
                         colorBgContainer: colors.transparent,
                     },
-                    Button: {
-                        colorBgContainer: colors.transparent,
+                    Table: {
+                        rowHoverBg: themeMode === 'dark' ? '#000' : '#edebf0',
                     },
+                },
+                token: {
+                    borderRadius: 4,
                 },
             }}
         >
