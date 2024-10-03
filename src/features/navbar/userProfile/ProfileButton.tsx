@@ -5,7 +5,6 @@ import {
     Card,
     Dropdown,
     Flex,
-    Menu,
     MenuProps,
     Tooltip,
     Typography,
@@ -34,16 +33,9 @@ const ProfileButton = () => {
                 <Card
                     className="custom-card"
                     title={
-                        <div style={{ paddingTop: '16px' }}>
+                        <div style={{ paddingBlock: '16px' }}>
                             <Typography.Text>Account</Typography.Text>
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    gap: '10px',
-                                    justifyContent: 'flex-start',
-                                    alignItems: 'center',
-                                }}
-                            >
+                            <Flex gap={8} align="center" justify="flex-start">
                                 <div>
                                     <Avatar
                                         style={{
@@ -56,12 +48,7 @@ const ProfileButton = () => {
                                         S
                                     </Avatar>
                                 </div>
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                    }}
-                                >
+                                <Flex vertical>
                                     <Typography.Text>
                                         {userDetails.name}
                                     </Typography.Text>
@@ -74,16 +61,31 @@ const ProfileButton = () => {
                                     >
                                         ({userDetails.userRole})
                                     </Typography.Text>
-                                </div>
-                            </div>
+                                </Flex>
+                            </Flex>
                         </div>
                     }
                     bordered={false}
                     style={{ width: 230 }}
                 >
-                    <p>Admin Center</p>
-                    <p>Setting</p>
-                    <p>Log Out</p>
+                    <Typography.Link
+                        href="/worklenz/admin-center"
+                        style={{ color: colors.darkGray }}
+                    >
+                        Admin Center
+                    </Typography.Link>
+                    <Typography.Link
+                        href="/worklenz/setting"
+                        style={{ color: colors.darkGray }}
+                    >
+                        Setting
+                    </Typography.Link>
+                    <Typography.Link
+                        href="/auth/login"
+                        style={{ color: colors.darkGray }}
+                    >
+                        Log Out
+                    </Typography.Link>
                 </Card>
             ),
         },
@@ -96,9 +98,11 @@ const ProfileButton = () => {
                 menu={{ items: profile }}
                 placement="bottomRight"
                 trigger={['click']}
-                overlayStyle={{ marginTop: '5px', padding: 0 }}
             >
-                <Button type="text" icon={<UserOutlined />} />
+                <Button
+                    className="borderless-icon-btn"
+                    icon={<UserOutlined style={{ fontSize: 20 }} />}
+                />
             </Dropdown>
         </Tooltip>
     )
