@@ -6,6 +6,9 @@ import reportWebVitals from './reportWebVitals'
 import './features/i18n/i18n'
 import { Provider } from 'react-redux'
 import { store } from './app/store'
+import { applyCssVariables } from './styles/colors';
+
+applyCssVariables();
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(

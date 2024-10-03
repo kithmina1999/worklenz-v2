@@ -13,6 +13,7 @@ import AuthLayout from './layouts/AuthLayout'
 import ThemeWrapper from './features/theme/ThemeWrapper'
 import PreferenceSelector from './components/PreferenceSelector'
 import NotFoundPage from './pages/NotFoundPage'
+import CreateFirstProject from './pages/accountSetup/CreateFirstProject'
 import MainLayout from './layouts/MainLayout'
 import Homepage from './pages/home/Homepage'
 
@@ -32,6 +33,8 @@ const App = () => {
                         element={<ForgotPasswordPage />}
                     />
                 </Route>
+
+                <Route path='worklenz/setup' element={<CreateFirstProject />}/>
 
                 {/* main pages routes */}
                 <Route path="/worklenz" element={<MainLayout />}>
