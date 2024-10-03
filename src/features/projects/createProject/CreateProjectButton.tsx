@@ -1,7 +1,7 @@
 import { Dropdown } from 'antd'
 import React from 'react'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
-import { toggleDrawer } from './createProjectSlice'
+import { toggleDrawer } from '../projectSlice'
 import { DownOutlined, EditOutlined, ImportOutlined } from '@ant-design/icons'
 
 const CreateProjectButton = () => {
