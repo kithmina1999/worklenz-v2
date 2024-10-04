@@ -1,28 +1,7 @@
 import React, { useState } from 'react'
-import logo from '../../assets/images/logo.png'
-import {
-    Button,
-    Card,
-    Col,
-    ConfigProvider,
-    Drawer,
-    Flex,
-    Menu,
-    MenuProps,
-    Tooltip,
-    Typography,
-} from 'antd'
+import { Col, ConfigProvider, Flex, Menu, MenuProps, Typography } from 'antd'
 import { NavLink, useNavigate } from 'react-router-dom'
-import {
-    ClockCircleOutlined,
-    HomeOutlined,
-    MenuOutlined,
-    ProjectOutlined,
-    QuestionCircleOutlined,
-    ReadOutlined,
-} from '@ant-design/icons'
 import { useMediaQuery } from 'react-responsive'
-import { colors } from '../../styles/colors'
 import { useTranslation } from 'react-i18next'
 import InviteButton from './addMember/InviteButton'
 import SwitchTeamButton from './switchTeam/SwitchTeamButton'
@@ -32,9 +11,10 @@ import AddMemberDrawer from './addMember/AddMemberDrawer'
 import NotficationDrawer from './notification/NotficationDrawer'
 import HelpButton from './help/HelpButton'
 import UpgradePlanButton from './upgradePlan/UpgradePlanButton'
+import MobileMenuButton from './mobileMenu/MobileMenuButton'
+import NavbarLogo from './NavbarLogo'
 
 const Navbar = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [current, setCurrent] = useState('home')
     const navigate = useNavigate()
 
@@ -69,9 +49,6 @@ const Navbar = () => {
         setCurrent(e.key)
     }
 
-    // mobile nav menu
-    const handleMenuToggle = () => setIsMenuOpen((prevState) => !prevState)
-
     // media queries from react-responsive package
     const isMobile = useMediaQuery({ query: '(max-width: 576px)' })
     const isTablet = useMediaQuery({ query: '(min-width: 576px)' })
@@ -89,56 +66,60 @@ const Navbar = () => {
             }}
         >
             {/* logo */}
-            <img
-                src={logo}
-                alt={t('logoAlt')}
-                style={{ width: '100%', maxWidth: 140 }}
-            />
+            <NavbarLogo />
+
             <Flex
                 align="center"
-                justify="space-between"
+                justify={isDesktop ? 'space-between' : 'flex-end'}
                 style={{ width: '100%' }}
             >
                 {/* navlinks menu  */}
-                <Menu
-                    onClick={navlinkClick}
-                    selectedKeys={[current]}
-                    mode="horizontal"
-                    style={{
-                        flex: 10,
-                        maxWidth: 400,
-                        minWidth: 0,
-                        border: 'none',
-                    }}
-                    items={navlinkItems}
-                />
-
-                <Flex gap={16} align="center">
-                    <ConfigProvider wave={{ disabled: true }}>
-                        <UpgradePlanButton />
-                        <InviteButton />
-                        <SwitchTeamButton />
-                        <NotificationButton />
-                        <HelpButton />
-                        <ProfileButton />
-                    </ConfigProvider>
-                </Flex>
-            </Flex>
-
-            {isMenuOpen && (
-                <Card style={{ position: 'absolute', top: 0, padding: 0 }}>
+                {isDesktop && (
                     <Menu
+                        onClick={navlinkClick}
+                        selectedKeys={[current]}
+                        mode="horizontal"
                         style={{
                             flex: 10,
                             maxWidth: 400,
                             minWidth: 0,
                             border: 'none',
                         }}
-                        onClick={navlinkClick}
                         items={navlinkItems}
                     />
-                </Card>
-            )}
+                )}
+
+                <Flex gap={16} align="center">
+                    <ConfigProvider wave={{ disabled: true }}>
+                        {isDesktop && (
+                            <Flex gap={12} align="center">
+                                <UpgradePlanButton />
+                                <InviteButton />
+                                <SwitchTeamButton />
+                                <NotificationButton />
+                                <HelpButton />
+                                <ProfileButton />
+                            </Flex>
+                        )}
+                        {isTablet && !isDesktop && (
+                            <Flex gap={12} align="center">
+                                <SwitchTeamButton />
+                                <NotificationButton />
+                                <ProfileButton />
+                                <MobileMenuButton />
+                            </Flex>
+                        )}
+                        {isMobile && (
+                            <Flex gap={12} align="center">
+                                <NotificationButton />
+                                <ProfileButton />
+                                <MobileMenuButton />
+                            </Flex>
+                        )}
+                    </ConfigProvider>
+                </Flex>
+            </Flex>
+
             {/* drawers  */}
             {/* add member drawer  */}
             <AddMemberDrawer />
