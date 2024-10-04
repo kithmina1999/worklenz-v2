@@ -1,10 +1,10 @@
 import {
     Alert,
-    Badge,
     Flex,
     Form,
     Input,
     InputRef,
+    message,
     Select,
     Typography,
 } from 'antd'
@@ -31,23 +31,23 @@ const AddTaskInlineForm = () => {
     // due date select options
     const dueDateOptions = [
         {
-            value: 'today',
+            value: 'Today',
             label: 'Today',
         },
         {
-            value: 'tomorrow',
+            value: 'Tomorrow',
             label: 'Tomorrow',
         },
         {
-            value: 'nextWeek',
+            value: 'Next Week',
             label: 'Next Week',
         },
         {
-            value: 'nextMonth',
+            value: 'Next Month',
             label: 'Next Month',
         },
         {
-            value: 'noDueDate',
+            value: 'No Due Date',
             label: 'No Due Date',
         },
     ]
@@ -64,9 +64,10 @@ const AddTaskInlineForm = () => {
     // function to handle task submit
     const handleTaskSubmit = (values: any) => {
         const newTask: TaskType = {
-            id: nanoid(),
-            name: values.name,
+            taskId: nanoid(),
+            task: values.name,
             dueDate: values.dueDate,
+            status: 'Todo',
             project: values.project,
         }
 
@@ -80,6 +81,9 @@ const AddTaskInlineForm = () => {
                     cursor: 'start',
                 })
             }
+
+            setIsDueDateFieldShowing(false)
+            setIsProjectFieldShowing(false)
         }, 100)
     }
 
@@ -88,9 +92,21 @@ const AddTaskInlineForm = () => {
             form={form}
             onFinish={handleTaskSubmit}
             style={{ display: 'flex', gap: 8 }}
-            initialValues={{ dueDate: 'noDueDate', project: projectOptions[0] }}
+            initialValues={{
+                dueDate: 'No Due Date',
+                project: projectOptions[0],
+            }}
         >
-            <Form.Item name="task" style={{ width: '100%', maxWidth: 400 }}>
+            <Form.Item
+                name="name"
+                style={{ width: '100%', maxWidth: 400 }}
+                rules={[
+                    {
+                        required: true,
+                        message: 'Please add a task',
+                    },
+                ]}
+            >
                 <Flex vertical gap={4}>
                     <Input
                         ref={taskInputRef}
@@ -128,34 +144,38 @@ const AddTaskInlineForm = () => {
                 </Flex>
             </Form.Item>
 
-            {isDueDateFieldShowing && (
-                <Form.Item
-                    name="dueDate"
-                    style={{ width: '100%', maxWidth: 200 }}
-                >
+            <Form.Item name="dueDate" style={{ width: '100%', maxWidth: 200 }}>
+                {isDueDateFieldShowing && (
                     <Select
                         suffixIcon={null}
                         options={dueDateOptions}
-                        defaultOpen={true}
+                        defaultOpen
                         onKeyDown={(e) => {
                             if (e.key === 'Tab' || 'Enter') {
                                 setIsProjectFieldShowing(true)
                             }
                         }}
                     />
-                </Form.Item>
-            )}
+                )}
+            </Form.Item>
 
-            {isProjectFieldShowing && (
-                <Form.Item
-                    name="project"
-                    style={{ width: '100%', maxWidth: 200 }}
-                >
+            <Form.Item
+                name="project"
+                style={{ width: '100%', maxWidth: 200 }}
+                rules={[
+                    {
+                        required: true,
+                        message: 'Related project is required',
+                    },
+                ]}
+            >
+                {isProjectFieldShowing && (
                     <Select
                         suffixIcon={null}
                         placeholder={'Project'}
                         options={projectOptions}
-                        defaultOpen={true}
+                        defaultOpen
+                        autoFocus
                         showSearch
                         optionFilterProp="label"
                         filterSort={(optionA, optionB) =>
@@ -171,8 +191,8 @@ const AddTaskInlineForm = () => {
                             }
                         }}
                     />
-                </Form.Item>
-            )}
+                )}
+            </Form.Item>
         </Form>
     )
 }
