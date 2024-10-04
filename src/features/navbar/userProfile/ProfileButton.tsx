@@ -1,105 +1,106 @@
-import { CheckCircleTwoTone, UserOutlined } from '@ant-design/icons'
+import { UserOutlined } from '@ant-design/icons'
 import {
     Avatar,
     Button,
-    ConfigProvider,
-    Divider,
+    Card,
     Dropdown,
     Flex,
-    Menu,
-    Space,
+    MenuProps,
     Tooltip,
     Typography,
 } from 'antd'
-import React from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { colors } from '../../../styles/colors'
-import { NavLink } from 'react-router-dom'
+// profile dropdown custom css
+import './profileDropdown.css'
+import { UserType } from '../../../types/user'
 
 const ProfileButton = () => {
     // localization
     const { t } = useTranslation('navbar')
 
-    // user profile dropdown items
-    const items = [
+    const userDetails: UserType = {
+        name: 'Sachintha Prasad',
+        email: 'prasadsachintha1231@gmail.com',
+        userRole: 'owner',
+    }
+
+    const profile: MenuProps['items'] = [
         {
-            key: '0',
+            key: '1',
             label: (
-                <Flex vertical>
-                    <Flex vertical gap={8}>
-                        <Typography.Text strong>Account</Typography.Text>
-                        <Flex gap={8} align="center">
-                            <Avatar
-                                size="small"
-                                style={{
-                                    backgroundColor: colors.vibrantOrange,
-                                }}
-                            >
-                                S
-                            </Avatar>
-                            <Flex vertical>
-                                <Typography.Text>
-                                    Sachintha Prasad
-                                </Typography.Text>
-                                <Typography.Text
-                                    style={{ fontSize: 12, fontWeight: 300 }}
-                                >
-                                    prasadsachintha1231@gmail.com
-                                </Typography.Text>
-                                <Typography.Text
-                                    style={{ fontSize: 12, fontWeight: 300 }}
-                                >
-                                    (owner)
-                                </Typography.Text>
-                            </Flex>
-                        </Flex>
-                    </Flex>
-                    <Menu
-                        style={{
-                            flex: 10,
-                            maxWidth: 400,
-                            minWidth: 0,
-                            border: 'none',
-                        }}
-                        items={[
-                            {
-                                key: 'admin',
-                                label: (
-                                    <NavLink to={'worklenz/admin-center'}>
-                                        Admin Center
-                                    </NavLink>
-                                ),
-                            },
-                            {
-                                key: 'setting',
-                                label: (
-                                    <NavLink to={'worklenz/settings'}>
-                                        Settings
-                                    </NavLink>
-                                ),
-                            },
-                            {
-                                key: 'logout',
-                                label: (
-                                    <NavLink
-                                        to={'http://localhost:3000/auth/login'}
+                <Card
+                    className="custom-card"
+                    title={
+                        <div style={{ paddingBlock: '16px' }}>
+                            <Typography.Text>Account</Typography.Text>
+                            <Flex gap={8} align="center" justify="flex-start">
+                                <div>
+                                    <Avatar
+                                        style={{
+                                            backgroundColor:
+                                                colors.vibrantOrange,
+                                            verticalAlign: 'middle',
+                                        }}
+                                        size={30}
                                     >
-                                        Log Out
-                                    </NavLink>
-                                ),
-                            },
-                        ]}
-                    />
-                </Flex>
+                                        S
+                                    </Avatar>
+                                </div>
+                                <Flex vertical>
+                                    <Typography.Text>
+                                        {userDetails.name}
+                                    </Typography.Text>
+                                    <Typography.Text style={{ fontSize: 12 }}>
+                                        {userDetails.email}
+                                    </Typography.Text>
+                                    <Typography.Text
+                                        type="secondary"
+                                        style={{ fontSize: 12 }}
+                                    >
+                                        ({userDetails.userRole})
+                                    </Typography.Text>
+                                </Flex>
+                            </Flex>
+                        </div>
+                    }
+                    bordered={false}
+                    style={{ width: 230 }}
+                >
+                    <Typography.Link
+                        href="/worklenz/admin-center"
+                        style={{ color: colors.darkGray }}
+                    >
+                        Admin Center
+                    </Typography.Link>
+                    <Typography.Link
+                        href="/worklenz/setting"
+                        style={{ color: colors.darkGray }}
+                    >
+                        Setting
+                    </Typography.Link>
+                    <Typography.Link
+                        href="/auth/login"
+                        style={{ color: colors.darkGray }}
+                    >
+                        Log Out
+                    </Typography.Link>
+                </Card>
             ),
         },
     ]
 
     return (
         <Tooltip title={t('profileTooltip')}>
-            <Dropdown menu={{ items }} trigger={['click']}>
+            <Dropdown
+                overlayClassName="custom-dropdown"
+                menu={{ items: profile }}
+                placement="bottomRight"
+                trigger={['click']}
+            >
                 <Button
-                    className="navbar-action-btn"
+                    className="borderless-icon-btn"
                     icon={<UserOutlined style={{ fontSize: 20 }} />}
                 />
             </Dropdown>

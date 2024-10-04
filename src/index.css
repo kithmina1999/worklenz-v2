@@ -6,8 +6,6 @@
 
 /* antdesign override imports  */
 @import url('./styles/homeTable.css');
-/* navbar custom css  */
-@import url('./features/navbar/navbar.css');
 
 *,
 *::before,
@@ -20,4 +18,9 @@
 
 ::-webkit-scrollbar {
     display: none;
+}
+
+/* helper classes  */
+.borderless-icon-btn {
+    border: none;
 }

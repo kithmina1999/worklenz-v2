@@ -13,14 +13,14 @@ import {
     Typography,
 } from 'antd'
 import React, { useRef, useState } from 'react'
-import { useAppSelector } from '../../hooks/useAppSelector'
-import { TodoType } from '../../types/todo'
-import { useAppDispatch } from '../../hooks/useAppDispatch'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { TodoType } from '../../../types/todo'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
 
-import { addTodo } from '../../features/todo/todoSlice'
-import EmptyListPlaceholder from '../../components/EmptyListPlaceholder'
+import { addTodo } from '../../../features/todo/todoSlice'
+import EmptyListPlaceholder from '../../../components/EmptyListPlaceholder'
 import { nanoid } from '@reduxjs/toolkit'
-import TodoDoneButton from '../../components/TodoDoneButton'
+import TodoDoneButton from './TodoDoneButton'
 
 const TodoList = () => {
     const todoList = useAppSelector((state) => state.todoReducer.todoList)
@@ -49,7 +49,7 @@ const TodoList = () => {
         dispatch(addTodo(newTodo))
         form.resetFields()
 
-        // there is an issue (input field focused but can't type) occurs when immediately focus the input, so this timeout fuction held to create a small delay
+        //? there is an issue (input field focused but can't type) occurs when immediately focus the input, so this timeout fuction held to create a small delay
         setTimeout(() => {
             if (todoInputRef.current) {
                 todoInputRef.current.focus({
@@ -63,7 +63,7 @@ const TodoList = () => {
     const columns: TableProps<TodoType>['columns'] = [
         {
             key: 'completeBtn',
-            width: 24,
+            width: 32,
             render: (record: TodoType) => <TodoDoneButton record={record} />,
         },
         {
@@ -147,6 +147,9 @@ const TodoList = () => {
                             columns={columns}
                             showHeader={false}
                             pagination={false}
+                            // scroll={{
+                            //     y: 55 * 5,
+                            // }}
                         />
                     )}
                 </div>

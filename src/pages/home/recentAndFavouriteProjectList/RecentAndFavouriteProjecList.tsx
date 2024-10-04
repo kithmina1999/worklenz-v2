@@ -1,5 +1,6 @@
 import { StarFilled, SyncOutlined } from '@ant-design/icons'
 import {
+    Badge,
     Button,
     Card,
     Empty,
@@ -8,21 +9,27 @@ import {
     Skeleton,
     Table,
     TableProps,
-    Tooltip,
     Typography,
 } from 'antd'
 import React, { useState } from 'react'
-import { useAppSelector } from '../../hooks/useAppSelector'
-import { ProjectType } from '../../types/project'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { ProjectType } from '../../../types/project'
+import AddFavouriteProjectButton from './AddFavouriteProjectButton'
 
 const RecentAndFavouriteProjecList = () => {
-    const projectsList = useAppSelector(
-        (state) => state.createProjectReducer.projects
-    )
     const [projectSegment, setProjectSegment] = useState<
         'Recent' | 'Favourites'
     >('Recent')
     const [isLoading, setIsLoading] = useState(false)
+    const projectsList = useAppSelector(
+        (state) => state.projectReducer.projectsList
+    )
+
+    // this project list check wheather it's recent projects or favourite projects
+    const activeProjectsList =
+        projectSegment === 'Recent'
+            ? projectsList
+            : projectsList.filter((project) => project.isFavourite)
 
     // function for handle refresh
     const handleRefresh = () => {
@@ -30,7 +37,7 @@ const RecentAndFavouriteProjecList = () => {
         setTimeout(() => setIsLoading(false), 500)
     }
 
-    // function for handle segmaent change and render the calender
+    // function for handle segmaent change between recent and favourites
     const handleSegmentChange = (value: 'Recent' | 'Favourites') => {
         if (value === 'Recent') {
             setProjectSegment('Recent')
@@ -45,8 +52,10 @@ const RecentAndFavouriteProjecList = () => {
     const columns: TableProps<ProjectType>['columns'] = [
         {
             key: 'completeBtn',
-            width: 24,
-            render: (record: ProjectType) => <StarFilled />,
+            width: 32,
+            render: (record: ProjectType) => (
+                <AddFavouriteProjectButton record={record} />
+            ),
         },
         {
             key: 'name',
@@ -54,7 +63,11 @@ const RecentAndFavouriteProjecList = () => {
                 <Typography.Paragraph
                     style={{ margin: 0, paddingInlineEnd: 6 }}
                 >
-                    {record.name}
+                    <Badge
+                        color={record.projectColor}
+                        style={{ marginInlineEnd: 4 }}
+                    />
+                    {record.projectName}
                 </Typography.Paragraph>
             ),
         },
@@ -64,7 +77,7 @@ const RecentAndFavouriteProjecList = () => {
         <Card
             title={
                 <Typography.Title level={5} style={{ marginBlockEnd: 0 }}>
-                    Projects ({projectsList.length})
+                    Projects ({activeProjectsList.length})
                 </Typography.Title>
             }
             extra={
@@ -89,7 +102,7 @@ const RecentAndFavouriteProjecList = () => {
                 <Skeleton />
             ) : (
                 <div>
-                    {projectsList.length === 0 ? (
+                    {activeProjectsList.length === 0 ? (
                         <Empty
                             image="https://app.worklenz.com/assets/images/empty-box.webp"
                             imageStyle={{ height: 60 }}
@@ -100,14 +113,16 @@ const RecentAndFavouriteProjecList = () => {
                             }}
                             description={
                                 <Typography.Text>
-                                    You have not assigned to any project yet.
+                                    {projectSegment === 'Recent'
+                                        ? 'You have not assigned to any project yet.'
+                                        : 'No any favourite projects yet.'}
                                 </Typography.Text>
                             }
                         />
                     ) : (
                         <Table
                             className="homepage-table"
-                            dataSource={projectsList}
+                            dataSource={activeProjectsList}
                             columns={columns}
                             showHeader={false}
                             pagination={false}
