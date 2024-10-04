@@ -13,9 +13,9 @@ import AuthLayout from './layouts/AuthLayout'
 import ThemeWrapper from './features/theme/ThemeWrapper'
 import PreferenceSelector from './components/PreferenceSelector'
 import NotFoundPage from './pages/NotFoundPage'
-import CreateFirstProject from './pages/accountSetup/CreateFirstProject'
 import MainLayout from './layouts/MainLayout'
 import Homepage from './pages/home/Homepage'
+import AccountSetup from './pages/accountSetup/AccountSetup'
 
 const App = () => {
     const router = createBrowserRouter(
@@ -34,7 +34,7 @@ const App = () => {
                     />
                 </Route>
 
-                <Route path='worklenz/setup' element={<CreateFirstProject />}/>
+                <Route path='worklenz/setup' element={<AccountSetup />}/>
 
                 {/* main pages routes */}
                 <Route path="/worklenz" element={<MainLayout />}>

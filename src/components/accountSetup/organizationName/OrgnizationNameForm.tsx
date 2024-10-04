@@ -1,5 +1,10 @@
-import React, { useState } from 'react'
+import React, { startTransition, useEffect, useState } from 'react'
 import { Button, Form, Input, Typography } from 'antd'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../../../app/store'
+import { setButtonDisabled } from '../../../features/action-setup/buttonSlice'
+import './OrganizationNameForm.css'
+import { useTranslation } from 'react-i18next'
 
 const { Title } = Typography
 
@@ -10,21 +15,37 @@ interface OrganizationNameProps {
 const OrganizationNameForm: React.FC<OrganizationNameProps> = ({
     onContinue,
 }) => {
+    const dispatch = useDispatch()
     const [inputValue, setInputValue] = useState('')
-    const [isButtonDisabled, setIsButtonDisabled] = useState(true)
+    const isButtonDisabled = useSelector((state: RootState) => state.button.isButtonDisable)
+    const themeMode = useSelector((state: RootState) => state.themeReducer.mode)
+
+    const { t } = useTranslation('organizationNameFormPage')
+
+    useEffect(() => {
+        dispatch(setButtonDisabled(true))
+    }, [dispatch])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
         setInputValue(value)
 
         if (value.trim() === '') {
-            setIsButtonDisabled(true)
+            dispatch(setButtonDisabled(true))
         } else {
-            setIsButtonDisabled(false)
+            dispatch(setButtonDisabled(false))
         }
     }
+
+    const handleOnContinue = () => {
+        startTransition(() => {
+          onContinue();
+        });
+      };
+
     return (
         <Form
+            className='organization-name-form'
             style={{
                 width: '600px',
                 paddingBottom: '1rem',
@@ -34,15 +55,15 @@ const OrganizationNameForm: React.FC<OrganizationNameProps> = ({
         >
             <Form.Item>
                 <Title level={2} style={{ marginBottom: '1rem' }}>
-                    Name your organization.
+                    {t('nameYourOrganization')}
                 </Title>
             </Form.Item>
             <Form.Item
                 layout="vertical"
                 rules={[{ required: true }]}
                 label={
-                    <span style={{ color: '#00000073', fontWeight: 500 }}>
-                        Pick a name for your Worklenz account.
+                    <span style={{ color: themeMode === 'dark'? '' : '#00000073', fontWeight: 500 }}>
+                        {t('worklenzAccountTitle')}
                     </span>
                 }
             >
@@ -58,9 +79,9 @@ const OrganizationNameForm: React.FC<OrganizationNameProps> = ({
                     type="primary"
                     htmlType="submit"
                     disabled={isButtonDisabled}
-                    onClick={onContinue}
+                    onClick={handleOnContinue}
                 >
-                    Continue
+                    {t('continue')}
                 </Button>
             </Form.Item>
         </Form>

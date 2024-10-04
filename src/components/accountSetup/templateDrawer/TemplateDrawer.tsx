@@ -3,10 +3,17 @@ import React from "react";
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
 import './TemplateDrawer.css'
+import { RootState } from "../../../app/store";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const { Title, Text } = Typography
 
 const TemplateDrawer: React.FC = () => {
+
+  const themeMode = useSelector((state: RootState) => state.themeReducer.mode)
+
+  const { t } = useTranslation('templateDrawer')
 
   type MenuItem = Required<MenuProps>['items'][number];
 
@@ -21,22 +28,24 @@ const TemplateDrawer: React.FC = () => {
   ];
 
   const items: MenuItem[] = [
-    { key: '1', label: 'Bug Tracking'},
-    { key: '2', label: 'Construction' },
-    { key: '3', label: 'Design & Creative' },
-    { key: '4', label: 'Education' },
-    { key: '5', label: 'Finance' },
-    { key: '6', label: 'HR & Recruiting' },
-    { key: '7', label: 'Information Technology' },
-    { key: '8', label: 'Legal' },
-    { key: '9', label: 'Manufacturing' },
-    { key: '10', label: 'Marketing' },
-    { key: '11', label: 'Nonprofit' },
-    { key: '12', label: 'Personal use' },
-    { key: '13', label: 'Sales & CRM' },
-    { key: '14', label: 'Service & Consulting' },
-    { key: '15', label: 'Software Development' },
+    { key: '1', label: t('bugTracking') },
+    { key: '2', label: t('construction') },
+    { key: '3', label: t('designCreative') },
+    { key: '4', label: t('education') },
+    { key: '5', label: t('finance') },
+    { key: '6', label: t('hrRecruiting') },
+    { key: '7', label: t('informationTechnology') },
+    { key: '8', label: t('legal') },
+    { key: '9', label: t('manufacturing') },
+    { key: '10', label: t('marketing') },
+    { key: '11', label: t('nonprofit') },
+    { key: '12', label: t('personalUse') },
+    { key: '13', label: t('salesCRM') },
+    { key: '14', label: t('serviceConsulting') },
+    { key: '15', label: t('softwareDevelopment') },
   ];
+
+
 
   const onClick = () => {};
 
@@ -66,7 +75,7 @@ const TemplateDrawer: React.FC = () => {
               {/* Description */}
               <div  style={{display: 'flex', marginBottom: '1rem',}}>
                 <div style={{maxWidth: '120px', minWidth: '120px'}}>
-                  <Text style={{fontWeight: 500}}>Description</Text>
+                  <Text style={{fontWeight: 500}}>{t('description')}</Text>
                 </div>
                 <div>
                   <Text>The “Bug Tracking” project template is a versatile solution meticulously designed to streamline and enhance the bug management processes of businesses across diverse industries. This template is especially valuable for organizations that rely on software development, IT services, or digital product management. It provides a structured and efficient approach to tracking, resolving, and improving software issues.</Text>
@@ -76,7 +85,7 @@ const TemplateDrawer: React.FC = () => {
               {/* Phase */}
               <div  style={{display: 'flex', marginBottom: '1.5rem',}}>
                 <div style={{maxWidth: '120px', minWidth: '120px'}}>
-                  <Text style={{fontWeight: 500}}>Phase</Text>
+                  <Text style={{fontWeight: 500}}>{t('phase')}</Text>
                 </div>
                 <div>
                   <Tag color="#75c9c069" style={{color: 'black', marginBottom: '8px'}}>Incoming</Tag>
@@ -90,7 +99,7 @@ const TemplateDrawer: React.FC = () => {
                 {/* Statuses */}
               <div  style={{display: 'flex', marginBottom: '1.5rem',}}>
                 <div style={{maxWidth: '120px', minWidth: '120px'}}>
-                  <Text style={{fontWeight: 500}}>Statuses</Text>
+                  <Text style={{fontWeight: 500}}>{t('statuses')}</Text>
                 </div>
                 <div>
                   <Tag color="#a9a9a969" style={{color: 'black', marginBottom: '8px'}}>To Do</Tag>
@@ -103,7 +112,7 @@ const TemplateDrawer: React.FC = () => {
               {/* Priorities */}
               <div  style={{display: 'flex', marginBottom: '1.5rem',}}>
                 <div style={{maxWidth: '120px', minWidth: '120px'}}>
-                  <Text style={{fontWeight: 500}}>Priorities</Text>
+                  <Text style={{fontWeight: 500}}>{t('priorities')}</Text>
                 </div>
                 <div>
                   <Tag color="#75c99769" style={{color: 'black', marginBottom: '8px'}}>Low</Tag>
@@ -115,7 +124,7 @@ const TemplateDrawer: React.FC = () => {
               {/* Labels */}
               <div  style={{display: 'flex', marginBottom: '1.5rem',}}>
                 <div style={{maxWidth: '120px', minWidth: '120px'}}>
-                  <Text style={{fontWeight: 500}}>Labels</Text>
+                  <Text style={{fontWeight: 500}}>{t('labels')}</Text>
                 </div>
                 <div>
                   <Tag color="#cbbc7869" style={{color: 'black', marginBottom: '8px'}}>UI/UX Bug</Tag>
@@ -130,10 +139,10 @@ const TemplateDrawer: React.FC = () => {
                 </div>
               </div>
 
-              {/* Labels */}
+              {/* Tasks */}
               <div  style={{display: 'flex', flexDirection: 'column' ,marginBottom: '1.5rem',}}>
                 <div style={{maxWidth: '120px', minWidth: '120px'}}>
-                  <Text style={{fontWeight: 500}}>Tasks</Text>
+                  <Text style={{fontWeight: 500}}>{t('tasks')}</Text>
                 </div>
                 <div style={{marginTop: '0.5rem'}}>
                   <List
@@ -156,7 +165,7 @@ const TemplateDrawer: React.FC = () => {
   return (
     <div style={{ height: '100vh', overflow: 'hidden' }}>
       {/* Sticky Tabs Header */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 100, backgroundColor: '#fff', overflow: 'hidden'}}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 100, backgroundColor: themeMode === 'dark' ? '' : '#fff', overflow: 'hidden'}}>
         <Tabs type="card" items={tabs} />
       </div>
     </div>

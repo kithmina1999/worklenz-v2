@@ -7,6 +7,7 @@ import createProjectReducer from '../features/projects/createProject/createProje
 import notificationReducer from '../features/navbar/notification/notificationSlice'
 import addMemberReducer from '../features/navbar/addMember/addMemberSlice'
 import taskReducer from '../features/tasks/taskSlice'
+import buttonReducer from '../features/action-setup/buttonSlice'
 
 export const store = configureStore({
     middleware: (getDefaultMiddleware) =>
@@ -22,6 +23,7 @@ export const store = configureStore({
         notificationReducer: notificationReducer,
         addMemberReducer: addMemberReducer,
         taskReducer: taskReducer,
+        button: buttonReducer
     },
 })
 

@@ -5,11 +5,19 @@ import OrganizationNameForm from '../../components/accountSetup/organizationName
 import CreateFirstProjectForm from '../../components/accountSetup/createFirstProject/CreateFirstProjectForm'
 import CreateFirstTasks from '../../components/accountSetup/createFirstTasks/CreateFirstTasks'
 import InviteInitialTeamMembers from '../../components/accountSetup/inviteInitialTeamMembers/InviteInitialTeamMembers'
+import './AccountSetup.css'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../app/store'
+import { useTranslation } from 'react-i18next'
 
 const { Title } = Typography
 
-const CreateFirstProject: React.FC = () => {
-    const [current, setCurrent] = useState(3)
+const AccountSetup: React.FC = () => {
+    const [current, setCurrent] = useState(0)
+    const isButtonDisabled = useSelector((state: RootState) => state.button.isButtonDisable)
+    const themeMode = useSelector((state: RootState) => state.themeReducer.mode)
+
+    const { t } = useTranslation('accountSetupPage')
 
     const steps = [
         {
@@ -42,7 +50,6 @@ const CreateFirstProject: React.FC = () => {
             title: '',
             content: (
                 <InviteInitialTeamMembers 
-                onContinue={() => setCurrent(current + 1)}
                 onGoBack={() => setCurrent(current - 1)}
                 />
             ),
@@ -52,13 +59,14 @@ const CreateFirstProject: React.FC = () => {
     return (
         <div
             style={{
+                height: '100vh',
                 width: '100vw',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 paddingTop: '3rem',
                 paddingBottom: '3rem',
-                backgroundColor: '#FAFAFA',
+                backgroundColor: themeMode === 'dark' ? 'black' : '#FAFAFA',
             }}
         >
             <div>
@@ -72,11 +80,11 @@ const CreateFirstProject: React.FC = () => {
                     marginBottom: '24px',
                 }}
             >
-                Setup your account.
+                {t('setupYourAccount')}
             </Title>
             <div
                 style={{
-                    backgroundColor: 'white',
+                    backgroundColor: themeMode === 'dark' ? '#141414' : 'white',
                     marginTop: '1.5rem',
                     paddingTop: '3rem',
                     marginRight: 'auto',
@@ -89,6 +97,7 @@ const CreateFirstProject: React.FC = () => {
                 }}
             >
                 <Space
+                    className={themeMode === 'dark' ? 'dark-mode' : ''}
                     direction="vertical"
                     style={{
                         display: 'flex',
@@ -100,6 +109,7 @@ const CreateFirstProject: React.FC = () => {
                     }}
                 >
                     <Steps
+                        className={isButtonDisabled ? 'step' : 'progress-steps'}
                         current={current}
                         items={steps}
                         style={{
@@ -108,7 +118,7 @@ const CreateFirstProject: React.FC = () => {
                             width: '600px',
                         }}
                     />
-                    <div style={{ flexGrow: 1, width: '100%' }}>
+                    <div className='step-content' style={{ flexGrow: 1, width: '600px' }}>
                         {steps[current].content}
                     </div>
                 </Space>
@@ -117,4 +127,4 @@ const CreateFirstProject: React.FC = () => {
     )
 }
 
-export default CreateFirstProject
+export default AccountSetup

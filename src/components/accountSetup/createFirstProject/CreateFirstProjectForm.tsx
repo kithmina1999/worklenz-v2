@@ -1,7 +1,11 @@
-import React, { useState } from 'react'
+import React, { startTransition, useEffect, useState } from 'react'
 import { Button, Drawer, Form, Input, Typography } from 'antd'
 import './CreateFirstProjectForm.css'
 import TemplateDrawer from '../templateDrawer/TemplateDrawer'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../../../app/store'
+import { setButtonDisabled } from '../../../features/action-setup/buttonSlice'
+import { useTranslation } from 'react-i18next'
 
 const { Title } = Typography
 
@@ -14,31 +18,54 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
     onContinue,
     onGoBack,
 }) => {
+    const dispatch = useDispatch()
     const [inputValue, setInputValue] = useState('')
-    const [isButtonDisabled, setIsButtonDisabled] = useState(true)
+    const isButtonDisabled = useSelector((state: RootState) => state.button.isButtonDisable)
     const [open, setOpen] = useState(false)
+    const themeMode = useSelector((state: RootState) => state.themeReducer.mode)
+
+    const { t } = useTranslation('createFirstProjectFormPage')
 
     const openTemplateSelector = () => {
-        setOpen(true)
+        startTransition(() => {
+            setOpen(true)
+        })
     }
 
     const closeTemplateSelector = () => {
         setOpen(false)
     }
 
+    useEffect(() => {
+        dispatch(setButtonDisabled(true))
+    }, [dispatch])
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
         setInputValue(value)
 
         if (value.trim() === '') {
-            setIsButtonDisabled(true)
+            dispatch(setButtonDisabled(true))
         } else {
-            setIsButtonDisabled(false)
+            dispatch(setButtonDisabled(false))
         }
     }
 
+    const handleGoBack = () => {
+        startTransition(() => {
+          onGoBack();
+        });
+      };
+
+      const handleOnContinue = () => {
+        startTransition(() => {
+          onContinue();
+        });
+      };
+
     return (
         <Form
+        className='first-project-form'
             style={{
                 width: '600px',
                 paddingBottom: '1rem',
@@ -48,7 +75,7 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
         >
             <Form.Item>
                 <Title level={2} style={{ marginBottom: '1rem' }}>
-                    Create your first project.
+                    {t('formTitle')}
                 </Title>
             </Form.Item>
 
@@ -56,8 +83,8 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
                 layout="vertical"
                 rules={[{ required: true }]}
                 label={
-                    <span style={{ color: '#00000073', fontWeight: 500 }}>
-                        What project are you working on right now?
+                    <span style={{ color: themeMode === 'dark'? '' : '#00000073', fontWeight: 500 }}>
+                        {t('inputLabel')}
                     </span>
                 }
             >
@@ -69,10 +96,10 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
             </Form.Item>
 
             <div style={{ position: 'relative' }}>
-                <Title level={4} className="vert-text">
-                    or
+                <Title level={4} className= {themeMode === 'dark' ? 'vert-text-dark' : 'vert-text'}>
+                    {t('or')}
                 </Title>
-                <div className="vert-line"></div>
+                <div className={themeMode === 'dark' ? 'vert-line-dark' : 'vert-line'}></div>
             </div>
 
             <div
@@ -92,10 +119,10 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
                         alignItems: 'center',
                     }}
                 >
-                    Import from template
+                    {t('templateButton')}
                 </Button>
                 <Drawer
-                    title="Select from templates"
+                    title={t('templateDrawerTitle')}
                     width={1000}
                     onClose={closeTemplateSelector}
                     open={open}
@@ -111,9 +138,9 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
                                 style={{ marginRight: '8px' }}
                                 onClick={closeTemplateSelector}
                             >
-                                Cancel
+                                {t('cancel')}
                             </Button>
-                            <Button type="primary">Create</Button>
+                            <Button type="primary">{t('create')}</Button>
                         </div>
                     }
                 >
@@ -121,19 +148,20 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
                 </Drawer>
             </div>
 
-            <Form.Item style={{ display: 'flex', marginTop: '5rem' }}>
-                <Button style={{ padding: 0 }} type="link" onClick={onGoBack}>
-                    Go back
+            <Form.Item style={{ marginTop: '5rem',}}>
+                <div style={{ display: 'flex', justifyContent: 'space-between'}}>
+                <Button style={{ padding: 0 }} type="link" onClick={handleGoBack}>
+                    {t('goBack')}
                 </Button>
-                <Button
-                    style={{ marginLeft: '450px' }}
+                <Button                  
                     type="primary"
                     htmlType="submit"
                     disabled={isButtonDisabled}
-                    onClick={onContinue}
+                    onClick={handleOnContinue}
                 >
-                    Continue
+                    {t('continue')}
                 </Button>
+                </div>
             </Form.Item>
         </Form>
     )

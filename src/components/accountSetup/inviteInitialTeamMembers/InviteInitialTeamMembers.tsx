@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { startTransition, useState } from 'react';
 import { Alert, Button, Form, Input, List, Typography } from 'antd';
 import { PlusOutlined, CloseCircleOutlined, MailOutlined } from '@ant-design/icons';
 import './InviteInitialTeamMembers.css';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../app/store';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 
 interface InviteInitialTeamMembersProps {
-  onContinue: () => void;
   onGoBack: () => void;
 }
 
@@ -14,8 +16,11 @@ interface Email {
   id: number;
   value: string;
 }
-const InviteInitialTeamMembers : React.FC<InviteInitialTeamMembersProps> = ({onContinue,onGoBack}) => {
+const InviteInitialTeamMembers : React.FC<InviteInitialTeamMembersProps> = ({onGoBack}) => {
     const [emails, setEmails] = useState<Email[]>([{ id: Date.now(), value: '' }]);
+    const themeMode = useSelector((state: RootState) => state.themeReducer.mode)
+
+    const { t } = useTranslation('inviteInitialTeamMembers')
 
     const handleInputChange = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -38,9 +43,16 @@ const InviteInitialTeamMembers : React.FC<InviteInitialTeamMembersProps> = ({onC
     };
   
     const isButtonDisabled = emails.some(email => email.value.trim() === '');
+
+    const handleGoBack = () => {
+      startTransition(() => {
+        onGoBack();
+      });
+    };
   
     return (
       <Form
+        className='invite-members-form'
         style={{
           minHeight: '300px',
           width: '600px',
@@ -53,7 +65,7 @@ const InviteInitialTeamMembers : React.FC<InviteInitialTeamMembersProps> = ({onC
       >
         <Form.Item>
           <Title level={2} style={{ marginBottom: '1rem' }}>
-          Invite your team to work with
+          {t('formTitle')}
           <br />
           <Text style={{fontSize: '20px', fontWeight: 400}}>"<mark>Test</mark>"</Text>
           </Title>
@@ -62,8 +74,8 @@ const InviteInitialTeamMembers : React.FC<InviteInitialTeamMembersProps> = ({onC
           layout="vertical"
           rules={[{ required: true }]}
           label={
-            <span style={{ color: '#00000073', fontWeight: 500 }}>
-              Invite with email <span style={{marginLeft: '0.25rem'}}><MailOutlined /></span>
+            <span style={{ color: themeMode === 'dark'? '' : '#00000073', fontWeight: 500 }}>
+              {t('inputLable')} <span style={{marginLeft: '0.25rem'}}><MailOutlined /></span>
             </span>
           }
         >
@@ -81,7 +93,7 @@ const InviteInitialTeamMembers : React.FC<InviteInitialTeamMembersProps> = ({onC
                     className="custom-close-button"
                     style={{ marginLeft: '48px' }}
                     type="text"
-                    icon={<CloseCircleOutlined style={{ color: '#00000073', fontSize: '20px' }} />}
+                    icon={<CloseCircleOutlined style={{ color: themeMode === 'dark'? '' : '#00000073', fontSize: '20px' }} />}
                     onClick={() => removeEmail(email.id)}
                   />
                 </div>
@@ -94,24 +106,23 @@ const InviteInitialTeamMembers : React.FC<InviteInitialTeamMembersProps> = ({onC
             onClick={addEmail}
             style={{ marginTop: '16px' }}
           >
-            Add another
+            {t('addAnother')}
           </Button>
         <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between' }}>
             <div>
-          <Button style={{ padding: '4px 15px 4px 0' }} type="link" onClick={onGoBack}>
-            Go back
+          <Button style={{ padding: '4px 15px 4px 0' }} type="link" onClick={handleGoBack}>
+          {t('goBack')}
           </Button>
-          <Button style={{ color: '#00000073', fontWeight: 500}} type="text" >
-            Skip for now
+          <Button style={{ color: themeMode === 'dark'? '' : '#00000073', fontWeight: 500}} type="text" >
+          {t('skipForNow')}
           </Button>
             </div>
           <Button
             type="primary"
             htmlType="submit"
             disabled={isButtonDisabled}
-            onClick={onContinue}
           >
-            Continue
+            {t('continue')}
           </Button>
         </div>
         </Form.Item>
