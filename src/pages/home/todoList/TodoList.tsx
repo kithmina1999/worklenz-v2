@@ -41,8 +41,8 @@ const TodoList = () => {
     // function to handle todo submit
     const handleTodoSubmit = (values: any) => {
         const newTodo: TodoType = {
-            id: nanoid(),
-            name: values.name,
+            todoId: nanoid(),
+            todoName: values.name,
             isCompleted: false,
         }
         setIsAlertShowing(false)
@@ -72,7 +72,7 @@ const TodoList = () => {
                 <Typography.Paragraph
                     style={{ margin: 0, paddingInlineEnd: 6 }}
                 >
-                    {record.name}
+                    {record.todoName}
                 </Typography.Paragraph>
             ),
         },
@@ -143,6 +143,7 @@ const TodoList = () => {
                     ) : (
                         <Table
                             className="homepage-table"
+                            rowKey={(record) => record.todoId}
                             dataSource={todoList}
                             columns={columns}
                             showHeader={false}
