@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
-import './features/i18n/i18n'
+import './i18n'
 import { Provider } from 'react-redux'
 import { store } from './app/store'
-import { applyCssVariables } from './styles/colors';
+import { applyCssVariables } from './styles/colors'
 
-applyCssVariables();
+applyCssVariables()
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
@@ -16,7 +16,7 @@ root.render(
         <React.StrictMode>
             <App />
         </React.StrictMode>
-    </Provider>,
+    </Provider>
 )
 
 reportWebVitals()

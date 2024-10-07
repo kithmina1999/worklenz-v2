@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { startTransition, useEffect, useState } from 'react';
 import { Alert, Button, Form, Input, List, Typography } from 'antd';
 import { PlusOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import './CreateFirstTasks.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../app/store';
+import { setButtonDisabled } from '../../../features/action-setup/buttonSlice';
+import { useTranslation } from 'react-i18next';
 
 const { Title } = Typography;
 
@@ -19,11 +23,23 @@ const CreateFirstTasks: React.FC<CreateFirstTasksProps> = ({
   onContinue,
   onGoBack,
 }) => {
+  const dispatch = useDispatch()
   const [tasks, setTasks] = useState<Task[]>([{ id: Date.now(), value: '' }]);
+  const isButtonDisabled = useSelector((state: RootState) => state.button.isButtonDisable)
+  const themeMode = useSelector((state: RootState) => state.themeReducer.mode)
+
+  const { t } = useTranslation('createFirstTasks')
+
+  useEffect(() => {
+    dispatch(setButtonDisabled(true))
+}, [dispatch])
 
   const handleInputChange = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setTasks(tasks.map(task => (task.id === id ? { ...task, value } : task)));
+    
+    const isAnyTaskEmpty = tasks.some((task) => task.value.trim() === '');
+    dispatch(setButtonDisabled(isAnyTaskEmpty));
   };
 
   const addTask = () => {
@@ -41,10 +57,21 @@ const CreateFirstTasks: React.FC<CreateFirstTasksProps> = ({
       }
   };
 
-  const isButtonDisabled = tasks.some(task => task.value.trim() === '');
+  const handleGoBack = () => {
+    startTransition(() => {
+      onGoBack()
+    });
+  };
+
+  const handleOnContinue = () => {
+    startTransition(() => {
+      onContinue();
+    });
+  };
 
   return (
     <Form
+      className='create-first-task-form'
       style={{
         minHeight: '300px',
         width: '600px',
@@ -57,15 +84,15 @@ const CreateFirstTasks: React.FC<CreateFirstTasksProps> = ({
     >
       <Form.Item>
         <Title level={2} style={{ marginBottom: '1rem' }}>
-          Create your first task.
+          {t('formTitle')}
         </Title>
       </Form.Item>
       <Form.Item
         layout="vertical"
         rules={[{ required: true }]}
         label={
-          <span style={{ color: '#00000073', fontWeight: 500 }}>
-            Type a few tasks that you are going to do in "<mark>dff</mark>".
+          <span style={{ color: themeMode === 'dark'? '' : '#00000073', fontWeight: 500 }}>
+            {t('inputLable')} "<mark>dff</mark>".
           </span>
         }
       >
@@ -83,7 +110,7 @@ const CreateFirstTasks: React.FC<CreateFirstTasksProps> = ({
                   className="custom-close-button"
                   style={{ marginLeft: '48px' }}
                   type="text"
-                  icon={<CloseCircleOutlined style={{ color: '#00000073', fontSize: '20px' }} />}
+                  icon={<CloseCircleOutlined style={{ color: themeMode === 'dark'? '' : '#00000073', fontSize: '20px' }} />}
                   onClick={() => removeTask(task.id)}
                 />
               </div>
@@ -96,19 +123,19 @@ const CreateFirstTasks: React.FC<CreateFirstTasksProps> = ({
           onClick={addTask}
           style={{ marginTop: '16px' }}
         >
-          Add another
+          {t('addAnother')}
         </Button>
       <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between' }}>
-        <Button style={{ padding: 0 }} type="link" onClick={onGoBack}>
-          Go back
+        <Button style={{ padding: 0 }} type="link" onClick={handleGoBack}>
+        {t('goBack')}
         </Button>
         <Button
           type="primary"
           htmlType="submit"
           disabled={isButtonDisabled}
-          onClick={onContinue}
+          onClick={handleOnContinue}
         >
-          Continue
+          {t('continue')}
         </Button>
       </div>
       </Form.Item>
