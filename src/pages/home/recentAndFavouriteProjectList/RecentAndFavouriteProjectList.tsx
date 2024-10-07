@@ -16,7 +16,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { ProjectType } from '../../../types/project'
 import AddFavouriteProjectButton from './AddFavouriteProjectButton'
 
-const RecentAndFavouriteProjecList = () => {
+const RecentAndFavouriteProjectList = () => {
     const [projectSegment, setProjectSegment] = useState<
         'Recent' | 'Favourites'
     >('Recent')
@@ -54,13 +54,17 @@ const RecentAndFavouriteProjecList = () => {
             key: 'completeBtn',
             width: 32,
             render: (record: ProjectType) => (
-                <AddFavouriteProjectButton record={record} />
+                <AddFavouriteProjectButton
+                    key={record.projectId}
+                    record={record}
+                />
             ),
         },
         {
             key: 'name',
             render: (record: ProjectType) => (
                 <Typography.Paragraph
+                    key={record.projectId}
                     style={{ margin: 0, paddingInlineEnd: 6 }}
                 >
                     <Badge
@@ -122,6 +126,7 @@ const RecentAndFavouriteProjecList = () => {
                     ) : (
                         <Table
                             className="homepage-table"
+                            rowKey={(record) => record.projectId}
                             dataSource={activeProjectsList}
                             columns={columns}
                             showHeader={false}
@@ -134,4 +139,4 @@ const RecentAndFavouriteProjecList = () => {
     )
 }
 
-export default RecentAndFavouriteProjecList
+export default RecentAndFavouriteProjectList

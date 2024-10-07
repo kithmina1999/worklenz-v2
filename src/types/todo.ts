@@ -1,5 +1,5 @@
 export type TodoType = {
-    id: string
-    name: string
+    todoId: string
+    todoName: string
     isCompleted: boolean
 }
