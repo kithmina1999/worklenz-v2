@@ -3,9 +3,11 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 import Navbar from '../features/navbar/Navbar'
 import { useAppSelector } from '../hooks/useAppSelector'
+import { useMediaQuery } from 'react-responsive'
 
 const MainLayout = () => {
     const themeMode = useAppSelector((state) => state.themeReducer.mode)
+    const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' })
 
     return (
         <Layout>
@@ -25,8 +27,8 @@ const MainLayout = () => {
 
             <Layout.Content>
                 <Col
-                    xs={{ span: 20, offset: 2, flex: '100%' }}
-                    xxl={{ span: 16, offset: 4, flex: '100%' }}
+                    xxl={{ span: 18, offset: 3, flex: '100%' }}
+                    style={{ paddingInline: isDesktop ? 48 : 24 }}
                 >
                     <Outlet />
                 </Col>
