@@ -16,6 +16,7 @@ import NotFoundPage from './pages/NotFoundPage'
 import MainLayout from './layouts/MainLayout'
 import Homepage from './pages/home/Homepage'
 import AccountSetup from './pages/accountSetup/AccountSetup'
+import ProjectList from './pages/projectList/ProjectList'
 
 const App = () => {
     const router = createBrowserRouter(
@@ -39,6 +40,7 @@ const App = () => {
                 {/* main pages routes */}
                 <Route path="/worklenz" element={<MainLayout />}>
                     <Route path="/worklenz/home" element={<Homepage />} />
+                    <Route path="/worklenz/projects" element={<ProjectList />} />
                 </Route>
 
                 {/* not found pages */}
