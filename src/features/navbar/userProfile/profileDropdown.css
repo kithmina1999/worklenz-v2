@@ -1,33 +1,33 @@
-.custom-dropdown .ant-dropdown-menu {
+.profile-dropdown .ant-dropdown-menu {
     padding: 0 !important;
     margin-top: 16px !important;
 }
 
-.custom-dropdown .ant-dropdown-menu-item {
+.profile-dropdown .ant-dropdown-menu-item {
     padding: 0 !important;
 }
 
-.custom-card .ant-card-head {
+.profile-card .ant-card-head {
     padding: 0 16px;
 }
 
-.custom-card .ant-card-body {
+.profile-card .ant-card-body {
     padding: 4px 0;
 }
 
-.custom-card .ant-card-body a {
+.profile-card .ant-card-body a {
     display: block;
     margin: 0;
     padding: 10px 15px;
 }
 
-.custom-card .ant-card-body a:hover {
+.profile-card .ant-card-body a:hover {
     color: #1890ff !important;
     background-color: #edebf0 !important;
     box-sizing: border-box;
 }
 
-.custom-card {
+.profile-card {
     border: none !important;
     box-shadow: none !important;
 }
