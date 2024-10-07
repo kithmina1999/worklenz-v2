@@ -7,12 +7,24 @@ import {
     Select,
     Typography,
     Tooltip,
+    Table,
+    TableProps,
+    Badge,
+    Skeleton,
 } from 'antd'
 import React, { useState } from 'react'
 import ListView from './ListView'
 import CalendarView from './CalendarView'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import EmptyListPlaceholder from '../../../components/EmptyListPlaceholder'
+import StatusDropdown from './statusDropdown/StatusDropdown'
+import { TaskType } from '../../../types/task'
 
 const TasksList = () => {
+    const tasksList = useAppSelector((state) => state.taskReducer.tasks)
+    const projectList = useAppSelector(
+        (state) => state.projectReducer.projectsList
+    )
     const [listView, setListView] = useState<'List' | 'Calendar'>('List')
     const [isLoading, setIsLoading] = useState(false)
 
@@ -32,6 +44,57 @@ const TasksList = () => {
             handleRefresh()
         }
     }
+
+    // table columns
+    const columns: TableProps<TaskType>['columns'] = [
+        {
+            key: 'task',
+            title: 'Task',
+            width: '400px',
+            render: (values) => (
+                <Typography.Text style={{ textTransform: 'capitalize' }}>
+                    {values.task}
+                </Typography.Text>
+            ),
+        },
+        {
+            key: 'project',
+            title: 'Project',
+            width: '180px',
+            render: (values) => {
+                const project = projectList.find(
+                    (project) => project.projectName === values.project
+                )
+                return (
+                    project && (
+                        <Typography.Paragraph
+                            style={{ margin: 0, paddingInlineEnd: 6 }}
+                        >
+                            <Badge
+                                color={project.projectColor}
+                                style={{ marginInlineEnd: 4 }}
+                            />
+                            {project.projectName}
+                        </Typography.Paragraph>
+                    )
+                )
+            },
+        },
+        {
+            key: 'status',
+            title: 'Status',
+            width: '180px',
+            render: (values) => (
+                <StatusDropdown currentStatus={values.status} />
+            ),
+        },
+        {
+            key: 'dueDate',
+            title: 'Due Date',
+            width: '180px',
+            dataIndex: 'dueDate',
+        },
+    ]
 
     return (
         <Card
@@ -77,6 +140,24 @@ const TasksList = () => {
         >
             {/* toggle task view list / calendar */}
             {listView === 'List' ? <ListView /> : <CalendarView />}
+
+            {/* task list table --> render with different filters and views  */}
+            {isLoading ? (
+                <Skeleton />
+            ) : tasksList.length === 0 ? (
+                <EmptyListPlaceholder
+                    imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
+                    text=" No tasks to show."
+                />
+            ) : (
+                <Table
+                    className="homepage-table"
+                    dataSource={tasksList}
+                    rowKey={(record) => record.taskId}
+                    columns={columns}
+                    pagination={false}
+                />
+            )}
         </Card>
     )
 }
