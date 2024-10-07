@@ -4,11 +4,12 @@ import { Space, Steps, Typography } from 'antd'
 import OrganizationNameForm from '../../components/accountSetup/organizationName/OrgnizationNameForm'
 import CreateFirstProjectForm from '../../components/accountSetup/createFirstProject/CreateFirstProjectForm'
 import CreateFirstTasks from '../../components/accountSetup/createFirstTasks/CreateFirstTasks'
+import InviteInitialTeamMembers from '../../components/accountSetup/inviteInitialTeamMembers/InviteInitialTeamMembers'
 
 const { Title } = Typography
 
 const CreateFirstProject: React.FC = () => {
-    const [current, setCurrent] = useState(0)
+    const [current, setCurrent] = useState(3)
 
     const steps = [
         {
@@ -39,7 +40,12 @@ const CreateFirstProject: React.FC = () => {
         },
         {
             title: '',
-            content: 'Last-content',
+            content: (
+                <InviteInitialTeamMembers 
+                onContinue={() => setCurrent(current + 1)}
+                onGoBack={() => setCurrent(current - 1)}
+                />
+            ),
         },
     ]
 

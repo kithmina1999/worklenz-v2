@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, List, Typography } from 'antd';
+import { Alert, Button, Form, Input, List, Typography } from 'antd';
 import { PlusOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import './CreateFirstTasks.css';
 
@@ -27,7 +27,12 @@ const CreateFirstTasks: React.FC<CreateFirstTasksProps> = ({
   };
 
   const addTask = () => {
-    setTasks([...tasks, { id: Date.now(), value: '' }]);
+    const lastTask = tasks[tasks.length - 1]
+    if (lastTask.value.trim() !== '') {
+      setTasks([...tasks, { id: Date.now(), value: '' }]);
+    } else {
+      <Alert message="Please fill the task before adding a new one" type="error" />
+    }
   };
 
   const removeTask = (id: number) => {
