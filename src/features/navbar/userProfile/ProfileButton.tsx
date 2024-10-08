@@ -75,7 +75,7 @@ const ProfileButton = () => {
                         Admin Center
                     </Typography.Link>
                     <Typography.Link
-                        href="/worklenz/settings"
+                        href="/worklenz/settings/profile"
                         style={{ color: colors.darkGray }}
                     >
                         Settings
