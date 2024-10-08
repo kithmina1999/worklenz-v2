@@ -1,6 +1,15 @@
 import React, { useState } from 'react'
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Flex, Form, Input, message, Space, Typography } from 'antd'
+import {
+    Button,
+    Card,
+    Flex,
+    Form,
+    Input,
+    message,
+    Space,
+    Typography,
+} from 'antd'
 import googleIcon from '../../assets/images/icons8-google.svg'
 import { Link, useNavigate } from 'react-router-dom'
 import PageHeader from '../../components/PageHeader'
@@ -28,7 +37,13 @@ const SignupPage = () => {
     }
 
     return (
-        <div>
+        <Card
+            style={{
+                padding: '12px 24px 0 24px',
+                width: '100%',
+            }}
+            bordered={false}
+        >
             <PageHeader description={t('headerDescription')} />
             <Form
                 name="signup"
@@ -36,7 +51,7 @@ const SignupPage = () => {
                 autoComplete="off"
                 requiredMark="optional"
                 onFinish={onFinish}
-                style={{ marginInline: 'auto', maxWidth: 400 }}
+                style={{ width: '100%' }}
             >
                 <Form.Item
                     name="name"
@@ -169,13 +184,16 @@ const SignupPage = () => {
                             {t('alreadyHaveAccountText')}
                         </Typography.Text>
 
-                        <Link to="/auth/login" style={{ fontSize: 14 }}>
+                        <Typography.Link
+                            href="/auth/login"
+                            style={{ fontSize: 14 }}
+                        >
                             {t('loginButton')}
-                        </Link>
+                        </Typography.Link>
                     </Space>
                 </Form.Item>
             </Form>
-        </div>
+        </Card>
     )
 }
 
