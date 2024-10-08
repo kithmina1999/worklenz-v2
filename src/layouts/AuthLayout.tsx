@@ -1,18 +1,43 @@
-import { Col, Layout } from 'antd'
+import { ConfigProvider, Flex, Layout } from 'antd'
 import React from 'react'
 import { Outlet } from 'react-router-dom'
+import { useAppSelector } from '../hooks/useAppSelector'
+import { colors } from '../styles/colors'
 
 const AuthLayout = () => {
+    const themeMode = useAppSelector((state) => state.themeReducer.mode)
+
     return (
-        <Layout style={{ minHeight: '100vh' }}>
-            <Col
-                style={{ marginTop: 120 }}
-                xs={{ span: 20, offset: 2, flex: '100%' }}
-                sm={{ span: 12, offset: 6, flex: '100%' }}
+        <ConfigProvider
+            theme={{
+                components: {
+                    Layout: {
+                        colorBgLayout:
+                            themeMode === 'dark' ? colors.darkGray : '#fafafa',
+                    },
+                },
+            }}
+        >
+            <Layout
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    minHeight: '100vh',
+                    width: '100%',
+                }}
             >
-                <Outlet />
-            </Col>
-        </Layout>
+                <Flex
+                    style={{
+                        marginTop: 100,
+                        marginInline: 24,
+                        width: '100%',
+                        maxWidth: 440,
+                    }}
+                >
+                    <Outlet />
+                </Flex>
+            </Layout>
+        </ConfigProvider>
     )
 }
 
