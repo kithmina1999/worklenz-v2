@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Flex, Input, Segmented, Tooltip, Typography } from 'antd'
+import { Button, Card, Flex, Input, Segmented, Tooltip } from 'antd'
 import { PageHeader } from '@ant-design/pro-components'
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons'
 import './ProjectList.css'
-import AllProjectList from '../../components/ProjectList/AllProjectList'
-
-const { Title } = Typography
+import AllProjectList from '../../components/ProjectList/allProjectList/AllProjectList'
+import CreateProjectButton from '../../features/projects/createProject/CreateProjectButton'
+import CreateProjectDrawer from '../../features/projects/createProject/CreateProjectDrawer'
+import FavouriteProjectList from '../../components/ProjectList/favouriteProjectList/FavouriteProjectList'
+import ArchiveProjectList from '../../components/ProjectList/archivedProjectList/ArchiveProjectList'
+import { useTranslation } from 'react-i18next'
 
 const ProjectList: React.FC = () => {
+
+    const { t } = useTranslation("ProjectList")
+
     const [projectSegment, setProjectSegment] = useState<
         'All' | 'Favourites' | 'Archived'
     >('All')
@@ -58,11 +64,11 @@ const ProjectList: React.FC = () => {
         <div style={{ marginBlock: 65, minHeight: '90vh' }}>
             <PageHeader
                 className="site-page-header"
-                title="2 Projects"
+                title={`2 ${t('projects')}`}
                 style={{ padding: '16px 0' }}
                 extra={
                     <Flex gap={8} align="center">
-                        <Tooltip title="Refresh projects">
+                        <Tooltip title={t('refreshProjects')}>
                             <Button
                                 shape="circle"
                                 icon={<SyncOutlined spin={isLoading} />}
@@ -77,17 +83,19 @@ const ProjectList: React.FC = () => {
                             ) => handleSegmentChange(value)}
                         />
                         <Input
-                            placeholder="Search by name"
+                            placeholder={t('placeholder')}
                             suffix={<SearchOutlined />}
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
+                        <CreateProjectButton />
+                        <CreateProjectDrawer />
                     </Flex>
                 }
             />
             <Card>
-                <AllProjectList />
+                {projectSegment === 'All' ? <AllProjectList /> : projectSegment === 'Favourites' ? <FavouriteProjectList /> : <ArchiveProjectList />}
             </Card>
         </div>
     )

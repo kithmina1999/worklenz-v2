@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Col, ConfigProvider, Flex, Menu, MenuProps, Typography } from 'antd'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from 'react-responsive'
 import { useTranslation } from 'react-i18next'
 import InviteButton from './addMember/InviteButton'
@@ -15,8 +15,9 @@ import MobileMenuButton from './mobileMenu/MobileMenuButton'
 import NavbarLogo from './NavbarLogo'
 
 const Navbar = () => {
-    const [current, setCurrent] = useState('home')
+    const [current, setCurrent] = useState<string>('home')
     const navigate = useNavigate()
+    const location = useLocation();
 
     // localization
     const { t } = useTranslation('navbar')
@@ -53,6 +54,11 @@ const Navbar = () => {
     const isMobile = useMediaQuery({ query: '(max-width: 576px)' })
     const isTablet = useMediaQuery({ query: '(min-width: 576px)' })
     const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' })
+
+    useEffect(() => {
+        const pathKey = location.pathname.split('/').pop();
+        setCurrent(pathKey ?? 'home');
+    }, [location]);
 
     return (
         <Col
