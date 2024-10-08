@@ -1,5 +1,5 @@
 import React from 'react'
-import notFoundImg from '../assets/images/not-found-img.png'
+import notFoundImg from '../../assets/images/not-found-img.png'
 import { Button, Flex, Layout, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 
