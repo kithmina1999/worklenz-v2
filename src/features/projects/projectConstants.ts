@@ -25,7 +25,7 @@ export const projectColors: string[] = [
     '#cbbc78',
     '#cb9878',
     '#bb774c',
-] as const
+]
 
 // data type for status data
 type StatusDataType = {
@@ -83,7 +83,7 @@ export const statusData: StatusDataType[] = [
             twoToneColor: colors.limeGreen,
         }),
     },
-] as const
+]
 
 // data type for health status data
 type HealthStatusDataType = {
@@ -101,4 +101,4 @@ export const healthStatusData: HealthStatusDataType[] = [
     },
     { value: 'atRisk', label: 'At Risk', color: colors.vibrantOrange },
     { value: 'good', label: 'Good', color: colors.limeGreen },
-] as const
+]
