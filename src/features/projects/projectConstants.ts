@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import { colors } from '../../styles/colors'
 import {
     CloseCircleTwoTone,
@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons'
 
 // color for project
-export const projectColors = [
+export const projectColors: string[] = [
     '#154c9b',
     '#3b7ad4',
     '#70a6f3',
@@ -27,8 +27,14 @@ export const projectColors = [
     '#bb774c',
 ] as const
 
+// data type for status data
+type StatusDataType = {
+    value: string
+    label: ReactNode
+    icon: ReactNode
+}
 // status data for project
-export const statusData = [
+export const statusData: StatusDataType[] = [
     {
         value: 'cancelled',
         label: 'Cancelled',
@@ -79,8 +85,14 @@ export const statusData = [
     },
 ] as const
 
+// data type for health status data
+type HealthStatusDataType = {
+    value: string
+    label: ReactNode
+    color: string
+}
 // health status data for project
-export const healthStatusData = [
+export const healthStatusData: HealthStatusDataType[] = [
     { value: 'notSet', label: 'Not Set', color: colors.paleBlue },
     {
         value: 'needAttention',
