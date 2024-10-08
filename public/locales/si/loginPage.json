@@ -1,0 +1,17 @@
+{
+    "headerDescription": "ඔබගේ ගිණුමට ඇතුල් වන්න",
+    "emailLabel": "ඊමේල්",
+    "emailPlaceholder": "ඔබගේ ඊමේල් ලිපිනය ඇතුළත් කරන්න",
+    "emailRequired": "කරුණාකර ඔබේ ඊමේල් ලිපිනය ඇතුළත් කරන්න!",
+    "passwordLabel": "මුරපදය",
+    "passwordPlaceholder": "ඔබගේ මුරපදය ඇතුළත් කරන්න",
+    "passwordRequired": "කරුණාකර ඔබේ මුරපදය ඇතුළත් කරන්න!",
+    "rememberMe": "මා සමාර්ථව තබන්න",
+    "loginButton": "ඇතුල් වන්න",
+    "signupButton": "ලියාපදිංචි වන්න",
+    "forgotPasswordButton": "මුරපදය අමතකද?",
+    "signInWithGoogleButton": "Google සමඟ පිවිසෙන්න",
+    "successMessage": "ඔබ සාර්ථකව ගිණුමට ඇතුළු වී ඇත!",
+    "dontHaveAccountText": "ගිණුමක් නැද්ද?",
+    "orText": "හෝ"
+}
