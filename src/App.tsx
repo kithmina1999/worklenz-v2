@@ -12,10 +12,12 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import AuthLayout from './layouts/AuthLayout'
 import ThemeWrapper from './features/theme/ThemeWrapper'
 import PreferenceSelector from './components/PreferenceSelector'
-import NotFoundPage from './pages/NotFoundPage'
+import NotFoundPage from './pages/notFoundPage/NotFoundPage'
 import MainLayout from './layouts/MainLayout'
 import Homepage from './pages/home/Homepage'
 import AccountSetup from './pages/accountSetup/AccountSetup'
+import SettingsLayout from './layouts/SettingsLayout'
+import { settingsItems } from './pages/settings/settingsConstants'
 
 const App = () => {
     const router = createBrowserRouter(
@@ -34,11 +36,26 @@ const App = () => {
                     />
                 </Route>
 
-                <Route path='worklenz/setup' element={<AccountSetup />}/>
+                <Route path="worklenz/setup" element={<AccountSetup />} />
 
                 {/* main pages routes */}
                 <Route path="/worklenz" element={<MainLayout />}>
                     <Route path="/worklenz/home" element={<Homepage />} />
+
+                    {/* settings page routes */}
+                    <Route
+                        path="/worklenz/settings"
+                        element={<SettingsLayout />}
+                    >
+                        {/* setting page sub routes */}
+                        {/* setting items import from the setting constants file locale in pages/settings  */}
+                        {settingsItems.map((item) => (
+                            <Route
+                                path={`/worklenz/settings/${item.endpoint}`}
+                                element={item.element}
+                            />
+                        ))}
+                    </Route>
                 </Route>
 
                 {/* not found pages */}
