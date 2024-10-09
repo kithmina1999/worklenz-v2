@@ -75,10 +75,10 @@ const ProfileButton = () => {
                         Admin Center
                     </Typography.Link>
                     <Typography.Link
-                        href="/worklenz/setting"
+                        href="/worklenz/settings/profile"
                         style={{ color: colors.darkGray }}
                     >
-                        Setting
+                        Settings
                     </Typography.Link>
                     <Typography.Link
                         href="/auth/login"
