@@ -10,7 +10,7 @@ export const colors = {
     limeGreen: '#52c41a',
     yellow: '#f8d914',
     transparent: 'transparent',
-} as const
+}
 
 export const applyCssVariables = () => {
     const root = document.documentElement

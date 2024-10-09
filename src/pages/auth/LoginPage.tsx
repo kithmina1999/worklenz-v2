@@ -5,10 +5,13 @@ import googleIcon from '../../assets/images/icons8-google.svg'
 import { Link, useNavigate } from 'react-router-dom'
 import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../app/store'
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const themeMode = useSelector((state: RootState) => state.themeReducer.mode)
 
     // Localization
     const { t } = useTranslation('loginPage')
@@ -28,7 +31,13 @@ const LoginPage = () => {
     }
 
     return (
-        <div>
+        <div
+          style={{
+            backgroundColor: `${themeMode === 'dark' ? "#141414" : "white"}`,
+            padding: "40px",
+            borderRadius: "4px",
+          }}
+        >
             <PageHeader description={t('headerDescription')} />
             <Form
                 name="login"
