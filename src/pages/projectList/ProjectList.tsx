@@ -94,7 +94,7 @@ const ProjectList: React.FC = () => {
                     </Flex>
                 }
             />
-            <Card>
+            <Card className='project-card'>
                 {projectSegment === 'All' ? <AllProjectList /> : projectSegment === 'Favourites' ? <FavouriteProjectList /> : <ArchiveProjectList />}
             </Card>
         </div>

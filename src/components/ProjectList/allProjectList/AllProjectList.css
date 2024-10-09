@@ -1,7 +1,4 @@
-/* .custom-table {
-    width: 600px !important;
-    font-size: 5px !important;
-} */
+
 
 table th {
     border: none !important;
@@ -50,4 +47,18 @@ table td {
 }
 :where(.css-dev-only-do-not-override-ezht69).ant-rate .ant-rate-star-first, :where(.css-dev-only-do-not-override-ezht69).ant-rate .ant-rate-star-second{
     color: #dedede;
+}
+.ant-table-filter-dropdown-btns{
+    display: none !important;
+}
+
+@media (max-width: 1000px) {
+    table th {
+        font-size: 10px;
+    }
+    
+    table td {
+        font-size: 10px;
+    }
+
 }
