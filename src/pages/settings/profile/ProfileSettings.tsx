@@ -13,12 +13,16 @@ import {
 } from 'antd'
 import React, { useState } from 'react'
 import { colors } from '../../../styles/colors'
+import { useTranslation } from 'react-i18next'
 
 const ProfileSettings = () => {
     const [loading, setLoading] = useState(false)
     const [imageUrl, setImageUrl] = useState<string>()
     const [name, setName] = useState('Sachintha Prasad')
     const [email, setEmail] = useState('prasadsachintha1231@gmail.com')
+
+    // localization
+    const { t } = useTranslation('profileSettings')
 
     type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
 
@@ -32,11 +36,11 @@ const ProfileSettings = () => {
         const isJpgOrPng =
             file.type === 'image/jpeg' || file.type === 'image/png'
         if (!isJpgOrPng) {
-            message.error('You can only upload JPG/PNG file!')
+            message.error(t('uploadError'))
         }
         const isLt2M = file.size / 1024 / 1024 < 2
         if (!isLt2M) {
-            message.error('Image must smaller than 2MB!')
+            message.error(t('uploadSizeError'))
         }
         return isJpgOrPng && isLt2M
     }
@@ -59,7 +63,7 @@ const ProfileSettings = () => {
         <button style={{ border: 0, background: 'none' }} type="button">
             <Flex align="center" gap={4}>
                 {loading ? <LoadingOutlined /> : <PlusOutlined />}
-                <Typography.Text>Upload</Typography.Text>
+                <Typography.Text>{t('upload')}</Typography.Text>
             </Flex>
         </button>
     )
@@ -94,11 +98,11 @@ const ProfileSettings = () => {
                 </Form.Item>
                 <Form.Item
                     name="name"
-                    label="Name"
+                    label={t('nameLabel')}
                     rules={[
                         {
                             required: true,
-                            message: 'Name is required',
+                            message: t('nameRequiredError'),
                         },
                     ]}
                 >
@@ -106,18 +110,18 @@ const ProfileSettings = () => {
                 </Form.Item>
                 <Form.Item
                     name="email"
-                    label="Email"
+                    label={t('emailLabel')}
                     rules={[
                         {
                             required: true,
-                            message: 'Name is required',
+                            message: t('emailRequiredError'),
                         },
                     ]}
                 >
                     <Input style={{ borderRadius: 4 }} disabled />
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary">Save Changes</Button>
+                    <Button type="primary">{t('saveChanges')}</Button>
                 </Form.Item>
             </Form>
 
@@ -125,12 +129,12 @@ const ProfileSettings = () => {
                 <Typography.Text
                     style={{ fontSize: 12, color: colors.lightGray }}
                 >
-                    Joined a month ago
+                    {t('profileJoinedText')}
                 </Typography.Text>
                 <Typography.Text
                     style={{ fontSize: 12, color: colors.lightGray }}
                 >
-                    Last updated a month ago
+                    {t('profileLastUpdatedText')}
                 </Typography.Text>
             </Flex>
         </Card>
