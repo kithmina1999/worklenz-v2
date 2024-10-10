@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { UserOutlined } from '@ant-design/icons'
-import { Button, Flex, Form, Input, message, Typography } from 'antd'
+import { Button, Card, Flex, Form, Input, message, Typography } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
 import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
@@ -29,7 +29,13 @@ const ForgotPasswordPage = () => {
     }
 
     return (
-        <div>
+        <Card
+            style={{
+                padding: '12px 24px 0 24px',
+                width: '100%',
+            }}
+            bordered={false}
+        >
             <PageHeader description={t('headerDescription')} />
             <Form
                 name="forgot-password"
@@ -39,7 +45,7 @@ const ForgotPasswordPage = () => {
                 requiredMark="optional"
                 initialValues={{ remember: true }}
                 onFinish={onFinish}
-                style={{ marginInline: 'auto', maxWidth: 400 }}
+                style={{ width: '100%' }}
             >
                 <Form.Item
                     name="email"
@@ -89,7 +95,7 @@ const ForgotPasswordPage = () => {
                     </Flex>
                 </Form.Item>
             </Form>
-        </div>
+        </Card>
     )
 }
 

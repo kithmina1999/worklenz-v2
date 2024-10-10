@@ -3,7 +3,7 @@ import UserGreetingWithTime from './UserGreetingWithTime'
 import TasksList from './taskList/TasksList'
 import TodoList from './todoList/TodoList'
 import RecentAndFavouriteProjecList from './recentAndFavouriteProjectList/RecentAndFavouriteProjectList'
-import { Col } from 'antd'
+import { Col, Flex, Row } from 'antd'
 import { useMediaQuery } from 'react-responsive'
 import CreateProjectDrawer from '../../features/projects/createProject/CreateProjectDrawer'
 import CreateProjectButton from '../../features/projects/createProject/CreateProjectButton'
@@ -27,35 +27,38 @@ const Homepage = () => {
             </Col>
 
             {isDesktop ? (
-                <Col style={{ display: 'flex', gap: 24, marginBlockStart: 48 }}>
-                    <Col span={16}>
+                <Flex
+                    gap={24}
+                    align="flex-start"
+                    style={{
+                        width: '100%',
+                        marginBlockStart: 48,
+                    }}
+                >
+                    <Flex style={{ minWidth: 500, width: '100%' }}>
                         <TasksList />
-                    </Col>
-                    <Col
-                        span={8}
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: 24,
-                        }}
+                    </Flex>
+                    <Flex
+                        vertical
+                        gap={24}
+                        style={{ width: '100%', maxWidth: 400 }}
                     >
                         <TodoList />
                         <RecentAndFavouriteProjecList />
-                    </Col>
-                </Col>
+                    </Flex>
+                </Flex>
             ) : (
-                <Col
+                <Flex
+                    vertical
+                    gap={24}
                     style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 24,
                         marginBlockStart: 24,
                     }}
                 >
                     <TasksList />
                     <TodoList />
                     <RecentAndFavouriteProjecList />
-                </Col>
+                </Flex>
             )}
 
             {/* drawers */}

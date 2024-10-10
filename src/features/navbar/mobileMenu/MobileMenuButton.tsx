@@ -6,11 +6,23 @@ import {
     QuestionCircleOutlined,
     ReadOutlined,
 } from '@ant-design/icons'
-import { Button, Card, Dropdown, MenuProps, Space, Typography } from 'antd'
+import {
+    Button,
+    Card,
+    Dropdown,
+    Flex,
+    MenuProps,
+    Space,
+    Typography,
+} from 'antd'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { colors } from '../../../styles/colors'
 import { NavLink } from 'react-router-dom'
+import InviteButton from '../addMember/InviteButton'
+import SwitchTeamButton from '../switchTeam/SwitchTeamButton'
+// custom css
+import './mobileMenu.css'
 
 const MobileMenuButton = () => {
     // localization
@@ -44,7 +56,7 @@ const MobileMenuButton = () => {
             key: '1',
             label: (
                 <Card
-                    className="custom-card"
+                    className="mobile-menu-card"
                     bordered={false}
                     style={{ width: 230 }}
                 >
@@ -59,17 +71,26 @@ const MobileMenuButton = () => {
                         </NavLink>
                     ))}
 
-                    <Button
+                    <Flex
+                        vertical
+                        gap={12}
                         style={{
-                            backgroundColor: colors.lightBeige,
-                            color: 'black',
                             width: '90%',
                             marginInlineStart: 12,
                             marginBlock: 6,
                         }}
                     >
-                        {t('upgradePlan')}
-                    </Button>
+                        <Button
+                            style={{
+                                backgroundColor: colors.lightBeige,
+                                color: 'black',
+                            }}
+                        >
+                            {t('upgradePlan')}
+                        </Button>
+                        <InviteButton />
+                        <SwitchTeamButton />
+                    </Flex>
                 </Card>
             ),
         },
@@ -77,7 +98,7 @@ const MobileMenuButton = () => {
 
     return (
         <Dropdown
-            overlayClassName="custom-dropdown"
+            overlayClassName="mobile-menu-dropdown"
             menu={{ items: mobileMenu }}
             placement="bottomRight"
             trigger={['click']}

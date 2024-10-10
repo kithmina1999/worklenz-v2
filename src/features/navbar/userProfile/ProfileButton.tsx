@@ -31,7 +31,7 @@ const ProfileButton = () => {
             key: '1',
             label: (
                 <Card
-                    className="custom-card"
+                    className="profile-card"
                     title={
                         <div style={{ paddingBlock: '16px' }}>
                             <Typography.Text>Account</Typography.Text>
@@ -43,7 +43,6 @@ const ProfileButton = () => {
                                                 avatarNamesMap[avatarCharacter],
                                             verticalAlign: 'middle',
                                         }}
-                                        size={30}
                                     >
                                         {avatarCharacter}
                                     </Avatar>
@@ -79,7 +78,7 @@ const ProfileButton = () => {
     return (
         <Tooltip title={t('profileTooltip')}>
             <Dropdown
-                overlayClassName="custom-dropdown"
+                overlayClassName="profile-dropdown"
                 menu={{ items: profile }}
                 placement="bottomRight"
                 trigger={['click']}
