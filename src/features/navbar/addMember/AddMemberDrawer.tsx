@@ -1,4 +1,4 @@
-import { Button, Drawer, Form, Input, Select, Typography } from 'antd'
+import { Button, Drawer, Flex, Form, Input, Select, Typography } from 'antd'
 import React from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
@@ -23,34 +23,39 @@ const AddMemberDrawer = () => {
             open={isDrawerOpen}
             onClose={() => dispatch(toggleDrawer())}
         >
-            <Form form={form} layout="vertical">
+            <Form
+                form={form}
+                layout="vertical"
+                initialValues={{ access: 'member' }}
+            >
                 <Form.Item
                     label="Email(s)"
                     name="email"
                     rules={[
                         {
                             required: true,
-                            message: 'Please enter a Name',
+                            message: 'Please enter a email',
                         },
                     ]}
                 >
-                    <Input
-                        type="email"
-                        placeholder="Add team members by email"
-                    />
-                    <Typography.Text
-                        style={{ fontSize: 12, color: colors.lightGray }}
-                    >
-                        Invitees will be added to the team either they accept
-                        the invitation or not.
-                    </Typography.Text>
+                    <Flex vertical gap={4}>
+                        <Input
+                            type="email"
+                            placeholder="Add team members by email"
+                        />
+                        <Typography.Text
+                            style={{ fontSize: 12, color: colors.lightGray }}
+                        >
+                            Invitees will be added to the team either they
+                            accept the invitation or not.
+                        </Typography.Text>
+                    </Flex>
                 </Form.Item>
                 <Form.Item label="Job Title" name="jobTitle">
                     <Input placeholder="Select the job title(Optional)" />
                 </Form.Item>
                 <Form.Item label="Access" name="access">
                     <Select
-                        defaultValue={'member'}
                         options={[
                             { value: 'member', label: 'Member' },
                             { value: 'admin', label: 'Admin' },

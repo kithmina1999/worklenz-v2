@@ -1,12 +1,13 @@
 import { RightOutlined } from '@ant-design/icons'
 import { ConfigProvider, Flex, Menu, MenuProps } from 'antd'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { colors } from '../../../styles/colors'
 import { settingsItems } from '../settingsConstants'
 import { useTranslation } from 'react-i18next'
 
 const SettingSidebar = () => {
+    const location = useLocation()
     // localization
     const { t } = useTranslation('settingsSidebar')
 
@@ -46,11 +47,13 @@ const SettingSidebar = () => {
             }}
         >
             <Menu
-                style={{ border: 'none', width: '100%' }}
-                mode="vertical"
                 items={items}
-                defaultSelectedKeys={['1']}
-                defaultOpenKeys={['1']}
+                selectedKeys={[
+                    // this code extract the key from relative path
+                    location.pathname.split('/worklenz/settings/')[1] || '',
+                ]}
+                mode="vertical"
+                style={{ border: 'none', width: '100%' }}
             />
         </ConfigProvider>
     )

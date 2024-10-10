@@ -11,27 +11,27 @@ import {
 } from 'antd'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { colors } from '../../../styles/colors'
 // profile dropdown custom css
 import './profileDropdown.css'
-import { UserType } from '../../../types/user'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { Link } from 'react-router-dom'
+import { avatarNamesMap } from '../../../shared/constants'
 
 const ProfileButton = () => {
+    // get user data from redux - user reducer
+    const userDetails = useAppSelector((state) => state.userReducer)
     // localization
     const { t } = useTranslation('navbar')
 
-    const userDetails: UserType = {
-        name: 'Sachintha Prasad',
-        email: 'prasadsachintha1231@gmail.com',
-        userRole: 'owner',
-    }
+    // get avatar character
+    const avatarCharacter = userDetails.name[0].toLocaleUpperCase()
 
     const profile: MenuProps['items'] = [
         {
             key: '1',
             label: (
                 <Card
-                    className="custom-card"
+                    className="profile-card"
                     title={
                         <div style={{ paddingBlock: '16px' }}>
                             <Typography.Text>Account</Typography.Text>
@@ -40,12 +40,11 @@ const ProfileButton = () => {
                                     <Avatar
                                         style={{
                                             backgroundColor:
-                                                colors.vibrantOrange,
+                                                avatarNamesMap[avatarCharacter],
                                             verticalAlign: 'middle',
                                         }}
-                                        size={30}
                                     >
-                                        S
+                                        {avatarCharacter}
                                     </Avatar>
                                 </div>
                                 <Flex vertical>
@@ -69,7 +68,7 @@ const ProfileButton = () => {
                     style={{ width: 230 }}
                 >
                     <Typography.Link
-                        href="/worklenz/admin-center/overview"
+                        href="/worklenz/admin-center"
                         style={{ color: colors.darkGray }}
                     >
                         Admin Center
@@ -94,7 +93,7 @@ const ProfileButton = () => {
     return (
         <Tooltip title={t('profileTooltip')}>
             <Dropdown
-                overlayClassName="custom-dropdown"
+                overlayClassName="profile-dropdown"
                 menu={{ items: profile }}
                 placement="bottomRight"
                 trigger={['click']}

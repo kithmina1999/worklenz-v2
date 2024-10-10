@@ -1,0 +1,14 @@
+.switch-team-dropdown .ant-dropdown-menu {
+    padding: 0 !important;
+    border-radius: 12px;
+    margin-top: 12px !important;
+    overflow: hidden;
+}
+
+.switch-team-dropdown .ant-dropdown-menu-item {
+    padding: 0 !important;
+}
+
+.switch-team-card .ant-card-body {
+    padding: 0 !important;
+}

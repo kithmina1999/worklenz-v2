@@ -22,7 +22,7 @@ const SettingsLayout = () => {
                         marginBlockStart: 24,
                     }}
                 >
-                    <Flex style={{ width: '100%', maxWidth: 300 }}>
+                    <Flex style={{ width: '100%', maxWidth: 240 }}>
                         <SettingSidebar />
                     </Flex>
                     <Flex style={{ width: '100%' }}>

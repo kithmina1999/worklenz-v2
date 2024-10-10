@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { UserOutlined } from '@ant-design/icons'
-import { Button, Flex, Form, Input, message, Typography } from 'antd'
+import { Button, Card, Flex, Form, Input, message, Typography } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
 import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
+import { useMediaQuery } from 'react-responsive'
 
 const ForgotPasswordPage = () => {
     const [form] = Form.useForm()
@@ -12,6 +13,9 @@ const ForgotPasswordPage = () => {
 
     // Localization
     const { t } = useTranslation('forgotPasswordPage')
+
+    // media queries from react-responsive package
+    const isMobile = useMediaQuery({ query: '(max-width: 576px)' })
 
     const onFinish = (values: any) => {
         console.log('Received values of form: ', values)
@@ -29,7 +33,18 @@ const ForgotPasswordPage = () => {
     }
 
     return (
-        <div>
+        <Card
+            style={{
+                width: '100%',
+                boxShadow: 'none',
+            }}
+            styles={{
+                body: {
+                    paddingInline: isMobile ? 24 : 48,
+                },
+            }}
+            bordered={false}
+        >
             <PageHeader description={t('headerDescription')} />
             <Form
                 name="forgot-password"
@@ -39,7 +54,7 @@ const ForgotPasswordPage = () => {
                 requiredMark="optional"
                 initialValues={{ remember: true }}
                 onFinish={onFinish}
-                style={{ marginInline: 'auto', maxWidth: 400 }}
+                style={{ width: '100%' }}
             >
                 <Form.Item
                     name="email"
@@ -89,7 +104,7 @@ const ForgotPasswordPage = () => {
                     </Flex>
                 </Form.Item>
             </Form>
-        </div>
+        </Card>
     )
 }
 
