@@ -54,8 +54,8 @@ const AddTaskInlineForm = () => {
 
     // project options
     let projectOptions = [
-        ...projectList.map((project, index) => ({
-            key: index,
+        ...projectList.map((project) => ({
+            key: project.projectId,
             value: project.projectName,
             label: project.projectName,
         })),
@@ -94,7 +94,7 @@ const AddTaskInlineForm = () => {
             style={{ display: 'flex', gap: 8 }}
             initialValues={{
                 dueDate: 'No Due Date',
-                project: projectOptions[0],
+                project: projectOptions[0]?.value,
             }}
         >
             <Form.Item
