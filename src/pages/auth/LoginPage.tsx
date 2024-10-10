@@ -12,19 +12,20 @@ import {
     Typography,
 } from 'antd'
 import googleIcon from '../../assets/images/icons8-google.svg'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
-import { RootState } from '../../app/store'
+import { useMediaQuery } from 'react-responsive'
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
-    const themeMode = useSelector((state: RootState) => state.themeReducer.mode)
 
     // Localization
     const { t } = useTranslation('loginPage')
+
+    // media queries from react-responsive package
+    const isMobile = useMediaQuery({ query: '(max-width: 576px)' })
 
     const onFinish = (values: any) => {
         console.log('Received values of form: ', values)
@@ -43,8 +44,13 @@ const LoginPage = () => {
     return (
         <Card
             style={{
-                padding: '12px 24px 0 24px',
                 width: '100%',
+                boxShadow: 'none',
+            }}
+            styles={{
+                body: {
+                    paddingInline: isMobile ? 24 : 48,
+                },
             }}
             bordered={false}
         >
@@ -104,9 +110,9 @@ const LoginPage = () => {
                             <Checkbox>{t('rememberMe')}</Checkbox>
                         </Form.Item>
 
-                        <Link to="/auth/forgot-password">
+                        <Typography.Link href="/auth/forgot-password">
                             {t('forgotPasswordButton')}
-                        </Link>
+                        </Typography.Link>
                     </Flex>
                 </Form.Item>
 
