@@ -61,8 +61,8 @@ const MobileMenuButton = () => {
                     style={{ width: 230 }}
                 >
                     {navLinks.map((navEl, index) => (
-                        <NavLink to={`/worklenz/${navEl.name}`}>
-                            <Typography.Text key={index} strong>
+                        <NavLink key={index} to={`/worklenz/${navEl.name}`}>
+                            <Typography.Text strong>
                                 <Space>
                                     {navEl.icon}
                                     {t(navEl.name)}
