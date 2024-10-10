@@ -34,7 +34,7 @@ const AddMemberDrawer = () => {
                     rules={[
                         {
                             required: true,
-                            message: 'Please enter a Name',
+                            message: 'Please enter a email',
                         },
                     ]}
                 >
