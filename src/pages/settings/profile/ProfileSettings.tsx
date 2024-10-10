@@ -14,15 +14,19 @@ import {
 import React, { useState } from 'react'
 import { colors } from '../../../styles/colors'
 import { useTranslation } from 'react-i18next'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { changeUserName } from '../../../features/user/userSlice'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
 
 const ProfileSettings = () => {
     const [loading, setLoading] = useState(false)
     const [imageUrl, setImageUrl] = useState<string>()
-    const [name, setName] = useState('Sachintha Prasad')
-    const [email, setEmail] = useState('prasadsachintha1231@gmail.com')
-
+    // get user data from redux - user reducer
+    const userDetails = useAppSelector((state) => state.userReducer)
+    const dispatch = useAppDispatch()
     // localization
     const { t } = useTranslation('profileSettings')
+    const [form] = Form.useForm()
 
     type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
 
@@ -68,11 +72,23 @@ const ProfileSettings = () => {
         </button>
     )
 
+    // this fuction handle form submit
+    const handleFormSubmit = (values: any) => {
+        console.log(values.name)
+        dispatch(changeUserName(values.name))
+        message.success('Name changed successfully!')
+    }
+
     return (
         <Card style={{ width: '100%' }}>
             <Form
+                form={form}
+                onFinish={handleFormSubmit}
                 layout="vertical"
-                initialValues={{ name: name, email: email }}
+                initialValues={{
+                    name: userDetails.name,
+                    email: userDetails.email,
+                }}
                 style={{ width: '100%', maxWidth: 350 }}
             >
                 <Form.Item>
@@ -121,7 +137,9 @@ const ProfileSettings = () => {
                     <Input style={{ borderRadius: 4 }} disabled />
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary">{t('saveChanges')}</Button>
+                    <Button type="primary" htmlType="submit">
+                        {t('saveChanges')}
+                    </Button>
                 </Form.Item>
             </Form>
 
