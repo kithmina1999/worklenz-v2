@@ -10,8 +10,12 @@ import {
     Typography,
 } from 'antd'
 import React from 'react'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
+import { toggleDrawer } from '../../../features/navbar/addMember/addMemberSlice'
 
 const TeamMembersSettings = () => {
+    const dispatch = useAppDispatch()
+
     // table columns
     const columns: TableProps['columns'] = [
         {
@@ -71,7 +75,12 @@ const TeamMembersSettings = () => {
                         placeholder="Search by name"
                         style={{ maxWidth: 200 }}
                     />
-                    <Button type="primary">Create Client</Button>
+                    <Button
+                        type="primary"
+                        onClick={() => dispatch(toggleDrawer())}
+                    >
+                        Add Member
+                    </Button>
                 </Flex>
             </Flex>
 
