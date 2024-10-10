@@ -25,6 +25,15 @@ export const projectColors: string[] = [
     '#cbbc78',
     '#cb9878',
     '#bb774c',
+    '#905b39',
+    '#903737',
+    '#bf4949',
+    '#f37070',
+    '#ff9c3c',
+    '#fbc84c',
+    '#cbc8a1',
+    '#a9a9a9',
+    '#767676',
 ]
 
 // data type for status data
