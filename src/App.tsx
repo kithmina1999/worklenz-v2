@@ -16,6 +16,7 @@ import NotFoundPage from './pages/notFoundPage/NotFoundPage'
 import MainLayout from './layouts/MainLayout'
 import Homepage from './pages/home/Homepage'
 import AccountSetup from './pages/accountSetup/AccountSetup'
+import ProjectList from './pages/projectList/ProjectList'
 import SettingsLayout from './layouts/SettingsLayout'
 import { settingsItems } from './pages/settings/settingsConstants'
 
@@ -41,6 +42,9 @@ const App = () => {
                 {/* main pages routes */}
                 <Route path="/worklenz" element={<MainLayout />}>
                     <Route path="/worklenz/home" element={<Homepage />} />
+
+                    <Route path="/worklenz/projects" element={<ProjectList />} />
+
 
                     {/* settings page routes */}
                     <Route
