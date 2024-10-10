@@ -9,7 +9,7 @@ import {
     Tooltip,
     Typography,
 } from 'antd'
-import React, { useState } from 'react'
+import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { colors } from '../../../styles/colors'
 // profile dropdown custom css
@@ -69,7 +69,7 @@ const ProfileButton = () => {
                     style={{ width: 230 }}
                 >
                     <Typography.Link
-                        href="/worklenz/admin-center"
+                        href="/worklenz/admin-center/overview"
                         style={{ color: colors.darkGray }}
                     >
                         Admin Center

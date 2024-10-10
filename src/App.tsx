@@ -19,6 +19,8 @@ import AccountSetup from './pages/accountSetup/AccountSetup'
 import ProjectList from './pages/projectList/ProjectList'
 import SettingsLayout from './layouts/SettingsLayout'
 import { settingsItems } from './pages/settings/settingsConstants'
+import { adminCenterItems } from './pages/adminCenter/adminCenterConstants'
+import AdminCenterLayout from './layouts/AdminCenterLayout'
 
 const App = () => {
     const router = createBrowserRouter(
@@ -42,7 +44,6 @@ const App = () => {
                 {/* main pages routes */}
                 <Route path="/worklenz" element={<MainLayout />}>
                     <Route path="/worklenz/home" element={<Homepage />} />
-
                     <Route path="/worklenz/projects" element={<ProjectList />} />
 
 
@@ -56,6 +57,20 @@ const App = () => {
                         {settingsItems.map((item) => (
                             <Route
                                 path={`/worklenz/settings/${item.endpoint}`}
+                                element={item.element}
+                            />
+                        ))}
+                    </Route>
+                    {/* settings page routes */}
+                    <Route
+                        path="/worklenz/admin-center"
+                        element={<AdminCenterLayout />}
+                    >
+                        {/* setting page sub routes */}
+                        {/* setting items import from the setting constants file locale in pages/settings  */}
+                        {adminCenterItems.map((item) => (
+                            <Route
+                                path={`/worklenz/admin-center/${item.endpoint}`}
                                 element={item.element}
                             />
                         ))}
