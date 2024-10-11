@@ -1,13 +1,13 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { MemberType } from '../../../types/member'
 
 type addMemberState = {
-    member: MemberType
+    membersList: MemberType[]
     isDrawerOpen: boolean
 }
 
 const initialState: addMemberState = {
-    member: {},
+    membersList: [],
     isDrawerOpen: false,
 }
 
@@ -20,8 +20,11 @@ const addMemberSlice = createSlice({
                 ? (state.isDrawerOpen = false)
                 : (state.isDrawerOpen = true)
         },
+        addMember: (state, action: PayloadAction<MemberType>) => {
+            state.membersList.push(action.payload)
+        },
     },
 })
 
-export const { toggleDrawer } = addMemberSlice.actions
+export const { toggleDrawer, addMember } = addMemberSlice.actions
 export default addMemberSlice.reducer
