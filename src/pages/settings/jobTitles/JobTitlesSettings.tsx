@@ -1,21 +1,11 @@
-import { PushpinOutlined } from '@ant-design/icons'
-import {
-    Button,
-    Card,
-    Flex,
-    Input,
-    Table,
-    TableProps,
-    Tooltip,
-    Typography,
-} from 'antd'
+import { Button, Card, Flex, Input, Table, TableProps, Typography } from 'antd'
 import React, { useMemo, useState } from 'react'
-import { colors } from '../../../styles/colors'
 import CreateJobTitlesDrawer from '../../../features/settings/job/CreateJobTitlesDrawer'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleDrawer } from '../../../features/settings/job/jobSlice'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { JobType } from '../../../types/job'
+import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 
 const JobTitlesSettings = () => {
     // get data from job reducer
@@ -67,22 +57,12 @@ const JobTitlesSettings = () => {
                         >
                             Create Job Title
                         </Button>
-                        <Tooltip
-                            title={'Click to pin this into the main menu'}
-                            trigger={'hover'}
-                        >
-                            <Button
-                                className="borderless-icon-btn"
-                                icon={
-                                    <PushpinOutlined
-                                        style={{
-                                            fontSize: 18,
-                                            color: colors.skyBlue,
-                                        }}
-                                    />
-                                }
-                            />
-                        </Tooltip>
+
+                        {/* this button pin this route to navbar  */}
+                        <PinRouteToNavbarButton
+                            name="jobTitles"
+                            path="/worklenz/settings/job-titles"
+                        />
                     </Flex>
                 </Flex>
             }
