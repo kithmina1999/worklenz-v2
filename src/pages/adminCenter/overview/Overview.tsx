@@ -1,6 +1,6 @@
 import { EditOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons'
 import { PageHeader } from '@ant-design/pro-components'
-import { Button, Card, Tooltip, Typography } from 'antd'
+import { Button, Card, Input, Tooltip, Typography } from 'antd'
 import React, { useState } from 'react'
 import OrganizationAdminsTable from './OrganizationAdminsTable'
 import TextArea from 'antd/es/input/TextArea'
@@ -10,6 +10,7 @@ const { Text } = Typography
 const Overview: React.FC = () => {
     const [isEditable, setIsEditable] = useState(false)
     const [name, setName] = useState('Raveesha Dilanka');
+    const [isEditableContactNumber, setIsEditableContactNumber] = useState(false)
 
     const handleEdit = () => {
         setIsEditable(true)
@@ -22,6 +23,14 @@ const Overview: React.FC = () => {
 
     const handleNameChange = (e: any) => {
         setName(e.target.value)
+    }
+
+    const addContactNumber = () => {
+        setIsEditableContactNumber(true)
+    }
+
+    const handleContactNumberBlur = () => {
+        setIsEditableContactNumber(false)
     }
 
     return (
@@ -92,9 +101,9 @@ const Overview: React.FC = () => {
                             <PhoneOutlined />
                         </span>
                     </Tooltip>
-                    <Button type="link" style={{ padding: 0 }}>
+                    {isEditableContactNumber ? (<Input onBlur={handleContactNumberBlur} style={{width: '200px'}}/>) : (<Button type="link" style={{ padding: 0 }} onClick={addContactNumber}>
                         Add Contact Number
-                    </Button>
+                    </Button>)}
                 </div>
             </Card>
 

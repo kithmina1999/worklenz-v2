@@ -16,6 +16,7 @@ import './profileDropdown.css'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { Link } from 'react-router-dom'
 import { avatarNamesMap } from '../../../shared/constants'
+import { colors } from '../../../styles/colors'
 
 const ProfileButton = () => {
     // get user data from redux - user reducer

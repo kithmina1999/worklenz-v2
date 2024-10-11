@@ -10,7 +10,7 @@ const AdminCenterLayout : React.FC = () => {
     const { t } = useTranslation('adminCenterSidebar')
 
     return (
-        <div style={{ marginBlock: 96, minHeight: '90vh' }}>
+        <div style={{ marginBlock: 96, minHeight: '90vh', marginLeft: '68px', marginRight: '68px'}}>
             <Typography.Title level={4}>{t('adminCenter')}</Typography.Title>
 
             {isTablet ? (
