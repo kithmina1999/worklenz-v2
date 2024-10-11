@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Col, ConfigProvider, Flex, Menu, MenuProps } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -25,28 +25,28 @@ const Navbar = () => {
     const { t } = useTranslation('navbar')
 
     // in here nav routes list get data locally from the navRoutes array
-    const [navRoutesList, setNavRoutesList] =
-        useState<NavRoutesType[]>(navRoutes)
+    const [navRoutesList, setNavRoutesList] = useState<NavRoutesType[]>(
+        () => getFromLocalStorage('navRoutes') || navRoutes
+    )
+
     //this useEffect re render the navRoutes list with localstorage change
     useEffect(() => {
         const storedNavRoutesList: NavRoutesType[] =
-            getFromLocalStorage('navRoutes')
+            getFromLocalStorage('navRoutes') || navRoutes
         setNavRoutesList(storedNavRoutesList)
     }, [navRoutesList])
 
     // menu type
     type MenuItem = Required<MenuProps>['items'][number]
-    // nav links menu --> used useMemo for avoid unnecessary renders
-    const navlinkItems: MenuItem[] = useMemo(() => {
-        return navRoutesList.map((route) => ({
-            key: route.name,
-            label: (
-                <Link to={route.path} style={{ fontWeight: 600 }}>
-                    {t(route.name)}
-                </Link>
-            ),
-        }))
-    }, [navRoutesList, t])
+    // nav links menu
+    const navlinkItems: MenuItem[] = navRoutesList.map((route, index) => ({
+        key: route.path.split('/').pop() || index,
+        label: (
+            <Link to={route.path} style={{ fontWeight: 600 }}>
+                {t(route.name)}
+            </Link>
+        ),
+    }))
 
     useEffect(() => {
         const pathKey = location.pathname.split('/').pop()
