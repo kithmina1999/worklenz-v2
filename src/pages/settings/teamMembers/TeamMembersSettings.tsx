@@ -1,5 +1,6 @@
 import { SyncOutlined } from '@ant-design/icons'
 import {
+    Avatar,
     Button,
     Card,
     Flex,
@@ -15,6 +16,7 @@ import { toggleDrawer } from '../../../features/navbar/addMember/addMemberSlice'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { MemberType } from '../../../types/member'
 import { colors } from '../../../styles/colors'
+import { avatarNamesMap } from '../../../shared/constants'
 
 const TeamMembersSettings = () => {
     const dispatch = useAppDispatch()
@@ -23,26 +25,58 @@ const TeamMembersSettings = () => {
         (state) => state.addMemberReducer.membersList
     )
 
+    // userDetails.name[0].toLocaleUpperCase()
+
     // table columns
     const columns: TableProps['columns'] = [
         {
             key: 'name',
             title: 'Name',
-            dataIndex: 'name',
             sorter: (a, b) => a.name.length - b.name.length,
+            render: (record: MemberType) => (
+                <Typography.Text
+                    style={{
+                        textTransform: 'capitalize',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                    }}
+                >
+                    <Avatar
+                        style={{
+                            backgroundColor:
+                                avatarNamesMap[
+                                    record.memberEmail[0].toLocaleUpperCase()
+                                ],
+                            verticalAlign: 'middle',
+                        }}
+                    >
+                        {record.memberEmail[0].toLocaleUpperCase()}
+                    </Avatar>
+
+                    {record.memberEmail.split('@')[0]}
+                </Typography.Text>
+            ),
         },
         {
             key: 'projects',
             title: 'Projects',
-            dataIndex: 'projects',
             sorter: (a, b) => a.projects.length - b.projects.length,
+            render: () => <Typography.Text>0</Typography.Text>,
         },
         {
             key: 'memberEmail',
             title: 'Email',
             sorter: (a, b) => a.memberEmail.localeCompare(b.memberEmail),
             render: (record: MemberType) => (
-                <Typography.Text>{record.memberEmail}</Typography.Text>
+                <div>
+                    <Typography.Text>{record.memberEmail}</Typography.Text>
+                    <Typography.Text
+                        style={{ fontSize: 12, color: colors.lightGray }}
+                    >
+                        (pending invitation)
+                    </Typography.Text>
+                </div>
             ),
         },
         {
