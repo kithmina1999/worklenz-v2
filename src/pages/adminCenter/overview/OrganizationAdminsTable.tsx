@@ -1,6 +1,8 @@
 import { Table, TableProps } from "antd";
 import React from "react";
 import './OrganizationAdminsTable.css'
+import { useAppSelector } from "../../../hooks/useAppSelector";
+import { RootState } from "../../../app/store";
 
 interface DataType {
     key: string;
@@ -10,18 +12,20 @@ interface DataType {
 
 const OrganizationAdminsTable : React.FC = () => {
 
+    const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode)
+
     const columns: TableProps<DataType>['columns'] = [
         {
             dataIndex: 'name',
             key: 'name',
             render: (text) => (
-                <div style={{color: '#000000d9'}}>{text} <span style={{color: '#000000a6'}}>(Owner)</span></div>
+                <div style={{color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`}}>{text} <span style={{color: `${themeMode === 'dark'? '#ffffffd9' :'#000000a6'}`}}>(Owner)</span></div>
             )
         },
         {
             dataIndex: 'email',
             key: 'email',
-            render: (text) => <span style={{color: '#000000a6'}}>{text}</span>
+            render: (text) => <span style={{color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`}}>{text}</span>
         }
     ]
 

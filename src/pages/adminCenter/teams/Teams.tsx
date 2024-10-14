@@ -34,6 +34,7 @@ import './Teams.css'
 import SettingTeamDrawer from '../../../features/adminCenter/teams/SettingTeamDrawer'
 
 const Teams: React.FC = () => {
+    const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode)
     const [isLoading, setIsLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const teamsLists = useAppSelector(
@@ -147,7 +148,7 @@ const Teams: React.FC = () => {
                 subTitle={
                     <span
                         style={{
-                            color: '#000000d9',
+                            color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`,
                             fontWeight: 500,
                             fontSize: '16px',
                         }}

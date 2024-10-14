@@ -69,7 +69,7 @@ const ProfileButton = () => {
                     style={{ width: 230 }}
                 >
                     <Typography.Link
-                        href="/worklenz/admin-center"
+                        href="/worklenz/admin-center/overview"
                         style={{ color: colors.darkGray }}
                     >
                         Admin Center
