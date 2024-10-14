@@ -7,7 +7,10 @@ import projectReducer from '../features/projects/projectSlice'
 import notificationReducer from '../features/navbar/notification/notificationSlice'
 import addMemberReducer from '../features/navbar/addMember/addMemberSlice'
 import taskReducer from '../features/tasks/taskSlice'
+import userReducer from '../features/user/userSlice'
 import buttonReducer from '../features/action-setup/buttonSlice'
+import clientReducer from '../features/settings/client/clientSlice'
+import jobReducer from '../features/settings/job/jobSlice'
 
 export const store = configureStore({
     // there is error  occured with day js package when use with redux it shows a non-serializable value was detected
@@ -24,7 +27,10 @@ export const store = configureStore({
         notificationReducer: notificationReducer,
         addMemberReducer: addMemberReducer,
         taskReducer: taskReducer,
-        button: buttonReducer
+        button: buttonReducer,
+        userReducer: userReducer,
+        clientReducer: clientReducer,
+        jobReducer: jobReducer,
     },
 })
 

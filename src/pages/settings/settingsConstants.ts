@@ -26,7 +26,7 @@ import LanguageAndRegionSettings from './languageAndRegion/LanguageAndRegionSett
 
 // type of a menu item in settings sidebar
 type SettingMenuItems = {
-    key: number
+    key: string
     name: string
     endpoint: string
     icon: ReactNode
@@ -35,77 +35,77 @@ type SettingMenuItems = {
 // settings all element items use for sidebar and routes
 export const settingsItems: SettingMenuItems[] = [
     {
-        key: 1,
+        key: 'profile',
         name: 'profile',
         endpoint: 'profile',
         icon: React.createElement(UserOutlined),
         element: React.createElement(ProfileSettings),
     },
     {
-        key: 2,
+        key: 'notifications',
         name: 'notifications',
         endpoint: 'notifications',
         icon: React.createElement(NotificationOutlined),
         element: React.createElement(NotificationsSettings),
     },
     {
-        key: 3,
+        key: 'clients',
         name: 'clients',
         endpoint: 'clients',
         icon: React.createElement(UserSwitchOutlined),
         element: React.createElement(ClientsSettings),
     },
     {
-        key: 4,
+        key: 'job-titles',
         name: 'jobTitles',
         endpoint: 'job-titles',
         icon: React.createElement(IdcardOutlined),
         element: React.createElement(JobTitlesSettings),
     },
     {
-        key: 5,
+        key: 'labels',
         name: 'labels',
         endpoint: 'labels',
         icon: React.createElement(TagsOutlined),
         element: React.createElement(LabelsSettings),
     },
     {
-        key: 6,
+        key: 'categories',
         name: 'categories',
         endpoint: 'categories',
         icon: React.createElement(GroupOutlined),
         element: React.createElement(CategoriesSettings),
     },
     {
-        key: 7,
+        key: 'project-templates',
         name: 'projectTemplates',
         endpoint: 'project-templates',
         icon: React.createElement(FileZipOutlined),
         element: React.createElement(ProjectTemplatesSettings),
     },
     {
-        key: 8,
+        key: 'task-templates',
         name: 'taskTemplates',
         endpoint: 'task-templates',
         icon: React.createElement(ProfileOutlined),
         element: React.createElement(TaskTemplatesSettings),
     },
     {
-        key: 9,
+        key: 'team-members',
         name: 'teamMembers',
         endpoint: 'team-members',
         icon: React.createElement(TeamOutlined),
         element: React.createElement(TeamMembersSettings),
     },
     {
-        key: 10,
+        key: 'teams',
         name: 'teams',
         endpoint: 'teams',
         icon: React.createElement(BankOutlined),
         element: React.createElement(TeamsSettings),
     },
     {
-        key: 11,
+        key: 'language-and-region',
         name: 'languageAndRegion',
         endpoint: 'language-and-region',
         icon: React.createElement(GlobalOutlined),

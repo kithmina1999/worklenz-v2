@@ -1,20 +1,31 @@
 import React, { useState } from 'react'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Flex, Form, Input, message, Space, Typography } from 'antd'
+import {
+    Button,
+    Card,
+    Checkbox,
+    Flex,
+    Form,
+    Input,
+    message,
+    Space,
+    Typography,
+} from 'antd'
 import googleIcon from '../../assets/images/icons8-google.svg'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
-import { RootState } from '../../app/store'
+import { useMediaQuery } from 'react-responsive'
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
-    const themeMode = useSelector((state: RootState) => state.themeReducer.mode)
 
     // Localization
     const { t } = useTranslation('loginPage')
+
+    // media queries from react-responsive package
+    const isMobile = useMediaQuery({ query: '(max-width: 576px)' })
 
     const onFinish = (values: any) => {
         console.log('Received values of form: ', values)
@@ -31,12 +42,17 @@ const LoginPage = () => {
     }
 
     return (
-        <div
-          style={{
-            backgroundColor: `${themeMode === 'dark' ? "#141414" : "white"}`,
-            padding: "40px",
-            borderRadius: "4px",
-          }}
+        <Card
+            style={{
+                width: '100%',
+                boxShadow: 'none',
+            }}
+            styles={{
+                body: {
+                    paddingInline: isMobile ? 24 : 48,
+                },
+            }}
+            bordered={false}
         >
             <PageHeader description={t('headerDescription')} />
             <Form
@@ -46,7 +62,7 @@ const LoginPage = () => {
                 requiredMark="optional"
                 initialValues={{ remember: true }}
                 onFinish={onFinish}
-                style={{ marginInline: 'auto', maxWidth: 400 }}
+                style={{ width: '100%' }}
             >
                 <Form.Item
                     name="email"
@@ -94,9 +110,9 @@ const LoginPage = () => {
                             <Checkbox>{t('rememberMe')}</Checkbox>
                         </Form.Item>
 
-                        <Link to="/auth/forgot-password">
+                        <Typography.Link href="/auth/forgot-password">
                             {t('forgotPasswordButton')}
-                        </Link>
+                        </Typography.Link>
                     </Flex>
                 </Form.Item>
 
@@ -141,13 +157,16 @@ const LoginPage = () => {
                             {t('dontHaveAccountText')}
                         </Typography.Text>
 
-                        <Link to="/auth/signup" style={{ fontSize: 14 }}>
+                        <Typography.Link
+                            href="/auth/signup"
+                            style={{ fontSize: 14 }}
+                        >
                             {t('signupButton')}
-                        </Link>
+                        </Typography.Link>
                     </Space>
                 </Form.Item>
             </Form>
-        </div>
+        </Card>
     )
 }
 

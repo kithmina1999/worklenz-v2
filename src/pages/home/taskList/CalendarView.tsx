@@ -1,12 +1,11 @@
 import React from 'react'
 import HomeCalendar from '../../../components/calendars/homeCalendar/HomeCalendar'
-import EmptyListPlaceholder from '../../../components/EmptyListPlaceholder'
-import { Input, Table, Tag, Typography } from 'antd'
+import { Tag, Typography } from 'antd'
 import { ClockCircleOutlined } from '@ant-design/icons'
 import { useAppSelector } from '../../../hooks/useAppSelector'
+import AddTaskInlineForm from './AddTaskInlineForm'
 
 const CalendarView = () => {
-    const tasksList: string[] = []
     const date = useAppSelector((state) => state.dateReducer.date)
 
     return (
@@ -28,19 +27,7 @@ const CalendarView = () => {
                 </Typography.Text>
             </Tag>
 
-            <Input
-                placeholder="+ Add Task"
-                style={{ width: '100%', maxWidth: 300 }}
-            />
-
-            {tasksList.length === 0 ? (
-                <EmptyListPlaceholder
-                    imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
-                    text=" No tasks to show."
-                />
-            ) : (
-                <Table dataSource={tasksList}></Table>
-            )}
+            <AddTaskInlineForm />
         </div>
     )
 }
