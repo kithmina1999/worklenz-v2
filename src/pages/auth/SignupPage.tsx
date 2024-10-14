@@ -14,6 +14,7 @@ import googleIcon from '../../assets/images/icons8-google.svg'
 import { Link, useNavigate } from 'react-router-dom'
 import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
+import { useMediaQuery } from 'react-responsive'
 
 const SignupPage = () => {
     const [loading, setLoading] = useState(false)
@@ -21,6 +22,9 @@ const SignupPage = () => {
 
     // Localization
     const { t } = useTranslation('signupPage')
+
+    // media queries from react-responsive package
+    const isMobile = useMediaQuery({ query: '(max-width: 576px)' })
 
     const onFinish = (values: any) => {
         console.log('Received values of form: ', values)
@@ -39,8 +43,13 @@ const SignupPage = () => {
     return (
         <Card
             style={{
-                padding: '12px 24px 0 24px',
                 width: '100%',
+                boxShadow: 'none',
+            }}
+            styles={{
+                body: {
+                    paddingInline: isMobile ? 24 : 48,
+                },
             }}
             bordered={false}
         >

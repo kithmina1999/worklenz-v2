@@ -28,9 +28,10 @@ const AuthLayout = () => {
             >
                 <Flex
                     style={{
-                        marginTop: 100,
+                        marginBlockStart: 96,
+                        marginBlockEnd: 48,
                         marginInline: 24,
-                        width: '100%',
+                        width: '90%',
                         maxWidth: 440,
                     }}
                 >

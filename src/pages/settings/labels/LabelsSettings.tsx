@@ -1,16 +1,6 @@
-import { PushpinOutlined } from '@ant-design/icons'
-import {
-    Button,
-    Card,
-    Flex,
-    Input,
-    Table,
-    TableProps,
-    Tooltip,
-    Typography,
-} from 'antd'
+import { Card, Flex, Input, Table, TableProps, Typography } from 'antd'
 import React from 'react'
-import { colors } from '../../../styles/colors'
+import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 
 const LabelsSettings = () => {
     // table columns
@@ -42,22 +32,12 @@ const LabelsSettings = () => {
                             placeholder="Search by name"
                             style={{ maxWidth: 200 }}
                         />
-                        <Tooltip
-                            title={'Click to pin this into the main menu'}
-                            trigger={'hover'}
-                        >
-                            <Button
-                                className="borderless-icon-btn"
-                                icon={
-                                    <PushpinOutlined
-                                        style={{
-                                            fontSize: 18,
-                                            color: colors.skyBlue,
-                                        }}
-                                    />
-                                }
-                            />
-                        </Tooltip>
+
+                        {/* this button pin this route to navbar  */}
+                        <PinRouteToNavbarButton
+                            name="labels"
+                            path="/worklenz/settings/labels"
+                        />
                     </Flex>
                 </Flex>
             }

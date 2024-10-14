@@ -4,6 +4,7 @@ import { Button, Card, Flex, Form, Input, message, Typography } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
 import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
+import { useMediaQuery } from 'react-responsive'
 
 const ForgotPasswordPage = () => {
     const [form] = Form.useForm()
@@ -12,6 +13,9 @@ const ForgotPasswordPage = () => {
 
     // Localization
     const { t } = useTranslation('forgotPasswordPage')
+
+    // media queries from react-responsive package
+    const isMobile = useMediaQuery({ query: '(max-width: 576px)' })
 
     const onFinish = (values: any) => {
         console.log('Received values of form: ', values)
@@ -31,8 +35,13 @@ const ForgotPasswordPage = () => {
     return (
         <Card
             style={{
-                padding: '12px 24px 0 24px',
                 width: '100%',
+                boxShadow: 'none',
+            }}
+            styles={{
+                body: {
+                    paddingInline: isMobile ? 24 : 48,
+                },
             }}
             bordered={false}
         >

@@ -9,10 +9,17 @@ import { colors } from '../../../styles/colors'
 import { useTranslation } from 'react-i18next'
 // custom css
 import './switchTeam.css'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { avatarNamesMap } from '../../../shared/constants'
 
 const SwitchTeamButton = () => {
+    // get user data from redux - user reducer
+    const userDetails = useAppSelector((state) => state.userReducer)
     // localization
     const { t } = useTranslation('navbar')
+
+    // get avatar character
+    const avatarCharacter = userDetails.name[0].toLocaleUpperCase()
 
     // switch teams dropdown items
     const items = [
@@ -27,27 +34,35 @@ const SwitchTeamButton = () => {
                     }}
                 >
                     <Flex vertical gap={8}>
-                        <Flex gap={12} align="center" style={{ padding: 12 }}>
-                            <Avatar
-                                style={{
-                                    backgroundColor: colors.vibrantOrange,
-                                }}
-                            >
-                                S
-                            </Avatar>
-                            <Flex vertical>
-                                <Typography.Text
+                        <Flex
+                            gap={12}
+                            align="center"
+                            justify="space-between"
+                            style={{ padding: 12 }}
+                        >
+                            <Flex gap={8} align="center">
+                                <Avatar
                                     style={{
-                                        fontSize: 12,
-                                        fontWeight: 300,
-                                        color: colors.lightGray,
+                                        backgroundColor:
+                                            avatarNamesMap[avatarCharacter],
                                     }}
                                 >
-                                    Owned by you
-                                </Typography.Text>
-                                <Typography.Text>
-                                    Sachintha Prasad
-                                </Typography.Text>
+                                    {avatarCharacter}
+                                </Avatar>
+                                <Flex vertical>
+                                    <Typography.Text
+                                        style={{
+                                            fontSize: 12,
+                                            fontWeight: 300,
+                                            color: colors.lightGray,
+                                        }}
+                                    >
+                                        Owned by you
+                                    </Typography.Text>
+                                    <Typography.Text>
+                                        {userDetails.name}
+                                    </Typography.Text>
+                                </Flex>
                             </Flex>
                             <CheckCircleFilled
                                 style={{
@@ -83,7 +98,7 @@ const SwitchTeamButton = () => {
                 >
                     <BankOutlined />
                     <Typography.Text strong style={{ color: colors.skyBlue }}>
-                        Sachintha Prasad
+                        {userDetails.name}
                     </Typography.Text>
                     <CaretDownFilled />
                 </Flex>

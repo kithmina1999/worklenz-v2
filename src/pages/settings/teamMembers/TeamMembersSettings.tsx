@@ -1,5 +1,6 @@
 import { SyncOutlined } from '@ant-design/icons'
 import {
+    Avatar,
     Button,
     Card,
     Flex,
@@ -10,33 +11,88 @@ import {
     Typography,
 } from 'antd'
 import React from 'react'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
+import { toggleDrawer } from '../../../features/navbar/addMember/addMemberSlice'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { MemberType } from '../../../types/member'
+import { colors } from '../../../styles/colors'
+import { avatarNamesMap } from '../../../shared/constants'
 
 const TeamMembersSettings = () => {
+    const dispatch = useAppDispatch()
+    // get team member list from redux - add member reducer
+    const membersList = useAppSelector(
+        (state) => state.addMemberReducer.membersList
+    )
+
+    // userDetails.name[0].toLocaleUpperCase()
+
     // table columns
     const columns: TableProps['columns'] = [
         {
             key: 'name',
             title: 'Name',
-            dataIndex: 'name',
             sorter: (a, b) => a.name.length - b.name.length,
+            render: (record: MemberType) => (
+                <Typography.Text
+                    style={{
+                        textTransform: 'capitalize',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                    }}
+                >
+                    <Avatar
+                        style={{
+                            backgroundColor:
+                                avatarNamesMap[
+                                    record.memberEmail[0].toLocaleUpperCase()
+                                ],
+                            verticalAlign: 'middle',
+                        }}
+                    >
+                        {record.memberEmail[0].toLocaleUpperCase()}
+                    </Avatar>
+
+                    {record.memberEmail.split('@')[0]}
+                </Typography.Text>
+            ),
         },
         {
             key: 'projects',
             title: 'Projects',
-            dataIndex: 'projects',
             sorter: (a, b) => a.projects.length - b.projects.length,
+            render: () => <Typography.Text>0</Typography.Text>,
         },
         {
-            key: 'email',
+            key: 'memberEmail',
             title: 'Email',
-            dataIndex: 'email',
-            sorter: (a, b) => a.email.length - b.email.length,
+            sorter: (a, b) => a.memberEmail.localeCompare(b.memberEmail),
+            render: (record: MemberType) => (
+                <div>
+                    <Typography.Text>{record.memberEmail}</Typography.Text>
+                    <Typography.Text
+                        style={{ fontSize: 12, color: colors.lightGray }}
+                    >
+                        (pending invitation)
+                    </Typography.Text>
+                </div>
+            ),
         },
         {
-            key: 'teamAccess',
+            key: 'memberRole',
             title: 'Team Access',
-            dataIndex: 'teamAccess',
-            sorter: (a, b) => a.teamAccess.length - b.teamAccess.length,
+            sorter: (a, b) => a.memberRole.localeCompare(b.memberRole),
+            render: (record: MemberType) => (
+                <Typography.Text
+                    style={{
+                        color: colors.skyBlue,
+                        textTransform: 'capitalize',
+                    }}
+                >
+                    {record.memberRole}
+                </Typography.Text>
+            ),
         },
     ]
 
@@ -48,7 +104,7 @@ const TeamMembersSettings = () => {
                 style={{ marginBlockEnd: 24 }}
             >
                 <Typography.Title level={4} style={{ marginBlockEnd: 0 }}>
-                    0 Members
+                    {membersList.length} Member{membersList.length !== 1 && 's'}
                 </Typography.Title>
 
                 <Flex
@@ -71,12 +127,22 @@ const TeamMembersSettings = () => {
                         placeholder="Search by name"
                         style={{ maxWidth: 200 }}
                     />
-                    <Button type="primary">Create Client</Button>
+                    <Button
+                        type="primary"
+                        onClick={() => dispatch(toggleDrawer())}
+                    >
+                        Add Member
+                    </Button>
                 </Flex>
             </Flex>
 
             <Card style={{ width: '100%' }}>
-                <Table columns={columns} />
+                <Table
+                    className="homepage-table"
+                    columns={columns}
+                    dataSource={membersList}
+                    rowKey={(record) => record.memberId}
+                />
             </Card>
         </div>
     )
