@@ -34,6 +34,9 @@ const ThemeWrapper = ({ children }: ChildrenProp) => {
                     Table: {
                         rowHoverBg: themeMode === 'dark' ? '#000' : '#edebf0',
                     },
+                    Select: {
+                        controlHeight: 32,
+                    },
                 },
                 token: {
                     borderRadius: 4,
