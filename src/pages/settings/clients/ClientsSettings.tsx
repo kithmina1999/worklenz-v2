@@ -1,15 +1,41 @@
-import { Button, Card, Flex, Input, Table, TableProps, Typography } from 'antd'
+import {
+    Button,
+    Card,
+    Flex,
+    Input,
+    Popconfirm,
+    Table,
+    TableProps,
+    Typography,
+} from 'antd'
 import React, { useMemo, useState } from 'react'
 import { colors } from '../../../styles/colors'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
-import { toggleDrawer } from '../../../features/settings/client/clientSlice'
+import {
+    deleteClient,
+    toggleCreateClientDrawer,
+    toggleUpdateClientDrawer,
+} from '../../../features/settings/client/clientSlice'
 import CreateClientDrawer from '../../../features/settings/client/CreateClientDrawer'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { ClientType } from '../../../types/client'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
+import {
+    DeleteOutlined,
+    EditOutlined,
+    ExclamationCircleFilled,
+} from '@ant-design/icons'
+import UpdateClientDrawer from '../../../features/settings/client/UpdateClientDrawer'
 
 const ClientsSettings = () => {
+    // get currently hover row
+    const [hoverRow, setHoverRow] = useState<string | null>(null)
+    // get currently selected client id
+    const [selectedClientId, setSelectedClientId] = useState<string | null>(
+        null
+    )
+
     // get data from client reducer
     const clientsList = useAppSelector(
         (state) => state.clientReducer.clientsList
@@ -17,7 +43,7 @@ const ClientsSettings = () => {
     const dispatch = useAppDispatch()
 
     // this is for get the current string that type on search bar
-    const [searchQuery, setSearchQuery] = useState('')
+    const [searchQuery, setSearchQuery] = useState<string>('')
 
     // used useMemo hook for re render the list when searching
     const filteredClientsData = useMemo(() => {
@@ -33,7 +59,20 @@ const ClientsSettings = () => {
             title: 'Name',
             sorter: (a, b) => a.clientName.localeCompare(b.clientName),
             render: (record: ClientType) => (
-                <Typography.Text>{record.clientName}</Typography.Text>
+                <Typography.Text
+                    style={{
+                        color:
+                            hoverRow === record.clientId
+                                ? colors.skyBlue
+                                : colors.darkGray,
+                    }}
+                    onClick={() => {
+                        setSelectedClientId(record.clientId)
+                        dispatch(toggleUpdateClientDrawer())
+                    }}
+                >
+                    {record.clientName}
+                </Typography.Text>
             ),
         },
         {
@@ -46,6 +85,43 @@ const ClientsSettings = () => {
                     <Typography.Text style={{ color: colors.lightGray }}>
                         No projects available
                     </Typography.Text>
+                ),
+        },
+        {
+            key: 'actionBtns',
+            width: 80,
+            render: (record: ClientType) =>
+                hoverRow === record.clientId && (
+                    <Flex gap={8} style={{ padding: 0 }}>
+                        <Button
+                            size="small"
+                            icon={<EditOutlined />}
+                            onClick={() => {
+                                setSelectedClientId(record.clientId)
+                                dispatch(toggleUpdateClientDrawer())
+                            }}
+                        />
+
+                        <Popconfirm
+                            title="Are you sure?"
+                            icon={
+                                <ExclamationCircleFilled
+                                    style={{ color: colors.vibrantOrange }}
+                                />
+                            }
+                            okText="Yes"
+                            cancelText="Cancel"
+                            onConfirm={() =>
+                                dispatch(deleteClient(record.clientId))
+                            }
+                        >
+                            <Button
+                                shape="default"
+                                icon={<DeleteOutlined />}
+                                size="small"
+                            />
+                        </Popconfirm>
+                    </Flex>
                 ),
         },
     ]
@@ -71,7 +147,7 @@ const ClientsSettings = () => {
                         />
                         <Button
                             type="primary"
-                            onClick={() => dispatch(toggleDrawer())}
+                            onClick={() => dispatch(toggleCreateClientDrawer())}
                         >
                             Create Client
                         </Button>
@@ -90,10 +166,25 @@ const ClientsSettings = () => {
                 dataSource={filteredClientsData}
                 columns={columns}
                 rowKey={(record) => record.clientId}
+                pagination={{
+                    showSizeChanger: true,
+                    defaultPageSize: 20,
+                }}
+                onRow={(record) => {
+                    return {
+                        onMouseEnter: () => setHoverRow(record.clientId),
+                        onMouseLeave: () => setHoverRow(null),
+                        style: {
+                            cursor: 'pointer',
+                            height: 36,
+                        },
+                    }
+                }}
             />
 
-            {/* add client drawer  */}
+            {/*  client drawers  */}
             <CreateClientDrawer />
+            <UpdateClientDrawer selectedClientId={selectedClientId} />
         </Card>
     )
 }
