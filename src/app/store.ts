@@ -8,6 +8,7 @@ import notificationReducer from '../features/navbar/notification/notificationSli
 import addMemberReducer from '../features/navbar/addMember/addMemberSlice'
 import taskReducer from '../features/tasks/taskSlice'
 import userReducer from '../features/user/userSlice'
+import userReducer from '../features/user/userSlice'
 import buttonReducer from '../features/action-setup/buttonSlice'
 import clientReducer from '../features/settings/client/clientSlice'
 import jobReducer from '../features/settings/job/jobSlice'
