@@ -1,14 +1,4 @@
-import { PushpinOutlined } from '@ant-design/icons'
-import {
-    Button,
-    Card,
-    Flex,
-    Input,
-    Table,
-    TableProps,
-    Tooltip,
-    Typography,
-} from 'antd'
+import { Button, Card, Flex, Input, Table, TableProps, Typography } from 'antd'
 import React, { useMemo, useState } from 'react'
 import { colors } from '../../../styles/colors'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
@@ -16,6 +6,8 @@ import { toggleDrawer } from '../../../features/settings/client/clientSlice'
 import CreateClientDrawer from '../../../features/settings/client/CreateClientDrawer'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { ClientType } from '../../../types/client'
+
+import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 
 const ClientsSettings = () => {
     // get data from client reducer
@@ -83,22 +75,12 @@ const ClientsSettings = () => {
                         >
                             Create Client
                         </Button>
-                        <Tooltip
-                            title={'Click to pin this into the main menu'}
-                            trigger={'hover'}
-                        >
-                            <Button
-                                className="borderless-icon-btn"
-                                icon={
-                                    <PushpinOutlined
-                                        style={{
-                                            fontSize: 18,
-                                            color: colors.skyBlue,
-                                        }}
-                                    />
-                                }
-                            />
-                        </Tooltip>
+
+                        {/* this button pin this route to navbar  */}
+                        <PinRouteToNavbarButton
+                            name="clients"
+                            path="/worklenz/settings/clients"
+                        />
                     </Flex>
                 </Flex>
             }

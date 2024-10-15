@@ -1,14 +1,5 @@
-import { PushpinOutlined } from '@ant-design/icons'
-import {
-    Button,
-    Card,
-    Flex,
-    Table,
-    TableProps,
-    Tooltip,
-    Typography,
-} from 'antd'
-import { colors } from '../../../styles/colors'
+import { Card, Flex, Table, TableProps, Typography } from 'antd'
+import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 
 const TeamsSettings = () => {
     // table columns
@@ -41,22 +32,11 @@ const TeamsSettings = () => {
                     0 Teams
                 </Typography.Title>
 
-                <Tooltip
-                    title={'Click to pin this into the main menu'}
-                    trigger={'hover'}
-                >
-                    <Button
-                        className="borderless-icon-btn"
-                        icon={
-                            <PushpinOutlined
-                                style={{
-                                    fontSize: 18,
-                                    color: colors.skyBlue,
-                                }}
-                            />
-                        }
-                    />
-                </Tooltip>
+                {/* this button pin this route to navbar  */}
+                <PinRouteToNavbarButton
+                    name="teams"
+                    path="/worklenz/settings/teams"
+                />
             </Flex>
 
             <Card style={{ width: '100%' }}>

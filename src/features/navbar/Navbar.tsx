@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Col, ConfigProvider, Flex, Menu, MenuProps, Typography } from 'antd'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { useMediaQuery } from 'react-responsive'
+import { Col, ConfigProvider, Flex, Menu, MenuProps } from 'antd'
+import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import InviteButton from './addMember/InviteButton'
 import SwitchTeamButton from './switchTeam/SwitchTeamButton'
@@ -13,52 +12,46 @@ import HelpButton from './help/HelpButton'
 import UpgradePlanButton from './upgradePlan/UpgradePlanButton'
 import MobileMenuButton from './mobileMenu/MobileMenuButton'
 import NavbarLogo from './NavbarLogo'
+import { getFromLocalStorage } from '../../utils/localStorageFunctions'
+import { navRoutes, NavRoutesType } from './navRoutes'
+import { useResponsive } from '../../hooks/useResponsive'
 
 const Navbar = () => {
     const [current, setCurrent] = useState<string>('home')
-    const navigate = useNavigate()
-    const location = useLocation();
-
+    const location = useLocation()
+    // media queries from useResponsive custom hook
+    const { isDesktop, isMobile, isTablet } = useResponsive()
     // localization
     const { t } = useTranslation('navbar')
+
+    // in here nav routes list get data locally from the navRoutes array
+    const [navRoutesList, setNavRoutesList] = useState<NavRoutesType[]>(
+        () => getFromLocalStorage('navRoutes') || navRoutes
+    )
+
+    //this useEffect re render the navRoutes list with localstorage change
+    useEffect(() => {
+        const storedNavRoutesList: NavRoutesType[] =
+            getFromLocalStorage('navRoutes') || navRoutes
+        setNavRoutesList(storedNavRoutesList)
+    }, [navRoutesList])
 
     // menu type
     type MenuItem = Required<MenuProps>['items'][number]
     // nav links menu
-    const navlinkItems: MenuItem[] = [
-        {
-            key: 'home',
-            label: <Typography.Link strong>{t('home')}</Typography.Link>,
-        },
-        {
-            key: 'projects',
-            label: <Typography.Link strong>{t('projects')}</Typography.Link>,
-        },
-        {
-            key: 'schedules',
-            label: <Typography.Link strong>{t('schedules')}</Typography.Link>,
-        },
-        {
-            key: 'reporting',
-            label: <Typography.Link strong>{t('reporting')}</Typography.Link>,
-        },
-    ]
-
-    //handle navlink menu click
-    const navlinkClick: MenuProps['onClick'] = (e) => {
-        navigate(`/worklenz/${e.key}`)
-        setCurrent(e.key)
-    }
-
-    // media queries from react-responsive package
-    const isMobile = useMediaQuery({ query: '(max-width: 576px)' })
-    const isTablet = useMediaQuery({ query: '(min-width: 576px)' })
-    const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' })
+    const navlinkItems: MenuItem[] = navRoutesList.map((route, index) => ({
+        key: route.path.split('/').pop() || index,
+        label: (
+            <Link to={route.path} style={{ fontWeight: 600 }}>
+                {t(route.name)}
+            </Link>
+        ),
+    }))
 
     useEffect(() => {
-        const pathKey = location.pathname.split('/').pop();
-        setCurrent(pathKey ?? 'home');
-    }, [location]);
+        const pathKey = location.pathname.split('/').pop()
+        setCurrent(pathKey ?? 'home')
+    }, [location])
 
     return (
         <Col
@@ -82,12 +75,11 @@ const Navbar = () => {
                 {/* navlinks menu  */}
                 {isDesktop && (
                     <Menu
-                        onClick={navlinkClick}
                         selectedKeys={[current]}
                         mode="horizontal"
                         style={{
                             flex: 10,
-                            maxWidth: 400,
+                            maxWidth: 720,
                             minWidth: 0,
                             border: 'none',
                         }}
