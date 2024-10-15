@@ -1,4 +1,3 @@
-import { PushpinOutlined } from '@ant-design/icons'
 import {
     Button,
     Card,
@@ -7,10 +6,10 @@ import {
     Popconfirm,
     Table,
     TableProps,
+    Tooltip,
     Typography,
 } from 'antd'
 import React, { useMemo, useState } from 'react'
-import { colors } from '../../../styles/colors'
 
 import CreateJobTitlesDrawer from '../../../features/settings/job/CreateJobTitlesDrawer'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
@@ -23,6 +22,14 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { JobType } from '../../../types/job'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
+import {
+    DeleteOutlined,
+    EditOutlined,
+    ExclamationCircleFilled,
+    PushpinOutlined
+} from '@ant-design/icons'
+import { colors } from '../../../styles/colors'
+import UpdateJobTitlesDrawer from '../../../features/settings/job/UpdateJobTitlesDrawer'
 
 
 const JobTitlesSettings = () => {
@@ -133,24 +140,6 @@ const JobTitlesSettings = () => {
                             Create Job Title
                         </Button>
 
-                        <Tooltip
-                            title={'Click to pin this into the main menu'}
-                            trigger={'hover'}
-                        >
-                            <Button
-                                className="borderless-icon-btn"
-                                icon={
-                                    <PushpinOutlined
-                                        style={{
-                                            fontSize: 18,
-                                            color: colors.skyBlue,
-                                        }}
-                                    />
-                                }
-                            />
-                        </Tooltip>
-
-
                         {/* this button pin this route to navbar  */}
                         <PinRouteToNavbarButton
                             name="jobTitles"
@@ -165,12 +154,12 @@ const JobTitlesSettings = () => {
                 className="homepage-table"
                 dataSource={filteredJobTitlesData}
                 columns={columns}
-                rowKey={(record) => record.jobId}
+                rowKey={(record: any) => record.jobId}
                 pagination={{
                     showSizeChanger: true,
                     defaultPageSize: 20,
                 }}
-                onRow={(record) => {
+                onRow={(record: any) => {
                     return {
                         onMouseEnter: () => setHoverRow(record.jobId),
                         onMouseLeave: () => setHoverRow(null),
