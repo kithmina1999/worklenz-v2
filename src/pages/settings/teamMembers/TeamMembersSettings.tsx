@@ -212,7 +212,6 @@ const TeamMembersSettings = () => {
         {
             key: 'memberRole',
             title: 'Team Access',
-            width: 220,
             sorter: (a, b) => a.memberRole.localeCompare(b.memberRole),
             render: (record: MemberType) => (
                 <Flex gap={16} align="center">
@@ -224,82 +223,81 @@ const TeamMembersSettings = () => {
                     >
                         {record.memberRole}
                     </Typography.Text>
-
-                    {/* action btns only show in admin and members rows  */}
-                    {record.memberRole !== 'owner' &&
-                        hoverRow === record.memberId && (
-                            <Flex gap={8} style={{ padding: 0 }}>
-                                <Tooltip title="Edit" trigger={'hover'}>
-                                    <Button
-                                        size="small"
-                                        icon={<EditOutlined />}
-                                        onClick={() => {
-                                            setSelectedMemberId(record.memberId)
-                                            dispatch(toggleUpdateMemberDrawer())
-                                        }}
-                                    />
-                                </Tooltip>
-
-                                <Tooltip
-                                    title={
-                                        record.isActivate
-                                            ? 'Deactivate'
-                                            : 'Activate'
-                                    }
-                                    trigger={'hover'}
-                                >
-                                    <Popconfirm
-                                        title="Are you sure?"
-                                        icon={
-                                            <ExclamationCircleFilled
-                                                style={{
-                                                    color: colors.vibrantOrange,
-                                                }}
-                                            />
-                                        }
-                                        okText="Yes"
-                                        cancelText="Cancel"
-                                        onConfirm={() =>
-                                            dispatch(toggleMemberStatus(record))
-                                        }
-                                    >
-                                        <Button
-                                            shape="default"
-                                            icon={<UserSwitchOutlined />}
-                                            size="small"
-                                        />
-                                    </Popconfirm>
-                                </Tooltip>
-
-                                <Tooltip title="Delete" trigger={'hover'}>
-                                    <Popconfirm
-                                        title="Are you sure?"
-                                        icon={
-                                            <ExclamationCircleFilled
-                                                style={{
-                                                    color: colors.vibrantOrange,
-                                                }}
-                                            />
-                                        }
-                                        okText="Yes"
-                                        cancelText="Cancel"
-                                        onConfirm={() =>
-                                            dispatch(
-                                                deleteMember(record.memberId)
-                                            )
-                                        }
-                                    >
-                                        <Button
-                                            shape="default"
-                                            icon={<DeleteOutlined />}
-                                            size="small"
-                                        />
-                                    </Popconfirm>
-                                </Tooltip>
-                            </Flex>
-                        )}
                 </Flex>
             ),
+        },
+        {
+            key: 'actionBtns',
+            width: 120,
+            render: (record: MemberType) =>
+                record.memberRole !== 'owner' &&
+                hoverRow === record.memberId && (
+                    <Flex gap={8} style={{ padding: 0 }}>
+                        <Tooltip title="Edit" trigger={'hover'}>
+                            <Button
+                                size="small"
+                                icon={<EditOutlined />}
+                                onClick={() => {
+                                    setSelectedMemberId(record.memberId)
+                                    dispatch(toggleUpdateMemberDrawer())
+                                }}
+                            />
+                        </Tooltip>
+
+                        <Tooltip
+                            title={
+                                record.isActivate ? 'Deactivate' : 'Activate'
+                            }
+                            trigger={'hover'}
+                        >
+                            <Popconfirm
+                                title="Are you sure?"
+                                icon={
+                                    <ExclamationCircleFilled
+                                        style={{
+                                            color: colors.vibrantOrange,
+                                        }}
+                                    />
+                                }
+                                okText="Yes"
+                                cancelText="Cancel"
+                                onConfirm={() =>
+                                    dispatch(toggleMemberStatus(record))
+                                }
+                            >
+                                <Button
+                                    shape="default"
+                                    icon={<UserSwitchOutlined />}
+                                    size="small"
+                                />
+                            </Popconfirm>
+                        </Tooltip>
+
+                        <Tooltip title="Delete" trigger={'hover'}>
+                            <Popconfirm
+                                title="Are you sure?"
+                                icon={
+                                    <ExclamationCircleFilled
+                                        style={{
+                                            color: colors.vibrantOrange,
+                                        }}
+                                    />
+                                }
+                                okText="Yes"
+                                cancelText="Cancel"
+                                onConfirm={() =>
+                                    dispatch(deleteMember(record.memberId))
+                                }
+                            >
+                                <Button
+                                    shape="default"
+                                    icon={<DeleteOutlined />}
+                                    size="small"
+                                />
+                            </Popconfirm>
+                        </Tooltip>
+                    </Flex>
+                ),
         },
     ]
 
