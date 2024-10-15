@@ -158,26 +158,12 @@ const ClientsSettings = () => {
                             title={'Click to pin this into the main menu'}
                             trigger={'hover'}
                         >
-                            <Button
-                                className="borderless-icon-btn"
-                                icon={
-                                    <PushpinOutlined
-                                        style={{
-                                            fontSize: 18,
-                                            color: colors.skyBlue,
-                                        }}
-                                    />
-                                }
+                            {/* this button pin this route to navbar  */}
+                            <PinRouteToNavbarButton
+                                name="clients"
+                                path="/worklenz/settings/clients"
                             />
                         </Tooltip>
-
-
-                        {/* this button pin this route to navbar  */}
-                        <PinRouteToNavbarButton
-                            name="clients"
-                            path="/worklenz/settings/clients"
-                        />
-
                     </Flex>
                 </Flex>
             }

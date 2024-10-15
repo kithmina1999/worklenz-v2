@@ -46,24 +46,12 @@ const TeamsSettings = () => {
                     title={'Click to pin this into the main menu'}
                     trigger={'hover'}
                 >
-                    <Button
-                        className="borderless-icon-btn"
-                        icon={
-                            <PushpinOutlined
-                                style={{
-                                    fontSize: 18,
-                                    color: colors.skyBlue,
-                                }}
-                            />
-                        }
+                    {/* this button pin this route to navbar  */}
+                    <PinRouteToNavbarButton
+                        name="teams"
+                        path="/worklenz/settings/teams"
                     />
                 </Tooltip>
-
-                {/* this button pin this route to navbar  */}
-                <PinRouteToNavbarButton
-                    name="teams"
-                    path="/worklenz/settings/teams"
-                />
             </Flex>
 
             <Card style={{ width: '100%' }}>

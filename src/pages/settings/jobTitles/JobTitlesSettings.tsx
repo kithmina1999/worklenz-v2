@@ -6,6 +6,7 @@ import {
     Flex,
     Input,
     Popconfirm,
+    Table,
     Tooltip,
     Typography,
 } from 'antd'
@@ -28,9 +29,8 @@ import {
     EditOutlined,
     ExclamationCircleFilled,
 } from '@ant-design/icons'
-import { colors } from '../../../styles/colors'
 import UpdateJobTitlesDrawer from '../../../features/settings/job/UpdateJobTitlesDrawer'
-
+import { TableProps } from 'antd/lib'
 
 const JobTitlesSettings = () => {
     // get currently hover row
@@ -144,26 +144,12 @@ const JobTitlesSettings = () => {
                             title={'Click to pin this into the main menu'}
                             trigger={'hover'}
                         >
-                            <Button
-                                className="borderless-icon-btn"
-                                icon={
-                                    <PushpinOutlined
-                                        style={{
-                                            fontSize: 18,
-                                            color: colors.skyBlue,
-                                        }}
-                                    />
-                                }
+                            {/* this button pin this route to navbar  */}
+                            <PinRouteToNavbarButton
+                                name="jobTitles"
+                                path="/worklenz/settings/job-titles"
                             />
                         </Tooltip>
-
-
-                        {/* this button pin this route to navbar  */}
-                        <PinRouteToNavbarButton
-                            name="jobTitles"
-                            path="/worklenz/settings/job-titles"
-                        />
-
                     </Flex>
                 </Flex>
             }
