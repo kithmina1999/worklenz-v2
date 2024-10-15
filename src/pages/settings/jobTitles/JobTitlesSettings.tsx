@@ -1,11 +1,11 @@
 import { PushpinOutlined } from '@ant-design/icons'
+
 import {
     Button,
     Card,
     Flex,
     Input,
-    Table,
-    TableProps,
+    Popconfirm,
     Tooltip,
     Typography,
 } from 'antd'
@@ -14,14 +14,30 @@ import { colors } from '../../../styles/colors'
 
 import CreateJobTitlesDrawer from '../../../features/settings/job/CreateJobTitlesDrawer'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
-import { toggleDrawer } from '../../../features/settings/job/jobSlice'
+import {
+    deleteJobTitle,
+    toggleCreateJobTitleDrawer,
+    toggleUpdateJobTitleDrawer,
+} from '../../../features/settings/job/jobSlice'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { JobType } from '../../../types/job'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
+import {
+    DeleteOutlined,
+    EditOutlined,
+    ExclamationCircleFilled,
+} from '@ant-design/icons'
+import { colors } from '../../../styles/colors'
+import UpdateJobTitlesDrawer from '../../../features/settings/job/UpdateJobTitlesDrawer'
 
 
 const JobTitlesSettings = () => {
+    // get currently hover row
+    const [hoverRow, setHoverRow] = useState<string | null>(null)
+    // get currently selected job id
+    const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
+
     // get data from job reducer
     const jobTitlesList = useAppSelector((state) => state.jobReducer.jobsList)
     const dispatch = useAppDispatch()
@@ -41,8 +57,58 @@ const JobTitlesSettings = () => {
             title: 'Name',
             sorter: (a, b) => a.jobTitle.localeCompare(b.jobTitle),
             render: (record: JobType) => (
-                <Typography.Text>{record.jobTitle}</Typography.Text>
+                <Typography.Text
+                    style={{
+                        color:
+                            hoverRow === record.jobId
+                                ? colors.skyBlue
+                                : colors.darkGray,
+                    }}
+                    onClick={() => {
+                        setSelectedJobId(record.jobId)
+                        dispatch(toggleUpdateJobTitleDrawer())
+                    }}
+                >
+                    {record.jobTitle}
+                </Typography.Text>
             ),
+        },
+        {
+            key: 'actionBtns',
+            width: 80,
+            render: (record: JobType) =>
+                hoverRow === record.jobId && (
+                    <Flex gap={8} style={{ padding: 0 }}>
+                        <Button
+                            size="small"
+                            icon={<EditOutlined />}
+                            onClick={() => {
+                                setSelectedJobId(record.jobId)
+                                dispatch(toggleUpdateJobTitleDrawer())
+                            }}
+                        />
+
+                        <Popconfirm
+                            title="Are you sure?"
+                            icon={
+                                <ExclamationCircleFilled
+                                    style={{ color: colors.vibrantOrange }}
+                                />
+                            }
+                            okText="Yes"
+                            cancelText="Cancel"
+                            onConfirm={() =>
+                                dispatch(deleteJobTitle(record.jobId))
+                            }
+                        >
+                            <Button
+                                shape="default"
+                                icon={<DeleteOutlined />}
+                                size="small"
+                            />
+                        </Popconfirm>
+                    </Flex>
+                ),
         },
     ]
 
@@ -67,7 +133,9 @@ const JobTitlesSettings = () => {
                         />
                         <Button
                             type="primary"
-                            onClick={() => dispatch(toggleDrawer())}
+                            onClick={() =>
+                                dispatch(toggleCreateJobTitleDrawer())
+                            }
                         >
                             Create Job Title
                         </Button>
@@ -105,9 +173,24 @@ const JobTitlesSettings = () => {
                 dataSource={filteredJobTitlesData}
                 columns={columns}
                 rowKey={(record) => record.jobId}
+                pagination={{
+                    showSizeChanger: true,
+                    defaultPageSize: 20,
+                }}
+                onRow={(record) => {
+                    return {
+                        onMouseEnter: () => setHoverRow(record.jobId),
+                        onMouseLeave: () => setHoverRow(null),
+                        style: {
+                            cursor: 'pointer',
+                            height: 36,
+                        },
+                    }
+                }}
             />
             {/* create job title drawer  */}
             <CreateJobTitlesDrawer />
+            <UpdateJobTitlesDrawer selectedJobTitleId={selectedJobId} />
         </Card>
     )
 }
