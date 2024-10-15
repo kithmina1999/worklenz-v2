@@ -76,7 +76,10 @@ const AddMemberDrawer = () => {
                     ]}
                 >
                     <Flex vertical gap={4}>
-                        <Input placeholder="Add team members by email" />
+                        <Input
+                            type="email"
+                            placeholder="Add team members by email"
+                        />
                         <Typography.Text
                             style={{ fontSize: 12, color: colors.lightGray }}
                         >
