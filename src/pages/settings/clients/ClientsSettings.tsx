@@ -1,4 +1,4 @@
-import { PushpinOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, PushpinOutlined } from '@ant-design/icons'
 import {
     Button,
     Card,
@@ -23,6 +23,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { ClientType } from '../../../types/client'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
+import UpdateClientDrawer from '../../../features/settings/client/UpdateClientDrawer'
 
 const ClientsSettings = () => {
     // get currently hover row
