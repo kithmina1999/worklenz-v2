@@ -68,16 +68,15 @@ const AddMemberDrawer = () => {
                         },
                     ]}
                 >
-                    <Input
-                        type="email"
-                        placeholder="Add team members by email"
-                    />
-                    <Typography.Text
-                        style={{ fontSize: 12, color: colors.lightGray }}
-                    >
-                        Invitees will be added to the team either they accept
-                        the invitation or not.
-                    </Typography.Text>
+                    <Flex vertical gap={4}>
+                        <Input placeholder="Add team members by email" />
+                        <Typography.Text
+                            style={{ fontSize: 12, color: colors.lightGray }}
+                        >
+                            Invitees will be added to the team either they
+                            accept the invitation or not.
+                        </Typography.Text>
+                    </Flex>
                 </Form.Item>
 
                 <Form.Item label="Job Title" name="jobTitle">

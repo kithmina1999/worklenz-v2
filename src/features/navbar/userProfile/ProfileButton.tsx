@@ -10,20 +10,14 @@ import {
     Typography,
 } from 'antd'
 import React from 'react'
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 // profile dropdown custom css
 import './profileDropdown.css'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { Link } from 'react-router-dom'
 import { avatarNamesMap } from '../../../shared/constants'
-import { useAppSelector } from '../../../hooks/useAppSelector'
-import { Link } from 'react-router-dom'
-import { avatarNamesMap } from '../../../shared/constants'
 
 const ProfileButton = () => {
-    // get user data from redux - user reducer
-    const userDetails = useAppSelector((state) => state.userReducer)
     // get user data from redux - user reducer
     const userDetails = useAppSelector((state) => state.userReducer)
     // localization
@@ -32,14 +26,12 @@ const ProfileButton = () => {
     // get avatar character
     const avatarCharacter = userDetails.name[0].toLocaleUpperCase()
     // get avatar character
-    const avatarCharacter = userDetails.name[0].toLocaleUpperCase()
 
     const profile: MenuProps['items'] = [
         {
             key: '1',
             label: (
                 <Card
-                    className="profile-card"
                     className="profile-card"
                     title={
                         <div style={{ paddingBlock: '16px' }}>
@@ -49,7 +41,6 @@ const ProfileButton = () => {
                                     <Avatar
                                         style={{
                                             backgroundColor:
-                                                avatarNamesMap[avatarCharacter],
                                                 avatarNamesMap[avatarCharacter],
                                             verticalAlign: 'middle',
                                         }}
@@ -104,7 +95,6 @@ const ProfileButton = () => {
     return (
         <Tooltip title={t('profileTooltip')}>
             <Dropdown
-                overlayClassName="profile-dropdown"
                 overlayClassName="profile-dropdown"
                 menu={{ items: profile }}
                 placement="bottomRight"
