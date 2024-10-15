@@ -17,6 +17,8 @@ import CreateClientDrawer from '../../../features/settings/client/CreateClientDr
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { ClientType } from '../../../types/client'
 
+import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
+
 const ClientsSettings = () => {
     // get data from client reducer
     const clientsList = useAppSelector(
@@ -83,6 +85,7 @@ const ClientsSettings = () => {
                         >
                             Create Client
                         </Button>
+
                         <Tooltip
                             title={'Click to pin this into the main menu'}
                             trigger={'hover'}
@@ -99,6 +102,14 @@ const ClientsSettings = () => {
                                 }
                             />
                         </Tooltip>
+
+
+                        {/* this button pin this route to navbar  */}
+                        <PinRouteToNavbarButton
+                            name="clients"
+                            path="/worklenz/settings/clients"
+                        />
+
                     </Flex>
                 </Flex>
             }

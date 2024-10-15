@@ -9,6 +9,7 @@ import {
     Typography,
 } from 'antd'
 import { colors } from '../../../styles/colors'
+import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 
 const TeamsSettings = () => {
     // table columns
@@ -57,6 +58,12 @@ const TeamsSettings = () => {
                         }
                     />
                 </Tooltip>
+
+                {/* this button pin this route to navbar  */}
+                <PinRouteToNavbarButton
+                    name="teams"
+                    path="/worklenz/settings/teams"
+                />
             </Flex>
 
             <Card style={{ width: '100%' }}>

@@ -68,7 +68,8 @@ const ProfileButton = () => {
                     bordered={false}
                     style={{ width: 230 }}
                 >
-                    <Typography.Link
+
+<!--                     <Typography.Link
                         href="/worklenz/admin-center/overview"
                         style={{ color: colors.darkGray }}
                     >
@@ -85,7 +86,12 @@ const ProfileButton = () => {
                         style={{ color: colors.darkGray }}
                     >
                         Log Out
-                    </Typography.Link>
+                    </Typography.Link> -->
+
+                    <Link to="/worklenz/admin-center">Admin Center</Link>
+                    <Link to="/worklenz/settings/profile">Settings</Link>
+                    <Link to="/auth/login">Log Out</Link>
+
                 </Card>
             ),
         },

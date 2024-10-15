@@ -12,6 +12,8 @@ import {
 import React from 'react'
 import { colors } from '../../../styles/colors'
 
+import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
+
 const LabelsSettings = () => {
     // table columns
     const columns: TableProps['columns'] = [
@@ -42,6 +44,7 @@ const LabelsSettings = () => {
                             placeholder="Search by name"
                             style={{ maxWidth: 200 }}
                         />
+
                         <Tooltip
                             title={'Click to pin this into the main menu'}
                             trigger={'hover'}
@@ -58,6 +61,14 @@ const LabelsSettings = () => {
                                 }
                             />
                         </Tooltip>
+
+
+                        {/* this button pin this route to navbar  */}
+                        <PinRouteToNavbarButton
+                            name="labels"
+                            path="/worklenz/settings/labels"
+                        />
+
                     </Flex>
                 </Flex>
             }
