@@ -154,24 +154,6 @@ const ClientsSettings = () => {
                             Create Client
                         </Button>
 
-                        <Tooltip
-                            title={'Click to pin this into the main menu'}
-                            trigger={'hover'}
-                        >
-                            <Button
-                                className="borderless-icon-btn"
-                                icon={
-                                    <PushpinOutlined
-                                        style={{
-                                            fontSize: 18,
-                                            color: colors.skyBlue,
-                                        }}
-                                    />
-                                }
-                            />
-                        </Tooltip>
-
-
                         {/* this button pin this route to navbar  */}
                         <PinRouteToNavbarButton
                             name="clients"
