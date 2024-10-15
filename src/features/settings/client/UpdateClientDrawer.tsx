@@ -1,42 +1,63 @@
 import { Button, Drawer, Form, Input, Typography } from 'antd'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
-import { addClient, toggleCreateClientDrawer } from './clientSlice'
+import { toggleUpdateClientDrawer, updateClient } from './clientSlice'
 import { ClientType } from '../../../types/client'
-import { nanoid } from '@reduxjs/toolkit'
 
-const CreateClientDrawer = () => {
-    // get drawer state from client reducer
+type UpdateClientDrawerProps = {
+    selectedClientId: string | null
+}
+
+const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
+    // get data from client reducer
+    const clientsList = useAppSelector(
+        (state) => state.clientReducer.clientsList
+    )
+
+    // get data of currentlt selectedClient
+    const selectedClient = clientsList.find(
+        (client) => client.clientId === selectedClientId
+    )
+
     const isDrawerOpen = useAppSelector(
-        (state) => state.clientReducer.isCreateClientDrawerOpen
+        (state) => state.clientReducer.isUpdateClientDrawerOpen
     )
     const dispatch = useAppDispatch()
 
     const [form] = Form.useForm()
 
+    // Load the selected client details to the form when drawer opens
+    useEffect(() => {
+        if (selectedClient) {
+            form.setFieldsValue({
+                name: selectedClient.clientName,
+            })
+        }
+    }, [selectedClient, form])
+
     // this function for handle form submit
     const handleFormSubmit = (values: any) => {
-        const newClient: ClientType = {
-            clientId: nanoid(),
-            clientName: values.name,
-            project: null,
-        }
+        if (selectedClient) {
+            const updatedClient: ClientType = {
+                ...selectedClient,
+                clientName: values.name,
+            }
 
-        dispatch(addClient(newClient))
-        dispatch(toggleCreateClientDrawer())
-        form.resetFields()
+            dispatch(updateClient(updatedClient))
+            dispatch(toggleUpdateClientDrawer())
+        }
     }
 
     return (
         <Drawer
             title={
                 <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-                    Create Client
+                    Update Client
                 </Typography.Text>
             }
             open={isDrawerOpen}
-            onClose={() => dispatch(toggleCreateClientDrawer())}
+            onClose={() => dispatch(toggleUpdateClientDrawer())}
         >
             <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
                 <Form.Item
@@ -58,7 +79,7 @@ const CreateClientDrawer = () => {
                         style={{ width: '100%' }}
                         htmlType="submit"
                     >
-                        Create
+                        Update
                     </Button>
                 </Form.Item>
             </Form>
@@ -66,4 +87,4 @@ const CreateClientDrawer = () => {
     )
 }
 
-export default CreateClientDrawer
+export default UpdateClientDrawer

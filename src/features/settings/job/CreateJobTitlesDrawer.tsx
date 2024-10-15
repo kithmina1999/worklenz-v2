@@ -3,12 +3,12 @@ import React from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { nanoid } from '@reduxjs/toolkit'
-import { addJobTitle, toggleDrawer } from './jobSlice'
+import { addJobTitle, toggleCreateJobTitleDrawer } from './jobSlice'
 import { JobType } from '../../../types/job'
 
 const CreateJobTitlesDrawer = () => {
     const isDrawerOpen = useAppSelector(
-        (state) => state.jobReducer.isDrawerOpen
+        (state) => state.jobReducer.isCreateJobTitleDrawerOpen
     )
     const dispatch = useAppDispatch()
 
@@ -22,7 +22,7 @@ const CreateJobTitlesDrawer = () => {
         }
 
         dispatch(addJobTitle(newJobTitle))
-        dispatch(toggleDrawer())
+        dispatch(toggleCreateJobTitleDrawer())
         form.resetFields()
         message.success('Job title added!')
     }
@@ -35,7 +35,7 @@ const CreateJobTitlesDrawer = () => {
                 </Typography.Text>
             }
             open={isDrawerOpen}
-            onClose={() => dispatch(toggleDrawer())}
+            onClose={() => dispatch(toggleCreateJobTitleDrawer())}
         >
             <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
                 <Form.Item
