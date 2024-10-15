@@ -14,8 +14,8 @@ import { useTranslation } from 'react-i18next'
 // profile dropdown custom css
 import './profileDropdown.css'
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { Link } from 'react-router-dom'
 import { avatarNamesMap } from '../../../shared/constants'
+import { RootState } from '../../../app/store'
 
 const ProfileButton = () => {
     // get user data from redux - user reducer
@@ -26,6 +26,8 @@ const ProfileButton = () => {
     // get avatar character
     const avatarCharacter = userDetails.name[0].toLocaleUpperCase()
     // get avatar character
+
+    const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode)
 
     const profile: MenuProps['items'] = [
         {
@@ -45,7 +47,6 @@ const ProfileButton = () => {
                                             verticalAlign: 'middle',
                                         }}
                                     >
-                                        {avatarCharacter}
                                         {avatarCharacter}
                                     </Avatar>
                                 </div>
@@ -71,19 +72,19 @@ const ProfileButton = () => {
                 >
                     <Typography.Link
                         href="/worklenz/admin-center/overview"
-                        style={{ color: '#181818'}}
+                        style={{ color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`}}
                     >
                         Admin Center
                     </Typography.Link>
                     <Typography.Link
                         href="/worklenz/settings/profile"
-                        style={{ color: '#181818' }}
+                        style={{ color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}` }}
                     >
                         Settings
                     </Typography.Link>
                     <Typography.Link
                         href="/auth/login"
-                        style={{ color: '#181818' }}
+                        style={{ color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}` }}
                     >
                         Log Out
                     </Typography.Link>
@@ -101,7 +102,8 @@ const ProfileButton = () => {
                 trigger={['click']}
             >
                 <Button
-                    className="borderless-icon-btn"
+                    style={{height: '62px', width: '60px'}}
+                    type='text'
                     icon={<UserOutlined style={{ fontSize: 20 }} />}
                 />
             </Dropdown>

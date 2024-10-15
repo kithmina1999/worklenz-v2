@@ -6,6 +6,7 @@ import OrganizationAdminsTable from './OrganizationAdminsTable'
 import TextArea from 'antd/es/input/TextArea'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { RootState } from '../../../app/store'
+import { useTranslation } from 'react-i18next'
 
 const { Text } = Typography
 
@@ -37,10 +38,12 @@ const Overview: React.FC = () => {
         setIsEditableContactNumber(false)
     }
 
+    const { t } = useTranslation('overview')
+
     return (
         <div style={{ width: '100%' }}>
             <PageHeader
-                title={<span>Overview</span>}
+                title={<span>{t('overview')}</span>}
                 style={{ padding: '16px 0' }}
             />
             <Card>
@@ -53,7 +56,7 @@ const Overview: React.FC = () => {
                         fontSize: '16px',
                     }}
                 >
-                    Organization Name
+                    {t('name')}
                 </div>
                 <div style={{ paddingTop: '8px' }}>
                     <div style={{ marginBottom: '8px'}}>
@@ -84,7 +87,7 @@ const Overview: React.FC = () => {
                         fontSize: '16px',
                     }}
                 >
-                    Organization Owner
+                    {t('owner')}
                 </div>
                 <div style={{ paddingTop: '8px' }}>
                     <div style={{ marginBottom: '8px' }}>
@@ -106,7 +109,7 @@ const Overview: React.FC = () => {
                         </span>
                     </Tooltip>
                     {isEditableContactNumber ? (<Input onBlur={handleContactNumberBlur} style={{width: '200px'}}/>) : (<Button type="link" style={{ padding: 0 }} onClick={addContactNumber}>
-                        Add Contact Number
+                        {t('contactNumber')}
                     </Button>)}
                 </div>
             </Card>
@@ -123,7 +126,7 @@ const Overview: React.FC = () => {
                         fontSize: '16px',
                     }}
                 >
-                    Organization Admins
+                    {t('admins')}
                 </div>
                 <OrganizationAdminsTable />
             </Card>

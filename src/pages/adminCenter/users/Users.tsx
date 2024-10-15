@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import UsersTable from "./UsersTable";
 import { RootState } from "../../../app/store";
 import { useAppSelector } from "../../../hooks/useAppSelector";
+import { useTranslation } from "react-i18next";
 
 const Users : React.FC = () => {
 
@@ -14,6 +15,8 @@ const Users : React.FC = () => {
 
     const [searchTerm, setSearchTerm] = useState('')
     const [debouncedTerm, setDebouncedTerm] = useState('')
+
+    const { t } = useTranslation('users')
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -43,12 +46,12 @@ const Users : React.FC = () => {
   return (
     <div style={{width: '100%'}}>
         <PageHeader
-                title={<span>Users</span>}
+                title={<span>{t('title')}</span>}
                 style={{ padding: '16px 0' }}
             />
         <PageHeader
             style={{ paddingLeft: 0, paddingTop: 0, paddingRight: '24px', paddingBottom: '16px'}} 
-            subTitle={<span style={{color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`, fontWeight: 500, fontSize: '16px'}}>1 users</span>}
+            subTitle={<span style={{color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`, fontWeight: 500, fontSize: '16px'}}>1 {t('subTitle')}</span>}
             extra={
                 <Flex gap={8} align="center">
                     <Tooltip title='Refresh users'>
@@ -59,7 +62,7 @@ const Users : React.FC = () => {
                         />
                     </Tooltip>
                     <Input
-                        placeholder='Search by name'
+                        placeholder={t('placeholder')}
                         suffix={<SearchOutlined />}
                         type="text"
                         value={searchTerm}

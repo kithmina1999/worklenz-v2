@@ -1,11 +1,12 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 import { Button, Drawer, Form, Input, message, Typography } from "antd";
 import { TeamsType } from "../../../types/adminCenter/team";
 import { nanoid } from "@reduxjs/toolkit";
 import { addTeam, toggleDrawer } from "./teamSlice";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { useTranslation } from "react-i18next";
 
 const CreateTeamDrawer : React.FC = () => {
     const isDrawerOpen = useSelector(
@@ -13,6 +14,8 @@ const CreateTeamDrawer : React.FC = () => {
     )
     const dispatch = useAppDispatch()
     const [form] = Form.useForm()
+
+    const { t } = useTranslation('teams')
 
     const handleFormSubmit = (values: any) => {
         const newTeam : TeamsType = {
@@ -33,7 +36,7 @@ const CreateTeamDrawer : React.FC = () => {
     <Drawer
             title={
                 <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-                    Create New Team
+                    {t('drawerTitle')}
                 </Typography.Text>
             }
             open={isDrawerOpen}
@@ -42,15 +45,15 @@ const CreateTeamDrawer : React.FC = () => {
             <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
                 <Form.Item
                     name="name"
-                    label="Team name"
+                    label={t('label')}
                     rules={[
                         {
                             required: true,
-                            message: 'Please enter a Name',
+                            message: t('message'),
                         },
                     ]}
                 >
-                    <Input placeholder="Name" />
+                    <Input placeholder={t('drawerPlaceholder')} />
                 </Form.Item>
 
                 <Form.Item>
@@ -59,7 +62,7 @@ const CreateTeamDrawer : React.FC = () => {
                         style={{ width: '100%' }}
                         htmlType="submit"
                     >
-                        Create
+                        {t('create')}
                     </Button>
                 </Form.Item>
             </Form>

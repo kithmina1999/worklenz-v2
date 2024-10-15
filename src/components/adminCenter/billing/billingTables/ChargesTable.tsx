@@ -1,5 +1,6 @@
 import { Table, TableProps } from "antd";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface DataType {
     key: string
@@ -17,14 +18,16 @@ const ChargesTable : React.FC = () => {
     const perUserValue = 5.99
     const users = 23
 
+    const { t } = useTranslation('currentBill');
+
     const columns: TableProps['columns'] = [
         {
-            title: 'Description',
+            title: t('description'),
             key: 'description',
             dataIndex: 'description',
         },
         {
-            title: 'Billing Period',
+            title: t('billingPeriod'),
             key: 'billingPeriod',
             render: (record) => {
                 const formattedStartingDate =  new Date(record.startingDate).toLocaleDateString('en-US', {
@@ -42,12 +45,12 @@ const ChargesTable : React.FC = () => {
             }
         },
         {
-            title: 'Bill Status',
+            title: t('billStatus'),
             key: 'billStatus',
             dataIndex: 'billStatus',
         },
         {
-            title: 'Per User Value',
+            title: t('perUserValue'),
             key: 'perUserValue',
             dataIndex: 'perUserValue',
             render: (text) => (
@@ -55,12 +58,12 @@ const ChargesTable : React.FC = () => {
             )
         },
         {
-            title: 'Users',
+            title: t('users'),
             key: 'users',
             dataIndex: 'users',
         },
         {
-            title: 'Amount',
+            title: t('amount'),
             key: 'amount',
             dataIndex: 'amount',
             render: (text) => (

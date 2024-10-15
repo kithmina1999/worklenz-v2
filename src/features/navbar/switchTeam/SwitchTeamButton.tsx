@@ -85,7 +85,7 @@ const SwitchTeamButton = () => {
                 trigger={['click']}
             >
                 <Flex
-                    gap={4}
+                    gap={12}
                     align="center"
                     justify="center"
                     style={{
@@ -94,6 +94,7 @@ const SwitchTeamButton = () => {
                         fontWeight: 500,
                         borderRadius: '50rem',
                         padding: '10px 16px',
+                        height: '39px'
                     }}
                 >
                     <BankOutlined />

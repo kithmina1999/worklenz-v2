@@ -1,6 +1,7 @@
 import { ContainerOutlined } from "@ant-design/icons";
 import { Badge, Button, Table, TableProps } from "antd";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface DataType {
     key: string
@@ -13,14 +14,16 @@ interface DataType {
 
 const InvoicesTable :React.FC = () => {
 
+    const { t } = useTranslation('currentBill');
+
     const columns: TableProps['columns'] = [
         {
-            title: 'Transaction ID',
+            title: t('transactionId'),
             key: 'transactionId',
             dataIndex: 'transactionId'
         },
         {
-            title: 'Transaction Date',
+            title: t('transactionDate'),
             key: 'transactionDate',
             render: (record) => {
                 const formattedStartingDate =  new Date(record.startingDate).toLocaleDateString('en-US', {
@@ -33,7 +36,7 @@ const InvoicesTable :React.FC = () => {
             }
         },
         {
-            title: 'Billing Period',
+            title: t('billingPeriod'),
             key: 'billingPeriod',
             render: (record) => {
                 const formattedStartingDate =  new Date(record.startingDate).toLocaleDateString('en-US', {
@@ -51,12 +54,12 @@ const InvoicesTable :React.FC = () => {
             }
         },
         {
-            title: 'Payment Method',
+            title: t('paymentMethod'),
             key: 'paymentMethod',
             dataIndex: 'paymentMethod',
         },
         {
-            title: 'Status',
+            title: t('status'),
             key: 'status',
             dataIndex: 'status',
             render: (text) => (
