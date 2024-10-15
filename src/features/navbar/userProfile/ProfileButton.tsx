@@ -16,7 +16,6 @@ import './profileDropdown.css'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { Link } from 'react-router-dom'
 import { avatarNamesMap } from '../../../shared/constants'
-import { colors } from '../../../styles/colors'
 
 const ProfileButton = () => {
     // get user data from redux - user reducer
@@ -70,19 +69,19 @@ const ProfileButton = () => {
                 >
                     <Typography.Link
                         href="/worklenz/admin-center/overview"
-                        style={{ color: colors.darkGray }}
+                        style={{ color: '#181818'}}
                     >
                         Admin Center
                     </Typography.Link>
                     <Typography.Link
                         href="/worklenz/settings/profile"
-                        style={{ color: colors.darkGray }}
+                        style={{ color: '#181818' }}
                     >
                         Settings
                     </Typography.Link>
                     <Typography.Link
                         href="/auth/login"
-                        style={{ color: colors.darkGray }}
+                        style={{ color: '#181818' }}
                     >
                         Log Out
                     </Typography.Link>
