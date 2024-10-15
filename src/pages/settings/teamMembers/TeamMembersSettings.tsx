@@ -12,6 +12,7 @@ import {
 import React from 'react'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleDrawer } from '../../../features/navbar/addMember/addMemberSlice'
+
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { MemberType } from '../../../types/member'
 import { colors } from '../../../styles/colors'
