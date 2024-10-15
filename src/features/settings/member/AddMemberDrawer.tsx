@@ -11,14 +11,14 @@ import {
 import React from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
-import { addMember, toggleDrawer } from './addMemberSlice'
+import { addMember, toggleCreateMemberDrawer } from './memberSlice'
 import { colors } from '../../../styles/colors'
 import { MemberType } from '../../../types/member'
 import { nanoid } from '@reduxjs/toolkit'
 
 const AddMemberDrawer = () => {
     const isDrawerOpen = useAppSelector(
-        (state) => state.addMemberReducer.isDrawerOpen
+        (state) => state.memberReducer.isCreateMemberDrawerOpen
     )
     const dispatch = useAppDispatch()
 
@@ -28,17 +28,24 @@ const AddMemberDrawer = () => {
     const [form] = Form.useForm()
 
     // function for handle form submit
-    const handleFormSubmit = (values: any) => {
-        const newMember: MemberType = {
-            memberId: nanoid(),
-            memberName: values.name,
-            memberEmail: values.email,
-            memberRole: values.access,
+    const handleFormSubmit = async (values: any) => {
+        try {
+            const newMember: MemberType = {
+                memberId: nanoid(),
+                memberName: values.name,
+                memberEmail: values.email,
+                memberRole: values.access,
+                jobTitle: values.jobTitle,
+                isActivate: null,
+                isInivitationAccept: false,
+            }
+            dispatch(addMember(newMember))
+            form.resetFields()
+            message.success('Member added successfully')
+            dispatch(toggleCreateMemberDrawer())
+        } catch (error) {
+            message.error('Failed to add member')
         }
-        dispatch(addMember(newMember))
-        message.success('member added!')
-        form.resetFields()
-        dispatch(toggleDrawer())
     }
 
     return (
@@ -49,7 +56,7 @@ const AddMemberDrawer = () => {
                 </Typography.Text>
             }
             open={isDrawerOpen}
-            onClose={() => dispatch(toggleDrawer())}
+            onClose={() => dispatch(toggleCreateMemberDrawer())}
         >
             <Form
                 form={form}
@@ -116,7 +123,7 @@ const AddMemberDrawer = () => {
                     <Select
                         options={[
                             { value: 'member', label: 'Member' },
-                            { value: 'owner', label: 'Admin' },
+                            { value: 'admin', label: 'Admin' },
                         ]}
                     />
                 </Form.Item>
