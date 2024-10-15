@@ -1,3 +1,4 @@
+import { PushpinOutlined } from '@ant-design/icons'
 import {
     Button,
     Card,
@@ -21,12 +22,6 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { ClientType } from '../../../types/client'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
-import {
-    DeleteOutlined,
-    EditOutlined,
-    ExclamationCircleFilled,
-} from '@ant-design/icons'
-import UpdateClientDrawer from '../../../features/settings/client/UpdateClientDrawer'
 
 const ClientsSettings = () => {
     // get currently hover row
@@ -152,11 +147,30 @@ const ClientsSettings = () => {
                             Create Client
                         </Button>
 
+                        <Tooltip
+                            title={'Click to pin this into the main menu'}
+                            trigger={'hover'}
+                        >
+                            <Button
+                                className="borderless-icon-btn"
+                                icon={
+                                    <PushpinOutlined
+                                        style={{
+                                            fontSize: 18,
+                                            color: colors.skyBlue,
+                                        }}
+                                    />
+                                }
+                            />
+                        </Tooltip>
+
+
                         {/* this button pin this route to navbar  */}
                         <PinRouteToNavbarButton
                             name="clients"
                             path="/worklenz/settings/clients"
                         />
+
                     </Flex>
                 </Flex>
             }
