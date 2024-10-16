@@ -5,8 +5,12 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { addClient, toggleCreateClientDrawer } from './clientSlice'
 import { ClientType } from '../../../types/client'
 import { nanoid } from '@reduxjs/toolkit'
+import { useTranslation } from 'react-i18next'
 
 const CreateClientDrawer = () => {
+    // localization
+    const { t } = useTranslation('clientSettings')
+
     // get drawer state from client reducer
     const isDrawerOpen = useAppSelector(
         (state) => state.clientReducer.isCreateClientDrawerOpen
@@ -32,7 +36,7 @@ const CreateClientDrawer = () => {
         <Drawer
             title={
                 <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-                    Create Client
+                    {t('createClientDrawerTitle')}
                 </Typography.Text>
             }
             open={isDrawerOpen}
@@ -41,15 +45,15 @@ const CreateClientDrawer = () => {
             <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
                 <Form.Item
                     name="name"
-                    label="Name"
+                    label={t('nameLabel')}
                     rules={[
                         {
                             required: true,
-                            message: 'Please enter a Name',
+                            message: t('nameRequiredError'),
                         },
                     ]}
                 >
-                    <Input placeholder="Name" />
+                    <Input placeholder={t('namePlaceholder')} />
                 </Form.Item>
 
                 <Form.Item>
@@ -58,7 +62,7 @@ const CreateClientDrawer = () => {
                         style={{ width: '100%' }}
                         htmlType="submit"
                     >
-                        Create
+                        {t('createButton')}
                     </Button>
                 </Form.Item>
             </Form>

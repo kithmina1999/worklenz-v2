@@ -4,12 +4,16 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleUpdateClientDrawer, updateClient } from './clientSlice'
 import { ClientType } from '../../../types/client'
+import { useTranslation } from 'react-i18next'
 
 type UpdateClientDrawerProps = {
     selectedClientId: string | null
 }
 
 const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
+    // localization
+    const { t } = useTranslation('clientSettings')
+
     // get data from client reducer
     const clientsList = useAppSelector(
         (state) => state.clientReducer.clientsList
@@ -53,7 +57,7 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
         <Drawer
             title={
                 <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-                    Update Client
+                    {t('updateClientDrawerTitle')}
                 </Typography.Text>
             }
             open={isDrawerOpen}
@@ -62,15 +66,15 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
             <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
                 <Form.Item
                     name="name"
-                    label="Name"
+                    label={t('nameLabel')}
                     rules={[
                         {
                             required: true,
-                            message: 'Please enter a Name',
+                            message: t('nameRequiredError'),
                         },
                     ]}
                 >
-                    <Input placeholder="Name" />
+                    <Input placeholder={t('namePlaceholder')} />
                 </Form.Item>
 
                 <Form.Item>
@@ -79,7 +83,7 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
                         style={{ width: '100%' }}
                         htmlType="submit"
                     >
-                        Update
+                        {t('updateButton')}
                     </Button>
                 </Form.Item>
             </Form>

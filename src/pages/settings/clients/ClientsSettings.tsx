@@ -28,8 +28,12 @@ import {
     ExclamationCircleFilled,
 } from '@ant-design/icons'
 import UpdateClientDrawer from '../../../features/settings/client/UpdateClientDrawer'
+import { useTranslation } from 'react-i18next'
 
 const ClientsSettings = () => {
+    // localization
+    const { t } = useTranslation('clientSettings')
+
     // get currently hover row
     const [hoverRow, setHoverRow] = useState<string | null>(null)
     // get currently selected client id
@@ -57,8 +61,14 @@ const ClientsSettings = () => {
     const columns: TableProps['columns'] = [
         {
             key: 'clientName',
-            title: 'Name',
+            title: t('nameColumn'),
             sorter: (a, b) => a.clientName.localeCompare(b.clientName),
+            onCell: (record) => ({
+                onClick: () => {
+                    setSelectedClientId(record.clientId)
+                    dispatch(toggleUpdateClientDrawer())
+                },
+            }),
             render: (record: ClientType) => (
                 <Typography.Text
                     style={{
@@ -67,10 +77,6 @@ const ClientsSettings = () => {
                                 ? colors.skyBlue
                                 : colors.darkGray,
                     }}
-                    onClick={() => {
-                        setSelectedClientId(record.clientId)
-                        dispatch(toggleUpdateClientDrawer())
-                    }}
                 >
                     {record.clientName}
                 </Typography.Text>
@@ -78,13 +84,19 @@ const ClientsSettings = () => {
         },
         {
             key: 'project',
-            title: 'Project',
+            title: t('projectColumn'),
+            onCell: (record) => ({
+                onClick: () => {
+                    setSelectedClientId(record.clientId)
+                    dispatch(toggleUpdateClientDrawer())
+                },
+            }),
             render: (record: ClientType) =>
                 record.project ? (
                     <Typography.Text>{record.project}</Typography.Text>
                 ) : (
                     <Typography.Text style={{ color: colors.lightGray }}>
-                        No projects available
+                        {t('noProjectsAvailable')}
                     </Typography.Text>
                 ),
         },
@@ -104,14 +116,14 @@ const ClientsSettings = () => {
                         />
 
                         <Popconfirm
-                            title="Are you sure?"
+                            title={t('areYouSure')}
                             icon={
                                 <ExclamationCircleFilled
                                     style={{ color: colors.vibrantOrange }}
                                 />
                             }
-                            okText="Yes"
-                            cancelText="Cancel"
+                            okText={t('yes')}
+                            cancelText={t('cancel')}
                             onConfirm={() =>
                                 dispatch(deleteClient(record.clientId))
                             }
@@ -143,20 +155,17 @@ const ClientsSettings = () => {
                             onChange={(e) =>
                                 setSearchQuery(e.currentTarget.value)
                             }
-                            placeholder="Search by name"
+                            placeholder={t('searchPlaceholder')}
                             style={{ maxWidth: 200 }}
                         />
                         <Button
                             type="primary"
                             onClick={() => dispatch(toggleCreateClientDrawer())}
                         >
-                            Create Client
+                            {t('createClient')}
                         </Button>
 
-                        <Tooltip
-                            title={'Click to pin this into the main menu'}
-                            trigger={'hover'}
-                        >
+                        <Tooltip title={t('pinTooltip')} trigger={'hover'}>
                             {/* this button pin this route to navbar  */}
                             <PinRouteToNavbarButton
                                 name="clients"

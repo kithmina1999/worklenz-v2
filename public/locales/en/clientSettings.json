@@ -1,0 +1,18 @@
+{
+    "nameColumn": "Name",
+    "projectColumn": "Project",
+    "noProjectsAvailable": "No projects available",
+    "areYouSure": "Are you sure?",
+    "yes": "Yes",
+    "cancel": "Cancel",
+    "searchPlaceholder": "Search by name",
+    "createClient": "Create Client",
+    "pinTooltip": "Click to pin this into the main menu",
+    "createClientDrawerTitle": "Create Client",
+    "updateClientDrawerTitle": "Update Client",
+    "nameLabel": "Name",
+    "namePlaceholder": "Name",
+    "nameRequiredError": "Please enter a Name",
+    "createButton": "Create",
+    "updateButton": "Update"
+}
