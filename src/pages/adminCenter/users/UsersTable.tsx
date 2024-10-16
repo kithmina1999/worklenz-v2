@@ -51,6 +51,7 @@ const UsersTable : React.FC = () => {
     pagination={{
         showSizeChanger: true,
         defaultPageSize: 20,
+        pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
       }}
     />
   );

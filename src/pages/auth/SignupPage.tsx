@@ -35,7 +35,7 @@ const SignupPage = () => {
             message.success(t('signupSuccessMessage'))
 
             setTimeout(() => {
-                navigate('worklenz/setup')
+                navigate('/worklenz/setup')
             }, 500)
         }, 1500)
     }

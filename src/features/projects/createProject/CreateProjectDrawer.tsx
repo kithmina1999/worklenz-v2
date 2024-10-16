@@ -39,6 +39,9 @@ const CreateProjectDrawer = () => {
             projectName: values.name,
             isFavourite: false,
             projectColor: values.color,
+            projectCreated: new Date(),
+            projectTeam: 'Raveesha Dilanka',
+            projectMemberCount: 1
         }
         dispatch(createProject(newProject))
         message.success('project created!')
