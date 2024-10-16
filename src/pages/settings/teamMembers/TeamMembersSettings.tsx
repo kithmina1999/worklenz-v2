@@ -32,8 +32,12 @@ import { MemberType } from '../../../types/member'
 import { colors } from '../../../styles/colors'
 import { avatarNamesMap } from '../../../shared/constants'
 import UpdateMemberDrawer from '../../../features/settings/member/UpdateMemberDrawer'
+import { useTranslation } from 'react-i18next'
 
 const TeamMembersSettings = () => {
+    // localization
+    const { t } = useTranslation('teamMembersSettings')
+
     // get currently hover row
     const [hoverRow, setHoverRow] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(false)
@@ -103,7 +107,7 @@ const TeamMembersSettings = () => {
     const columns: TableProps['columns'] = [
         {
             key: 'name',
-            title: 'Name',
+            title: t('nameColumn'),
             sorter: (a, b) => a.name.length - b.name.length,
             onCell: (record) => ({
                 onClick: () => {
@@ -146,7 +150,7 @@ const TeamMembersSettings = () => {
                                     color: colors.yellow,
                                 }}
                             >
-                                (Deactivated)
+                                {t('deactivatedText')}
                             </Typography.Text>
                         )}
                     </Typography.Text>
@@ -155,7 +159,7 @@ const TeamMembersSettings = () => {
         },
         {
             key: 'projects',
-            title: 'Projects',
+            title: t('projectsColumn'),
             sorter: (a, b) => a.projects - b.projects,
             onCell: (record) => ({
                 onClick: () => {
@@ -178,7 +182,7 @@ const TeamMembersSettings = () => {
         },
         {
             key: 'memberEmail',
-            title: 'Email',
+            title: t('emailColumn'),
             sorter: (a, b) => a.memberEmail.localeCompare(b.memberEmail),
             onCell: (record) => ({
                 onClick: () => {
@@ -203,7 +207,7 @@ const TeamMembersSettings = () => {
                         <Typography.Text
                             style={{ fontSize: 12, color: colors.lightGray }}
                         >
-                            (pending invitation)
+                            {t('pendingInvitationText')}
                         </Typography.Text>
                     )}
                 </div>
@@ -211,7 +215,7 @@ const TeamMembersSettings = () => {
         },
         {
             key: 'memberRole',
-            title: 'Team Access',
+            title: t('teamAccessColumn'),
             sorter: (a, b) => a.memberRole.localeCompare(b.memberRole),
             render: (record: MemberType) => (
                 <Flex gap={16} align="center">
@@ -233,7 +237,7 @@ const TeamMembersSettings = () => {
                 record.memberRole !== 'owner' &&
                 hoverRow === record.memberId && (
                     <Flex gap={8} style={{ padding: 0 }}>
-                        <Tooltip title="Edit" trigger={'hover'}>
+                        <Tooltip title={t('editTooltip')} trigger={'hover'}>
                             <Button
                                 size="small"
                                 icon={<EditOutlined />}
@@ -246,12 +250,14 @@ const TeamMembersSettings = () => {
 
                         <Tooltip
                             title={
-                                record.isActivate ? 'Deactivate' : 'Activate'
+                                record.isActivate
+                                    ? t('deactivateTooltip')
+                                    : t('activateTooltip')
                             }
                             trigger={'hover'}
                         >
                             <Popconfirm
-                                title="Are you sure?"
+                                title={t('confirmActivateTitle')}
                                 icon={
                                     <ExclamationCircleFilled
                                         style={{
@@ -259,8 +265,8 @@ const TeamMembersSettings = () => {
                                         }}
                                     />
                                 }
-                                okText="Yes"
-                                cancelText="Cancel"
+                                okText={t('okText')}
+                                cancelText={t('cancelText')}
                                 onConfirm={() =>
                                     dispatch(toggleMemberStatus(record))
                                 }
@@ -273,9 +279,9 @@ const TeamMembersSettings = () => {
                             </Popconfirm>
                         </Tooltip>
 
-                        <Tooltip title="Delete" trigger={'hover'}>
+                        <Tooltip title={t('deleteTooltip')} trigger={'hover'}>
                             <Popconfirm
-                                title="Are you sure?"
+                                title={t('confirmDeleteTitle')}
                                 icon={
                                     <ExclamationCircleFilled
                                         style={{
@@ -283,8 +289,8 @@ const TeamMembersSettings = () => {
                                         }}
                                     />
                                 }
-                                okText="Yes"
-                                cancelText="Cancel"
+                                okText={t('okText')}
+                                cancelText={t('cancelText')}
                                 onConfirm={() =>
                                     dispatch(deleteMember(record.memberId))
                                 }
@@ -309,8 +315,10 @@ const TeamMembersSettings = () => {
                 style={{ marginBlockEnd: 24 }}
             >
                 <Typography.Title level={4} style={{ marginBlockEnd: 0 }}>
-                    {filteredMembersData.length} Member
-                    {filteredMembersData.length !== 1 && 's'}
+                    {filteredMembersData.length}{' '}
+                    {filteredMembersData.length !== 1
+                        ? t('membersCountPlural')
+                        : t('memberCount')}
                 </Typography.Title>
 
                 <Flex
@@ -319,10 +327,7 @@ const TeamMembersSettings = () => {
                     justify="flex-end"
                     style={{ width: '100%', maxWidth: 400 }}
                 >
-                    <Tooltip
-                        title={'Click to pin this into the main menu'}
-                        trigger={'hover'}
-                    >
+                    <Tooltip title={t('pinTooltip')} trigger={'hover'}>
                         <Button
                             shape="circle"
                             icon={<SyncOutlined />}
@@ -332,14 +337,14 @@ const TeamMembersSettings = () => {
                     <Input.Search
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.currentTarget.value)}
-                        placeholder="Search by name"
+                        placeholder={t('searchPlaceholder')}
                         style={{ maxWidth: 200 }}
                     />
                     <Button
                         type="primary"
                         onClick={() => dispatch(toggleCreateMemberDrawer())}
                     >
-                        Add Member
+                        {t('addMemberButton')}
                     </Button>
                 </Flex>
             </Flex>

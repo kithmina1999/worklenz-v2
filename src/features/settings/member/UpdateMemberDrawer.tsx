@@ -15,12 +15,16 @@ import { toggleUpdateMemberDrawer, updateMember } from './memberSlice'
 import { colors } from '../../../styles/colors'
 import { MemberType } from '../../../types/member'
 import { avatarNamesMap } from '../../../shared/constants'
+import { useTranslation } from 'react-i18next'
 
 type UpdateMemberDrawerProps = {
     selectedMemberId: string | null
 }
 
 const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
+    // localization
+    const { t } = useTranslation('teamMembersSettings')
+
     // get job titles from redux - job reducer
     const jobsList = useAppSelector((state) => state.jobReducer.jobsList)
 
@@ -68,17 +72,17 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                 }
                 dispatch(updateMember(updatedMember))
                 dispatch(toggleUpdateMemberDrawer())
-                message.success('Member updated Successfully!')
+                message.success(t('updateMemberSuccessMessage'))
             }
         } catch (error) {
-            message.error('Member updated Failed!')
+            message.error(t('updateMemberErrorMessage'))
         }
     }
 
     // function to resend invitation
     const resendInvitation = () => {
         dispatch(toggleUpdateMemberDrawer())
-        message.success('Invitation sent successfully!')
+        message.success(t('invitationSentSuccessMessage'))
     }
 
     // function to get name
@@ -135,10 +139,10 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                 layout="vertical"
                 initialValues={{ access: 'member' }}
             >
-                <Form.Item label="Job Title" name="jobTitle">
+                <Form.Item label={t('jobTitleLabel')} name="jobTitle">
                     <Select
                         size="middle"
-                        placeholder="Select the job title (Optional)"
+                        placeholder={t('jobTitlePlaceholder')}
                         options={jobsList.map((job) => ({
                             label: job.jobTitle,
                             value: job.jobTitle,
@@ -148,15 +152,20 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                 </Form.Item>
 
                 <Form.Item
-                    label="Access"
+                    label={t('memberAccessLabel')}
                     name="access"
                     rules={[{ required: true }]}
                 >
                     <Select
                         disabled={selectedMember?.memberRole === 'owner'}
                         options={[
-                            { value: 'member', label: 'Member' },
-                            { value: 'admin', label: 'Admin' },
+                            { value: 'member', label: t('memberText') },
+                            { value: 'admin', label: t('adminText') },
+                            {
+                                value: 'owner',
+                                label: t('ownerText'),
+                                disabled: true,
+                            },
                         ]}
                     />
                 </Form.Item>
@@ -168,7 +177,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                             style={{ width: '100%' }}
                             htmlType="submit"
                         >
-                            Update
+                            {t('updateButton')}
                         </Button>
 
                         <Button
@@ -177,7 +186,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                             onClick={resendInvitation}
                             disabled={selectedMember?.memberRole === 'owner'}
                         >
-                            Resend invitaion
+                            {t('resendInvitationButton')}
                         </Button>
 
                         <Flex vertical style={{ marginBlockStart: 8 }}>
@@ -187,7 +196,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                                     color: colors.lightGray,
                                 }}
                             >
-                                Added 3 hours ago
+                                {t('addedText')} 3 hours ago
                             </Typography.Text>
                             <Typography.Text
                                 style={{
@@ -195,7 +204,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                                     color: colors.lightGray,
                                 }}
                             >
-                                Updated 3 hours ago
+                                {t('updatedText')} 3 hours ago
                             </Typography.Text>
                         </Flex>
                     </Flex>

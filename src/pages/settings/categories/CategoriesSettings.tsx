@@ -1,17 +1,21 @@
 import { Card, Flex, Input, Table, TableProps, Typography } from 'antd'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 const CategoriesSettings = () => {
+    // localization
+    const { t } = useTranslation('categoriesSettings')
+
     // table columns
     const columns: TableProps['columns'] = [
         {
             key: 'category',
-            title: 'Category',
+            title: t('categoryColumn'),
             dataIndex: 'category',
         },
         {
             key: 'associatedTask',
-            title: 'Associated Task',
+            title: t('associatedTaskColumn'),
             dataIndex: 'associatedTask',
         },
     ]
@@ -28,7 +32,7 @@ const CategoriesSettings = () => {
                         style={{ width: '100%', maxWidth: 400 }}
                     >
                         <Input.Search
-                            placeholder="Search by name"
+                            placeholder={t('searchPlaceholder')}
                             style={{ maxWidth: 200 }}
                         />
                     </Flex>
@@ -38,10 +42,7 @@ const CategoriesSettings = () => {
             <Table
                 locale={{
                     emptyText: (
-                        <Typography.Text>
-                            Categories can be created while updating or creating
-                            projects.
-                        </Typography.Text>
+                        <Typography.Text>{t('emptyText')}</Typography.Text>
                     ),
                 }}
                 columns={columns}
