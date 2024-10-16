@@ -17,6 +17,7 @@ const initialState: teamState = {
             owner: 'Raveesha Dilanka',
             members: ['Raveesha Dilanka'],
             created: new Date('2024-05-08T08:30:00'),
+            isActive: true,
         },
     ],
     isDrawerOpen: false,
@@ -65,6 +66,11 @@ const teamSlice = createSlice({
                 ? (state.isUpdateTitleNameModalOpen = false)
                 : (state.isUpdateTitleNameModalOpen = true)
         },
+        setTeamActive: (state, action: PayloadAction<string>) => {
+            state.teamsList.forEach(
+                (team) => (team.isActive = team.teamId === action.payload)
+            )
+        },
     },
 })
 
@@ -76,5 +82,6 @@ export const {
     deleteTeam,
     editTeamName,
     toggleUpdateTeamNameModal,
+    setTeamActive,
 } = teamSlice.actions
 export default teamSlice.reducer

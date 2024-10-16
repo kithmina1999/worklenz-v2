@@ -20,8 +20,9 @@ const CreateTeamDrawer: React.FC = () => {
             teamName: values.name,
             membersCount: 1,
             members: ['Raveesha Dilanka'],
-            owner: 'Raveesha Dilank',
+            owner: values.name,
             created: new Date(),
+            isActive: false,
         }
 
         dispatch(addTeam(newTeam))

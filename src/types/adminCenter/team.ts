@@ -5,4 +5,5 @@ export type TeamsType = {
     membersCount: Number
     members: string[]
     created: Date
+    isActive: boolean
 }

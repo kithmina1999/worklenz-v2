@@ -40,8 +40,9 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
             teamName: values.name,
             membersCount: team?.membersCount || 1,
             members: team?.members || ['Raveesha Dilanka'],
-            owner: 'Raveesha Dilank',
+            owner: values.name,
             created: team?.created || new Date(),
+            isActive: false,
         }
 
         dispatch(updateTeam(newTeam))
