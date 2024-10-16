@@ -1,4 +1,4 @@
-import { Button, Drawer, Form, Input, Typography } from 'antd'
+import { Button, Drawer, Form, Input, message, Typography } from 'antd'
 import React from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
@@ -20,16 +20,21 @@ const CreateClientDrawer = () => {
     const [form] = Form.useForm()
 
     // this function for handle form submit
-    const handleFormSubmit = (values: any) => {
-        const newClient: ClientType = {
-            clientId: nanoid(),
-            clientName: values.name,
-            project: null,
-        }
+    const handleFormSubmit = async (values: any) => {
+        try {
+            const newClient: ClientType = {
+                clientId: nanoid(),
+                clientName: values.name,
+                project: null,
+            }
 
-        dispatch(addClient(newClient))
-        dispatch(toggleCreateClientDrawer())
-        form.resetFields()
+            dispatch(addClient(newClient))
+            dispatch(toggleCreateClientDrawer())
+            form.resetFields()
+            message.success(t('createClientSuccessMessage'))
+        } catch (error) {
+            message.error(t('createClientErrorMessage'))
+        }
     }
 
     return (

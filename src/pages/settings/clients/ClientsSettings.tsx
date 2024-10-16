@@ -116,14 +116,14 @@ const ClientsSettings = () => {
                         />
 
                         <Popconfirm
-                            title={t('areYouSure')}
+                            title={t('deleteConfirmationTitle')}
                             icon={
                                 <ExclamationCircleFilled
                                     style={{ color: colors.vibrantOrange }}
                                 />
                             }
-                            okText={t('yes')}
-                            cancelText={t('cancel')}
+                            okText={t('deleteConfirmationOk')}
+                            cancelText={t('deleteConfirmationCancel')}
                             onConfirm={() =>
                                 dispatch(deleteClient(record.clientId))
                             }

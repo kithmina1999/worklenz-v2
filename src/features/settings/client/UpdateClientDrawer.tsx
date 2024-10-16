@@ -1,4 +1,4 @@
-import { Button, Drawer, Form, Input, Typography } from 'antd'
+import { Button, Drawer, Form, Input, message, Typography } from 'antd'
 import React, { useEffect } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
@@ -41,15 +41,20 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
     }, [selectedClient, form])
 
     // this function for handle form submit
-    const handleFormSubmit = (values: any) => {
-        if (selectedClient) {
-            const updatedClient: ClientType = {
-                ...selectedClient,
-                clientName: values.name,
-            }
+    const handleFormSubmit = async (values: any) => {
+        try {
+            if (selectedClient) {
+                const updatedClient: ClientType = {
+                    ...selectedClient,
+                    clientName: values.name,
+                }
 
-            dispatch(updateClient(updatedClient))
-            dispatch(toggleUpdateClientDrawer())
+                dispatch(updateClient(updatedClient))
+                dispatch(toggleUpdateClientDrawer())
+                message.success(t('updateClientSuccessMessage'))
+            }
+        } catch (error) {
+            message.error(t('updateClientErrorMessage'))
         }
     }
 
