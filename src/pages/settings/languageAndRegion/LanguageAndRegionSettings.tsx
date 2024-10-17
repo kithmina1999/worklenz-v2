@@ -15,7 +15,10 @@ const LanguageAndRegionSettings = () => {
             <Form
                 layout="vertical"
                 style={{ width: '100%', maxWidth: 350 }}
-                initialValues={{ language: 'English' }}
+                initialValues={{
+                    language: 'English',
+                    timeZone: 'Asia/Colombo',
+                }}
             >
                 <Form.Item
                     name="language"
@@ -30,6 +33,7 @@ const LanguageAndRegionSettings = () => {
                     <Select options={languageOptions} />
                 </Form.Item>
                 <Form.Item
+                    name="timeZone"
                     label="Time zone"
                     rules={[
                         {

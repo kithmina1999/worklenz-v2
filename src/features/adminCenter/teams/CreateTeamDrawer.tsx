@@ -8,9 +8,9 @@ import { addTeam, toggleDrawer } from "./teamSlice";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
 import { useTranslation } from "react-i18next";
 
-const CreateTeamDrawer : React.FC = () => {
+const CreateTeamDrawer: React.FC = () => {
     const isDrawerOpen = useSelector(
-        (state : RootState) => state.teamReducer.isDrawerOpen
+        (state: RootState) => state.teamReducer.isDrawerOpen
     )
     const dispatch = useAppDispatch()
     const [form] = Form.useForm()
@@ -18,12 +18,14 @@ const CreateTeamDrawer : React.FC = () => {
     const { t } = useTranslation('teams')
 
     const handleFormSubmit = (values: any) => {
-        const newTeam : TeamsType = {
+        const newTeam: TeamsType = {
             teamId: nanoid(),
             teamName: values.name,
             membersCount: 1,
             members: ['Raveesha Dilanka'],
-            created: new Date()
+            owner: values.name,
+            created: new Date(),
+            isActive: false,
         }
 
         dispatch(addTeam(newTeam))
@@ -32,8 +34,8 @@ const CreateTeamDrawer : React.FC = () => {
         message.success('Team added!')
     }
 
-  return (
-    <Drawer
+    return (
+        <Drawer
             title={
                 <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
                     {t('drawerTitle')}
@@ -67,7 +69,7 @@ const CreateTeamDrawer : React.FC = () => {
                 </Form.Item>
             </Form>
         </Drawer>
-  );
-};
+    )
+}
 
-export default CreateTeamDrawer;
+export default CreateTeamDrawer

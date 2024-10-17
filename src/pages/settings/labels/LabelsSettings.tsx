@@ -1,30 +1,23 @@
-import { PushpinOutlined } from '@ant-design/icons'
-import {
-    Button,
-    Card,
-    Flex,
-    Input,
-    Table,
-    TableProps,
-    Tooltip,
-    Typography,
-} from 'antd'
+import { Card, Flex, Input, Table, TableProps, Tooltip, Typography } from 'antd'
 import React from 'react'
-import { colors } from '../../../styles/colors'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
+import { useTranslation } from 'react-i18next'
 
 const LabelsSettings = () => {
+    // localization
+    const { t } = useTranslation('labelsSettings')
+
     // table columns
     const columns: TableProps['columns'] = [
         {
             key: 'label',
-            title: 'Label',
+            title: t('labelColumn'),
             dataIndex: 'label',
         },
         {
             key: 'associatedTask',
-            title: 'Associated Task',
+            title: t('associatedTaskColumn'),
             dataIndex: 'associatedTask',
         },
     ]
@@ -41,16 +34,17 @@ const LabelsSettings = () => {
                         style={{ width: '100%', maxWidth: 400 }}
                     >
                         <Input.Search
-                            placeholder="Search by name"
+                            placeholder={t('searchPlaceholder')}
                             style={{ maxWidth: 200 }}
                         />
 
-                        {/* this button pin this route to navbar  */}
-                        <PinRouteToNavbarButton
-                            name="labels"
-                            path="/worklenz/settings/labels"
-                        />
-
+                        <Tooltip title={t('pinTooltip')} trigger={'hover'}>
+                            {/* this button pin this route to navbar  */}
+                            <PinRouteToNavbarButton
+                                name="labels"
+                                path="/worklenz/settings/labels"
+                            />
+                        </Tooltip>
                     </Flex>
                 </Flex>
             }
@@ -58,10 +52,7 @@ const LabelsSettings = () => {
             <Table
                 locale={{
                     emptyText: (
-                        <Typography.Text>
-                            Labels can be created while updating or creating
-                            tasks.
-                        </Typography.Text>
+                        <Typography.Text>{t('emptyText')}</Typography.Text>
                     ),
                 }}
                 columns={columns}
