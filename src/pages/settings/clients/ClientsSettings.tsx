@@ -1,3 +1,4 @@
+import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, PushpinOutlined } from '@ant-design/icons'
 import {
     Button,
     Card,
@@ -22,11 +23,6 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { ClientType } from '../../../types/client'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
-import {
-    DeleteOutlined,
-    EditOutlined,
-    ExclamationCircleFilled,
-} from '@ant-design/icons'
 import UpdateClientDrawer from '../../../features/settings/client/UpdateClientDrawer'
 import { useTranslation } from 'react-i18next'
 

@@ -6,8 +6,30 @@ type ProjectState = {
     isDrawerOpen: boolean
 }
 
+const saveProjectListToLocalStorage = (projectsList: ProjectType[]) => {
+    try {
+        const serializedList = JSON.stringify(projectsList)
+        localStorage.setItem('projectList', serializedList)
+    } catch (error) {
+        console.error('Could not save project list', error)
+    }
+}
+
+const getProjectListFromLocalStorage = (): ProjectType[] => {
+    try {
+        const serializedList = localStorage.getItem('projectList')
+        if (serializedList === null) {
+            return [] 
+        }
+        return JSON.parse(serializedList)
+    } catch (error) {
+        console.error('Could not load project list', error)
+        return []
+    }
+}
+
 const initialState: ProjectState = {
-    projectsList: [],
+    projectsList: getProjectListFromLocalStorage(),
     isDrawerOpen: false,
 }
 
@@ -23,6 +45,7 @@ const projectSlice = createSlice({
         // action for create project
         createProject: (state, action: PayloadAction<ProjectType>) => {
             state.projectsList.push(action.payload)
+            saveProjectListToLocalStorage(state.projectsList)
         },
         // action for set the is favourite state
         toggleFavouriteProjectSelection: (
@@ -38,9 +61,15 @@ const projectSlice = createSlice({
                     : (project.isFavourite = true)
             }
         },
+        deleteProject: (state, action: PayloadAction<string>) => {
+            state.projectsList = state.projectsList.filter(
+                (project) => project.projectId !== action.payload
+            )
+            saveProjectListToLocalStorage(state.projectsList)
+        },
     },
 })
 
-export const { toggleDrawer, createProject, toggleFavouriteProjectSelection } =
+export const { toggleDrawer, createProject, toggleFavouriteProjectSelection, deleteProject } =
     projectSlice.actions
 export default projectSlice.reducer

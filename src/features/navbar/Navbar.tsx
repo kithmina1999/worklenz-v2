@@ -87,16 +87,18 @@ const Navbar = () => {
                     />
                 )}
 
-                <Flex gap={16} align="center">
+                <Flex gap={20} align="center">
                     <ConfigProvider wave={{ disabled: true }}>
                         {isDesktop && (
-                            <Flex gap={12} align="center">
+                            <Flex gap={20} align="center">
                                 <UpgradePlanButton />
                                 <InviteButton />
-                                <SwitchTeamButton />
-                                <NotificationButton />
-                                <HelpButton />
-                                <ProfileButton />
+                                <Flex align="center">
+                                    <SwitchTeamButton />
+                                    <NotificationButton />
+                                    <HelpButton />
+                                    <ProfileButton />
+                                </Flex>
                             </Flex>
                         )}
                         {isTablet && !isDesktop && (

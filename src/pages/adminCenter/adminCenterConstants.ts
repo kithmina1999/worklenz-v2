@@ -1,6 +1,7 @@
 import {
     AppstoreOutlined,
     CreditCardOutlined,
+    ProfileOutlined,
     TeamOutlined,
     UserOutlined,
 } from '@ant-design/icons'
@@ -9,6 +10,7 @@ import Overview from './overview/Overview'
 import Users from './users/Users'
 import Teams from './teams/Teams'
 import Billing from './billing/Billing'
+import Projects from './projects/Projects'
 
 // type of a menu item in admin center sidebar
 type AdminCenterMenuItems = {
@@ -43,6 +45,13 @@ export const adminCenterItems: AdminCenterMenuItems[] = [
     },
     {
         key: 4,
+        name: 'projects',
+        endpoint: 'projects',
+        icon: React.createElement(ProfileOutlined),
+        element: React.createElement(Projects),
+    },
+    {
+        key: 5,
         name: 'billing',
         endpoint: 'billing',
         icon: React.createElement(CreditCardOutlined),

@@ -6,11 +6,12 @@ import AdminCenterSidebar from '../pages/adminCenter/sidebar/AdminCenterSidebar'
 import { useTranslation } from 'react-i18next'
 
 const AdminCenterLayout : React.FC = () => {
-    const isTablet = useMediaQuery({ query: '(min-width: 768px)' })
+    const isTablet = useMediaQuery({ query: '(min-width:768px)' })
+    const isMarginAvailable = useMediaQuery({ query: '(min-width: 1000px)' })
     const { t } = useTranslation('adminCenterSidebar')
 
     return (
-        <div style={{ marginBlock: 96, minHeight: '90vh', marginLeft: '68px', marginRight: '68px'}}>
+        <div style={{ marginBlock: 96, minHeight: '90vh', marginLeft: `${isMarginAvailable ? '5%' : ''}`, marginRight: `${isMarginAvailable ? '5%' : ''}`}}>
             <Typography.Title level={4}>{t('adminCenter')}</Typography.Title>
 
             {isTablet ? (
@@ -22,7 +23,7 @@ const AdminCenterLayout : React.FC = () => {
                         marginBlockStart: 24,
                     }}
                 >
-                    <Flex style={{ width: '100%', maxWidth: 250,}}>
+                    <Flex style={{ width: '100%', maxWidth: 240}}>
                         <AdminCenterSidebar />
                     </Flex>
                     <Flex style={{ width: '100%' }}>
