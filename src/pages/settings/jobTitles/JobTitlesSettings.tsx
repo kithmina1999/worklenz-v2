@@ -5,11 +5,11 @@ import {
     Input,
     Popconfirm,
     Table,
+    TableProps,
     Tooltip,
     Typography,
 } from 'antd'
 import React, { useMemo, useState } from 'react'
-import { colors } from '../../../styles/colors'
 
 import CreateJobTitlesDrawer from '../../../features/settings/job/CreateJobTitlesDrawer'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
@@ -26,6 +26,7 @@ import {
     DeleteOutlined,
     EditOutlined,
     ExclamationCircleFilled,
+    PushpinOutlined
 } from '@ant-design/icons'
 import UpdateJobTitlesDrawer from '../../../features/settings/job/UpdateJobTitlesDrawer'
 import { TableProps } from 'antd/lib'
@@ -158,12 +159,12 @@ const JobTitlesSettings = () => {
                 className="homepage-table"
                 dataSource={filteredJobTitlesData}
                 columns={columns}
-                rowKey={(record) => record.jobId}
+                rowKey={(record: any) => record.jobId}
                 pagination={{
                     showSizeChanger: true,
                     defaultPageSize: 20,
                 }}
-                onRow={(record) => {
+                onRow={(record: any) => {
                     return {
                         onMouseEnter: () => setHoverRow(record.jobId),
                         onMouseLeave: () => setHoverRow(null),
