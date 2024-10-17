@@ -4,7 +4,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { colors } from '../../../styles/colors'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
-import { toggleDrawer } from './addMemberSlice'
+import { toggleCreateMemberDrawer } from '../../settings/member/memberSlice'
 
 const InviteButton = () => {
     const dispatch = useAppDispatch()
@@ -21,7 +21,7 @@ const InviteButton = () => {
                     color: colors.skyBlue,
                     borderColor: colors.skyBlue,
                 }}
-                onClick={() => dispatch(toggleDrawer())}
+                onClick={() => dispatch(toggleCreateMemberDrawer())}
             >
                 {t('invite')}
             </Button>

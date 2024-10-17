@@ -16,11 +16,12 @@ import NotFoundPage from './pages/notFoundPage/NotFoundPage'
 import MainLayout from './layouts/MainLayout'
 import Homepage from './pages/home/Homepage'
 import AccountSetup from './pages/accountSetup/AccountSetup'
-import ProjectList from './pages/projectList/ProjectList'
+import ProjectList from './pages/projects/ProjectList'
 import SettingsLayout from './layouts/SettingsLayout'
 import { settingsItems } from './pages/settings/settingsConstants'
 import { adminCenterItems } from './pages/adminCenter/adminCenterConstants'
 import AdminCenterLayout from './layouts/AdminCenterLayout'
+import ProjectView from './pages/projects/projectView/ProjectView'
 
 const App = () => {
     const router = createBrowserRouter(
@@ -44,8 +45,16 @@ const App = () => {
                 {/* main pages routes */}
                 <Route path="/worklenz" element={<MainLayout />}>
                     <Route path="/worklenz/home" element={<Homepage />} />
-                    <Route path="/worklenz/projects" element={<ProjectList />} />
+                    <Route
+                        path="/worklenz/projects"
+                        element={<ProjectList />}
+                    />
 
+                    {/* project view page routes  */}
+                    <Route
+                        path="/worklenz/projects/project-view"
+                        element={<ProjectView />}
+                    />
 
                     {/* settings page routes */}
                     <Route

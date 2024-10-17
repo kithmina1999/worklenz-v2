@@ -1,12 +1,16 @@
 import { Card, Table, TableProps } from 'antd'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 const ProjectTemplatesSettings = () => {
+    // localization
+    const { t } = useTranslation('projectTemplatesSettings')
+
     // table columns
     const columns: TableProps['columns'] = [
         {
             key: 'name',
-            title: 'Name',
+            title: t('nameColumn'),
             dataIndex: 'name',
         },
     ]

@@ -1,9 +1,10 @@
-import { Button, Drawer, Form, Input, Typography } from 'antd'
+import { Button, Drawer, Form, Input, message, Typography } from 'antd'
 import React, { useEffect } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleUpdateJobTitleDrawer, updateJobTitle } from './jobSlice'
 import { JobType } from '../../../types/job'
+import { useTranslation } from 'react-i18next'
 
 type UpdateJobTitleDrawerProps = {
     selectedJobTitleId: string | null
@@ -12,6 +13,9 @@ type UpdateJobTitleDrawerProps = {
 const UpdateJobTitleDrawer = ({
     selectedJobTitleId,
 }: UpdateJobTitleDrawerProps) => {
+    // localization
+    const { t } = useTranslation('jobTitlesSettings')
+
     // get data from client reducer
     const jobTitlesList = useAppSelector((state) => state.jobReducer.jobsList)
 
@@ -37,15 +41,20 @@ const UpdateJobTitleDrawer = ({
     }, [selectedJobTitle, form])
 
     // this function for handle form submit
-    const handleFormSubmit = (values: any) => {
-        if (selectedJobTitle) {
-            const updatedJobTitle: JobType = {
-                ...selectedJobTitle,
-                jobTitle: values.name,
-            }
+    const handleFormSubmit = async (values: any) => {
+        try {
+            if (selectedJobTitle) {
+                const updatedJobTitle: JobType = {
+                    ...selectedJobTitle,
+                    jobTitle: values.name,
+                }
 
-            dispatch(updateJobTitle(updatedJobTitle))
-            dispatch(toggleUpdateJobTitleDrawer())
+                dispatch(updateJobTitle(updatedJobTitle))
+                dispatch(toggleUpdateJobTitleDrawer())
+                message.success(t('updateJobTitleSuccessMessage'))
+            }
+        } catch (error) {
+            message.error(t('updateJobTitleErrorMessage'))
         }
     }
 
@@ -53,7 +62,7 @@ const UpdateJobTitleDrawer = ({
         <Drawer
             title={
                 <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-                    Update Job Title
+                    {t('updateJobTitleDrawerTitle')}
                 </Typography.Text>
             }
             open={isDrawerOpen}
@@ -62,15 +71,15 @@ const UpdateJobTitleDrawer = ({
             <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
                 <Form.Item
                     name="name"
-                    label="Name"
+                    label={t('nameLabel')}
                     rules={[
                         {
                             required: true,
-                            message: 'Please enter a Name',
+                            message: t('nameRequiredError'),
                         },
                     ]}
                 >
-                    <Input placeholder="Name" />
+                    <Input placeholder={t('namePlaceholder')} />
                 </Form.Item>
 
                 <Form.Item>
@@ -79,7 +88,7 @@ const UpdateJobTitleDrawer = ({
                         style={{ width: '100%' }}
                         htmlType="submit"
                     >
-                        Update
+                        {t('updateButton')}
                     </Button>
                 </Form.Item>
             </Form>
