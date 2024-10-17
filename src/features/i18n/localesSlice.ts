@@ -13,8 +13,8 @@ const getLanguageFromLocalStorage = () => {
     return savedLng === 'en'
         ? (savedLng as 'en')
         : savedLng === 'si'
-          ? (savedLng as 'si')
-          : 'en'
+            ? (savedLng as 'si')
+            : 'en'
 }
 // fuction for save the current language to the local storage
 const saveLanguageInLocalStorage = (lng: LanguageType) => {

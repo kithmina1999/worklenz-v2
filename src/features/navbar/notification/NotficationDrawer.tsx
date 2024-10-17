@@ -6,10 +6,10 @@ import { toggleDrawer } from './notificationSlice'
 
 const NotficationDrawer = () => {
     const [notificationType, setNotificationType] = useState<'read' | 'unread'>(
-        'unread'
+        'unread',
     )
     const isDrawerOpen = useAppSelector(
-        (state) => state.notificationReducer.isDrawerOpen
+        (state) => state.notificationReducer.isDrawerOpen,
     )
     const dispatch = useAppDispatch()
 

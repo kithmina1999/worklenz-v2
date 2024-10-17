@@ -28,7 +28,7 @@ import {
     toggleUpdateMemberDrawer,
 } from '../../../features/settings/member/memberSlice'
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { MemberType } from '../../../types/member'
+import { MemberType } from '../../../types/member.types'
 import { colors } from '../../../styles/colors'
 import { avatarNamesMap } from '../../../shared/constants'
 import UpdateMemberDrawer from '../../../features/settings/member/UpdateMemberDrawer'
@@ -44,20 +44,20 @@ const TeamMembersSettings = () => {
 
     // get currently selected member id
     const [selectedMemberId, setSelectedMemberId] = useState<string | null>(
-        null
+        null,
     )
 
     // get all members lists from redux - add member reducer
     const owner = useAppSelector((state) => state.memberReducer.owner)
     const membersList = useAppSelector(
-        (state) => state.memberReducer.membersList
+        (state) => state.memberReducer.membersList,
     )
     const dispatch = useAppDispatch()
 
     // all members
     const allMembersList: MemberType[] = useMemo(
         () => [owner, ...membersList],
-        [owner, membersList]
+        [owner, membersList],
     )
 
     // function for handle refresh
@@ -72,7 +72,7 @@ const TeamMembersSettings = () => {
     // function to get name
     const getMemberName = (memberId: string) => {
         const member = allMembersList.find(
-            (member) => member.memberId === memberId
+            (member) => member.memberId === memberId,
         )
 
         if (member?.memberName) {
@@ -99,7 +99,7 @@ const TeamMembersSettings = () => {
         return allMembersList.filter((item) =>
             (item.memberName || item.memberEmail)
                 ?.toLowerCase()
-                .includes(searchQuery.toLowerCase())
+                .includes(searchQuery.toLowerCase()),
         )
     }, [allMembersList, searchQuery])
 

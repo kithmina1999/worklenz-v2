@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TodoType } from '../../types/todo'
+import { TodoType } from '../../types/todo.types'
 
 type TodoState = {
     todoList: TodoType[]
@@ -18,7 +18,7 @@ const todoSlice = createSlice({
         },
         completeTodo: (state, action: PayloadAction<TodoType>) => {
             state.todoList = state.todoList.filter(
-                (todo) => todo.todoId !== action.payload.todoId
+                (todo) => todo.todoId !== action.payload.todoId,
             )
         },
     },

@@ -1,19 +1,10 @@
-import {
-    Avatar,
-    Button,
-    Drawer,
-    Flex,
-    Form,
-    message,
-    Select,
-    Typography,
-} from 'antd'
+import { Avatar, Button, Drawer, Flex, Form, message, Select, Typography } from 'antd'
 import React, { useEffect, useMemo } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleUpdateMemberDrawer, updateMember } from './memberSlice'
 import { colors } from '../../../styles/colors'
-import { MemberType } from '../../../types/member'
+import { MemberType } from '../../../types/member.types'
 import { avatarNamesMap } from '../../../shared/constants'
 import { useTranslation } from 'react-i18next'
 
@@ -33,23 +24,23 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
     // get all members lists from redux - add member reducer
     const owner = useAppSelector((state) => state.memberReducer.owner)
     const membersList = useAppSelector(
-        (state) => state.memberReducer.membersList
+        (state) => state.memberReducer.membersList,
     )
 
     // all members
     const allMembersList: MemberType[] = useMemo(
         () => [owner, ...membersList],
-        [owner, membersList]
+        [owner, membersList],
     )
 
     const isDrawerOpen = useAppSelector(
-        (state) => state.memberReducer.isUpdateMemberDrawerOpen
+        (state) => state.memberReducer.isUpdateMemberDrawerOpen,
     )
     const dispatch = useAppDispatch()
 
     // get currently selected member
     const selectedMember = allMembersList.find(
-        (member) => member.memberId === selectedMemberId
+        (member) => member.memberId === selectedMemberId,
     )
 
     useEffect(() => {
@@ -103,7 +94,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                             backgroundColor:
                                 avatarNamesMap[
                                     selectedMemberName[0]?.toUpperCase()
-                                ],
+                                    ],
                             verticalAlign: 'middle',
                         }}
                     >

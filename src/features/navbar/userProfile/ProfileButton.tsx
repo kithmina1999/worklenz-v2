@@ -1,14 +1,5 @@
 import { UserOutlined } from '@ant-design/icons'
-import {
-    Avatar,
-    Button,
-    Card,
-    Dropdown,
-    Flex,
-    MenuProps,
-    Tooltip,
-    Typography,
-} from 'antd'
+import { Avatar, Button, Card, Dropdown, Flex, MenuProps, Tooltip, Typography } from 'antd'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 // profile dropdown custom css
@@ -72,7 +63,7 @@ const ProfileButton = () => {
                 >
                     <Typography.Link
                         href="/worklenz/admin-center/overview"
-                        style={{ color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`}}
+                        style={{ color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}` }}
                     >
                         Admin Center
                     </Typography.Link>
@@ -102,8 +93,8 @@ const ProfileButton = () => {
                 trigger={['click']}
             >
                 <Button
-                    style={{height: '62px', width: '60px'}}
-                    type='text'
+                    style={{ height: '62px', width: '60px' }}
+                    type="text"
                     icon={<UserOutlined style={{ fontSize: 20 }} />}
                 />
             </Dropdown>

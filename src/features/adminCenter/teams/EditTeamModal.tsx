@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { editTeamName, toggleUpdateTeamNameModal } from './teamSlice'
-import { TeamsType } from '../../../types/adminCenter/team'
+import { TeamsType } from '../../../types/adminCenter/team.types'
 
 type EditTeamProps = {
     selectedTeamId: string | null
@@ -13,11 +13,11 @@ const EditTeamModal = ({ selectedTeamId }: EditTeamProps) => {
     // get team list from team reducer
     const teamsList = useAppSelector((state) => state.teamReducer.teamsList)
     const isModalOpen = useAppSelector(
-        (state) => state.teamReducer.isUpdateTitleNameModalOpen
+        (state) => state.teamReducer.isUpdateTitleNameModalOpen,
     )
     // get selected team data
     const selectedTeam = teamsList.find(
-        (team) => team.teamId === selectedTeamId
+        (team) => team.teamId === selectedTeamId,
     )
 
     const dispatch = useAppDispatch()

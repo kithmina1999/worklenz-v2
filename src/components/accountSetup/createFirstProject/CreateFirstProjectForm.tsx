@@ -15,9 +15,9 @@ interface CreateFirstProjectProps {
 }
 
 const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
-    onContinue,
-    onGoBack,
-}) => {
+                                                                       onContinue,
+                                                                       onGoBack,
+                                                                   }) => {
     const dispatch = useDispatch()
     const [inputValue, setInputValue] = useState('')
     const isButtonDisabled = useSelector((state: RootState) => state.button.isButtonDisable)
@@ -53,19 +53,19 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
 
     const handleGoBack = () => {
         startTransition(() => {
-          onGoBack();
-        });
-      };
+            onGoBack()
+        })
+    }
 
-      const handleOnContinue = () => {
+    const handleOnContinue = () => {
         startTransition(() => {
-          onContinue();
-        });
-      };
+            onContinue()
+        })
+    }
 
     return (
         <Form
-        className='first-project-form'
+            className="first-project-form"
             style={{
                 width: '600px',
                 paddingBottom: '1rem',
@@ -83,7 +83,7 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
                 layout="vertical"
                 rules={[{ required: true }]}
                 label={
-                    <span style={{ color: themeMode === 'dark'? '' : '#00000073', fontWeight: 500 }}>
+                    <span style={{ color: themeMode === 'dark' ? '' : '#00000073', fontWeight: 500 }}>
                         {t('inputLabel')}
                     </span>
                 }
@@ -96,7 +96,7 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
             </Form.Item>
 
             <div style={{ position: 'relative' }}>
-                <Title level={4} className= {themeMode === 'dark' ? 'vert-text-dark' : 'vert-text'}>
+                <Title level={4} className={themeMode === 'dark' ? 'vert-text-dark' : 'vert-text'}>
                     {t('or')}
                 </Title>
                 <div className={themeMode === 'dark' ? 'vert-line-dark' : 'vert-line'}></div>
@@ -148,19 +148,19 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
                 </Drawer>
             </div>
 
-            <Form.Item style={{ marginTop: '5rem',}}>
-                <div style={{ display: 'flex', justifyContent: 'space-between'}}>
-                <Button style={{ padding: 0 }} type="link" onClick={handleGoBack}>
-                    {t('goBack')}
-                </Button>
-                <Button                  
-                    type="primary"
-                    htmlType="submit"
-                    disabled={isButtonDisabled}
-                    onClick={handleOnContinue}
-                >
-                    {t('continue')}
-                </Button>
+            <Form.Item style={{ marginTop: '5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Button style={{ padding: 0 }} type="link" onClick={handleGoBack}>
+                        {t('goBack')}
+                    </Button>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        disabled={isButtonDisabled}
+                        onClick={handleOnContinue}
+                    >
+                        {t('continue')}
+                    </Button>
                 </div>
             </Form.Item>
         </Form>

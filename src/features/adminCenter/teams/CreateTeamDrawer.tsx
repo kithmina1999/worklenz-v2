@@ -1,16 +1,16 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../app/store";
-import { Button, Drawer, Form, Input, message, Typography } from "antd";
-import { TeamsType } from "../../../types/adminCenter/team";
-import { nanoid } from "@reduxjs/toolkit";
-import { addTeam, toggleDrawer } from "./teamSlice";
-import { useAppDispatch } from "../../../hooks/useAppDispatch";
-import { useTranslation } from "react-i18next";
+import React from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../../app/store'
+import { Button, Drawer, Form, Input, message, Typography } from 'antd'
+import { TeamsType } from '../../../types/adminCenter/team.types'
+import { nanoid } from '@reduxjs/toolkit'
+import { addTeam, toggleDrawer } from './teamSlice'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
+import { useTranslation } from 'react-i18next'
 
 const CreateTeamDrawer: React.FC = () => {
     const isDrawerOpen = useSelector(
-        (state: RootState) => state.teamReducer.isDrawerOpen
+        (state: RootState) => state.teamReducer.isDrawerOpen,
     )
     const dispatch = useAppDispatch()
     const [form] = Form.useForm()

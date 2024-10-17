@@ -14,8 +14,8 @@ const NotificationButton = () => {
     return (
         <Tooltip title={t('notificationTooltip')} trigger={'hover'}>
             <Button
-                style={{height: '62px', width: '60px'}}
-                type='text'
+                style={{ height: '62px', width: '60px' }}
+                type="text"
                 icon={<BellOutlined style={{ fontSize: 20 }} />}
                 onClick={() => dispatch(toggleDrawer())}
             />

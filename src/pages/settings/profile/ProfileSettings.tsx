@@ -1,16 +1,5 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
-import {
-    Button,
-    Card,
-    Flex,
-    Form,
-    GetProp,
-    Input,
-    message,
-    Typography,
-    Upload,
-    UploadProps,
-} from 'antd'
+import { Button, Card, Flex, Form, GetProp, Input, message, Typography, Upload, UploadProps } from 'antd'
 import React, { useState } from 'react'
 import { colors } from '../../../styles/colors'
 import { useTranslation } from 'react-i18next'

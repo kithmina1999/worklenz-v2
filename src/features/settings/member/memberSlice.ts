@@ -1,5 +1,5 @@
 import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit'
-import { MemberType } from '../../../types/member'
+import { MemberType } from '../../../types/member.types'
 
 type MemberState = {
     owner: MemberType
@@ -41,7 +41,7 @@ const memberSlice = createSlice({
         },
         toggleMemberStatus: (state, action: PayloadAction<MemberType>) => {
             const index = state.membersList.findIndex(
-                (member) => member.memberId === action.payload.memberId
+                (member) => member.memberId === action.payload.memberId,
             )
             if (index >= 0) {
                 state.membersList[index].isActivate
@@ -51,7 +51,7 @@ const memberSlice = createSlice({
         },
         updateMember: (state, action: PayloadAction<MemberType>) => {
             const index = state.membersList.findIndex(
-                (member) => member.memberId === action.payload.memberId
+                (member) => member.memberId === action.payload.memberId,
             )
             if (index >= 0) {
                 state.membersList[index] = action.payload
@@ -59,7 +59,7 @@ const memberSlice = createSlice({
         },
         deleteMember: (state, action: PayloadAction<string>) => {
             state.membersList = state.membersList.filter(
-                (member) => member.memberId !== action.payload
+                (member) => member.memberId !== action.payload,
             )
         },
     },

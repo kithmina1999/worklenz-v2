@@ -1,5 +1,5 @@
 import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit'
-import { TeamsType } from '../../../types/adminCenter/team'
+import { TeamsType } from '../../../types/adminCenter/team.types'
 
 interface teamState {
     teamsList: TeamsType[]
@@ -44,18 +44,18 @@ const teamSlice = createSlice({
         },
         updateTeam: (state, action: PayloadAction<TeamsType>) => {
             const index = state.teamsList.findIndex(
-                (team) => team.teamId === action.payload.teamId
+                (team) => team.teamId === action.payload.teamId,
             )
             state.teamsList[index] = action.payload
         },
         deleteTeam: (state, action: PayloadAction<string>) => {
             state.teamsList = state.teamsList.filter(
-                (team) => team.teamId !== action.payload
+                (team) => team.teamId !== action.payload,
             )
         },
         editTeamName: (state, action: PayloadAction<TeamsType>) => {
             const index = state.teamsList.findIndex(
-                (team) => team.teamId === action.payload.teamId
+                (team) => team.teamId === action.payload.teamId,
             )
             if (index >= 0) {
                 state.teamsList[index] = action.payload
@@ -68,7 +68,7 @@ const teamSlice = createSlice({
         },
         setTeamActive: (state, action: PayloadAction<string>) => {
             state.teamsList.forEach(
-                (team) => (team.isActive = team.teamId === action.payload)
+                (team) => (team.isActive = team.teamId === action.payload),
             )
         },
     },

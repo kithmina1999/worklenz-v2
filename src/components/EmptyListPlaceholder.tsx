@@ -8,10 +8,10 @@ type EmptyListPlaceholderProps = {
 }
 
 const EmptyListPlaceholder = ({
-    imageSrc,
-    imageHeight,
-    text,
-}: EmptyListPlaceholderProps) => {
+                                  imageSrc,
+                                  imageHeight,
+                                  text,
+                              }: EmptyListPlaceholderProps) => {
     return (
         <Empty
             image={imageSrc}

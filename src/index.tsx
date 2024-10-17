@@ -32,7 +32,7 @@ root.render(
                 <App />
             </React.StrictMode>
         </Provider>
-    </Suspense>
+    </Suspense>,
 )
 
 reportWebVitals()

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ProjectType } from '../../types/project'
+import { ProjectType } from '../../types/project.types'
 
 type ProjectState = {
     projectsList: ProjectType[]
@@ -19,7 +19,7 @@ const getProjectListFromLocalStorage = (): ProjectType[] => {
     try {
         const serializedList = localStorage.getItem('projectList')
         if (serializedList === null) {
-            return [] 
+            return []
         }
         return JSON.parse(serializedList)
     } catch (error) {
@@ -50,10 +50,10 @@ const projectSlice = createSlice({
         // action for set the is favourite state
         toggleFavouriteProjectSelection: (
             state,
-            action: PayloadAction<string>
+            action: PayloadAction<string>,
         ) => {
             const project = state.projectsList.find(
-                (project) => project.projectId === action.payload
+                (project) => project.projectId === action.payload,
             )
             if (project) {
                 project.isFavourite
@@ -63,7 +63,7 @@ const projectSlice = createSlice({
         },
         deleteProject: (state, action: PayloadAction<string>) => {
             state.projectsList = state.projectsList.filter(
-                (project) => project.projectId !== action.payload
+                (project) => project.projectId !== action.payload,
             )
             saveProjectListToLocalStorage(state.projectsList)
         },

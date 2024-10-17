@@ -10,8 +10,8 @@ const HelpButton = () => {
     return (
         <Tooltip title={t('help')}>
             <Button
-                style={{height: '62px', width: '60px'}}
-                type='text'
+                style={{ height: '62px', width: '60px' }}
+                type="text"
                 icon={<QuestionCircleOutlined style={{ fontSize: 20 }} />}
             />
         </Tooltip>

@@ -1,8 +1,4 @@
-import {
-    BankOutlined,
-    CaretDownFilled,
-    CheckCircleFilled,
-} from '@ant-design/icons'
+import { BankOutlined, CaretDownFilled, CheckCircleFilled } from '@ant-design/icons'
 import { Avatar, Card, Dropdown, Flex, Tooltip, Typography } from 'antd'
 import React from 'react'
 import { colors } from '../../../styles/colors'
@@ -51,7 +47,7 @@ const SwitchTeamButton = () => {
                                         backgroundColor:
                                             avatarNamesMap[
                                                 team.teamName[0].toLocaleUpperCase()
-                                            ],
+                                                ],
                                     }}
                                 >
                                     {team.teamName[0].toLocaleUpperCase()}
@@ -103,7 +99,7 @@ const SwitchTeamButton = () => {
                         fontWeight: 500,
                         borderRadius: '50rem',
                         padding: '10px 16px',
-                        height: '39px'
+                        height: '39px',
                     }}
                 >
                     <BankOutlined />

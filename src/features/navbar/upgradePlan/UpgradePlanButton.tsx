@@ -13,10 +13,10 @@ const UpgradePlanButton = () => {
                 style={{
                     backgroundColor: colors.lightBeige,
                     color: '#000000d9',
-                    padding: '4px 11px'
+                    padding: '4px 11px',
                 }}
-                size='small'
-                type='text'
+                size="small"
+                type="text"
             >
                 {t('upgradePlan')}
             </Button>

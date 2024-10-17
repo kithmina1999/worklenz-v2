@@ -1,4 +1,4 @@
-import {EditOutlined,EnterOutlined,MailOutlined,PhoneOutlined,} from '@ant-design/icons'
+import { EditOutlined, EnterOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons'
 import { PageHeader } from '@ant-design/pro-components'
 import { Button, Card, Input, Tooltip, Typography } from 'antd'
 import React, { useState } from 'react'
@@ -18,7 +18,7 @@ const Overview: React.FC = () => {
         useState(false)
 
     const themeMode = useAppSelector(
-        (state: RootState) => state.themeReducer.mode
+        (state: RootState) => state.themeReducer.mode,
     )
 
     const handleEdit = () => {
@@ -84,7 +84,7 @@ const Overview: React.FC = () => {
                                     onBlur={handleBlur}
                                 />
                                 <Button
-                                    icon={<EnterOutlined style={{color: '#00000073'}}/>}
+                                    icon={<EnterOutlined style={{ color: '#00000073' }} />}
                                     type="link"
                                     style={{
                                         position: 'absolute',

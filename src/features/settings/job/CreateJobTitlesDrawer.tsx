@@ -4,7 +4,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { nanoid } from '@reduxjs/toolkit'
 import { addJobTitle, toggleCreateJobTitleDrawer } from './jobSlice'
-import { JobType } from '../../../types/job'
+import { JobType } from '../../../types/job.types'
 import { useTranslation } from 'react-i18next'
 
 const CreateJobTitlesDrawer = () => {
@@ -12,7 +12,7 @@ const CreateJobTitlesDrawer = () => {
     const { t } = useTranslation('jobTitlesSettings')
 
     const isDrawerOpen = useAppSelector(
-        (state) => state.jobReducer.isCreateJobTitleDrawerOpen
+        (state) => state.jobReducer.isCreateJobTitleDrawerOpen,
     )
     const dispatch = useAppDispatch()
 

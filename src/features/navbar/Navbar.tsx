@@ -26,7 +26,7 @@ const Navbar = () => {
 
     // in here nav routes list get data locally from the navRoutes array
     const [navRoutesList, setNavRoutesList] = useState<NavRoutesType[]>(
-        () => getFromLocalStorage('navRoutes') || navRoutes
+        () => getFromLocalStorage('navRoutes') || navRoutes,
     )
 
     //this useEffect re render the navRoutes list with localstorage change

@@ -1,24 +1,24 @@
-import { DeleteOutlined, SearchOutlined, SyncOutlined } from "@ant-design/icons";
-import { PageHeader } from "@ant-design/pro-components";
-import { Button, Card, Flex, Input, Popconfirm, Table, TableProps, Tooltip, Typography } from "antd";
-import React, { useMemo, useState } from "react";
-import { useAppSelector } from "../../../hooks/useAppSelector";
-import { useTranslation } from "react-i18next";
-import { RootState } from "../../../app/store";
-import { ProjectType } from "../../../types/project";
-import { useMediaQuery } from "react-responsive";
+import { DeleteOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons'
+import { PageHeader } from '@ant-design/pro-components'
+import { Button, Card, Flex, Input, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd'
+import React, { useMemo, useState } from 'react'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { useTranslation } from 'react-i18next'
+import { RootState } from '../../../app/store'
+import { ProjectType } from '../../../types/project.types'
+import { useMediaQuery } from 'react-responsive'
 import './Projects.css'
-import { useAppDispatch } from "../../../hooks/useAppDispatch";
-import { deleteProject } from "../../../features/projects/projectSlice";
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
+import { deleteProject } from '../../../features/projects/projectSlice'
 
 
-const Projects : React.FC = () => {
+const Projects: React.FC = () => {
 
     const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode)
     const [isLoading, setIsLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const isTablet = useMediaQuery({ query: '(min-width: 1000px)' })
-    const projectList =  useAppSelector((state: RootState) => state.projectReducer.projectsList)
+    const projectList = useAppSelector((state: RootState) => state.projectReducer.projectsList)
     const dispatch = useAppDispatch()
 
     const { t } = useTranslation('teams')
@@ -30,7 +30,7 @@ const Projects : React.FC = () => {
 
     const filteredTeamsData = useMemo(() => {
         return projectList.filter((item) =>
-            item.projectName.toLowerCase().includes(searchTerm.toLowerCase())
+            item.projectName.toLowerCase().includes(searchTerm.toLowerCase()),
         )
     }, [projectList, searchTerm])
 
@@ -41,7 +41,7 @@ const Projects : React.FC = () => {
             key: 'projectName',
             render: (record: ProjectType) => (
                 <Typography.Text
-                className="project-name"
+                    className="project-name"
                     style={{ fontSize: `${isTablet ? '14px' : '10px'}` }}
                 >
                     {record.projectName}
@@ -53,7 +53,7 @@ const Projects : React.FC = () => {
             key: 'team',
             render: (record: ProjectType) => (
                 <Typography.Text
-                className="project-team"
+                    className="project-team"
                     style={{ fontSize: `${isTablet ? '14px' : '10px'}` }}
                 >
                     {record.projectTeam}
@@ -69,7 +69,7 @@ const Projects : React.FC = () => {
             key: 'membersCount',
             render: (record: ProjectType) => (
                 <Typography.Text
-                className="project-member-count"
+                    className="project-member-count"
                     style={{
                         display: 'flex',
                         justifyContent: 'center',
@@ -89,7 +89,7 @@ const Projects : React.FC = () => {
             key: 'createdAt',
             render: (record: ProjectType) => (
                 <Typography.Text
-                className="project-created-at"
+                    className="project-created-at"
                     style={{
                         display: 'flex',
                         justifyContent: 'right',
@@ -128,36 +128,40 @@ const Projects : React.FC = () => {
         },
     ]
 
-  return (
-    <div style={{width: '100%'}}>
-        <PageHeader
+    return (
+        <div style={{ width: '100%' }}>
+            <PageHeader
                 title={<span>Projects</span>}
                 style={{ padding: '16px 0' }}
             />
-        <PageHeader
-            style={{ paddingLeft: 0, paddingTop: 0, paddingRight: '24px', paddingBottom: '16px'}} 
-            subTitle={<span style={{color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`, fontWeight: 500, fontSize: '16px'}}>{filteredTeamsData.length} projects</span>}
-            extra={
-                <Flex gap={8} align="center">
-                    <Tooltip title='Refresh projects'>
-                        <Button
-                            shape="circle"
-                            icon={<SyncOutlined spin={isLoading} />}
-                            onClick={() => handleRefresh()}
+            <PageHeader
+                style={{ paddingLeft: 0, paddingTop: 0, paddingRight: '24px', paddingBottom: '16px' }}
+                subTitle={<span style={{
+                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
+                    fontWeight: 500,
+                    fontSize: '16px',
+                }}>{filteredTeamsData.length} projects</span>}
+                extra={
+                    <Flex gap={8} align="center">
+                        <Tooltip title="Refresh projects">
+                            <Button
+                                shape="circle"
+                                icon={<SyncOutlined spin={isLoading} />}
+                                onClick={() => handleRefresh()}
+                            />
+                        </Tooltip>
+                        <Input
+                            placeholder="Search by project name"
+                            suffix={<SearchOutlined />}
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                    </Tooltip>
-                    <Input
-                        placeholder='Search by project name'
-                        suffix={<SearchOutlined />}
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </Flex>
-            }
-        />
+                    </Flex>
+                }
+            />
 
-<Card>
+            <Card>
                 <Table
                     rowClassName="project-table-row"
                     className="project-table"
@@ -165,14 +169,14 @@ const Projects : React.FC = () => {
                     dataSource={filteredTeamsData}
                     rowKey={(record) => record.projectId}
                     pagination={{
-                      showSizeChanger: true,
-                      defaultPageSize: 20,
-                      pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+                        showSizeChanger: true,
+                        defaultPageSize: 20,
+                        pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
                     }}
                 />
             </Card>
-    </div>
-  );
-};
+        </div>
+    )
+}
 
-export default Projects;
+export default Projects

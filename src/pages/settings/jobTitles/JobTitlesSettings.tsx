@@ -1,14 +1,4 @@
-import {
-    Button,
-    Card,
-    Flex,
-    Input,
-    Popconfirm,
-    Table,
-    TableProps,
-    Tooltip,
-    Typography,
-} from 'antd'
+import { Button, Card, Flex, Input, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd'
 import React, { useMemo, useState } from 'react'
 
 import CreateJobTitlesDrawer from '../../../features/settings/job/CreateJobTitlesDrawer'
@@ -19,18 +9,13 @@ import {
     toggleUpdateJobTitleDrawer,
 } from '../../../features/settings/job/jobSlice'
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { JobType } from '../../../types/job'
+import { JobType } from '../../../types/job.types'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
-import {
-    DeleteOutlined,
-    EditOutlined,
-    ExclamationCircleFilled,
-    PushpinOutlined
-} from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, ExclamationCircleFilled } from '@ant-design/icons'
 import UpdateJobTitlesDrawer from '../../../features/settings/job/UpdateJobTitlesDrawer'
-import { TableProps } from 'antd/lib'
 import { useTranslation } from 'react-i18next'
+import { colors } from '../../../styles/colors'
 
 const JobTitlesSettings = () => {
     // localization
@@ -48,7 +33,7 @@ const JobTitlesSettings = () => {
 
     const filteredJobTitlesData = useMemo(() => {
         return jobTitlesList.filter((item) =>
-            item.jobTitle.toLowerCase().includes(searchQuery.toLowerCase())
+            item.jobTitle.toLowerCase().includes(searchQuery.toLowerCase()),
         )
     }, [jobTitlesList, searchQuery])
 

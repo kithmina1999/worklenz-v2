@@ -18,19 +18,19 @@ const CurrentBill: React.FC = () => {
 
     const percentage = (usedData / totalData) * 100
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     const showModal = () => {
-        setIsModalOpen(true);
-      };
+        setIsModalOpen(true)
+    }
 
-      const handleCancel = () => {
-        setIsModalOpen(false);
-      };
+    const handleCancel = () => {
+        setIsModalOpen(false)
+    }
 
-      const isTablet = useMediaQuery({ query: '(min-width: 1000px)' })
+    const isTablet = useMediaQuery({ query: '(min-width: 1000px)' })
 
-      const { t } = useTranslation('currentBill');
+    const { t } = useTranslation('currentBill')
 
     return (
         <div style={{ width: '100%' }} className="current-billing">
@@ -40,7 +40,7 @@ const CurrentBill: React.FC = () => {
                         title={
                             <span
                                 style={{
-                                    color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`,
+                                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
                                     fontWeight: 500,
                                     fontSize: '16px',
                                 }}
@@ -53,7 +53,8 @@ const CurrentBill: React.FC = () => {
                                 style={{ marginTop: '8px', marginRight: '8px' }}
                             >
                                 <Button type="primary" onClick={showModal}>{t('upgradePlan')}</Button>
-                                <Modal open={isModalOpen} onCancel={handleCancel} width={1000} centered okButtonProps={{hidden: true}} cancelButtonProps={{hidden: true}}>
+                                <Modal open={isModalOpen} onCancel={handleCancel} width={1000} centered
+                                       okButtonProps={{ hidden: true }} cancelButtonProps={{ hidden: true }}>
                                     <UpgradePlans />
                                 </Modal>
                             </div>
@@ -69,10 +70,10 @@ const CurrentBill: React.FC = () => {
                         >
                             <div style={{ marginBottom: '14px' }}>
                                 <Typography.Text style={{ fontWeight: 700 }}>
-                                {t('cardBodyText01')}
+                                    {t('cardBodyText01')}
                                 </Typography.Text>
                                 <Typography.Text>
-                                {t('cardBodyText02')}
+                                    {t('cardBodyText02')}
                                 </Typography.Text>
                             </div>
                             <Button
@@ -90,7 +91,7 @@ const CurrentBill: React.FC = () => {
                         title={
                             <span
                                 style={{
-                                    color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`,
+                                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
                                     fontWeight: 500,
                                     fontSize: '16px',
                                 }}
@@ -99,22 +100,22 @@ const CurrentBill: React.FC = () => {
                             </span>
                         }
                     >
-                        <div style={{display: 'flex'}}>
-                            <div style={{padding: '0 8px'}}>
+                        <div style={{ display: 'flex' }}>
+                            <div style={{ padding: '0 8px' }}>
                                 <Progress
                                     percent={percentage}
                                     type="circle"
                                     format={(percent) => (
-                                        <span style={{fontSize: '13px'}}>{percent}% Used</span>
+                                        <span style={{ fontSize: '13px' }}>{percent}% Used</span>
                                     )}
                                 />
                             </div>
-                            <div style={{display: 'flex', flexDirection: 'column', padding: '0 8px'}}>
+                            <div style={{ display: 'flex', flexDirection: 'column', padding: '0 8px' }}>
                                 <Typography.Text>
-                                {t('used')} <strong>{usedData} GB</strong>
+                                    {t('used')} <strong>{usedData} GB</strong>
                                 </Typography.Text>
                                 <Typography.Text>
-                                {t('remaining')} <strong>{remainingData} GB</strong>
+                                    {t('remaining')} <strong>{remainingData} GB</strong>
                                 </Typography.Text>
                             </div>
                         </div>
@@ -122,11 +123,11 @@ const CurrentBill: React.FC = () => {
                 </Col>
             </Row>) : (<div>
                 <Col span={24} style={{ paddingRight: '10px' }}>
-                <Card
+                    <Card
                         title={
                             <span
                                 style={{
-                                    color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`,
+                                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
                                     fontWeight: 500,
                                     fontSize: '16px',
                                 }}
@@ -139,7 +140,8 @@ const CurrentBill: React.FC = () => {
                                 style={{ marginTop: '8px', marginRight: '8px' }}
                             >
                                 <Button type="primary" onClick={showModal}>{t('upgradePlan')}</Button>
-                                <Modal open={isModalOpen} onCancel={handleCancel} width={1000} centered okButtonProps={{hidden: true}} cancelButtonProps={{hidden: true}}>
+                                <Modal open={isModalOpen} onCancel={handleCancel} width={1000} centered
+                                       okButtonProps={{ hidden: true }} cancelButtonProps={{ hidden: true }}>
                                     <UpgradePlans />
                                 </Modal>
                             </div>
@@ -155,10 +157,10 @@ const CurrentBill: React.FC = () => {
                         >
                             <div style={{ marginBottom: '14px' }}>
                                 <Typography.Text style={{ fontWeight: 700 }}>
-                                {t('cardBodyText01')}
+                                    {t('cardBodyText01')}
                                 </Typography.Text>
                                 <Typography.Text>
-                                {t('cardBodyText02')}
+                                    {t('cardBodyText02')}
                                 </Typography.Text>
                             </div>
                             <Button
@@ -176,7 +178,7 @@ const CurrentBill: React.FC = () => {
                         title={
                             <span
                                 style={{
-                                    color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`,
+                                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
                                     fontWeight: 500,
                                     fontSize: '16px',
                                 }}
@@ -185,72 +187,72 @@ const CurrentBill: React.FC = () => {
                             </span>
                         }
                     >
-                        <div style={{display: 'flex'}}>
-                            <div style={{padding: '0 8px'}}>
+                        <div style={{ display: 'flex' }}>
+                            <div style={{ padding: '0 8px' }}>
                                 <Progress
                                     percent={percentage}
                                     type="circle"
                                     format={(percent) => (
-                                        <span style={{fontSize: '13px'}}>{percent}% Used</span>
+                                        <span style={{ fontSize: '13px' }}>{percent}% Used</span>
                                     )}
                                 />
                             </div>
-                            <div style={{display: 'flex', flexDirection: 'column', padding: '0 8px'}}>
+                            <div style={{ display: 'flex', flexDirection: 'column', padding: '0 8px' }}>
                                 <Typography.Text>
-                                {t('used')} <strong>{usedData} GB</strong>
+                                    {t('used')} <strong>{usedData} GB</strong>
                                 </Typography.Text>
                                 <Typography.Text>
-                                {t('remaining')} <strong>{remainingData} GB</strong>
+                                    {t('remaining')} <strong>{remainingData} GB</strong>
                                 </Typography.Text>
                             </div>
                         </div>
                     </Card>
                 </Col>
             </div>)}
-            
-            <div style={{marginTop: '1.5rem'}}>
-            <Card
-                title={
-                    <span
-                        style={{
-                            color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`,
-                            fontWeight: 500,
-                            fontSize: '16px',
-                            display: 'flex',
-                            gap: '4px'
-                        }}
-                    >
+
+            <div style={{ marginTop: '1.5rem' }}>
+                <Card
+                    title={
+                        <span
+                            style={{
+                                color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
+                                fontWeight: 500,
+                                fontSize: '16px',
+                                display: 'flex',
+                                gap: '4px',
+                            }}
+                        >
                         <span>{t('chargers')}</span>
                         <Tooltip title={t('tooltip')}>
                         <InfoCircleTwoTone />
                         </Tooltip>
                     </span>
-                }
-                style={{ marginTop: '16px' }}
-            >
-                <ChargesTable />
-            </Card>
+                    }
+                    style={{ marginTop: '16px' }}
+                >
+                    <ChargesTable />
+                </Card>
             </div>
 
-            <div style={{marginTop: '1.5rem'}}>
-            <Card
-                title={
-                    <span
-                        style={{
-                            color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`,
-                            fontWeight: 500,
-                            fontSize: '16px',
-                            display: 'flex',
-                            gap: '4px'
-                        }}
-                    >
+            <div style={{ marginTop: '1.5rem' }}>
+                <Card
+                    title={
+                        <span
+                            style={{
+                                color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
+                                fontWeight: 500,
+                                fontSize: '16px',
+                                display: 'flex',
+                                gap: '4px',
+                            }}
+                        >
                         {t('invoices')}
                     </span>
-                }
-                style={{ marginTop: '16px' }}
-            >
-                <InvoicesTable />
-            </Card>
+                    }
+                    style={{ marginTop: '16px' }}
+                >
+                    <InvoicesTable />
+                </Card>
             </div>
         </div>
     )

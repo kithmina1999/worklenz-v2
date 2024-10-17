@@ -2,7 +2,7 @@ import { Badge, Card, Dropdown, Flex, Menu, MenuProps } from 'antd'
 import React, { useState } from 'react'
 import { colors } from '../../../../styles/colors'
 import { DownOutlined } from '@ant-design/icons'
-import { TaskStatusType } from '../../../../types/task'
+import { TaskStatusType } from '../../../../types/task.types'
 // custom css file
 import './statusDropdown.css'
 
@@ -55,8 +55,8 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
         e.key === 'Todo'
             ? setStatus('Todo')
             : e.key === 'Doing'
-              ? setStatus('Doing')
-              : setStatus('Done')
+                ? setStatus('Doing')
+                : setStatus('Done')
     }
 
     //dropdown items

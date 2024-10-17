@@ -4,7 +4,6 @@ import {
     ClockCircleOutlined,
     DownOutlined,
     EditOutlined,
-    ImportOutlined,
     PushpinFilled,
     PushpinOutlined,
     SaveOutlined,
@@ -13,24 +12,12 @@ import {
     UsergroupAddOutlined,
 } from '@ant-design/icons'
 import { PageHeader } from '@ant-design/pro-components'
-import {
-    Button,
-    ConfigProvider,
-    Dropdown,
-    Flex,
-    Tabs,
-    TabsProps,
-    Tooltip,
-    Typography,
-} from 'antd'
-import React, { useEffect, useState } from 'react'
+import { Button, ConfigProvider, Dropdown, Flex, Tabs, TabsProps, Tooltip, Typography } from 'antd'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { colors } from '../../../styles/colors'
 import { tabItems } from './projectViewConstants'
-import {
-    getFromLocalStorage,
-    saveToLocalStorage,
-} from '../../../utils/localStorageFunctions'
+import { getFromLocalStorage, saveToLocalStorage } from '../../../utils/localStorageFunctions'
 
 const ProjectView = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)

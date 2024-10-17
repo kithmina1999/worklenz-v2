@@ -39,18 +39,18 @@ const TableColumns = (): ColumnsType<DataType> => {
                 // Format the start and end dates
                 const formattedStartDate = record.startDate
                     ? new Date(record.startDate).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                      })
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                    })
                     : 'N/A'
 
                 const formattedEndDate = record.endDate
                     ? new Date(record.endDate).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                      })
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                    })
                     : 'N/A'
 
                 return (
@@ -235,8 +235,8 @@ const TableColumns = (): ColumnsType<DataType> => {
                                 style={{
                                     backgroundColor:
                                         avatarColors[
-                                            index % avatarColors.length
-                                        ],
+                                        index % avatarColors.length
+                                            ],
                                     width: '28px',
                                     height: '28px',
                                     border: 'none',

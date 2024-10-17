@@ -1,19 +1,10 @@
-import {
-    Button,
-    Drawer,
-    Flex,
-    Form,
-    Input,
-    message,
-    Select,
-    Typography,
-} from 'antd'
+import { Button, Drawer, Flex, Form, Input, message, Select, Typography } from 'antd'
 import React from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { addMember, toggleCreateMemberDrawer } from './memberSlice'
 import { colors } from '../../../styles/colors'
-import { MemberType } from '../../../types/member'
+import { MemberType } from '../../../types/member.types'
 import { nanoid } from '@reduxjs/toolkit'
 import { useTranslation } from 'react-i18next'
 
@@ -22,7 +13,7 @@ const AddMemberDrawer = () => {
     const { t } = useTranslation('teamMembersSettings')
 
     const isDrawerOpen = useAppSelector(
-        (state) => state.memberReducer.isCreateMemberDrawerOpen
+        (state) => state.memberReducer.isCreateMemberDrawerOpen,
     )
     const dispatch = useAppDispatch()
 

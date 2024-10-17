@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleUpdateClientDrawer, updateClient } from './clientSlice'
-import { ClientType } from '../../../types/client'
+import { ClientType } from '../../../types/client.types'
 import { useTranslation } from 'react-i18next'
 
 type UpdateClientDrawerProps = {
@@ -16,16 +16,16 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
 
     // get data from client reducer
     const clientsList = useAppSelector(
-        (state) => state.clientReducer.clientsList
+        (state) => state.clientReducer.clientsList,
     )
 
     // get data of currentlt selectedClient
     const selectedClient = clientsList.find(
-        (client) => client.clientId === selectedClientId
+        (client) => client.clientId === selectedClientId,
     )
 
     const isDrawerOpen = useAppSelector(
-        (state) => state.clientReducer.isUpdateClientDrawerOpen
+        (state) => state.clientReducer.isUpdateClientDrawerOpen,
     )
     const dispatch = useAppDispatch()
 

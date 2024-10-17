@@ -1,21 +1,10 @@
-import {
-    Avatar,
-    Button,
-    Drawer,
-    Form,
-    Input,
-    message,
-    Select,
-    Table,
-    TableProps,
-    Typography,
-} from 'antd'
+import { Avatar, Button, Drawer, Form, Input, message, Select, Table, TableProps, Typography } from 'antd'
 import React from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { RootState } from '../../../app/store'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleSettingDrawer, updateTeam } from './teamSlice'
-import { TeamsType } from '../../../types/adminCenter/team'
+import { TeamsType } from '../../../types/adminCenter/team.types'
 import './SettingTeamDrawer.css'
 
 interface SettingTeamDrawerProps {
@@ -24,12 +13,12 @@ interface SettingTeamDrawerProps {
 
 const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
     const isSettingDrawerOpen = useAppSelector(
-        (state: RootState) => state.teamReducer.isSettingDrawerOpen
+        (state: RootState) => state.teamReducer.isSettingDrawerOpen,
     )
     const dispatch = useAppDispatch()
     const [form] = Form.useForm()
     const teamsLists = useAppSelector(
-        (state: RootState) => state.teamReducer.teamsList
+        (state: RootState) => state.teamReducer.teamsList,
     )
 
     const team = teamsLists.find((team) => team.teamId === teamId)
@@ -134,10 +123,10 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
                                 return membersDataSource.length > 0
                                     ? Promise.resolve()
                                     : Promise.reject(
-                                          new Error(
-                                              'Please add at least one user'
-                                          )
-                                      )
+                                        new Error(
+                                            'Please add at least one user',
+                                        ),
+                                    )
                             },
                         },
                     ]}

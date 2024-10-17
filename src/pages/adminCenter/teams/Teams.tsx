@@ -1,34 +1,13 @@
-import {
-    DeleteOutlined,
-    SearchOutlined,
-    SettingOutlined,
-    SyncOutlined,
-} from '@ant-design/icons'
+import { DeleteOutlined, SearchOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons'
 import { PageHeader } from '@ant-design/pro-components'
-import {
-    Avatar,
-    Badge,
-    Button,
-    Card,
-    Flex,
-    Input,
-    Popconfirm,
-    Table,
-    TableProps,
-    Tooltip,
-    Typography,
-} from 'antd'
+import { Avatar, Badge, Button, Card, Flex, Input, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd'
 import React, { useMemo, useState } from 'react'
-import {
-  deleteTeam,
-    toggleDrawer,
-    toggleSettingDrawer,
-} from '../../../features/adminCenter/teams/teamSlice'
+import { deleteTeam, toggleDrawer, toggleSettingDrawer } from '../../../features/adminCenter/teams/teamSlice'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import CreateTeamDrawer from '../../../features/adminCenter/teams/CreateTeamDrawer'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { RootState } from '../../../app/store'
-import { TeamsType } from '../../../types/adminCenter/team'
+import { TeamsType } from '../../../types/adminCenter/team.types'
 import './Teams.css'
 import SettingTeamDrawer from '../../../features/adminCenter/teams/SettingTeamDrawer'
 import { useMediaQuery } from 'react-responsive'
@@ -39,7 +18,7 @@ const Teams: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const teamsLists = useAppSelector(
-        (state: RootState) => state.teamReducer.teamsList
+        (state: RootState) => state.teamReducer.teamsList,
     )
     const dispatch = useAppDispatch()
     const [selectedTeam, setSelectedTeam] = useState<string>('')
@@ -47,7 +26,7 @@ const Teams: React.FC = () => {
 
     const filteredTeamsData = useMemo(() => {
         return teamsLists.filter((item) =>
-            item.teamName.toLowerCase().includes(searchTerm.toLowerCase())
+            item.teamName.toLowerCase().includes(searchTerm.toLowerCase()),
         )
     }, [teamsLists, searchTerm])
 
@@ -63,7 +42,7 @@ const Teams: React.FC = () => {
             title: t('team'),
             key: 'teamName',
             render: (record: TeamsType) => (
-                <Typography.Text style={{fontSize: `${isTablet ? '14px' : '10px'}`}}>
+                <Typography.Text style={{ fontSize: `${isTablet ? '14px' : '10px'}` }}>
                     <Badge status="success" style={{ marginRight: '8px' }} />
                     {record.teamName}
                 </Typography.Text>
@@ -106,30 +85,30 @@ const Teams: React.FC = () => {
             title: '',
             key: 'button',
             render: (record: TeamsType) => (
-                <div className='row-buttons'>
+                <div className="row-buttons">
                     <Tooltip title={t('settings')}>
                         <Button
                             style={{ marginRight: '8px' }}
                             size="small"
                             onClick={() => {
-                              setSelectedTeam(record.teamId)
-                              dispatch(toggleSettingDrawer())
+                                setSelectedTeam(record.teamId)
+                                dispatch(toggleSettingDrawer())
                             }}
                         >
                             <SettingOutlined />
                         </Button>
                     </Tooltip>
-                    <SettingTeamDrawer teamId={selectedTeam}/>
+                    <SettingTeamDrawer teamId={selectedTeam} />
 
                     <Tooltip title={t('delete')}>
-                      <Popconfirm
-                        title={t('popTitle')}
-                        onConfirm={() => dispatch(deleteTeam(record.teamId))}
-                      >
-                        <Button size="small">
-                            <DeleteOutlined />
-                        </Button>
-                      </Popconfirm>
+                        <Popconfirm
+                            title={t('popTitle')}
+                            onConfirm={() => dispatch(deleteTeam(record.teamId))}
+                        >
+                            <Button size="small">
+                                <DeleteOutlined />
+                            </Button>
+                        </Popconfirm>
                     </Tooltip>
                 </div>
             ),
@@ -152,7 +131,7 @@ const Teams: React.FC = () => {
                 subTitle={
                     <span
                         style={{
-                            color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`,
+                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
                             fontWeight: 500,
                             fontSize: '16px',
                         }}
@@ -195,9 +174,9 @@ const Teams: React.FC = () => {
                     dataSource={filteredTeamsData}
                     rowKey={(record) => record.teamId}
                     pagination={{
-                      showSizeChanger: true,
-                      defaultPageSize: 20,
-                      pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+                        showSizeChanger: true,
+                        defaultPageSize: 20,
+                        pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
                     }}
                 />
             </Card>

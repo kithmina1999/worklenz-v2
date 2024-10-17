@@ -15,7 +15,7 @@ const PinRouteToNavbarButton = ({ name, path }: NavRoutesType) => {
 
     const [isPinned, setIsPinned] = useState(
         // this function check the current name is available in local storage's navRoutes list if it's available then isPinned state will be true
-        navRoutesList.filter((item) => item.name === name).length && true
+        navRoutesList.filter((item) => item.name === name).length && true,
     )
 
     // this function handle pin to the navbar
@@ -26,7 +26,7 @@ const PinRouteToNavbarButton = ({ name, path }: NavRoutesType) => {
 
         if (isPinned) {
             newNavRoutesList = navRoutesList.filter(
-                (item) => item.name !== route.name
+                (item) => item.name !== route.name,
             )
         } else {
             newNavRoutesList = [...navRoutesList, route]

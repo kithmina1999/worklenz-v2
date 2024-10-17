@@ -3,7 +3,7 @@ import { Button, ConfigProvider, Tooltip } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { colors } from '../../../styles/colors'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
-import { ProjectType } from '../../../types/project'
+import { ProjectType } from '../../../types/project.types'
 import { toggleFavouriteProjectSelection } from '../../../features/projects/projectSlice'
 
 type AddFavouriteProjectButtonProps = {
@@ -11,11 +11,11 @@ type AddFavouriteProjectButtonProps = {
 }
 
 const AddFavouriteProjectButton = ({
-    record,
-}: AddFavouriteProjectButtonProps) => {
+                                       record,
+                                   }: AddFavouriteProjectButtonProps) => {
     const dispatch = useAppDispatch()
     const [checkIconColor, setCheckIconColor] = useState<string>(
-        colors.lightGray
+        colors.lightGray,
     )
 
     // function for handle favourite project toggle
@@ -30,7 +30,7 @@ const AddFavouriteProjectButton = ({
                 ? setCheckIconColor(colors.yellow)
                 : setCheckIconColor(colors.lightGray),
 
-        [handleToggleFavoriteProject]
+        [handleToggleFavoriteProject],
     )
 
     return (

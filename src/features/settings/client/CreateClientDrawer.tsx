@@ -3,7 +3,7 @@ import React from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { addClient, toggleCreateClientDrawer } from './clientSlice'
-import { ClientType } from '../../../types/client'
+import { ClientType } from '../../../types/client.types'
 import { nanoid } from '@reduxjs/toolkit'
 import { useTranslation } from 'react-i18next'
 
@@ -13,7 +13,7 @@ const CreateClientDrawer = () => {
 
     // get drawer state from client reducer
     const isDrawerOpen = useAppSelector(
-        (state) => state.clientReducer.isCreateClientDrawerOpen
+        (state) => state.clientReducer.isCreateClientDrawerOpen,
     )
     const dispatch = useAppDispatch()
 

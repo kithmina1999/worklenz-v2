@@ -1,17 +1,8 @@
-import {
-    Alert,
-    Flex,
-    Form,
-    Input,
-    InputRef,
-    message,
-    Select,
-    Typography,
-} from 'antd'
+import { Alert, Flex, Form, Input, InputRef, Select, Typography } from 'antd'
 import React, { useRef, useState } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { nanoid } from '@reduxjs/toolkit'
-import { TaskType } from '../../../types/task'
+import { TaskType } from '../../../types/task.types'
 import { addTask } from '../../../features/tasks/taskSlice'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 
@@ -22,7 +13,7 @@ const AddTaskInlineForm = () => {
     const [form] = Form.useForm()
     const dispatch = useAppDispatch()
     const projectList = useAppSelector(
-        (state) => state.projectReducer.projectsList
+        (state) => state.projectReducer.projectsList,
     )
 
     // ref for task input field
@@ -182,7 +173,7 @@ const AddTaskInlineForm = () => {
                             (optionA?.label ?? '')
                                 .toLowerCase()
                                 .localeCompare(
-                                    (optionB?.label ?? '').toLowerCase()
+                                    (optionB?.label ?? '').toLowerCase(),
                                 )
                         }
                         onKeyDown={(e) => {

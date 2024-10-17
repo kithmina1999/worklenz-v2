@@ -1,6 +1,6 @@
-import { Table, TableProps } from "antd";
-import React from "react";
-import { useTranslation } from "react-i18next";
+import { Table, TableProps } from 'antd'
+import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface DataType {
     key: string
@@ -13,12 +13,12 @@ interface DataType {
     amount: number
 }
 
-const ChargesTable : React.FC = () => {
+const ChargesTable: React.FC = () => {
 
     const perUserValue = 5.99
     const users = 23
 
-    const { t } = useTranslation('currentBill');
+    const { t } = useTranslation('currentBill')
 
     const columns: TableProps['columns'] = [
         {
@@ -30,19 +30,19 @@ const ChargesTable : React.FC = () => {
             title: t('billingPeriod'),
             key: 'billingPeriod',
             render: (record) => {
-                const formattedStartingDate =  new Date(record.startingDate).toLocaleDateString('en-US', {
+                const formattedStartingDate = new Date(record.startingDate).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
+                    day: 'numeric',
                 })
-                const formattedEndingDate =  new Date(record.endingDate).toLocaleDateString('en-US', {
+                const formattedEndingDate = new Date(record.endingDate).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
+                    day: 'numeric',
                 })
 
-                return `${formattedStartingDate} - ${formattedEndingDate}`;
-            }
+                return `${formattedStartingDate} - ${formattedEndingDate}`
+            },
         },
         {
             title: t('billStatus'),
@@ -55,7 +55,7 @@ const ChargesTable : React.FC = () => {
             dataIndex: 'perUserValue',
             render: (text) => (
                 <span>USD {text}</span>
-            )
+            ),
         },
         {
             title: t('users'),
@@ -68,7 +68,7 @@ const ChargesTable : React.FC = () => {
             dataIndex: 'amount',
             render: (text) => (
                 <span>USD {text}</span>
-            )
+            ),
         },
     ]
 
@@ -85,9 +85,9 @@ const ChargesTable : React.FC = () => {
         },
     ]
 
-  return (
-    <Table columns={columns} dataSource={data} pagination={false}/>
-  );
-};
+    return (
+        <Table columns={columns} dataSource={data} pagination={false} />
+    )
+}
 
-export default ChargesTable;
+export default ChargesTable

@@ -1,10 +1,4 @@
-import {
-    AppstoreOutlined,
-    CreditCardOutlined,
-    ProfileOutlined,
-    TeamOutlined,
-    UserOutlined,
-} from '@ant-design/icons'
+import { AppstoreOutlined, CreditCardOutlined, ProfileOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons'
 import React, { ReactNode } from 'react'
 import Overview from './overview/Overview'
 import Users from './users/Users'
