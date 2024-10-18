@@ -1,4 +1,13 @@
-import { Button, Card, Col, Modal, Progress, Row, Tooltip, Typography } from 'antd'
+import {
+    Button,
+    Card,
+    Col,
+    Modal,
+    Progress,
+    Row,
+    Tooltip,
+    Typography,
+} from 'antd'
 import React, { useState } from 'react'
 import './CurrentBill.css'
 import { InfoCircleTwoTone } from '@ant-design/icons'
@@ -11,7 +20,9 @@ import { useMediaQuery } from 'react-responsive'
 import { useTranslation } from 'react-i18next'
 
 const CurrentBill: React.FC = () => {
-    const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode)
+    const themeMode = useAppSelector(
+        (state: RootState) => state.themeReducer.mode
+    )
     const totalData = 1
     const usedData = 0
     const remainingData = totalData - usedData
@@ -34,181 +45,239 @@ const CurrentBill: React.FC = () => {
 
     return (
         <div style={{ width: '100%' }} className="current-billing">
-            {isTablet ? (<Row>
-                <Col span={16} style={{ paddingRight: '10px' }}>
-                    <Card
-                        title={
-                            <span
-                                style={{
-                                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                                    fontWeight: 500,
-                                    fontSize: '16px',
-                                }}
-                            >
-                                {t('currentPlanDetails')}
-                            </span>
-                        }
-                        extra={
-                            <div
-                                style={{ marginTop: '8px', marginRight: '8px' }}
-                            >
-                                <Button type="primary" onClick={showModal}>{t('upgradePlan')}</Button>
-                                <Modal open={isModalOpen} onCancel={handleCancel} width={1000} centered
-                                       okButtonProps={{ hidden: true }} cancelButtonProps={{ hidden: true }}>
-                                    <UpgradePlans />
-                                </Modal>
-                            </div>
-                        }
-                    >
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                width: '50%',
-                                padding: '0 12px',
-                            }}
+            {isTablet ? (
+                <Row>
+                    <Col span={16} style={{ paddingRight: '10px' }}>
+                        <Card
+                            title={
+                                <span
+                                    style={{
+                                        color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
+                                        fontWeight: 500,
+                                        fontSize: '16px',
+                                    }}
+                                >
+                                    {t('currentPlanDetails')}
+                                </span>
+                            }
+                            extra={
+                                <div
+                                    style={{
+                                        marginTop: '8px',
+                                        marginRight: '8px',
+                                    }}
+                                >
+                                    <Button type="primary" onClick={showModal}>
+                                        {t('upgradePlan')}
+                                    </Button>
+                                    <Modal
+                                        open={isModalOpen}
+                                        onCancel={handleCancel}
+                                        width={1000}
+                                        centered
+                                        okButtonProps={{ hidden: true }}
+                                        cancelButtonProps={{ hidden: true }}
+                                    >
+                                        <UpgradePlans />
+                                    </Modal>
+                                </div>
+                            }
                         >
-                            <div style={{ marginBottom: '14px' }}>
-                                <Typography.Text style={{ fontWeight: 700 }}>
-                                    {t('cardBodyText01')}
-                                </Typography.Text>
-                                <Typography.Text>
-                                    {t('cardBodyText02')}
-                                </Typography.Text>
-                            </div>
-                            <Button
-                                type="link"
-                                style={{ margin: 0, padding: 0, width: '90px' }}
-                            >
-                                {t('redeemCode')}
-                            </Button>
-                        </div>
-                    </Card>
-                </Col>
-
-                <Col span={8} style={{ paddingLeft: '10px' }}>
-                    <Card
-                        title={
-                            <span
-                                style={{
-                                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                                    fontWeight: 500,
-                                    fontSize: '16px',
-                                }}
-                            >
-                                {t('accountStorage')}
-                            </span>
-                        }
-                    >
-                        <div style={{ display: 'flex' }}>
-                            <div style={{ padding: '0 8px' }}>
-                                <Progress
-                                    percent={percentage}
-                                    type="circle"
-                                    format={(percent) => (
-                                        <span style={{ fontSize: '13px' }}>{percent}% Used</span>
-                                    )}
-                                />
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', padding: '0 8px' }}>
-                                <Typography.Text>
-                                    {t('used')} <strong>{usedData} GB</strong>
-                                </Typography.Text>
-                                <Typography.Text>
-                                    {t('remaining')} <strong>{remainingData} GB</strong>
-                                </Typography.Text>
-                            </div>
-                        </div>
-                    </Card>
-                </Col>
-            </Row>) : (<div>
-                <Col span={24} style={{ paddingRight: '10px' }}>
-                    <Card
-                        title={
-                            <span
-                                style={{
-                                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                                    fontWeight: 500,
-                                    fontSize: '16px',
-                                }}
-                            >
-                                {t('currentPlanDetails')}
-                            </span>
-                        }
-                        extra={
                             <div
-                                style={{ marginTop: '8px', marginRight: '8px' }}
-                            >
-                                <Button type="primary" onClick={showModal}>{t('upgradePlan')}</Button>
-                                <Modal open={isModalOpen} onCancel={handleCancel} width={1000} centered
-                                       okButtonProps={{ hidden: true }} cancelButtonProps={{ hidden: true }}>
-                                    <UpgradePlans />
-                                </Modal>
-                            </div>
-                        }
-                    >
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                width: '50%',
-                                padding: '0 12px',
-                            }}
-                        >
-                            <div style={{ marginBottom: '14px' }}>
-                                <Typography.Text style={{ fontWeight: 700 }}>
-                                    {t('cardBodyText01')}
-                                </Typography.Text>
-                                <Typography.Text>
-                                    {t('cardBodyText02')}
-                                </Typography.Text>
-                            </div>
-                            <Button
-                                type="link"
-                                style={{ margin: 0, padding: 0, width: '90px' }}
-                            >
-                                {t('redeemCode')}
-                            </Button>
-                        </div>
-                    </Card>
-                </Col>
-
-                <Col span={24} style={{ paddingLeft: '10px' }}>
-                    <Card
-                        title={
-                            <span
                                 style={{
-                                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                                    fontWeight: 500,
-                                    fontSize: '16px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    width: '50%',
+                                    padding: '0 12px',
                                 }}
                             >
-                                {t('accountStorage')}
-                            </span>
-                        }
-                    >
-                        <div style={{ display: 'flex' }}>
-                            <div style={{ padding: '0 8px' }}>
-                                <Progress
-                                    percent={percentage}
-                                    type="circle"
-                                    format={(percent) => (
-                                        <span style={{ fontSize: '13px' }}>{percent}% Used</span>
-                                    )}
-                                />
+                                <div style={{ marginBottom: '14px' }}>
+                                    <Typography.Text
+                                        style={{ fontWeight: 700 }}
+                                    >
+                                        {t('cardBodyText01')}
+                                    </Typography.Text>
+                                    <Typography.Text>
+                                        {t('cardBodyText02')}
+                                    </Typography.Text>
+                                </div>
+                                <Button
+                                    type="link"
+                                    style={{
+                                        margin: 0,
+                                        padding: 0,
+                                        width: '90px',
+                                    }}
+                                >
+                                    {t('redeemCode')}
+                                </Button>
                             </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', padding: '0 8px' }}>
-                                <Typography.Text>
-                                    {t('used')} <strong>{usedData} GB</strong>
-                                </Typography.Text>
-                                <Typography.Text>
-                                    {t('remaining')} <strong>{remainingData} GB</strong>
-                                </Typography.Text>
+                        </Card>
+                    </Col>
+
+                    <Col span={8} style={{ paddingLeft: '10px' }}>
+                        <Card
+                            title={
+                                <span
+                                    style={{
+                                        color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
+                                        fontWeight: 500,
+                                        fontSize: '16px',
+                                    }}
+                                >
+                                    {t('accountStorage')}
+                                </span>
+                            }
+                        >
+                            <div style={{ display: 'flex' }}>
+                                <div style={{ padding: '0 8px' }}>
+                                    <Progress
+                                        percent={percentage}
+                                        type="circle"
+                                        format={(percent) => (
+                                            <span style={{ fontSize: '13px' }}>
+                                                {percent}% Used
+                                            </span>
+                                        )}
+                                    />
+                                </div>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        padding: '0 8px',
+                                    }}
+                                >
+                                    <Typography.Text>
+                                        {t('used')}{' '}
+                                        <strong>{usedData} GB</strong>
+                                    </Typography.Text>
+                                    <Typography.Text>
+                                        {t('remaining')}{' '}
+                                        <strong>{remainingData} GB</strong>
+                                    </Typography.Text>
+                                </div>
                             </div>
-                        </div>
-                    </Card>
-                </Col>
-            </div>)}
+                        </Card>
+                    </Col>
+                </Row>
+            ) : (
+                <div>
+                    <Col span={24}>
+                        <Card
+                            title={
+                                <span
+                                    style={{
+                                        color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
+                                        fontWeight: 500,
+                                        fontSize: '16px',
+                                    }}
+                                >
+                                    {t('currentPlanDetails')}
+                                </span>
+                            }
+                            extra={
+                                <div
+                                    style={{
+                                        marginTop: '8px',
+                                        marginRight: '8px',
+                                    }}
+                                >
+                                    <Button type="primary" onClick={showModal}>
+                                        {t('upgradePlan')}
+                                    </Button>
+                                    <Modal
+                                        open={isModalOpen}
+                                        onCancel={handleCancel}
+                                        width={1000}
+                                        centered
+                                        okButtonProps={{ hidden: true }}
+                                        cancelButtonProps={{ hidden: true }}
+                                    >
+                                        <UpgradePlans />
+                                    </Modal>
+                                </div>
+                            }
+                        >
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    width: '50%',
+                                    padding: '0 12px',
+                                }}
+                            >
+                                <div style={{ marginBottom: '14px' }}>
+                                    <Typography.Text
+                                        style={{ fontWeight: 700 }}
+                                    >
+                                        {t('cardBodyText01')}
+                                    </Typography.Text>
+                                    <Typography.Text>
+                                        {t('cardBodyText02')}
+                                    </Typography.Text>
+                                </div>
+                                <Button
+                                    type="link"
+                                    style={{
+                                        margin: 0,
+                                        padding: 0,
+                                        width: '90px',
+                                    }}
+                                >
+                                    {t('redeemCode')}
+                                </Button>
+                            </div>
+                        </Card>
+                    </Col>
+
+                    <Col span={24} style={{ marginTop: '1.5rem' }}>
+                        <Card
+                            title={
+                                <span
+                                    style={{
+                                        color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
+                                        fontWeight: 500,
+                                        fontSize: '16px',
+                                    }}
+                                >
+                                    {t('accountStorage')}
+                                </span>
+                            }
+                        >
+                            <div style={{ display: 'flex' }}>
+                                <div style={{ padding: '0 8px' }}>
+                                    <Progress
+                                        percent={percentage}
+                                        type="circle"
+                                        format={(percent) => (
+                                            <span style={{ fontSize: '13px' }}>
+                                                {percent}% Used
+                                            </span>
+                                        )}
+                                    />
+                                </div>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        padding: '0 8px',
+                                    }}
+                                >
+                                    <Typography.Text>
+                                        {t('used')}{' '}
+                                        <strong>{usedData} GB</strong>
+                                    </Typography.Text>
+                                    <Typography.Text>
+                                        {t('remaining')}{' '}
+                                        <strong>{remainingData} GB</strong>
+                                    </Typography.Text>
+                                </div>
+                            </div>
+                        </Card>
+                    </Col>
+                </div>
+            )}
 
             <div style={{ marginTop: '1.5rem' }}>
                 <Card
@@ -222,11 +291,11 @@ const CurrentBill: React.FC = () => {
                                 gap: '4px',
                             }}
                         >
-                        <span>{t('chargers')}</span>
-                        <Tooltip title={t('tooltip')}>
-                        <InfoCircleTwoTone />
-                        </Tooltip>
-                    </span>
+                            <span>{t('chargers')}</span>
+                            <Tooltip title={t('tooltip')}>
+                                <InfoCircleTwoTone />
+                            </Tooltip>
+                        </span>
                     }
                     style={{ marginTop: '16px' }}
                 >
@@ -246,8 +315,8 @@ const CurrentBill: React.FC = () => {
                                 gap: '4px',
                             }}
                         >
-                        {t('invoices')}
-                    </span>
+                            {t('invoices')}
+                        </span>
                     }
                     style={{ marginTop: '16px' }}
                 >
