@@ -49,7 +49,7 @@ const MainLayout = () => {
                 <Layout.Content>
                     <Col
                         xxl={{ span: 18, offset: 3, flex: '100%' }}
-                        style={{ paddingInline: isDesktop ? 48 : 24 }}
+                        style={{ paddingInline: isDesktop ? 96 : 24 }}
                     >
                         <Outlet />
                     </Col>
