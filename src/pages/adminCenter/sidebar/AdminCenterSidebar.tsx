@@ -1,7 +1,7 @@
 import { RightOutlined } from '@ant-design/icons'
 import { ConfigProvider, Flex, Menu, MenuProps } from 'antd'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { colors } from '../../../styles/colors'
 import { useTranslation } from 'react-i18next'
 import { adminCenterItems } from '../adminCenterConstants'
@@ -10,6 +10,7 @@ import './AdminCenterSidebar.css'
 const AdminCenterSidebar: React.FC = () => {
     // localization
     const { t } = useTranslation('adminCenterSidebar')
+    const location = useLocation()
 
     type MenuItem = Required<MenuProps>['items'][number]
     // import menu items from admin center sidebar constants
@@ -47,11 +48,12 @@ const AdminCenterSidebar: React.FC = () => {
             }}
         >
             <Menu
-                style={{ border: 'none', width: '100%' }}
-                mode="vertical"
                 items={items}
-                defaultSelectedKeys={['1']}
-                defaultOpenKeys={['1']}
+                selectedKeys={[
+                    location.pathname.split('/worklenz/admin-center/')[1] || '',
+                ]}
+                mode="vertical"
+                style={{ border: 'none', width: '100%' }}
             />
         </ConfigProvider>
     )

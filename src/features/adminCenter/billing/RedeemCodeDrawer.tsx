@@ -10,7 +10,6 @@ const RedeemCodeDrawer: React.FC = () => {
     const [form] = Form.useForm()
     const { t } = useTranslation('currentBill')
     const [redeemCode, setRedeemCode] = useState<number | null>(null)
-    const [open, setOpen] = useState(false)
     const isDrawerOpen = useAppSelector(
         (state: RootState) => state.billingReducer.isDrawerOpen
     )

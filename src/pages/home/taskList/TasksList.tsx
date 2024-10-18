@@ -1,5 +1,17 @@
 import { SyncOutlined } from '@ant-design/icons'
-import { Badge, Button, Card, Flex, Segmented, Select, Skeleton, Table, TableProps, Tooltip, Typography } from 'antd'
+import {
+    Badge,
+    Button,
+    Card,
+    Flex,
+    Segmented,
+    Select,
+    Skeleton,
+    Table,
+    TableProps,
+    Tooltip,
+    Typography,
+} from 'antd'
 import React, { useState } from 'react'
 import ListView from './ListView'
 import CalendarView from './CalendarView'
@@ -11,7 +23,7 @@ import { TaskType } from '../../../types/task.types'
 const TasksList = () => {
     const tasksList = useAppSelector((state) => state.taskReducer.tasks)
     const projectList = useAppSelector(
-        (state) => state.projectReducer.projectsList,
+        (state) => state.projectReducer.projectsList
     )
     const [listView, setListView] = useState<'List' | 'Calendar'>('List')
     const [isLoading, setIsLoading] = useState(false)
@@ -51,7 +63,7 @@ const TasksList = () => {
             width: '180px',
             render: (values) => {
                 const project = projectList.find(
-                    (project) => project.projectName === values.project,
+                    (project) => project.projectName === values.project
                 )
                 return (
                     project && (
@@ -124,7 +136,11 @@ const TasksList = () => {
                     />
                 </Flex>
             }
-            style={{ width: '100%' }}
+            style={{
+                width: '100%',
+                border: '1px solid transparent',
+                boxShadow: '#7a7a7a26 0 5px 16px',
+            }}
         >
             {/* toggle task view list / calendar */}
             {listView === 'List' ? <ListView /> : <CalendarView />}

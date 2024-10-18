@@ -4,6 +4,7 @@ import {
     GlobalOutlined,
     GroupOutlined,
     IdcardOutlined,
+    LockOutlined,
     NotificationOutlined,
     ProfileOutlined,
     TagsOutlined,
@@ -23,6 +24,7 @@ import TaskTemplatesSettings from './taskTemplates/TaskTemplatesSettings'
 import TeamMembersSettings from './teamMembers/TeamMembersSettings'
 import TeamsSettings from './teams/TeamsSettings'
 import LanguageAndRegionSettings from './languageAndRegion/LanguageAndRegionSettings'
+import ChangePassword from './changePassword/ChangePassword'
 
 // type of a menu item in settings sidebar
 type SettingMenuItems = {
@@ -103,6 +105,13 @@ export const settingsItems: SettingMenuItems[] = [
         endpoint: 'teams',
         icon: React.createElement(BankOutlined),
         element: React.createElement(TeamsSettings),
+    },
+    {
+        key: 'change-password',
+        name: 'changePassword',
+        endpoint: 'password',
+        icon: React.createElement(LockOutlined),
+        element: React.createElement(ChangePassword),
     },
     {
         key: 'language-and-region',

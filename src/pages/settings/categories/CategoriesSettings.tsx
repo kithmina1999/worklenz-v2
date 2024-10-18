@@ -1,3 +1,4 @@
+import { SearchOutlined } from '@ant-design/icons'
 import { Card, Flex, Input, Table, TableProps, Typography } from 'antd'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
@@ -31,9 +32,10 @@ const CategoriesSettings = () => {
                         justify="flex-end"
                         style={{ width: '100%', maxWidth: 400 }}
                     >
-                        <Input.Search
+                        <Input
                             placeholder={t('searchPlaceholder')}
-                            style={{ maxWidth: 200 }}
+                            style={{ maxWidth: 232 }}
+                            suffix={<SearchOutlined />}
                         />
                     </Flex>
                 </Flex>

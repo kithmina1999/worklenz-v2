@@ -1,11 +1,12 @@
-import { Card, Col, Divider, Form, Input, Row } from 'antd'
+import { Button, Card, Col, Divider, Form, Input, Row } from 'antd'
 import React from 'react'
 import { RootState } from '../../../app/store'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 
 const Configuration: React.FC = () => {
-
-    const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode)
+    const themeMode = useAppSelector(
+        (state: RootState) => state.themeReducer.mode
+    )
 
     const name = 'Raveesha Dilanka'
     const emailAddress = 'raveeshadilanka1999@gmail.com'
@@ -36,31 +37,44 @@ const Configuration: React.FC = () => {
                     }}
                 >
                     <Row>
-                        <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
+                        <Col
+                            span={8}
+                            style={{ padding: '0 12px', height: '86px' }}
+                        >
                             <Form.Item
                                 name="name"
                                 label="Name"
                                 layout="vertical"
-                                rules={[{
-                                    required: true,
-                                }]}
+                                rules={[
+                                    {
+                                        required: true,
+                                    },
+                                ]}
                             >
                                 <Input placeholder="Name" />
                             </Form.Item>
                         </Col>
-                        <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
+                        <Col
+                            span={8}
+                            style={{ padding: '0 12px', height: '86px' }}
+                        >
                             <Form.Item
                                 name="emailAddress"
                                 label="Email Address"
                                 layout="vertical"
-                                rules={[{
-                                    required: true,
-                                }]}
+                                rules={[
+                                    {
+                                        required: true,
+                                    },
+                                ]}
                             >
                                 <Input placeholder="Name" disabled />
                             </Form.Item>
                         </Col>
-                        <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
+                        <Col
+                            span={8}
+                            style={{ padding: '0 12px', height: '86px' }}
+                        >
                             <Form.Item
                                 name="contactNumber"
                                 label="Contact Number"
@@ -72,21 +86,24 @@ const Configuration: React.FC = () => {
                     </Row>
 
                     <Divider orientation="left" style={{ margin: '16px 0' }}>
-                    <span
-                        style={{
-                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                            fontWeight: 600,
-                            fontSize: '16px',
-                            display: 'flex',
-                            gap: '4px',
-                        }}
-                    >
-                        Company Details
-                    </span>
+                        <span
+                            style={{
+                                color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
+                                fontWeight: 600,
+                                fontSize: '16px',
+                                display: 'flex',
+                                gap: '4px',
+                            }}
+                        >
+                            Company Details
+                        </span>
                     </Divider>
 
                     <Row>
-                        <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
+                        <Col
+                            span={8}
+                            style={{ padding: '0 12px', height: '86px' }}
+                        >
                             <Form.Item
                                 name="companyName"
                                 label="Company Name"
@@ -95,7 +112,10 @@ const Configuration: React.FC = () => {
                                 <Input placeholder="Company Name" />
                             </Form.Item>
                         </Col>
-                        <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
+                        <Col
+                            span={8}
+                            style={{ padding: '0 12px', height: '86px' }}
+                        >
                             <Form.Item
                                 name="addressLine01"
                                 label="Address Line 01"
@@ -104,7 +124,10 @@ const Configuration: React.FC = () => {
                                 <Input placeholder="Address Line 01" />
                             </Form.Item>
                         </Col>
-                        <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
+                        <Col
+                            span={8}
+                            style={{ padding: '0 12px', height: '86px' }}
+                        >
                             <Form.Item
                                 name="addressLine02"
                                 label="Address Line 02"
@@ -115,7 +138,10 @@ const Configuration: React.FC = () => {
                         </Col>
                     </Row>
                     <Row>
-                        <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
+                        <Col
+                            span={8}
+                            style={{ padding: '0 12px', height: '86px' }}
+                        >
                             <Form.Item
                                 name="country"
                                 label="Country"
@@ -124,7 +150,10 @@ const Configuration: React.FC = () => {
                                 <Input placeholder="Country" />
                             </Form.Item>
                         </Col>
-                        <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
+                        <Col
+                            span={8}
+                            style={{ padding: '0 12px', height: '86px' }}
+                        >
                             <Form.Item
                                 name="city"
                                 label="City"
@@ -133,7 +162,10 @@ const Configuration: React.FC = () => {
                                 <Input placeholder="City" />
                             </Form.Item>
                         </Col>
-                        <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
+                        <Col
+                            span={8}
+                            style={{ padding: '0 12px', height: '86px' }}
+                        >
                             <Form.Item
                                 name="state"
                                 label="State"
@@ -144,13 +176,25 @@ const Configuration: React.FC = () => {
                         </Col>
                     </Row>
                     <Row>
-                        <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
+                        <Col
+                            span={8}
+                            style={{ padding: '0 12px', height: '86px' }}
+                        >
                             <Form.Item
                                 name="postalCode"
                                 label="Postal Code"
                                 layout="vertical"
                             >
                                 <Input placeholder="Postal Code" />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col style={{ paddingLeft: '12px' }}>
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit">
+                                    Save
+                                </Button>
                             </Form.Item>
                         </Col>
                     </Row>
