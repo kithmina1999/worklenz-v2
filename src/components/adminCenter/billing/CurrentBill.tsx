@@ -18,11 +18,15 @@ import { RootState } from '../../../app/store'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useMediaQuery } from 'react-responsive'
 import { useTranslation } from 'react-i18next'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
+import { toggleDrawer } from '../../../features/adminCenter/billing/billingSlice'
+import RedeemCodeDrawer from '../../../features/adminCenter/billing/RedeemCodeDrawer'
 
 const CurrentBill: React.FC = () => {
     const themeMode = useAppSelector(
         (state: RootState) => state.themeReducer.mode
     )
+    const dispatch = useAppDispatch()
     const totalData = 1
     const usedData = 0
     const remainingData = totalData - usedData
@@ -108,9 +112,11 @@ const CurrentBill: React.FC = () => {
                                         padding: 0,
                                         width: '90px',
                                     }}
+                                    onClick={() => {dispatch(toggleDrawer())}}
                                 >
                                     {t('redeemCode')}
                                 </Button>
+                                <RedeemCodeDrawer />
                             </div>
                         </Card>
                     </Col>
@@ -224,9 +230,11 @@ const CurrentBill: React.FC = () => {
                                         padding: 0,
                                         width: '90px',
                                     }}
+                                    onClick={() => {dispatch(toggleDrawer())}}
                                 >
                                     {t('redeemCode')}
                                 </Button>
+                                <RedeemCodeDrawer />
                             </div>
                         </Card>
                     </Col>

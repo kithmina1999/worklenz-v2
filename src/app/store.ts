@@ -12,6 +12,7 @@ import buttonReducer from '../features/action-setup/buttonSlice'
 import clientReducer from '../features/settings/client/clientSlice'
 import jobReducer from '../features/settings/job/jobSlice'
 import teamReducer from '../features/adminCenter/teams/teamSlice'
+import billingReducer from '../features/adminCenter/billing/billingSlice'
 
 export const store = configureStore({
     // there is error  occured with day js package when use with redux it shows a non-serializable value was detected
@@ -33,6 +34,7 @@ export const store = configureStore({
         clientReducer: clientReducer,
         jobReducer: jobReducer,
         teamReducer: teamReducer,
+        billingReducer: billingReducer
     },
 })
 

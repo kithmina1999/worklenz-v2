@@ -24,6 +24,11 @@
     "paymentMethod": "Payment Method",
     "status": "Status",
 
+    "drawerTitle": "Redeem Code",
+    "label": "Redeem Code",
+    "drawerPlaceholder": "Enter your redeem code",
+    "redeemSubmit": "Submit",
+
     "modalTitle": "Select the best plan for your team",
     "seatLabel": "No of seats",
     "freePlan": "Free Plan",
