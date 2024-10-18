@@ -9,18 +9,39 @@ import {
     SaveOutlined,
     SettingOutlined,
     SyncOutlined,
-    UsergroupAddOutlined,
 } from '@ant-design/icons'
 import { PageHeader } from '@ant-design/pro-components'
-import { Button, ConfigProvider, Dropdown, Flex, Tabs, TabsProps, Tooltip, Typography } from 'antd'
+import {
+    Button,
+    ConfigProvider,
+    Dropdown,
+    Flex,
+    Tabs,
+    TabsProps,
+    Tooltip,
+    Typography,
+} from 'antd'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { colors } from '../../../styles/colors'
 import { tabItems } from './projectViewConstants'
-import { getFromLocalStorage, saveToLocalStorage } from '../../../utils/localStorageFunctions'
+import {
+    getFromLocalStorage,
+    saveToLocalStorage,
+} from '../../../utils/localStorageFunctions'
+import { useSelectedProject } from '../../../hooks/useSelectedProject'
+import ProjectMemberInviteButton from '../../../features/projects/singleProject/members/ProjectMemberInviteButton'
+import ProjectMemberDrawer from '../../../features/projects/singleProject/members/ProjectMemberDrawer'
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle'
 
 const ProjectView = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
+
+    // useSelectedProject custom hook returns currently selected project
+    const selectedProject = useSelectedProject()
+
+    // document title with useDocument title custom hook
+    useDocumentTitle(`${selectedProject?.projectName}`)
 
     const navigate = useNavigate()
 
@@ -105,7 +126,7 @@ const ProjectView = () => {
                             level={4}
                             style={{ marginBlockEnd: 0, marginInlineStart: 12 }}
                         >
-                            Worklenz UI rebuild
+                            {selectedProject?.projectName}
                         </Typography.Title>
                         {/* status  */}
                         <ClockCircleOutlined
@@ -141,9 +162,7 @@ const ProjectView = () => {
                             </Button>
                         </Tooltip>
 
-                        <Button type="primary" icon={<UsergroupAddOutlined />}>
-                            Invite
-                        </Button>
+                        <ProjectMemberInviteButton />
 
                         <Dropdown.Button
                             type="primary"
@@ -155,12 +174,13 @@ const ProjectView = () => {
                     </Flex>
                 }
             />
-
             <Tabs
                 defaultActiveKey={getFromLocalStorage('pinnedTab')}
                 items={tabMenuItems}
-                destroyInactiveTabPane={true}
             />
+            {/* drawers  */}
+            {/* add project members drawer */}
+            <ProjectMemberDrawer />
         </div>
     )
 }
