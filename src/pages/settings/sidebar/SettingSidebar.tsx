@@ -15,6 +15,19 @@ const SettingSidebar = () => {
     // import menu items from settings sidebar constants
     const menuItems = settingsItems
 
+    // function for get the active menu item
+    const getCurrentActiveKey = () => {
+        // this one return the stirng after worklenz/
+        const afterWorklenzString = location.pathname.split(
+            '/worklenz/settings/'
+        )[1]
+
+        // this one return the stirng after worklenz/ **pathKey** /
+        const pathKey = afterWorklenzString.split('/')[0]
+
+        return pathKey
+    }
+
     // menu items
     const items: MenuItem[] = [
         ...menuItems.map((item) => ({
@@ -48,10 +61,7 @@ const SettingSidebar = () => {
         >
             <Menu
                 items={items}
-                selectedKeys={[
-                    // this code extract the key from relative path
-                    location.pathname.split('/worklenz/settings/')[1] || '',
-                ]}
+                selectedKeys={[getCurrentActiveKey()]}
                 mode="vertical"
                 style={{ border: 'none', width: '100%' }}
             />
