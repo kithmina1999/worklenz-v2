@@ -6,9 +6,11 @@ import {
     Popconfirm,
     Table,
     TableProps,
+    Tooltip,
     Typography,
 } from 'antd'
 import React, { useMemo, useState } from 'react'
+
 import CreateJobTitlesDrawer from '../../../features/settings/job/CreateJobTitlesDrawer'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import {
@@ -17,17 +19,21 @@ import {
     toggleUpdateJobTitleDrawer,
 } from '../../../features/settings/job/jobSlice'
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { JobType } from '../../../types/job'
+import { JobType } from '../../../types/job.types'
+
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 import {
     DeleteOutlined,
     EditOutlined,
     ExclamationCircleFilled,
 } from '@ant-design/icons'
-import { colors } from '../../../styles/colors'
 import UpdateJobTitlesDrawer from '../../../features/settings/job/UpdateJobTitlesDrawer'
+import { useTranslation } from 'react-i18next'
+import { colors } from '../../../styles/colors'
 
 const JobTitlesSettings = () => {
+    // localization
+    const { t } = useTranslation('jobTitlesSettings')
     // get currently hover row
     const [hoverRow, setHoverRow] = useState<string | null>(null)
     // get currently selected job id
@@ -49,8 +55,14 @@ const JobTitlesSettings = () => {
     const columns: TableProps['columns'] = [
         {
             key: 'jobTitle',
-            title: 'Name',
+            title: t('nameColumn'),
             sorter: (a, b) => a.jobTitle.localeCompare(b.jobTitle),
+            onCell: (record) => ({
+                onClick: () => {
+                    setSelectedJobId(record.jobId)
+                    dispatch(toggleUpdateJobTitleDrawer())
+                },
+            }),
             render: (record: JobType) => (
                 <Typography.Text
                     style={{
@@ -58,10 +70,6 @@ const JobTitlesSettings = () => {
                             hoverRow === record.jobId
                                 ? colors.skyBlue
                                 : colors.darkGray,
-                    }}
-                    onClick={() => {
-                        setSelectedJobId(record.jobId)
-                        dispatch(toggleUpdateJobTitleDrawer())
                     }}
                 >
                     {record.jobTitle}
@@ -84,14 +92,14 @@ const JobTitlesSettings = () => {
                         />
 
                         <Popconfirm
-                            title="Are you sure?"
+                            title={t('deleteConfirmationTitle')}
                             icon={
                                 <ExclamationCircleFilled
                                     style={{ color: colors.vibrantOrange }}
                                 />
                             }
-                            okText="Yes"
-                            cancelText="Cancel"
+                            okText={t('deleteConfirmationOk')}
+                            cancelText={t('deleteConfirmationCancel')}
                             onConfirm={() =>
                                 dispatch(deleteJobTitle(record.jobId))
                             }
@@ -123,7 +131,7 @@ const JobTitlesSettings = () => {
                             onChange={(e) =>
                                 setSearchQuery(e.currentTarget.value)
                             }
-                            placeholder="Search by name"
+                            placeholder={t('searchPlaceholder')}
                             style={{ maxWidth: 200 }}
                         />
                         <Button
@@ -132,14 +140,16 @@ const JobTitlesSettings = () => {
                                 dispatch(toggleCreateJobTitleDrawer())
                             }
                         >
-                            Create Job Title
+                            {t('createJobTitleButton')}
                         </Button>
 
-                        {/* this button pin this route to navbar  */}
-                        <PinRouteToNavbarButton
-                            name="jobTitles"
-                            path="/worklenz/settings/job-titles"
-                        />
+                        <Tooltip title={t('pinTooltip')} trigger={'hover'}>
+                            {/* this button pin this route to navbar  */}
+                            <PinRouteToNavbarButton
+                                name="jobTitles"
+                                path="/worklenz/settings/job-titles"
+                            />
+                        </Tooltip>
                     </Flex>
                 </Flex>
             }
@@ -148,12 +158,12 @@ const JobTitlesSettings = () => {
                 className="homepage-table"
                 dataSource={filteredJobTitlesData}
                 columns={columns}
-                rowKey={(record) => record.jobId}
+                rowKey={(record: any) => record.jobId}
                 pagination={{
                     showSizeChanger: true,
                     defaultPageSize: 20,
                 }}
-                onRow={(record) => {
+                onRow={(record: any) => {
                     return {
                         onMouseEnter: () => setHoverRow(record.jobId),
                         onMouseLeave: () => setHoverRow(null),

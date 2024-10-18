@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Col, ConfigProvider, Flex, Menu, MenuProps } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import InviteButton from './addMember/InviteButton'
+import InviteButton from './invite/InviteButton'
 import SwitchTeamButton from './switchTeam/SwitchTeamButton'
 import NotificationButton from './notification/NotificationButton'
 import ProfileButton from './userProfile/ProfileButton'
-import AddMemberDrawer from './addMember/AddMemberDrawer'
+import AddMemberDrawer from '../settings/member/AddMemberDrawer'
 import NotficationDrawer from './notification/NotficationDrawer'
 import HelpButton from './help/HelpButton'
 import UpgradePlanButton from './upgradePlan/UpgradePlanButton'
@@ -26,7 +26,7 @@ const Navbar = () => {
 
     // in here nav routes list get data locally from the navRoutes array
     const [navRoutesList, setNavRoutesList] = useState<NavRoutesType[]>(
-        () => getFromLocalStorage('navRoutes') || navRoutes
+        () => getFromLocalStorage('navRoutes') || navRoutes,
     )
 
     //this useEffect re render the navRoutes list with localstorage change
@@ -87,16 +87,18 @@ const Navbar = () => {
                     />
                 )}
 
-                <Flex gap={16} align="center">
+                <Flex gap={20} align="center">
                     <ConfigProvider wave={{ disabled: true }}>
                         {isDesktop && (
-                            <Flex gap={12} align="center">
+                            <Flex gap={20} align="center">
                                 <UpgradePlanButton />
                                 <InviteButton />
-                                <SwitchTeamButton />
-                                <NotificationButton />
-                                <HelpButton />
-                                <ProfileButton />
+                                <Flex align="center">
+                                    <SwitchTeamButton />
+                                    <NotificationButton />
+                                    <HelpButton />
+                                    <ProfileButton />
+                                </Flex>
                             </Flex>
                         )}
                         {isTablet && !isDesktop && (

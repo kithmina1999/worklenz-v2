@@ -13,8 +13,8 @@ interface OrganizationNameProps {
 }
 
 const OrganizationNameForm: React.FC<OrganizationNameProps> = ({
-    onContinue,
-}) => {
+                                                                   onContinue,
+                                                               }) => {
     const dispatch = useDispatch()
     const [inputValue, setInputValue] = useState('')
     const isButtonDisabled = useSelector((state: RootState) => state.button.isButtonDisable)
@@ -39,13 +39,13 @@ const OrganizationNameForm: React.FC<OrganizationNameProps> = ({
 
     const handleOnContinue = () => {
         startTransition(() => {
-          onContinue();
-        });
-      };
+            onContinue()
+        })
+    }
 
     return (
         <Form
-            className='organization-name-form'
+            className="organization-name-form"
             style={{
                 width: '600px',
                 paddingBottom: '1rem',
@@ -62,7 +62,7 @@ const OrganizationNameForm: React.FC<OrganizationNameProps> = ({
                 layout="vertical"
                 rules={[{ required: true }]}
                 label={
-                    <span style={{ color: themeMode === 'dark'? '' : '#00000073', fontWeight: 500 }}>
+                    <span style={{ color: themeMode === 'dark' ? '' : '#00000073', fontWeight: 500 }}>
                         {t('worklenzAccountTitle')}
                     </span>
                 }

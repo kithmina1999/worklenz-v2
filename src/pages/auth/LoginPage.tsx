@@ -11,8 +11,8 @@ import {
     Space,
     Typography,
 } from 'antd'
-import googleIcon from '../../assets/images/icons8-google.svg'
-import { useNavigate } from 'react-router-dom'
+import googleIcon from '../../assets/images/google-icon.png'
+import { Link, useNavigate } from 'react-router-dom'
 import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive'
@@ -110,9 +110,13 @@ const LoginPage = () => {
                             <Checkbox>{t('rememberMe')}</Checkbox>
                         </Form.Item>
 
-                        <Typography.Link href="/auth/forgot-password">
+                        <Link
+                            to="/auth/forgot-password"
+                            className="ant-typography ant-typography-link blue-link"
+                            style={{ fontSize: 14 }}
+                        >
                             {t('forgotPasswordButton')}
-                        </Typography.Link>
+                        </Link>
                     </Flex>
                 </Form.Item>
 
@@ -157,12 +161,13 @@ const LoginPage = () => {
                             {t('dontHaveAccountText')}
                         </Typography.Text>
 
-                        <Typography.Link
-                            href="/auth/signup"
+                        <Link
+                            to="/auth/signup"
+                            className="ant-typography ant-typography-link blue-link"
                             style={{ fontSize: 14 }}
                         >
                             {t('signupButton')}
-                        </Typography.Link>
+                        </Link>
                     </Space>
                 </Form.Item>
             </Form>

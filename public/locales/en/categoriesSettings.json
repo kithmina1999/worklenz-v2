@@ -1,0 +1,6 @@
+{
+    "categoryColumn": "Category",
+    "associatedTaskColumn": "Associated Task",
+    "searchPlaceholder": "Search by name",
+    "emptyText": "Categories can be created while updating or creating projects."
+}

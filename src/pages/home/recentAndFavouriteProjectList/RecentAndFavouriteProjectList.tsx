@@ -1,19 +1,8 @@
-import { StarFilled, SyncOutlined } from '@ant-design/icons'
-import {
-    Badge,
-    Button,
-    Card,
-    Empty,
-    Flex,
-    Segmented,
-    Skeleton,
-    Table,
-    TableProps,
-    Typography,
-} from 'antd'
+import { SyncOutlined } from '@ant-design/icons'
+import { Badge, Button, Card, Empty, Flex, Segmented, Skeleton, Table, TableProps, Typography } from 'antd'
 import React, { useState } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { ProjectType } from '../../../types/project'
+import { ProjectType } from '../../../types/project.types'
 import AddFavouriteProjectButton from './AddFavouriteProjectButton'
 
 const RecentAndFavouriteProjectList = () => {
@@ -22,7 +11,7 @@ const RecentAndFavouriteProjectList = () => {
     >('Recent')
     const [isLoading, setIsLoading] = useState(false)
     const projectsList = useAppSelector(
-        (state) => state.projectReducer.projectsList
+        (state) => state.projectReducer.projectsList,
     )
 
     // this project list check wheather it's recent projects or favourite projects

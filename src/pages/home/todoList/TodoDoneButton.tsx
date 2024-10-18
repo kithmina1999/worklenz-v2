@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { colors } from '../../../styles/colors'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { completeTodo } from '../../../features/todo/todoSlice'
-import { TodoType } from '../../../types/todo'
+import { TodoType } from '../../../types/todo.types'
 
 type TodoDoneButtonProps = {
     record: TodoType
@@ -13,7 +13,7 @@ type TodoDoneButtonProps = {
 const TodoDoneButton = ({ record }: TodoDoneButtonProps) => {
     const dispatch = useAppDispatch()
     const [checkIconColor, setCheckIconColor] = useState<string>(
-        colors.lightGray
+        colors.lightGray,
     )
 
     const handleCompleteTodo = () => {

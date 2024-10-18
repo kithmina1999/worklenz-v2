@@ -6,20 +6,12 @@ import {
     QuestionCircleOutlined,
     ReadOutlined,
 } from '@ant-design/icons'
-import {
-    Button,
-    Card,
-    Dropdown,
-    Flex,
-    MenuProps,
-    Space,
-    Typography,
-} from 'antd'
+import { Button, Card, Dropdown, Flex, MenuProps, Space, Typography } from 'antd'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { colors } from '../../../styles/colors'
 import { NavLink } from 'react-router-dom'
-import InviteButton from '../addMember/InviteButton'
+import InviteButton from '../invite/InviteButton'
 import SwitchTeamButton from '../switchTeam/SwitchTeamButton'
 // custom css
 import './mobileMenu.css'

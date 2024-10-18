@@ -1,8 +1,4 @@
-import {
-    BankOutlined,
-    CaretDownFilled,
-    CheckCircleFilled,
-} from '@ant-design/icons'
+import { BankOutlined, CaretDownFilled, CheckCircleFilled } from '@ant-design/icons'
 import { Avatar, Card, Dropdown, Flex, Tooltip, Typography } from 'antd'
 import React from 'react'
 import { colors } from '../../../styles/colors'
@@ -11,23 +7,28 @@ import { useTranslation } from 'react-i18next'
 import './switchTeam.css'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { avatarNamesMap } from '../../../shared/constants'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
+import { setTeamActive } from '../../adminCenter/teams/teamSlice'
 
 const SwitchTeamButton = () => {
-    // get user data from redux - user reducer
-    const userDetails = useAppSelector((state) => state.userReducer)
     // localization
     const { t } = useTranslation('navbar')
+    // get team data from team reducer
+    const teamsDetails = useAppSelector((state) => state.teamReducer.teamsList)
 
-    // get avatar character
-    const avatarCharacter = userDetails.name[0].toLocaleUpperCase()
+    // get the active team
+    const activeTeam = teamsDetails.find((team) => team.isActive)
+
+    const dispatch = useAppDispatch()
 
     // switch teams dropdown items
     const items = [
-        {
-            key: '0',
+        ...teamsDetails.map((team) => ({
+            key: team.teamId,
             label: (
                 <Card
                     className="switch-team-card"
+                    onClick={() => dispatch(setTeamActive(team.teamId))}
                     bordered={false}
                     style={{
                         width: 230,
@@ -44,10 +45,12 @@ const SwitchTeamButton = () => {
                                 <Avatar
                                     style={{
                                         backgroundColor:
-                                            avatarNamesMap[avatarCharacter],
+                                            avatarNamesMap[
+                                                team.teamName[0].toLocaleUpperCase()
+                                                ],
                                     }}
                                 >
-                                    {avatarCharacter}
+                                    {team.teamName[0].toLocaleUpperCase()}
                                 </Avatar>
                                 <Flex vertical>
                                     <Typography.Text
@@ -57,24 +60,26 @@ const SwitchTeamButton = () => {
                                             color: colors.lightGray,
                                         }}
                                     >
-                                        Owned by you
+                                        Owned by {team.owner.split(' ')[0]}
                                     </Typography.Text>
                                     <Typography.Text>
-                                        {userDetails.name}
+                                        {team.teamName}
                                     </Typography.Text>
                                 </Flex>
                             </Flex>
                             <CheckCircleFilled
                                 style={{
                                     fontSize: 16,
-                                    color: colors.limeGreen,
+                                    color: team.isActive
+                                        ? colors.limeGreen
+                                        : colors.lightGray,
                                 }}
                             />
                         </Flex>
                     </Flex>
                 </Card>
             ),
-        },
+        })),
     ]
 
     return (
@@ -85,7 +90,7 @@ const SwitchTeamButton = () => {
                 trigger={['click']}
             >
                 <Flex
-                    gap={4}
+                    gap={12}
                     align="center"
                     justify="center"
                     style={{
@@ -94,11 +99,12 @@ const SwitchTeamButton = () => {
                         fontWeight: 500,
                         borderRadius: '50rem',
                         padding: '10px 16px',
+                        height: '39px',
                     }}
                 >
                     <BankOutlined />
                     <Typography.Text strong style={{ color: colors.skyBlue }}>
-                        {userDetails.name}
+                        {activeTeam?.teamName}
                     </Typography.Text>
                     <CaretDownFilled />
                 </Flex>

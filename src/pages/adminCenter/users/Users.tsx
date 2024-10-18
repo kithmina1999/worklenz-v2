@@ -1,12 +1,13 @@
-import { SearchOutlined, SyncOutlined } from "@ant-design/icons";
-import { PageHeader } from "@ant-design/pro-components";
-import { Button, Card, Flex, Input, Tooltip } from "antd";
-import React, { useEffect, useState } from "react";
-import UsersTable from "./UsersTable";
-import { RootState } from "../../../app/store";
-import { useAppSelector } from "../../../hooks/useAppSelector";
+import { SearchOutlined, SyncOutlined } from '@ant-design/icons'
+import { PageHeader } from '@ant-design/pro-components'
+import { Button, Card, Flex, Input, Tooltip } from 'antd'
+import React, { useEffect, useState } from 'react'
+import UsersTable from './UsersTable'
+import { RootState } from '../../../app/store'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { useTranslation } from 'react-i18next'
 
-const Users : React.FC = () => {
+const Users: React.FC = () => {
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -14,6 +15,8 @@ const Users : React.FC = () => {
 
     const [searchTerm, setSearchTerm] = useState('')
     const [debouncedTerm, setDebouncedTerm] = useState('')
+
+    const { t } = useTranslation('users')
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -40,39 +43,43 @@ const Users : React.FC = () => {
         setTimeout(() => setIsLoading(false), 500)
     }
 
-  return (
-    <div style={{width: '100%'}}>
-        <PageHeader
-                title={<span>Users</span>}
+    return (
+        <div style={{ width: '100%' }}>
+            <PageHeader
+                title={<span>{t('title')}</span>}
                 style={{ padding: '16px 0' }}
             />
-        <PageHeader
-            style={{ paddingLeft: 0, paddingTop: 0, paddingRight: '24px', paddingBottom: '16px'}} 
-            subTitle={<span style={{color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`, fontWeight: 500, fontSize: '16px'}}>1 users</span>}
-            extra={
-                <Flex gap={8} align="center">
-                    <Tooltip title='Refresh users'>
-                        <Button
-                            shape="circle"
-                            icon={<SyncOutlined spin={isLoading} />}
-                            onClick={() => handleRefresh()}
+            <PageHeader
+                style={{ paddingLeft: 0, paddingTop: 0, paddingRight: '24px', paddingBottom: '16px' }}
+                subTitle={<span style={{
+                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
+                    fontWeight: 500,
+                    fontSize: '16px',
+                }}>1 {t('subTitle')}</span>}
+                extra={
+                    <Flex gap={8} align="center">
+                        <Tooltip title="Refresh users">
+                            <Button
+                                shape="circle"
+                                icon={<SyncOutlined spin={isLoading} />}
+                                onClick={() => handleRefresh()}
+                            />
+                        </Tooltip>
+                        <Input
+                            placeholder={t('placeholder')}
+                            suffix={<SearchOutlined />}
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                    </Tooltip>
-                    <Input
-                        placeholder='Search by name'
-                        suffix={<SearchOutlined />}
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </Flex>
-            }
-        />
-        <Card>
-            <UsersTable />
-        </Card>
-    </div>
-  );
-};
+                    </Flex>
+                }
+            />
+            <Card>
+                <UsersTable />
+            </Card>
+        </div>
+    )
+}
 
-export default Users;
+export default Users

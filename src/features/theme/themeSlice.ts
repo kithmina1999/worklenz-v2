@@ -6,16 +6,20 @@ type ThemeState = {
     mode: ThemeType
 }
 
-// function for get current theme value from the local storage
-const getThemeModeFromLocalStorage = () => {
-    const savedTheme = localStorage.getItem('theme')
-    return savedTheme === 'default'
-        ? (savedTheme as 'default')
-        : savedTheme === 'dark'
-            ? (savedTheme as 'dark')
-            : 'default'
+// Function to detect the system's theme preference
+const getSystemTheme = (): ThemeType => {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'default'
 }
-// function for save the current theme value in the local storage
+
+// Function for getting the current theme value from localStorage or system theme
+const getThemeModeFromLocalStorage = (): ThemeType => {
+    const savedTheme = localStorage.getItem('theme') as ThemeType | null
+    return savedTheme || getSystemTheme() // If no theme is saved, fallback to system preference
+}
+
+// Function for saving the current theme value in localStorage
 const saveThemeModeToLocalStorage = (themeMode: ThemeType) => {
     localStorage.setItem('theme', themeMode)
 }
@@ -32,8 +36,12 @@ const themeSlice = createSlice({
             state.mode = state.mode === 'default' ? 'dark' : 'default'
             saveThemeModeToLocalStorage(state.mode)
         },
+        setTheme: (state, action) => {
+            state.mode = action.payload
+            saveThemeModeToLocalStorage(state.mode)
+        },
     },
 })
 
-export const { toggleTheme } = themeSlice.actions
+export const { toggleTheme, setTheme } = themeSlice.actions
 export default themeSlice.reducer

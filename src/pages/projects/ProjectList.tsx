@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 
 const ProjectList: React.FC = () => {
 
-    const { t } = useTranslation("ProjectList")
+    const { t } = useTranslation('ProjectList')
 
     const [projectSegment, setProjectSegment] = useState<
         'All' | 'Favourites' | 'Archived'
@@ -79,7 +79,7 @@ const ProjectList: React.FC = () => {
                             options={['All', 'Favourites', 'Archived']}
                             defaultValue="All"
                             onChange={(
-                                value: 'All' | 'Favourites' | 'Archived'
+                                value: 'All' | 'Favourites' | 'Archived',
                             ) => handleSegmentChange(value)}
                         />
                         <Input
@@ -94,8 +94,9 @@ const ProjectList: React.FC = () => {
                     </Flex>
                 }
             />
-            <Card className='project-card'>
-                {projectSegment === 'All' ? <AllProjectList /> : projectSegment === 'Favourites' ? <FavouriteProjectList /> : <ArchiveProjectList />}
+            <Card className="project-card">
+                {projectSegment === 'All' ? <AllProjectList /> : projectSegment === 'Favourites' ?
+                    <FavouriteProjectList /> : <ArchiveProjectList />}
             </Card>
         </div>
     )

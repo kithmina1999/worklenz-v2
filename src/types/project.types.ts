@@ -3,4 +3,7 @@ export type ProjectType = {
     projectName: string
     isFavourite: boolean
     projectColor: string
+    projectCreated: Date
+    projectTeam: string
+    projectMemberCount: number
 }

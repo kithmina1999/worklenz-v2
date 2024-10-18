@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { JobType } from '../../../types/job'
+import { JobType } from '../../../types/job.types'
 
 type JobState = {
     jobsList: JobType[]
@@ -34,7 +34,7 @@ const jobSlice = createSlice({
         // action for update job title
         updateJobTitle: (state, action: PayloadAction<JobType>) => {
             const index = state.jobsList.findIndex(
-                (job) => job.jobId === action.payload.jobId
+                (job) => job.jobId === action.payload.jobId,
             )
             if (index >= 0) {
                 state.jobsList[index] = action.payload
@@ -43,7 +43,7 @@ const jobSlice = createSlice({
         // action for delete job title
         deleteJobTitle: (state, action: PayloadAction<string>) => {
             state.jobsList = state.jobsList.filter(
-                (job) => job.jobId !== action.payload
+                (job) => job.jobId !== action.payload,
             )
         },
     },

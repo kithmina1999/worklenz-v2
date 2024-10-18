@@ -1,53 +1,36 @@
-import {
-    DeleteOutlined,
-    SearchOutlined,
-    SettingOutlined,
-    SyncOutlined,
-} from '@ant-design/icons'
+import { DeleteOutlined, SearchOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons'
 import { PageHeader } from '@ant-design/pro-components'
-import {
-    Avatar,
-    Badge,
-    Button,
-    Card,
-    Flex,
-    Input,
-    Popconfirm,
-    Table,
-    TableProps,
-    Tooltip,
-    Typography,
-} from 'antd'
-import React, { useEffect, useMemo, useState } from 'react'
-import CreateClientDrawer from '../../../features/settings/client/CreateClientDrawer'
-import {
-  deleteTeam,
-    toggleDrawer,
-    toggleSettingDrawer,
-} from '../../../features/adminCenter/teams/teamSlice'
+import { Avatar, Badge, Button, Card, Flex, Input, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd'
+import React, { useMemo, useState } from 'react'
+import { deleteTeam, toggleDrawer, toggleSettingDrawer } from '../../../features/adminCenter/teams/teamSlice'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import CreateTeamDrawer from '../../../features/adminCenter/teams/CreateTeamDrawer'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { RootState } from '../../../app/store'
-import { TeamsType } from '../../../types/adminCenter/team'
+import { TeamsType } from '../../../types/adminCenter/team.types'
 import './Teams.css'
 import SettingTeamDrawer from '../../../features/adminCenter/teams/SettingTeamDrawer'
+import { useMediaQuery } from 'react-responsive'
+import { useTranslation } from 'react-i18next'
 
 const Teams: React.FC = () => {
     const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode)
     const [isLoading, setIsLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const teamsLists = useAppSelector(
-        (state: RootState) => state.teamReducer.teamsList
+        (state: RootState) => state.teamReducer.teamsList,
     )
     const dispatch = useAppDispatch()
     const [selectedTeam, setSelectedTeam] = useState<string>('')
+    const isTablet = useMediaQuery({ query: '(min-width: 1000px)' })
 
     const filteredTeamsData = useMemo(() => {
         return teamsLists.filter((item) =>
-            item.teamName.toLowerCase().includes(searchTerm.toLowerCase())
+            item.teamName.toLowerCase().includes(searchTerm.toLowerCase()),
         )
     }, [teamsLists, searchTerm])
+
+    const { t } = useTranslation('teams')
 
     const handleRefresh = () => {
         setIsLoading(true)
@@ -56,10 +39,10 @@ const Teams: React.FC = () => {
 
     const columns: TableProps['columns'] = [
         {
-            title: 'Team',
+            title: t('team'),
             key: 'teamName',
             render: (record: TeamsType) => (
-                <Typography.Text>
+                <Typography.Text style={{ fontSize: `${isTablet ? '14px' : '10px'}` }}>
                     <Badge status="success" style={{ marginRight: '8px' }} />
                     {record.teamName}
                 </Typography.Text>
@@ -68,28 +51,28 @@ const Teams: React.FC = () => {
         {
             title: (
                 <span style={{ display: 'flex', justifyContent: 'center' }}>
-                    Members Count
+                    {t('membersCount')}
                 </span>
             ),
             key: 'membersCount',
             render: (record: TeamsType) => (
                 <Typography.Text
-                    style={{ display: 'flex', justifyContent: 'center' }}
+                    style={{ display: 'flex', justifyContent: 'center', fontSize: `${isTablet ? '14px' : '10px'}` }}
                 >
                     {record.membersCount.toString()}
                 </Typography.Text>
             ),
         },
         {
-            title: 'Members',
+            title: t('members'),
             key: 'members',
             render: (record: TeamsType) => (
                 <span>
                     <Avatar
                         style={{
-                            width: '28px',
+                            width: `${isTablet ? '28px' : '20px'}`,
                             backgroundColor: '#bf4949',
-                            height: '28px',
+                            height: `${isTablet ? '28px' : '20px'}`,
                             marginRight: '8px',
                         }}
                     >
@@ -102,30 +85,30 @@ const Teams: React.FC = () => {
             title: '',
             key: 'button',
             render: (record: TeamsType) => (
-                <div className='row-buttons'>
-                    <Tooltip title="Settings">
+                <div className="row-buttons">
+                    <Tooltip title={t('settings')}>
                         <Button
                             style={{ marginRight: '8px' }}
                             size="small"
                             onClick={() => {
-                              setSelectedTeam(record.teamId)
-                              dispatch(toggleSettingDrawer())
+                                setSelectedTeam(record.teamId)
+                                dispatch(toggleSettingDrawer())
                             }}
                         >
                             <SettingOutlined />
                         </Button>
                     </Tooltip>
-                    <SettingTeamDrawer teamId={selectedTeam}/>
+                    <SettingTeamDrawer teamId={selectedTeam} />
 
-                    <Tooltip title="Delete">
-                      <Popconfirm
-                        title='Are you sure?'
-                        onConfirm={() => dispatch(deleteTeam(record.teamId))}
-                      >
-                        <Button size="small">
-                            <DeleteOutlined />
-                        </Button>
-                      </Popconfirm>
+                    <Tooltip title={t('delete')}>
+                        <Popconfirm
+                            title={t('popTitle')}
+                            onConfirm={() => dispatch(deleteTeam(record.teamId))}
+                        >
+                            <Button size="small">
+                                <DeleteOutlined />
+                            </Button>
+                        </Popconfirm>
                     </Tooltip>
                 </div>
             ),
@@ -135,7 +118,7 @@ const Teams: React.FC = () => {
     return (
         <div style={{ width: '100%' }}>
             <PageHeader
-                title={<span>Teams</span>}
+                title={<span>{t('title')}</span>}
                 style={{ padding: '16px 0' }}
             />
             <PageHeader
@@ -148,17 +131,17 @@ const Teams: React.FC = () => {
                 subTitle={
                     <span
                         style={{
-                            color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`,
+                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
                             fontWeight: 500,
                             fontSize: '16px',
                         }}
                     >
-                        {teamsLists.length} teams
+                        {teamsLists.length} {t('subtitle')}
                     </span>
                 }
                 extra={
                     <Flex gap={8} align="center">
-                        <Tooltip title="Refresh teams">
+                        <Tooltip title={t('tooltip')}>
                             <Button
                                 shape="circle"
                                 icon={<SyncOutlined spin={isLoading} />}
@@ -166,7 +149,7 @@ const Teams: React.FC = () => {
                             />
                         </Tooltip>
                         <Input
-                            placeholder="Search by name"
+                            placeholder={t('placeholder')}
                             suffix={<SearchOutlined />}
                             type="text"
                             value={searchTerm}
@@ -176,7 +159,7 @@ const Teams: React.FC = () => {
                             type="primary"
                             onClick={() => dispatch(toggleDrawer())}
                         >
-                            Add Team
+                            {t('addTeam')}
                         </Button>
                         <CreateTeamDrawer />
                     </Flex>
@@ -191,8 +174,9 @@ const Teams: React.FC = () => {
                     dataSource={filteredTeamsData}
                     rowKey={(record) => record.teamId}
                     pagination={{
-                      showSizeChanger: true,
-                      defaultPageSize: 20,
+                        showSizeChanger: true,
+                        defaultPageSize: 20,
+                        pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
                     }}
                 />
             </Card>

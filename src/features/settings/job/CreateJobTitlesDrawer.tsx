@@ -4,9 +4,13 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { nanoid } from '@reduxjs/toolkit'
 import { addJobTitle, toggleCreateJobTitleDrawer } from './jobSlice'
-import { JobType } from '../../../types/job'
+import { JobType } from '../../../types/job.types'
+import { useTranslation } from 'react-i18next'
 
 const CreateJobTitlesDrawer = () => {
+    // localization
+    const { t } = useTranslation('jobTitlesSettings')
+
     const isDrawerOpen = useAppSelector(
         (state) => state.jobReducer.isCreateJobTitleDrawerOpen
     )
@@ -15,23 +19,27 @@ const CreateJobTitlesDrawer = () => {
     const [form] = Form.useForm()
 
     // this function for handle form submit
-    const handleFormSubmit = (values: any) => {
-        const newJobTitle: JobType = {
-            jobId: nanoid(),
-            jobTitle: values.name,
-        }
+    const handleFormSubmit = async (values: any) => {
+        try {
+            const newJobTitle: JobType = {
+                jobId: nanoid(),
+                jobTitle: values.name,
+            }
 
-        dispatch(addJobTitle(newJobTitle))
-        dispatch(toggleCreateJobTitleDrawer())
-        form.resetFields()
-        message.success('Job title added!')
+            dispatch(addJobTitle(newJobTitle))
+            dispatch(toggleCreateJobTitleDrawer())
+            form.resetFields()
+            message.success(t('createJobTitleSuccessMessage'))
+        } catch (error) {
+            message.error(t('createJobTitleErrorMessage'))
+        }
     }
 
     return (
         <Drawer
             title={
                 <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-                    Create Title
+                    {t('createJobTitleDrawerTitle')}
                 </Typography.Text>
             }
             open={isDrawerOpen}
@@ -40,15 +48,15 @@ const CreateJobTitlesDrawer = () => {
             <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
                 <Form.Item
                     name="name"
-                    label="Name"
+                    label={t('nameLabel')}
                     rules={[
                         {
                             required: true,
-                            message: 'Please enter a Name',
+                            message: t('nameRequiredError'),
                         },
                     ]}
                 >
-                    <Input placeholder="Name" />
+                    <Input placeholder={t('namePlaceholder')} />
                 </Form.Item>
 
                 <Form.Item>
@@ -57,7 +65,7 @@ const CreateJobTitlesDrawer = () => {
                         style={{ width: '100%' }}
                         htmlType="submit"
                     >
-                        Create
+                        {t('createButton')}
                     </Button>
                 </Form.Item>
             </Form>

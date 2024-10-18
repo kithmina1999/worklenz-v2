@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ClientType } from '../../../types/client'
+import { ClientType } from '../../../types/client.types'
 
 type ClientState = {
     clientsList: ClientType[]
@@ -34,7 +34,7 @@ const clientSlice = createSlice({
         // action for update client
         updateClient: (state, action: PayloadAction<ClientType>) => {
             const index = state.clientsList.findIndex(
-                (client) => client.clientId === action.payload.clientId
+                (client) => client.clientId === action.payload.clientId,
             )
             if (index >= 0) {
                 state.clientsList[index] = action.payload
@@ -43,7 +43,7 @@ const clientSlice = createSlice({
         // action for delete client
         deleteClient: (state, action: PayloadAction<string>) => {
             state.clientsList = state.clientsList.filter(
-                (client) => client.clientId !== action.payload
+                (client) => client.clientId !== action.payload,
             )
         },
     },

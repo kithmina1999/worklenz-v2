@@ -11,14 +11,18 @@ import {
 import React from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
-import { addMember, toggleDrawer } from './addMemberSlice'
+import { addMember, toggleCreateMemberDrawer } from './memberSlice'
 import { colors } from '../../../styles/colors'
-import { MemberType } from '../../../types/member'
+import { MemberType } from '../../../types/member.types'
 import { nanoid } from '@reduxjs/toolkit'
+import { useTranslation } from 'react-i18next'
 
 const AddMemberDrawer = () => {
+    // localization
+    const { t } = useTranslation('teamMembersSettings')
+
     const isDrawerOpen = useAppSelector(
-        (state) => state.addMemberReducer.isDrawerOpen
+        (state) => state.memberReducer.isCreateMemberDrawerOpen
     )
     const dispatch = useAppDispatch()
 
@@ -28,28 +32,35 @@ const AddMemberDrawer = () => {
     const [form] = Form.useForm()
 
     // function for handle form submit
-    const handleFormSubmit = (values: any) => {
-        const newMember: MemberType = {
-            memberId: nanoid(),
-            memberName: values.name,
-            memberEmail: values.email,
-            memberRole: values.access,
+    const handleFormSubmit = async (values: any) => {
+        try {
+            const newMember: MemberType = {
+                memberId: nanoid(),
+                memberName: values.name,
+                memberEmail: values.email,
+                memberRole: values.access,
+                jobTitle: values.jobTitle,
+                isActivate: null,
+                isInivitationAccept: false,
+            }
+            dispatch(addMember(newMember))
+            form.resetFields()
+            message.success(t('createMemberSuccessMessage'))
+            dispatch(toggleCreateMemberDrawer())
+        } catch (error) {
+            message.error(t('createMemberErrorMessage'))
         }
-        dispatch(addMember(newMember))
-        message.success('member added!')
-        form.resetFields()
-        dispatch(toggleDrawer())
     }
 
     return (
         <Drawer
             title={
                 <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-                    Add Member
+                    {t('addMemberDrawerTitle')}
                 </Typography.Text>
             }
             open={isDrawerOpen}
-            onClose={() => dispatch(toggleDrawer())}
+            onClose={() => dispatch(toggleCreateMemberDrawer())}
         >
             <Form
                 form={form}
@@ -58,23 +69,25 @@ const AddMemberDrawer = () => {
                 initialValues={{ access: 'member' }}
             >
                 <Form.Item
-                    label="Email(s)"
                     name="email"
+                    label={t('memberEmailLabel')}
                     rules={[
                         {
                             type: 'email',
                             required: true,
-                            message: 'Please enter a email',
+                            message: t('memberEmailRequiredError'),
                         },
                     ]}
                 >
                     <Flex vertical gap={4}>
-                        <Input placeholder="Add team members by email" />
+                        <Input
+                            type="email"
+                            placeholder={t('memberEmailPlaceholder')}
+                        />
                         <Typography.Text
                             style={{ fontSize: 12, color: colors.lightGray }}
                         >
-                            Invitees will be added to the team either they
-                            accept the invitation or not.
+                            {t('addMemberEmailHint')}
                         </Typography.Text>
                     </Flex>
                 </Form.Item>
@@ -82,7 +95,7 @@ const AddMemberDrawer = () => {
                 <Form.Item label="Job Title" name="jobTitle">
                     <Select
                         size="middle"
-                        placeholder="Select the job title (Optional)"
+                        placeholder={t('jobTitlePlaceholder')}
                         // dropdownRender={(menu) => (
                         //     <>
                         //         {menu}
@@ -112,11 +125,11 @@ const AddMemberDrawer = () => {
                     />
                 </Form.Item>
 
-                <Form.Item label="Access" name="access">
+                <Form.Item label={t('memberAccessLabel')} name="access">
                     <Select
                         options={[
-                            { value: 'member', label: 'Member' },
-                            { value: 'owner', label: 'Admin' },
+                            { value: 'member', label: t('memberText') },
+                            { value: 'admin', label: t('adminText') },
                         ]}
                     />
                 </Form.Item>
@@ -126,7 +139,7 @@ const AddMemberDrawer = () => {
                         style={{ width: '100%' }}
                         htmlType="submit"
                     >
-                        Add to team
+                        {t('addToTeamButton')}
                     </Button>
                 </Form.Item>
             </Form>

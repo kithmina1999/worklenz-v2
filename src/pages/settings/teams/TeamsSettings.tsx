@@ -1,23 +1,71 @@
-import { Card, Flex, Table, TableProps, Typography } from 'antd'
+import {
+    Button,
+    Card,
+    Flex,
+    Table,
+    TableProps,
+    Tooltip,
+    Typography,
+} from 'antd'
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { TeamsType } from '../../../types/adminCenter/team.types'
+import { dateFormat } from '../../../utils/dateFormat'
+import { EditOutlined } from '@ant-design/icons'
+import { useState } from 'react'
+import EditTeamModal from '../../../features/adminCenter/teams/EditTeamModal'
+import { toggleUpdateTeamNameModal } from '../../../features/adminCenter/teams/teamSlice'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
 
 const TeamsSettings = () => {
+    // get currently hover row
+    const [hoverRow, setHoverRow] = useState<string | null>(null)
+
+    // get currently selected team id
+    const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
+    // get team list from redux -> teamReducer
+    const teamList = useAppSelector((state) => state.teamReducer.teamsList)
+    const dispatch = useAppDispatch()
+
     // table columns
     const columns: TableProps['columns'] = [
         {
             key: 'name',
             title: 'Name',
-            dataIndex: 'name',
+            render: (record: TeamsType) => (
+                <Typography.Text>{record.teamName}</Typography.Text>
+            ),
         },
         {
             key: 'created',
             title: 'Created',
-            dataIndex: 'created',
+            render: (record: TeamsType) => (
+                <Typography.Text>{dateFormat(record.created)}</Typography.Text>
+            ),
         },
         {
             key: 'ownsBy',
             title: 'Owns By',
-            dataIndex: 'ownsBy',
+            render: (record: TeamsType) => (
+                <Typography.Text>{record.owner}</Typography.Text>
+            ),
+        },
+        {
+            key: 'actionBtns',
+            width: 60,
+            render: (record: TeamsType) =>
+                hoverRow === record.teamId && (
+                    <Tooltip title="Edit" trigger={'hover'}>
+                        <Button
+                            size="small"
+                            icon={<EditOutlined />}
+                            onClick={() => {
+                                setSelectedTeamId(record.teamId)
+                                dispatch(toggleUpdateTeamNameModal())
+                            }}
+                        />
+                    </Tooltip>
+                ),
         },
     ]
 
@@ -29,19 +77,47 @@ const TeamsSettings = () => {
                 style={{ marginBlockEnd: 24 }}
             >
                 <Typography.Title level={4} style={{ marginBlockEnd: 0 }}>
-                    0 Teams
+                    {teamList.length} Team
+                    {teamList.length !== 1 && 's'}
                 </Typography.Title>
 
-                {/* this button pin this route to navbar  */}
-                <PinRouteToNavbarButton
-                    name="teams"
-                    path="/worklenz/settings/teams"
-                />
+                <Tooltip
+                    title={'Click to pin this into the main menu'}
+                    trigger={'hover'}
+                >
+                    {/* this button pin this route to navbar  */}
+                    <PinRouteToNavbarButton
+                        name="teams"
+                        path="/worklenz/settings/teams"
+                    />
+                </Tooltip>
             </Flex>
 
             <Card style={{ width: '100%' }}>
-                <Table columns={columns} />
+                <Table
+                    className="homepage-table"
+                    columns={columns}
+                    dataSource={teamList}
+                    rowKey={(record) => record.teamId}
+                    pagination={{
+                        showSizeChanger: true,
+                        defaultPageSize: 20,
+                    }}
+                    onRow={(record) => {
+                        return {
+                            onMouseEnter: () => setHoverRow(record.teamId),
+                            onMouseLeave: () => setHoverRow(null),
+                            style: {
+                                cursor: 'pointer',
+                                height: 36,
+                            },
+                        }
+                    }}
+                />
             </Card>
+
+            {/* edit team name modal */}
+            <EditTeamModal selectedTeamId={selectedTeamId} />
         </div>
     )
 }

@@ -1,27 +1,31 @@
-import { Button, Drawer, Form, Input, Typography } from 'antd'
+import { Button, Drawer, Form, Input, message, Typography } from 'antd'
 import React, { useEffect } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleUpdateClientDrawer, updateClient } from './clientSlice'
-import { ClientType } from '../../../types/client'
+import { ClientType } from '../../../types/client.types'
+import { useTranslation } from 'react-i18next'
 
 type UpdateClientDrawerProps = {
     selectedClientId: string | null
 }
 
 const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
+    // localization
+    const { t } = useTranslation('clientSettings')
+
     // get data from client reducer
     const clientsList = useAppSelector(
-        (state) => state.clientReducer.clientsList
+        (state) => state.clientReducer.clientsList,
     )
 
     // get data of currentlt selectedClient
     const selectedClient = clientsList.find(
-        (client) => client.clientId === selectedClientId
+        (client) => client.clientId === selectedClientId,
     )
 
     const isDrawerOpen = useAppSelector(
-        (state) => state.clientReducer.isUpdateClientDrawerOpen
+        (state) => state.clientReducer.isUpdateClientDrawerOpen,
     )
     const dispatch = useAppDispatch()
 
@@ -37,15 +41,20 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
     }, [selectedClient, form])
 
     // this function for handle form submit
-    const handleFormSubmit = (values: any) => {
-        if (selectedClient) {
-            const updatedClient: ClientType = {
-                ...selectedClient,
-                clientName: values.name,
-            }
+    const handleFormSubmit = async (values: any) => {
+        try {
+            if (selectedClient) {
+                const updatedClient: ClientType = {
+                    ...selectedClient,
+                    clientName: values.name,
+                }
 
-            dispatch(updateClient(updatedClient))
-            dispatch(toggleUpdateClientDrawer())
+                dispatch(updateClient(updatedClient))
+                dispatch(toggleUpdateClientDrawer())
+                message.success(t('updateClientSuccessMessage'))
+            }
+        } catch (error) {
+            message.error(t('updateClientErrorMessage'))
         }
     }
 
@@ -53,7 +62,7 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
         <Drawer
             title={
                 <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-                    Update Client
+                    {t('updateClientDrawerTitle')}
                 </Typography.Text>
             }
             open={isDrawerOpen}
@@ -62,15 +71,15 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
             <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
                 <Form.Item
                     name="name"
-                    label="Name"
+                    label={t('nameLabel')}
                     rules={[
                         {
                             required: true,
-                            message: 'Please enter a Name',
+                            message: t('nameRequiredError'),
                         },
                     ]}
                 >
-                    <Input placeholder="Name" />
+                    <Input placeholder={t('namePlaceholder')} />
                 </Form.Item>
 
                 <Form.Item>
@@ -79,7 +88,7 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
                         style={{ width: '100%' }}
                         htmlType="submit"
                     >
-                        Update
+                        {t('updateButton')}
                     </Button>
                 </Form.Item>
             </Form>

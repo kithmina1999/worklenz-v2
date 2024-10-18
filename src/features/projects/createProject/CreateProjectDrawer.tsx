@@ -1,32 +1,16 @@
-import {
-    Badge,
-    Button,
-    DatePicker,
-    Drawer,
-    Flex,
-    Form,
-    Input,
-    message,
-    Select,
-    Tag,
-    Typography,
-} from 'antd'
+import { Badge, Button, DatePicker, Drawer, Flex, Form, Input, message, Select, Tag, Typography } from 'antd'
 import React from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { createProject, toggleDrawer } from '../projectSlice'
 import { PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons'
-import { ProjectType } from '../../../types/project'
+import { ProjectType } from '../../../types/project.types'
 import { nanoid } from '@reduxjs/toolkit'
-import {
-    healthStatusData,
-    projectColors,
-    statusData,
-} from '../projectConstants'
+import { healthStatusData, projectColors, statusData } from '../projectConstants'
 
 const CreateProjectDrawer = () => {
     const isDrawerOpen = useAppSelector(
-        (state) => state.projectReducer.isDrawerOpen
+        (state) => state.projectReducer.isDrawerOpen,
     )
     const dispatch = useAppDispatch()
 
@@ -39,6 +23,9 @@ const CreateProjectDrawer = () => {
             projectName: values.name,
             isFavourite: false,
             projectColor: values.color,
+            projectCreated: new Date(),
+            projectTeam: 'Raveesha Dilanka',
+            projectMemberCount: 1,
         }
         dispatch(createProject(newProject))
         message.success('project created!')

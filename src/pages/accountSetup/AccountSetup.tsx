@@ -49,8 +49,8 @@ const AccountSetup: React.FC = () => {
         {
             title: '',
             content: (
-                <InviteInitialTeamMembers 
-                onGoBack={() => setCurrent(current - 1)}
+                <InviteInitialTeamMembers
+                    onGoBack={() => setCurrent(current - 1)}
                 />
             ),
         },
@@ -118,7 +118,7 @@ const AccountSetup: React.FC = () => {
                             width: '600px',
                         }}
                     />
-                    <div className='step-content' style={{ flexGrow: 1, width: '600px' }}>
+                    <div className="step-content" style={{ flexGrow: 1, width: '600px' }}>
                         {steps[current].content}
                     </div>
                 </Space>
