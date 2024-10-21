@@ -4,7 +4,7 @@ import { Button, ConfigProvider, Flex, Tabs, TabsProps } from 'antd'
 import React from 'react'
 
 import { colors } from '../../../styles/colors'
-import { tabItems } from './projectViewConstants'
+import { tabItems } from '../../../lib/project/projectViewConstants'
 import {
     getFromLocalStorage,
     saveToLocalStorage,

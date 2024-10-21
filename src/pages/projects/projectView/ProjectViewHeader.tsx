@@ -1,6 +1,7 @@
 import {
     ArrowLeftOutlined,
     BellOutlined,
+    CalendarOutlined,
     ClockCircleOutlined,
     DownOutlined,
     EditOutlined,
@@ -9,12 +10,13 @@ import {
     SyncOutlined,
 } from '@ant-design/icons'
 import { PageHeader } from '@ant-design/pro-components'
-import { Button, Dropdown, Flex, Tooltip, Typography } from 'antd'
+import { Button, Dropdown, Flex, Tag, Tooltip, Typography } from 'antd'
 import React, { useState } from 'react'
 import ProjectMemberInviteButton from '../../../features/projects/singleProject/members/ProjectMemberInviteButton'
 import { useNavigate } from 'react-router-dom'
 import { useSelectedProject } from '../../../hooks/useSelectedProject'
 import { colors } from '../../../styles/colors'
+import dayjs from 'dayjs'
 
 const ProjectViewHeader = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -22,6 +24,14 @@ const ProjectViewHeader = () => {
 
     // useSelectedProject custom hook returns currently selected project
     const selectedProject = useSelectedProject()
+
+    // get start and end dates
+    const startDate = dayjs(selectedProject?.projectStartDate).format(
+        'MMM DD, YYYY'
+    )
+    const endDate = dayjs(selectedProject?.projectEndDate).format(
+        'MMM DD, YYYY'
+    )
 
     // function for handle refresh
     const handleRefresh = () => {
@@ -56,10 +66,58 @@ const ProjectViewHeader = () => {
                     >
                         {selectedProject?.projectName}
                     </Typography.Title>
-                    {/* status  */}
-                    <ClockCircleOutlined
-                        style={{ fontSize: 14, color: colors.lightGray }}
-                    />
+
+                    {/* attributes thats appear only if available  */}
+                    {selectedProject?.projectCategory && (
+                        <Tag
+                            color={colors.vibrantOrange}
+                            style={{
+                                borderRadius: 24,
+                                paddingInline: 8,
+                                margin: 0,
+                            }}
+                        >
+                            {selectedProject?.projectCategory.toString()}
+                        </Tag>
+                    )}
+
+                    {selectedProject?.projectStatus && (
+                        <Tooltip title={selectedProject.projectStatus}>
+                            <ClockCircleOutlined
+                                style={{
+                                    fontSize: 14,
+                                    color: colors.lightGray,
+                                }}
+                            />
+                        </Tooltip>
+                    )}
+
+                    {(startDate || endDate) && (
+                        <Tooltip
+                            title={
+                                <Typography.Text
+                                    style={{ color: colors.white }}
+                                >
+                                    {startDate && `Start date: ${startDate}`}
+                                    <br />
+                                    {endDate && `End date: ${endDate}`}
+                                </Typography.Text>
+                            }
+                        >
+                            <CalendarOutlined
+                                style={{
+                                    fontSize: 14,
+                                    color: colors.lightGray,
+                                }}
+                            />
+                        </Tooltip>
+                    )}
+
+                    {selectedProject?.projectNotes && (
+                        <Typography.Text style={{ color: colors.lightGray }}>
+                            {selectedProject.projectNotes}
+                        </Typography.Text>
+                    )}
                 </Flex>
             }
             style={{ padding: 0, marginBlockEnd: 24 }}

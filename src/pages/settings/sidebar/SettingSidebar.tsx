@@ -3,8 +3,8 @@ import { ConfigProvider, Flex, Menu, MenuProps } from 'antd'
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { colors } from '../../../styles/colors'
-import { settingsItems } from '../settingsConstants'
 import { useTranslation } from 'react-i18next'
+import { settingsItems } from '../../../lib/settings/settingsConstants'
 
 const SettingSidebar = () => {
     const location = useLocation()

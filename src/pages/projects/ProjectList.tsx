@@ -96,7 +96,6 @@ const ProjectList: React.FC = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <CreateProjectButton />
-                        <CreateProjectDrawer />
                     </Flex>
                 }
             />
@@ -109,6 +108,9 @@ const ProjectList: React.FC = () => {
                     <ArchiveProjectList />
                 )}
             </Card>
+
+            {/* drawers  */}
+            <CreateProjectDrawer />
         </div>
     )
 }

@@ -2,17 +2,22 @@ import { SearchOutlined } from '@ant-design/icons'
 import { Card, Flex, Input, Table, TableProps, Typography } from 'antd'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { useAppSelector } from '../../../hooks/useAppSelector'
 
 const CategoriesSettings = () => {
     // localization
     const { t } = useTranslation('categoriesSettings')
+
+    const categoriesList = useAppSelector(
+        (state) => state.categoriesReducer.categoriesList
+    )
 
     // table columns
     const columns: TableProps['columns'] = [
         {
             key: 'category',
             title: t('categoryColumn'),
-            dataIndex: 'category',
+            dataIndex: 'categoryName',
         },
         {
             key: 'associatedTask',
@@ -47,6 +52,7 @@ const CategoriesSettings = () => {
                         <Typography.Text>{t('emptyText')}</Typography.Text>
                     ),
                 }}
+                dataSource={categoriesList}
                 columns={columns}
             />
         </Card>
