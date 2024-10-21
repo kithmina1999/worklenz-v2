@@ -7,6 +7,7 @@ import './profileDropdown.css'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { avatarNamesMap } from '../../../shared/constants'
 import { RootState } from '../../../app/store'
+import './ProfileButton.css'
 
 const ProfileButton = () => {
     // get user data from redux - user reducer
@@ -93,6 +94,7 @@ const ProfileButton = () => {
                 trigger={['click']}
             >
                 <Button
+                    className='profile-button'
                     style={{ height: '62px', width: '60px' }}
                     type="text"
                     icon={<UserOutlined style={{ fontSize: 20 }} />}

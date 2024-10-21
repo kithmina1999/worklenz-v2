@@ -355,27 +355,31 @@ const TeamMembersSettings = () => {
                 {isLoading ? (
                     <Skeleton />
                 ) : (
-                    <Table
-                        className="homepage-table"
-                        columns={columns}
-                        dataSource={filteredMembersData}
-                        rowKey={(record) => record.memberId}
-                        pagination={{
-                            showSizeChanger: true,
-                            defaultPageSize: 20,
-                        }}
-                        onRow={(record) => {
-                            return {
-                                onMouseEnter: () =>
-                                    setHoverRow(record.memberId),
-                                onMouseLeave: () => setHoverRow(null),
-                                style: {
-                                    cursor: 'pointer',
-                                    height: 36,
-                                },
-                            }
-                        }}
-                    />
+                    <div style={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
+                        <Table
+                            className="homepage-table"
+                            columns={columns}
+                            dataSource={filteredMembersData}
+                            rowKey={(record) => record.memberId}
+                            pagination={{
+                                showSizeChanger: true,
+                                defaultPageSize: 20,
+                                size: 'small',
+                                pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+                            }}
+                            onRow={(record) => {
+                                return {
+                                    onMouseEnter: () =>
+                                        setHoverRow(record.memberId),
+                                    onMouseLeave: () => setHoverRow(null),
+                                    style: {
+                                        cursor: 'pointer',
+                                        height: 36,
+                                    },
+                                }
+                            }}
+                        />
+                    </div>
                 )}
             </Card>
 
