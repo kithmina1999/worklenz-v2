@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, ExclamationCircleFilled } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons'
 import { Button, Card, Flex, Input, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd'
 import React, { useMemo, useState } from 'react'
 import { colors } from '../../../styles/colors'
@@ -136,13 +136,14 @@ const ClientsSettings = () => {
                         justify="flex-end"
                         style={{ width: '100%', maxWidth: 400 }}
                     >
-                        <Input.Search
+                        <Input
                             value={searchQuery}
                             onChange={(e) =>
                                 setSearchQuery(e.currentTarget.value)
                             }
                             placeholder={t('searchPlaceholder')}
-                            style={{ maxWidth: 200 }}
+                            style={{ maxWidth: 232 }}
+                            suffix={<SearchOutlined />}
                         />
                         <Button
                             type="primary"

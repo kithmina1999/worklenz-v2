@@ -12,7 +12,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { JobType } from '../../../types/job.types'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
-import { DeleteOutlined, EditOutlined, ExclamationCircleFilled } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons'
 import UpdateJobTitlesDrawer from '../../../features/settings/job/UpdateJobTitlesDrawer'
 import { useTranslation } from 'react-i18next'
 import { colors } from '../../../styles/colors'
@@ -112,13 +112,14 @@ const JobTitlesSettings = () => {
                         justify="flex-end"
                         style={{ width: '100%', maxWidth: 400 }}
                     >
-                        <Input.Search
+                        <Input
                             value={searchQuery}
                             onChange={(e) =>
                                 setSearchQuery(e.currentTarget.value)
                             }
                             placeholder={t('searchPlaceholder')}
-                            style={{ maxWidth: 200 }}
+                            style={{ maxWidth: 232 }}
+                            suffix={<SearchOutlined />}
                         />
                         <Button
                             type="primary"

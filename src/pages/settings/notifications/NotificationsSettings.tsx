@@ -17,7 +17,7 @@ const NotificationsSettings = () => {
                     </Typography.Title>
                 </Flex>
                 <Typography.Text
-                    style={{ fontSize: 14, color: colors.lightGray }}
+                    style={{ fontSize: 14, color: '#00000073' }}
                 >
                     {t('emailDescription')}
                 </Typography.Text>
@@ -31,7 +31,7 @@ const NotificationsSettings = () => {
                     </Typography.Title>
                 </Flex>
                 <Typography.Text
-                    style={{ fontSize: 14, color: colors.lightGray }}
+                    style={{ fontSize: 14, color: '#00000073' }}
                 >
                     {t('dailyDigestDescription')}
                 </Typography.Text>
@@ -45,7 +45,7 @@ const NotificationsSettings = () => {
                     </Typography.Title>
                 </Flex>
                 <Typography.Text
-                    style={{ fontSize: 14, color: colors.lightGray }}
+                    style={{ fontSize: 14, color: '#00000073' }}
                 >
                     {t('popupDescription')}
                 </Typography.Text>
@@ -59,7 +59,7 @@ const NotificationsSettings = () => {
                     </Typography.Title>
                 </Flex>
                 <Typography.Text
-                    style={{ fontSize: 14, color: colors.lightGray }}
+                    style={{ fontSize: 14, color: '#00000073' }}
                 >
                     {t('unreadItemsDescription')}
                 </Typography.Text>

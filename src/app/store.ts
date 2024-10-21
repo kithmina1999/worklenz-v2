@@ -12,6 +12,7 @@ import buttonReducer from '../features/action-setup/buttonSlice'
 import clientReducer from '../features/settings/client/clientSlice'
 import jobReducer from '../features/settings/job/jobSlice'
 import teamReducer from '../features/adminCenter/teams/teamSlice'
+import billingReducer from '../features/adminCenter/billing/billingSlice'
 import projectMemberReducer from '../features/projects/singleProject/members/projectMembersSlice'
 
 export const store = configureStore({
@@ -34,6 +35,7 @@ export const store = configureStore({
         clientReducer: clientReducer,
         jobReducer: jobReducer,
         teamReducer: teamReducer,
+        billingReducer: billingReducer,
         projectMemberReducer: projectMemberReducer,
     },
 })
