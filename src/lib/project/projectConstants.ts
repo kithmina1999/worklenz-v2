@@ -7,6 +7,7 @@ import {
     CloseCircleTwoTone,
     StopOutlined,
 } from '@ant-design/icons'
+import { ProjectHealthStatus, ProjectStatus } from '../../types/project.types'
 
 // color for project
 export const projectColors: string[] = [
@@ -38,7 +39,7 @@ export const projectColors: string[] = [
 
 // data type for status data
 type StatusDataType = {
-    value: string
+    value: ProjectStatus
     label: ReactNode
     icon: ReactNode
 }
@@ -96,7 +97,7 @@ export const statusData: StatusDataType[] = [
 
 // data type for health status data
 type HealthStatusDataType = {
-    value: string
+    value: ProjectHealthStatus
     label: ReactNode
     color: string
 }
@@ -104,8 +105,8 @@ type HealthStatusDataType = {
 export const healthStatusData: HealthStatusDataType[] = [
     { value: 'notSet', label: 'Not Set', color: colors.paleBlue },
     {
-        value: 'needAttention',
-        label: 'Need Attention',
+        value: 'needsAttention',
+        label: 'Needs Attention',
         color: colors.lightBeige,
     },
     { value: 'atRisk', label: 'At Risk', color: colors.vibrantOrange },
