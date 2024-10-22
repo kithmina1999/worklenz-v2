@@ -1,0 +1,54 @@
+/* table overrides 
+    used in homepage, settings
+*/
+.custom-table table tr:nth-child(even) {
+    background: #4e4e4e10;
+}
+
+.custom-table table tr {
+    border-radius: 4px !important;
+}
+
+.custom-table table tr td,
+.custom-table table th {
+    border-bottom: none !important;
+    padding: 6px 12px !important;
+}
+
+.custom-table table th {
+    padding-bottom: 12px !important;
+    border: none !important;
+}
+
+.custom-table table th::before {
+    display: none;
+}
+
+/* custom dropdown 
+    used in navbar, project view filters
+*/
+.custom-dropdown .ant-dropdown-menu {
+    padding: 0 !important;
+    margin-top: 2px !important;
+}
+
+.custom-dropdown .ant-dropdown-menu-item {
+    padding: 0 !important;
+}
+
+/* custom list 
+    used in project view filters
+*/
+.custom-list-item:hover {
+    background-color: #f5f5f5 !important;
+}
+
+/* dropdown render card manual shadow 
+    used in project view filters
+*/
+.custom-card {
+    box-shadow:
+        0 3px 6px -4px #0000001f,
+        0 6px 16px #00000014,
+        0 9px 28px 8px #0000000d !important;
+}
