@@ -1,22 +1,22 @@
-.homepage-table table tr:nth-child(even) {
+.custom-table table tr:nth-child(even) {
     background: #4e4e4e10;
 }
 
-.homepage-table table tr {
+.custom-table table tr {
     border-radius: 4px !important;
 }
 
-.homepage-table table tr td,
-.homepage-table table th {
+.custom-table table tr td,
+.custom-table table th {
     border-bottom: none !important;
     padding: 6px 12px !important;
 }
 
-.homepage-table table th {
+.custom-table table th {
     padding-bottom: 12px !important;
     border: none !important;
 }
 
-.homepage-table table th::before {
+.custom-table table th::before {
     display: none;
 }
