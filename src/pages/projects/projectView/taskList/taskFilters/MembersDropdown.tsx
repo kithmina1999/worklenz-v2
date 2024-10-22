@@ -95,9 +95,8 @@ const MembersDropdown = () => {
                                         </Avatar>
                                     </div>
                                     <Flex vertical>
-                                        <Typography.Text>
-                                            {member.memberName}
-                                        </Typography.Text>
+                                        {member.memberName}
+
                                         <Typography.Text
                                             style={{
                                                 fontSize: 12,
@@ -142,6 +141,8 @@ const MembersDropdown = () => {
                         selectedCount > 0
                             ? colors.paleBlue
                             : colors.transparent,
+
+                    color: selectedCount > 0 ? colors.darkGray : '#dddddd',
                 }}
             >
                 <Space>

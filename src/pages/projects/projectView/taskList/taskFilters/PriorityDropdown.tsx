@@ -78,6 +78,8 @@ const PriorityDropdown = () => {
                         selectedCount > 0
                             ? colors.paleBlue
                             : colors.transparent,
+
+                    color: selectedCount > 0 ? colors.darkGray : '#dddddd',
                 }}
             >
                 <Space>

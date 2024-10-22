@@ -41,6 +41,7 @@
 */
 .custom-list-item:hover {
     background-color: #f5f5f5 !important;
+    color: #181818;
 }
 
 /* dropdown render card manual shadow 
