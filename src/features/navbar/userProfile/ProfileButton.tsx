@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next'
 import './profileDropdown.css'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { avatarNamesMap } from '../../../shared/constants'
-import { RootState } from '../../../app/store'
 import { Link } from 'react-router-dom'
 
 const ProfileButton = () => {
@@ -26,11 +25,6 @@ const ProfileButton = () => {
 
     // get avatar character
     const avatarCharacter = userDetails.name[0].toLocaleUpperCase()
-    // get avatar character
-
-    const themeMode = useAppSelector(
-        (state: RootState) => state.themeReducer.mode
-    )
 
     const profile: MenuProps['items'] = [
         {
@@ -73,30 +67,11 @@ const ProfileButton = () => {
                     bordered={false}
                     style={{ width: 230 }}
                 >
-                    <Link
-                        to="/worklenz/admin-center/overview"
-                        style={{
-                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
-                        }}
-                    >
+                    <Link to="/worklenz/admin-center/overview">
                         Admin Center
                     </Link>
-                    <Link
-                        to="/worklenz/settings/profile"
-                        style={{
-                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
-                        }}
-                    >
-                        Settings
-                    </Link>
-                    <Link
-                        to="/auth/login"
-                        style={{
-                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
-                        }}
-                    >
-                        Log Out
-                    </Link>
+                    <Link to="/worklenz/settings/profile">Settings</Link>
+                    <Link to="/auth/login">Log Out</Link>
                 </Card>
             ),
         },
