@@ -142,7 +142,7 @@ const MembersDropdown = () => {
                             ? colors.paleBlue
                             : colors.transparent,
 
-                    color: selectedCount > 0 ? colors.darkGray : '#dddddd',
+                    color: selectedCount > 0 ? colors.darkGray : 'inherit',
                 }}
             >
                 <Space>
