@@ -14,7 +14,7 @@ const mainRoutes: RouteObject[] = [
         children: [
             { path: 'home', element: <Homepage /> },
             { path: 'projects', element: <ProjectList /> },
-            { path: 'projects/project-view', element: <ProjectView /> },
+            { path: `projects/:projectId`, element: <ProjectView /> },
             ...settingsRoutes,
             ...adminCenterRoutes,
         ],

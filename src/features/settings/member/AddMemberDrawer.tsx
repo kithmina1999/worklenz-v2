@@ -1,4 +1,13 @@
-import { Button, Drawer, Flex, Form, Input, message, Select, Typography } from 'antd'
+import {
+    Button,
+    Drawer,
+    Flex,
+    Form,
+    Input,
+    message,
+    Select,
+    Typography,
+} from 'antd'
 import React from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
@@ -13,7 +22,7 @@ const AddMemberDrawer = () => {
     const { t } = useTranslation('teamMembersSettings')
 
     const isDrawerOpen = useAppSelector(
-        (state) => state.memberReducer.isCreateMemberDrawerOpen,
+        (state) => state.memberReducer.isCreateMemberDrawerOpen
     )
     const dispatch = useAppDispatch()
 
@@ -27,7 +36,7 @@ const AddMemberDrawer = () => {
         try {
             const newMember: MemberType = {
                 memberId: nanoid(),
-                memberName: values.name,
+                memberName: values.email.split('@')[0] || '',
                 memberEmail: values.email,
                 memberRole: values.access,
                 jobTitle: values.jobTitle,

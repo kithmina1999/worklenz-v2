@@ -30,7 +30,7 @@ const AddFavouriteProjectButton = ({
                 ? setCheckIconColor(colors.yellow)
                 : setCheckIconColor(colors.lightGray),
 
-        [handleToggleFavoriteProject]
+        [record.isFavourite]
     )
 
     return (

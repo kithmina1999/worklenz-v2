@@ -34,16 +34,21 @@ const CreateProjectButton = () => {
         {
             key: '1',
             label: (
-                <div style={{ width: '100%', margin: 0, padding: 0 }} onClick={openTemplateSelector}>
-                    <ImportOutlined
-                        style={{ marginRight: '8px' }} /> {current === 'home' ? ' Import from template ' : ' Create from template'}
+                <div
+                    style={{ width: '100%', margin: 0, padding: 0 }}
+                    onClick={openTemplateSelector}
+                >
+                    <ImportOutlined style={{ marginRight: '8px' }} />{' '}
+                    {current === 'home'
+                        ? ' Import from template '
+                        : ' Create from template'}
                 </div>
             ),
         },
     ]
 
     return (
-        <>
+        <div>
             <Dropdown.Button
                 type="primary"
                 icon={<DownOutlined />}
@@ -78,7 +83,7 @@ const CreateProjectButton = () => {
             >
                 <TemplateDrawer />
             </Drawer>
-        </>
+        </div>
     )
 }
 

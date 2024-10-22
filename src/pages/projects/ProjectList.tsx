@@ -9,10 +9,16 @@ import CreateProjectDrawer from '../../features/projects/createProject/CreatePro
 import FavouriteProjectList from '../../components/ProjectList/favouriteProjectList/FavouriteProjectList'
 import ArchiveProjectList from '../../components/ProjectList/archivedProjectList/ArchiveProjectList'
 import { useTranslation } from 'react-i18next'
+import { useAppSelector } from '../../hooks/useAppSelector'
 
 const ProjectList: React.FC = () => {
-
+    // localization
     const { t } = useTranslation('ProjectList')
+
+    // get project list from project slice
+    const projectList = useAppSelector(
+        (state) => state.projectReducer.projectsList
+    )
 
     const [projectSegment, setProjectSegment] = useState<
         'All' | 'Favourites' | 'Archived'
@@ -64,7 +70,7 @@ const ProjectList: React.FC = () => {
         <div style={{ marginBlock: 65, minHeight: '90vh' }}>
             <PageHeader
                 className="site-page-header"
-                title={`2 ${t('projects')}`}
+                title={`${projectList.length} ${t('projects')}`}
                 style={{ padding: '16px 0' }}
                 extra={
                     <Flex gap={8} align="center">
@@ -79,7 +85,7 @@ const ProjectList: React.FC = () => {
                             options={['All', 'Favourites', 'Archived']}
                             defaultValue="All"
                             onChange={(
-                                value: 'All' | 'Favourites' | 'Archived',
+                                value: 'All' | 'Favourites' | 'Archived'
                             ) => handleSegmentChange(value)}
                         />
                         <Input
@@ -90,14 +96,21 @@ const ProjectList: React.FC = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <CreateProjectButton />
-                        <CreateProjectDrawer />
                     </Flex>
                 }
             />
             <Card className="project-card">
-                {projectSegment === 'All' ? <AllProjectList /> : projectSegment === 'Favourites' ?
-                    <FavouriteProjectList /> : <ArchiveProjectList />}
+                {projectSegment === 'All' ? (
+                    <AllProjectList />
+                ) : projectSegment === 'Favourites' ? (
+                    <FavouriteProjectList />
+                ) : (
+                    <ArchiveProjectList />
+                )}
             </Card>
+
+            {/* drawers  */}
+            <CreateProjectDrawer />
         </div>
     )
 }

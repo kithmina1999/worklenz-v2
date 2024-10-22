@@ -1,5 +1,14 @@
 import { UserOutlined } from '@ant-design/icons'
-import { Avatar, Button, Card, Dropdown, Flex, MenuProps, Tooltip, Typography } from 'antd'
+import {
+    Avatar,
+    Button,
+    Card,
+    Dropdown,
+    Flex,
+    MenuProps,
+    Tooltip,
+    Typography,
+} from 'antd'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 // profile dropdown custom css
@@ -8,6 +17,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { avatarNamesMap } from '../../../shared/constants'
 import { RootState } from '../../../app/store'
 import './ProfileButton.css'
+import { Link } from 'react-router-dom'
 
 const ProfileButton = () => {
     // get user data from redux - user reducer
@@ -19,7 +29,9 @@ const ProfileButton = () => {
     const avatarCharacter = userDetails.name[0].toLocaleUpperCase()
     // get avatar character
 
-    const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode)
+    const themeMode = useAppSelector(
+        (state: RootState) => state.themeReducer.mode
+    )
 
     const profile: MenuProps['items'] = [
         {
@@ -62,24 +74,30 @@ const ProfileButton = () => {
                     bordered={false}
                     style={{ width: 230 }}
                 >
-                    <Typography.Link
-                        href="/worklenz/admin-center/overview"
-                        style={{ color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}` }}
+                    <Link
+                        to="/worklenz/admin-center/overview"
+                        style={{
+                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
+                        }}
                     >
                         Admin Center
-                    </Typography.Link>
-                    <Typography.Link
-                        href="/worklenz/settings/profile"
-                        style={{ color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}` }}
+                    </Link>
+                    <Link
+                        to="/worklenz/settings/profile"
+                        style={{
+                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
+                        }}
                     >
                         Settings
-                    </Typography.Link>
-                    <Typography.Link
-                        href="/auth/login"
-                        style={{ color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}` }}
+                    </Link>
+                    <Link
+                        to="/auth/login"
+                        style={{
+                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
+                        }}
                     >
                         Log Out
-                    </Typography.Link>
+                    </Link>
                 </Card>
             ),
         },
