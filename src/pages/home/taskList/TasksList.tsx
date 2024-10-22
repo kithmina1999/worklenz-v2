@@ -155,7 +155,7 @@ const TasksList = () => {
                 />
             ) : (
                 <Table
-                    className="homepage-table"
+                    className="custom-table"
                     dataSource={tasksList}
                     rowKey={(record) => record.taskId}
                     columns={columns}

@@ -356,7 +356,7 @@ const TeamMembersSettings = () => {
                     <Skeleton />
                 ) : (
                     <Table
-                        className="homepage-table"
+                        className="custom-table"
                         columns={columns}
                         dataSource={filteredMembersData}
                         rowKey={(record) => record.memberId}
