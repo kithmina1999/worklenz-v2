@@ -1,11 +1,11 @@
-import { MoreOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Dropdown, Flex, Typography } from 'antd'
+import { Checkbox, Flex, Typography } from 'antd'
 import SearchDropdown from './SearchDropdown'
 import SortDropdown from './SortDropdown'
 import PriorityDropdown from './PriorityDropdown'
 import LabelsDropdown from './LabelsDropdown'
 import MembersDropdown from './MembersDropdown'
 import GroupByDropdown from './GroupByDropdown'
+import ShowFieldsDropdown from './ShowFieldsDropdown'
 
 const TaskListFilters = () => {
     return (
@@ -30,11 +30,8 @@ const TaskListFilters = () => {
                     <Checkbox />
                     <Typography.Text>Show archvied</Typography.Text>
                 </Flex>
-                <Dropdown>
-                    <Flex align="center" gap={4}>
-                        <Button icon={<MoreOutlined />}>Show fields</Button>
-                    </Flex>
-                </Dropdown>
+                {/* show fields dropdown  */}
+                <ShowFieldsDropdown />
             </Flex>
         </Flex>
     )
