@@ -11,7 +11,7 @@ import { ProjectHealthStatus, ProjectStatus } from '../../types/project.types'
 
 // color for project
 export const projectColors: string[] = [
-    '#154c9b',
+    '#164c9b',
     '#3b7ad4',
     '#70a6f3',
     '#7781ca',
@@ -50,33 +50,39 @@ export const statusData: StatusDataType[] = [
         label: 'Cancelled',
         icon: React.createElement(CloseCircleTwoTone, {
             twoToneColor: colors.vibrantOrange,
+            style: { fontSize: 16 },
         }),
     },
     {
         value: 'blocked',
         label: 'Blocked',
-        icon: React.createElement(StopOutlined),
+        icon: React.createElement(StopOutlined, { style: { fontSize: 16 } }),
     },
     {
         value: 'onHold',
         label: 'On Hold',
-        icon: React.createElement(StopOutlined),
+        icon: React.createElement(StopOutlined, { style: { fontSize: 16 } }),
     },
     {
         value: 'proposed',
         label: 'Proposed',
-        icon: React.createElement(ClockCircleOutlined),
+        icon: React.createElement(ClockCircleOutlined, {
+            style: { fontSize: 16 },
+        }),
     },
     {
         value: 'inPlanning',
         label: 'In Planning',
-        icon: React.createElement(ClockCircleOutlined),
+        icon: React.createElement(ClockCircleOutlined, {
+            style: { fontSize: 16 },
+        }),
     },
     {
         value: 'inProgress',
         label: 'In Progress',
         icon: React.createElement(ClockCircleTwoTone, {
             twoToneColor: colors.limeGreen,
+            style: { fontSize: 16 },
         }),
     },
     {
@@ -84,6 +90,7 @@ export const statusData: StatusDataType[] = [
         label: 'Completed',
         icon: React.createElement(CheckCircleTwoTone, {
             twoToneColor: colors.limeGreen,
+            style: { fontSize: 16 },
         }),
     },
     {
@@ -91,6 +98,7 @@ export const statusData: StatusDataType[] = [
         label: 'Continuos',
         icon: React.createElement(ClockCircleTwoTone, {
             twoToneColor: colors.limeGreen,
+            style: { fontSize: 16 },
         }),
     },
 ]
