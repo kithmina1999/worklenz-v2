@@ -2,7 +2,6 @@ import {
     ArrowLeftOutlined,
     BellOutlined,
     CalendarOutlined,
-    ClockCircleOutlined,
     DownOutlined,
     EditOutlined,
     SaveOutlined,
@@ -17,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSelectedProject } from '../../../hooks/useSelectedProject'
 import { colors } from '../../../styles/colors'
 import dayjs from 'dayjs'
+import { statusData } from '../../../lib/project/projectConstants'
 
 const ProjectViewHeader = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -31,6 +31,11 @@ const ProjectViewHeader = () => {
     )
     const endDate = dayjs(selectedProject?.projectEndDate).format(
         'MMM DD, YYYY'
+    )
+
+    // get selected project status data
+    const selectedProjectStatus = statusData.find(
+        (status) => status.value === selectedProject?.projectStatus
     )
 
     // function for handle refresh
@@ -82,13 +87,8 @@ const ProjectViewHeader = () => {
                     )}
 
                     {selectedProject?.projectStatus && (
-                        <Tooltip title={selectedProject.projectStatus}>
-                            <ClockCircleOutlined
-                                style={{
-                                    fontSize: 14,
-                                    color: colors.lightGray,
-                                }}
-                            />
+                        <Tooltip title={selectedProjectStatus?.label}>
+                            {selectedProjectStatus?.icon}
                         </Tooltip>
                     )}
 
@@ -106,8 +106,7 @@ const ProjectViewHeader = () => {
                         >
                             <CalendarOutlined
                                 style={{
-                                    fontSize: 14,
-                                    color: colors.lightGray,
+                                    fontSize: 16,
                                 }}
                             />
                         </Tooltip>
