@@ -177,6 +177,7 @@ const Teams: React.FC = () => {
                         showSizeChanger: true,
                         defaultPageSize: 20,
                         pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+                        size: 'small'
                     }}
                 />
             </Card>

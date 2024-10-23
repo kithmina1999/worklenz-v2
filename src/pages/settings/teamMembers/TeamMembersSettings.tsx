@@ -2,6 +2,7 @@ import {
     DeleteOutlined,
     EditOutlined,
     ExclamationCircleFilled,
+    SearchOutlined,
     SyncOutlined,
     UserSwitchOutlined,
 } from '@ant-design/icons'
@@ -334,11 +335,12 @@ const TeamMembersSettings = () => {
                             onClick={() => handleRefresh()}
                         />
                     </Tooltip>
-                    <Input.Search
+                    <Input
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.currentTarget.value)}
                         placeholder={t('searchPlaceholder')}
-                        style={{ maxWidth: 200 }}
+                        style={{ maxWidth: 232 }}
+                        suffix={<SearchOutlined />}
                     />
                     <Button
                         type="primary"
@@ -353,27 +355,31 @@ const TeamMembersSettings = () => {
                 {isLoading ? (
                     <Skeleton />
                 ) : (
-                    <Table
-                        className="homepage-table"
-                        columns={columns}
-                        dataSource={filteredMembersData}
-                        rowKey={(record) => record.memberId}
-                        pagination={{
-                            showSizeChanger: true,
-                            defaultPageSize: 20,
-                        }}
-                        onRow={(record) => {
-                            return {
-                                onMouseEnter: () =>
-                                    setHoverRow(record.memberId),
-                                onMouseLeave: () => setHoverRow(null),
-                                style: {
-                                    cursor: 'pointer',
-                                    height: 36,
-                                },
-                            }
-                        }}
-                    />
+                    <div style={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
+                        <Table
+                            className="homepage-table"
+                            columns={columns}
+                            dataSource={filteredMembersData}
+                            rowKey={(record) => record.memberId}
+                            pagination={{
+                                showSizeChanger: true,
+                                defaultPageSize: 20,
+                                size: 'small',
+                                pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+                            }}
+                            onRow={(record) => {
+                                return {
+                                    onMouseEnter: () =>
+                                        setHoverRow(record.memberId),
+                                    onMouseLeave: () => setHoverRow(null),
+                                    style: {
+                                        cursor: 'pointer',
+                                        height: 36,
+                                    },
+                                }
+                            }}
+                        />
+                    </div>
                 )}
             </Card>
 

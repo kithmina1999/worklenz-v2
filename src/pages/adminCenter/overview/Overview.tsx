@@ -1,72 +1,69 @@
-import { EditOutlined, EnterOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons'
-import { PageHeader } from '@ant-design/pro-components'
-import { Button, Card, Input, Tooltip, Typography } from 'antd'
-import React, { useState } from 'react'
-import OrganizationAdminsTable from './OrganizationAdminsTable'
-import TextArea from 'antd/es/input/TextArea'
-import { useAppSelector } from '../../../hooks/useAppSelector'
-import { RootState } from '../../../app/store'
-import { useTranslation } from 'react-i18next'
+import { EditOutlined, EnterOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
+import { PageHeader } from '@ant-design/pro-components';
+import { Button, Card, Input, Tooltip, Typography } from 'antd';
+import React, { useState } from 'react';
+import OrganizationAdminsTable from './OrganizationAdminsTable';
+import TextArea from 'antd/es/input/TextArea';
+import { useAppSelector } from '../../../hooks/useAppSelector';
+import { RootState } from '../../../app/store';
+import { useTranslation } from 'react-i18next';
 
-const { Text } = Typography
+const { Text } = Typography;
 
 const Overview: React.FC = () => {
-    const [isEditable, setIsEditable] = useState(false)
-    const [name, setName] = useState('Raveesha Dilanka')
-    const [number, setNumber] = useState('')
-    const [isEditableContactNumber, setIsEditableContactNumber] =
-        useState(false)
+    const [isEditable, setIsEditable] = useState(false);
+    const [name, setName] = useState('Raveesha Dilanka');
+    const [number, setNumber] = useState('');
+    const [isEditableContactNumber, setIsEditableContactNumber] = useState(false);
 
-    const themeMode = useAppSelector(
-        (state: RootState) => state.themeReducer.mode,
-    )
+    const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
+    const { t } = useTranslation('overview');
 
     const handleEdit = () => {
-        setIsEditable(true)
-    }
+        setIsEditable(true);
+    };
 
     const handleEditContactNumber = () => {
-        setIsEditableContactNumber(true)
-    }
+        setIsEditableContactNumber(true);
+    };
 
     const handleBlur = () => {
-        setIsEditable(false)
-    }
+        setIsEditable(false);
+    };
 
-    const handleNameChange = (e: any) => {
-        setName(e.target.value)
-    }
+    const handleNameChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setName(e.target.value);
+    };
 
-    const handleContactNumber = (e: any) => {
-        setNumber(e.target.value)
-    }
+    const handleContactNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
 
-    const addContactNumber = () => {
-        setIsEditableContactNumber(true)
-    }
+        const filteredValue = inputValue.replace(/(?!^\+)[^0-9]/g, '');
+
+        if (inputValue.startsWith('+')) {
+            if (filteredValue.length > 1) {
+                setNumber(filteredValue);
+            } else if (filteredValue.length === 1 && inputValue.charAt(0) === '+') {
+                setNumber('+');
+            }
+        } else {
+            setNumber(filteredValue);
+        }
+    };
 
     const handleContactNumberBlur = () => {
-        setIsEditableContactNumber(false)
-    }
+        setIsEditableContactNumber(false);
+    };
 
-    const { t } = useTranslation('overview')
+    const addContactNumber = () => {
+        setIsEditableContactNumber(true);
+    };
 
     return (
         <div style={{ width: '100%' }}>
-            <PageHeader
-                title={<span>{t('overview')}</span>}
-                style={{ padding: '16px 0' }}
-            />
+            <PageHeader title={<span>{t('overview')}</span>} style={{ padding: '16px 0' }} />
             <Card>
-                <div
-                    style={{
-                        marginTop: 0,
-                        marginBottom: '0.5rem',
-                        color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                        fontWeight: 500,
-                        fontSize: '16px',
-                    }}
-                >
+                <div style={{ marginTop: 0, marginBottom: '0.5rem', color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`, fontWeight: 500, fontSize: '16px' }}>
                     {t('name')}
                 </div>
                 <div style={{ paddingTop: '8px' }}>
@@ -74,10 +71,7 @@ const Overview: React.FC = () => {
                         {isEditable ? (
                             <div style={{ position: 'relative' }}>
                                 <TextArea
-                                    style={{
-                                        height: '32px',
-                                        paddingRight: '40px',
-                                    }}
+                                    style={{ height: '32px', paddingRight: '40px' }}
                                     onPressEnter={handleBlur}
                                     value={name}
                                     onChange={handleNameChange}
@@ -86,27 +80,15 @@ const Overview: React.FC = () => {
                                 <Button
                                     icon={<EnterOutlined style={{ color: '#00000073' }} />}
                                     type="link"
-                                    style={{
-                                        position: 'absolute',
-                                        right: '1px',
-                                    }}
+                                    style={{ position: 'absolute', right: '1px' }}
                                     onClick={handleBlur}
                                 />
                             </div>
                         ) : (
-                            <Text
-                                style={{
-                                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                                }}
-                            >
+                            <Text style={{ color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}` }}>
                                 {name}{' '}
                                 <Tooltip title="Edit">
-                                    <Button
-                                        onClick={handleEdit}
-                                        size="small"
-                                        type="link"
-                                        icon={<EditOutlined />}
-                                    />
+                                    <Button onClick={handleEdit} size="small" type="link" icon={<EditOutlined />} />
                                 </Tooltip>
                             </Text>
                         )}
@@ -117,34 +99,18 @@ const Overview: React.FC = () => {
             <div style={{ marginTop: '1.5rem' }} />
 
             <Card>
-                <div
-                    style={{
-                        marginTop: 0,
-                        marginBottom: '0.5rem',
-                        color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                        fontWeight: 500,
-                        fontSize: '16px',
-                    }}
-                >
+                <div style={{ marginTop: 0, marginBottom: '0.5rem', color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`, fontWeight: 500, fontSize: '16px' }}>
                     {t('owner')}
                 </div>
                 <div style={{ paddingTop: '8px' }}>
                     <div style={{ marginBottom: '8px' }}>
-                        <Text
-                            style={{
-                                color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                            }}
-                        >
+                        <Text style={{ color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}` }}>
                             Raveesha Dilanka
                         </Text>
                     </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Text
-                        style={{
-                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                        }}
-                    >
+                    <Text style={{ color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}` }}>
                         <span style={{ marginRight: '8px' }}>
                             <MailOutlined />
                         </span>
@@ -164,29 +130,18 @@ const Overview: React.FC = () => {
                             onBlur={handleContactNumberBlur}
                             style={{ width: '200px' }}
                             value={number}
+                            type='text'
+                            maxLength={15}
                         />
                     ) : number === '' ? (
-                        <Button
-                            type="link"
-                            style={{ padding: 0 }}
-                            onClick={addContactNumber}
-                        >
+                        <Button type="link" style={{ padding: 0 }} onClick={addContactNumber}>
                             {t('contactNumber')}
                         </Button>
                     ) : (
-                        <Text
-                            style={{
-                                color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                            }}
-                        >
+                        <Text style={{ color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}` }}>
                             {number}
                             <Tooltip title="Edit">
-                                <Button
-                                    onClick={handleEditContactNumber}
-                                    size="small"
-                                    type="link"
-                                    icon={<EditOutlined />}
-                                />
+                                <Button onClick={handleEditContactNumber} size="small" type="link" icon={<EditOutlined />} />
                             </Tooltip>
                         </Text>
                     )}
@@ -196,21 +151,13 @@ const Overview: React.FC = () => {
             <div style={{ marginTop: '1.5rem' }} />
 
             <Card>
-                <div
-                    style={{
-                        marginTop: 0,
-                        marginBottom: '0.5rem',
-                        color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                        fontWeight: 500,
-                        fontSize: '16px',
-                    }}
-                >
+                <div style={{ marginTop: 0, marginBottom: '0.5rem', color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`, fontWeight: 500, fontSize: '16px' }}>
                     {t('admins')}
                 </div>
                 <OrganizationAdminsTable />
             </Card>
         </div>
-    )
-}
+    );
+};
 
-export default Overview
+export default Overview;

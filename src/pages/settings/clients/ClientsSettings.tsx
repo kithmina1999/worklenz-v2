@@ -2,6 +2,7 @@ import {
     DeleteOutlined,
     EditOutlined,
     ExclamationCircleFilled,
+    SearchOutlined,
 } from '@ant-design/icons'
 import {
     Button,
@@ -150,13 +151,14 @@ const ClientsSettings = () => {
                         justify="flex-end"
                         style={{ width: '100%', maxWidth: 400 }}
                     >
-                        <Input.Search
+                        <Input
                             value={searchQuery}
                             onChange={(e) =>
                                 setSearchQuery(e.currentTarget.value)
                             }
                             placeholder={t('searchPlaceholder')}
-                            style={{ maxWidth: 200 }}
+                            style={{ maxWidth: 232 }}
+                            suffix={<SearchOutlined />}
                         />
                         <Button
                             type="primary"

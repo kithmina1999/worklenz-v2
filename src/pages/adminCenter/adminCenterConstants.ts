@@ -8,7 +8,7 @@ import Projects from './projects/Projects'
 
 // type of a menu item in admin center sidebar
 type AdminCenterMenuItems = {
-    key: number
+    key: string
     name: string
     endpoint: string
     icon: ReactNode
@@ -17,35 +17,35 @@ type AdminCenterMenuItems = {
 // settings all element items use for sidebar and routes
 export const adminCenterItems: AdminCenterMenuItems[] = [
     {
-        key: 1,
+        key: 'overview',
         name: 'overview',
         endpoint: 'overview',
         icon: React.createElement(AppstoreOutlined),
         element: React.createElement(Overview),
     },
     {
-        key: 2,
+        key: 'users',
         name: 'users',
         endpoint: 'users',
         icon: React.createElement(UserOutlined),
         element: React.createElement(Users),
     },
     {
-        key: 3,
+        key: 'teams',
         name: 'teams',
         endpoint: 'teams',
         icon: React.createElement(TeamOutlined),
         element: React.createElement(Teams),
     },
     {
-        key: 4,
+        key: 'projects',
         name: 'projects',
         endpoint: 'projects',
         icon: React.createElement(ProfileOutlined),
         element: React.createElement(Projects),
     },
     {
-        key: 5,
+        key: 'billing',
         name: 'billing',
         endpoint: 'billing',
         icon: React.createElement(CreditCardOutlined),

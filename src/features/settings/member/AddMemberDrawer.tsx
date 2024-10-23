@@ -36,7 +36,7 @@ const AddMemberDrawer = () => {
         try {
             const newMember: MemberType = {
                 memberId: nanoid(),
-                memberName: values.name,
+                memberName: values.email.split('@')[0] || '',
                 memberEmail: values.email,
                 memberRole: values.access,
                 jobTitle: values.jobTitle,

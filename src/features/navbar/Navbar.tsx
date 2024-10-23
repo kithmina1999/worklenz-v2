@@ -26,7 +26,7 @@ const Navbar = () => {
 
     // in here nav routes list get data locally from the navRoutes array
     const [navRoutesList, setNavRoutesList] = useState<NavRoutesType[]>(
-        () => getFromLocalStorage('navRoutes') || navRoutes,
+        () => getFromLocalStorage('navRoutes') || navRoutes
     )
 
     //this useEffect re render the navRoutes list with localstorage change
@@ -49,7 +49,12 @@ const Navbar = () => {
     }))
 
     useEffect(() => {
-        const pathKey = location.pathname.split('/').pop()
+        // this one return the stirng after worklenz/
+        const afterWorklenzString = location.pathname.split('/worklenz/')[1]
+
+        // this one return the stirng after worklenz/ **pathKey** /
+        const pathKey = afterWorklenzString.split('/')[0]
+
         setCurrent(pathKey ?? 'home')
     }, [location])
 

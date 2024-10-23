@@ -1,16 +1,54 @@
-import { Badge, Button, DatePicker, Drawer, Flex, Form, Input, message, Select, Tag, Typography } from 'antd'
-import React from 'react'
+import {
+    Badge,
+    Button,
+    DatePicker,
+    Drawer,
+    Flex,
+    Form,
+    Input,
+    message,
+    Select,
+    Tag,
+    Typography,
+} from 'antd'
+import React, { useState } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { createProject, toggleDrawer } from '../projectSlice'
-import { PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons'
+import {
+    PlusCircleOutlined,
+    PlusOutlined,
+    QuestionCircleOutlined,
+} from '@ant-design/icons'
 import { ProjectType } from '../../../types/project.types'
 import { nanoid } from '@reduxjs/toolkit'
-import { healthStatusData, projectColors, statusData } from '../projectConstants'
+import {
+    healthStatusData,
+    projectColors,
+    statusData,
+} from '../../../lib/project/projectConstants'
+import { colors } from '../../../styles/colors'
+import { addCategory } from '../../settings/categories/categoriesSlice'
+import { CategoryType } from '../../../types/categories.types'
 
 const CreateProjectDrawer = () => {
+    // get currently active team data from team reducer and find the active team
+    const currentlyActiveTeamData = useAppSelector(
+        (state) => state.teamReducer.teamsList
+    ).find((item) => item.isActive)
+
+    // get categories list from categories reducer
+    let categoriesList = useAppSelector(
+        (state) => state.categoriesReducer.categoriesList
+    )
+
+    // state for show category add input box
+    const [isAddCategoryInputShow, setIsAddCategoryInputShow] =
+        useState<boolean>(false)
+    const [categoryText, setCategoryText] = useState<string>('')
+
     const isDrawerOpen = useAppSelector(
-        (state) => state.projectReducer.isDrawerOpen,
+        (state) => state.projectReducer.isDrawerOpen
     )
     const dispatch = useAppDispatch()
 
@@ -21,11 +59,22 @@ const CreateProjectDrawer = () => {
         const newProject: ProjectType = {
             projectId: nanoid(),
             projectName: values.name,
-            isFavourite: false,
             projectColor: values.color,
+            projectStatus: values.status,
+            projectHealthStatus: values.health,
+            projectCategory: values.category,
+            projectNotes: values.notes,
+            projectClient: values.client,
+            projectManager: values.projectManager,
+            projectStartDate: values.startDate,
+            projectEndDate: values.endDate,
+            projectEstimatedWorkingDays: values.estWorkingDays,
+            projectEstimatedManDays: values.estManDays,
+            projectHoursPerDays: values.hrsPerDay,
             projectCreated: new Date(),
-            projectTeam: 'Raveesha Dilanka',
-            projectMemberCount: 1,
+            isFavourite: false,
+            projectTeam: currentlyActiveTeamData?.owner || '',
+            projectMemberCount: 0,
         }
         dispatch(createProject(newProject))
         message.success('project created!')
@@ -84,6 +133,23 @@ const CreateProjectDrawer = () => {
         })),
     ]
 
+    // show input to add new category
+    const handleShowAddCategoryInput = () => {
+        setIsAddCategoryInputShow(true)
+    }
+
+    // function to handle category add
+    const handleAddCategoryItem = (category: string) => {
+        const newCategory: CategoryType = {
+            categoryId: nanoid(),
+            categoryName: category,
+        }
+
+        dispatch(addCategory(newCategory))
+        setCategoryText('')
+        setIsAddCategoryInputShow(false)
+    }
+
     return (
         <Drawer
             title={
@@ -94,6 +160,7 @@ const CreateProjectDrawer = () => {
             open={isDrawerOpen}
             onClose={() => dispatch(toggleDrawer())}
         >
+            {/* create project form  */}
             <Form
                 form={form}
                 layout="vertical"
@@ -102,6 +169,7 @@ const CreateProjectDrawer = () => {
                     color: '#154c9b',
                     status: 'proposed',
                     health: 'notSet',
+                    client: [],
                     estWorkingDays: 0,
                     estManDays: 0,
                     hrsPerDay: 8,
@@ -140,11 +208,42 @@ const CreateProjectDrawer = () => {
                 <Form.Item name="health" label="Health">
                     <Select options={healthOptions} />
                 </Form.Item>
-                <Form.Item name="categorey" label="Categorey">
-                    <Select
-                        options={healthOptions}
-                        placeholder="Add a category to the project"
-                    />
+                <Form.Item name="category" label="Category">
+                    {!isAddCategoryInputShow ? (
+                        <Select
+                            options={categoriesList}
+                            placeholder="Add a category to the project"
+                            dropdownRender={() => (
+                                <Button
+                                    style={{ width: '100%' }}
+                                    type="dashed"
+                                    icon={<PlusOutlined />}
+                                    onClick={handleShowAddCategoryInput}
+                                >
+                                    New Category
+                                </Button>
+                            )}
+                        />
+                    ) : (
+                        <Flex vertical gap={4}>
+                            <Input
+                                placeholder="Enter a name for the category"
+                                value={categoryText}
+                                onChange={(e) =>
+                                    setCategoryText(e.currentTarget.value)
+                                }
+                                onKeyDown={(e) =>
+                                    e.key === 'Enter' &&
+                                    handleAddCategoryItem(categoryText)
+                                }
+                            />
+                            <Typography.Text
+                                style={{ color: colors.lightGray }}
+                            >
+                                Hit enter to create!
+                            </Typography.Text>
+                        </Flex>
+                    )}
                 </Form.Item>
                 <Form.Item name="notes" label="Notes">
                     <Input.TextArea placeholder="Notes" />

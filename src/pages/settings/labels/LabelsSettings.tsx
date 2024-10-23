@@ -3,6 +3,7 @@ import React from 'react'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 import { useTranslation } from 'react-i18next'
+import { SearchOutlined } from '@ant-design/icons'
 
 const LabelsSettings = () => {
     // localization
@@ -33,9 +34,10 @@ const LabelsSettings = () => {
                         justify="flex-end"
                         style={{ width: '100%', maxWidth: 400 }}
                     >
-                        <Input.Search
+                        <Input
                             placeholder={t('searchPlaceholder')}
-                            style={{ maxWidth: 200 }}
+                            style={{ maxWidth: 232 }}
+                            suffix={<SearchOutlined />}
                         />
 
                         <Tooltip title={t('pinTooltip')} trigger={'hover'}>

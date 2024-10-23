@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next' // Assuming you're using i18next for translations
 import './TableColumns.css'
+import { useNavigate } from 'react-router-dom'
 
 interface DataType {
     key: string
@@ -28,29 +29,39 @@ const avatarColors = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#87d068']
 const TableColumns = (): ColumnsType<DataType> => {
     const { t } = useTranslation('allProjectList') // Use translation hook if you're using i18next
 
+    const navigate = useNavigate()
+
     return [
         {
             title: t('name'),
             dataIndex: 'name',
             key: 'name',
             sorter: (a, b) => a.name.length - b.name.length,
+            onCell: (record) => {
+                return {
+                    onClick: () => navigate(`/worklenz/projects/${record.key}`),
+                    style: {
+                        cursor: 'pointer',
+                    },
+                }
+            },
             showSorterTooltip: false,
             render: (text, record) => {
                 // Format the start and end dates
                 const formattedStartDate = record.startDate
                     ? new Date(record.startDate).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                    })
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                      })
                     : 'N/A'
 
                 const formattedEndDate = record.endDate
                     ? new Date(record.endDate).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                    })
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                      })
                     : 'N/A'
 
                 return (
@@ -235,8 +246,8 @@ const TableColumns = (): ColumnsType<DataType> => {
                                 style={{
                                     backgroundColor:
                                         avatarColors[
-                                        index % avatarColors.length
-                                            ],
+                                            index % avatarColors.length
+                                        ],
                                     width: '28px',
                                     height: '28px',
                                     border: 'none',
