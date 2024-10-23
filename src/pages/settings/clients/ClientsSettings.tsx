@@ -76,7 +76,7 @@ const ClientsSettings = () => {
                         color:
                             hoverRow === record.clientId
                                 ? colors.skyBlue
-                                : colors.darkGray,
+                                : 'inherit',
                     }}
                 >
                     {record.clientName}

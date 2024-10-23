@@ -129,7 +129,7 @@ const TeamMembersSettings = () => {
                             color:
                                 hoverRow === record.memberId
                                     ? colors.skyBlue
-                                    : colors.darkGray,
+                                    : 'inherit',
                         }}
                     >
                         <Avatar
@@ -174,7 +174,7 @@ const TeamMembersSettings = () => {
                         color:
                             hoverRow === record.memberId
                                 ? colors.skyBlue
-                                : colors.darkGray,
+                                : 'inherit',
                     }}
                 >
                     0
@@ -198,7 +198,7 @@ const TeamMembersSettings = () => {
                             color:
                                 hoverRow === record.memberId
                                     ? colors.skyBlue
-                                    : colors.darkGray,
+                                    : 'inherit',
                         }}
                     >
                         {record.memberEmail}

@@ -70,7 +70,7 @@ const JobTitlesSettings = () => {
                         color:
                             hoverRow === record.jobId
                                 ? colors.skyBlue
-                                : colors.darkGray,
+                                : 'inherit',
                     }}
                 >
                     {record.jobTitle}
