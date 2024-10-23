@@ -26,11 +26,6 @@ import {
     DeleteOutlined,
     EditOutlined,
     ExclamationCircleFilled,
-} from '@ant-design/icons'
-import {
-    DeleteOutlined,
-    EditOutlined,
-    ExclamationCircleFilled,
     SearchOutlined,
 } from '@ant-design/icons'
 import UpdateJobTitlesDrawer from '../../../features/settings/job/UpdateJobTitlesDrawer'
