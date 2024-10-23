@@ -1,12 +1,12 @@
 table th {
-    border: none !important;
+    /*border: none !important*/
     transition: none !important;
     padding: 8px !important;
 }
 
 table td {
     padding: 8px !important;
-    border: none !important;
+    /*border: none !important*/
     transition: none !important;
 }
 
