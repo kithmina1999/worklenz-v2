@@ -125,7 +125,7 @@ const RecentAndFavouriteProjectList = () => {
                         />
                     ) : (
                         <Table
-                            className="custom-table"
+                            className="custom-two-colors-row-table"
                             rowKey={(record) => record.projectId}
                             dataSource={activeProjectsList}
                             columns={columns}

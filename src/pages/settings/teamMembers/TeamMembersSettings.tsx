@@ -356,7 +356,7 @@ const TeamMembersSettings = () => {
                     <Skeleton />
                 ) : (
                     <Table
-                        className="custom-table"
+                        className="custom-two-colors-row-table"
                         columns={columns}
                         dataSource={filteredMembersData}
                         rowKey={(record) => record.memberId}

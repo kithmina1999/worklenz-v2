@@ -157,7 +157,7 @@ const JobTitlesSettings = () => {
             }
         >
             <Table
-                className="custom-table"
+                className="custom-two-colors-row-table"
                 dataSource={filteredJobTitlesData}
                 columns={columns}
                 rowKey={(record: any) => record.jobId}

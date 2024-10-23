@@ -84,13 +84,13 @@ const AllProjectList: React.FC = () => {
         <Table
             columns={TableColumns()}
             dataSource={projectData}
-            className="custom-table"
+            className="custom-two-colors-row-table"
             rowClassName={() => 'custom-row'}
             pagination={{
                 showSizeChanger: true,
                 defaultPageSize: 20,
                 pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
-                size: 'small'
+                size: 'small',
             }}
             // onRow={(record) => {
             //     return {

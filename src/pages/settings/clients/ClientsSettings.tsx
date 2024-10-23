@@ -179,7 +179,7 @@ const ClientsSettings = () => {
             }
         >
             <Table
-                className="custom-table"
+                className="custom-two-colors-row-table"
                 dataSource={filteredClientsData}
                 columns={columns}
                 rowKey={(record) => record.clientId}

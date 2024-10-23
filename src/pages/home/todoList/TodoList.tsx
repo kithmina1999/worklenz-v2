@@ -142,7 +142,7 @@ const TodoList = () => {
                         />
                     ) : (
                         <Table
-                            className="custom-table"
+                            className="custom-two-colors-row-table"
                             rowKey={(record) => record.todoId}
                             dataSource={todoList}
                             columns={columns}

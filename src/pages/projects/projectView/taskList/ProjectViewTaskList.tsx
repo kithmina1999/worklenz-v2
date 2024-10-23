@@ -1,12 +1,14 @@
 import React from 'react'
 import TaskListFilters from './taskListFilters'
+import TaskListTable from './taskListTable'
+import { Flex } from 'antd'
 
 const ProjectViewTaskList = () => {
     return (
-        <div>
+        <Flex vertical gap={16}>
             <TaskListFilters />
-            Task list tables
-        </div>
+            <TaskListTable />
+        </Flex>
     )
 }
 

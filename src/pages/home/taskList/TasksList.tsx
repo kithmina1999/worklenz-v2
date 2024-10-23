@@ -155,7 +155,7 @@ const TasksList = () => {
                 />
             ) : (
                 <Table
-                    className="custom-table"
+                    className="custom-two-colors-row-table"
                     dataSource={tasksList}
                     rowKey={(record) => record.taskId}
                     columns={columns}
