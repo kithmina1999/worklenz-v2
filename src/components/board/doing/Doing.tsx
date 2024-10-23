@@ -1,7 +1,7 @@
 import React from 'react'
 import TaskCard from '../taskCard/TaskCard'
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import 'react-perfect-scrollbar/dist/css/styles.css';
+import PerfectScrollbar from 'react-perfect-scrollbar'
+import 'react-perfect-scrollbar/dist/css/styles.css'
 import './Doing.css'
 
 const Doing: React.FC = () => {
@@ -46,8 +46,13 @@ const Doing: React.FC = () => {
                     </div>
                 </div>
 
-                <PerfectScrollbar style={{ maxHeight: 'calc(100vh - 250px)', padding: '2px 16px 2px 2px' }}>
-                    <TaskCard />
+                <PerfectScrollbar
+                    style={{
+                        maxHeight: 'calc(100vh - 250px)',
+                        padding: '2px 16px 2px 2px',
+                    }}
+                >
+                    <TaskCard status="doing" />
                 </PerfectScrollbar>
             </div>
         </div>

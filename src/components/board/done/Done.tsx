@@ -1,8 +1,8 @@
-import React from 'react';
-import TaskCard from '../taskCard/TaskCard';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import 'react-perfect-scrollbar/dist/css/styles.css';
-import './Done.css';
+import React from 'react'
+import TaskCard from '../taskCard/TaskCard'
+import PerfectScrollbar from 'react-perfect-scrollbar'
+import 'react-perfect-scrollbar/dist/css/styles.css'
+import './Done.css'
 
 const Done: React.FC = () => {
     return (
@@ -46,21 +46,27 @@ const Done: React.FC = () => {
                 </div>
 
                 {/* Wrap the scrollable area with PerfectScrollbar */}
-                <PerfectScrollbar style={{ maxHeight: 'calc(100vh - 250px)', padding: '2px 16px 2px 2px' }}>
-                    <TaskCard />
-                    <TaskCard />
-                    <TaskCard />
-                    <TaskCard />
-                    <TaskCard />
-                    <TaskCard />
-                    <TaskCard />
-                    <TaskCard />
-                    <TaskCard />
-                    <TaskCard />
+                <PerfectScrollbar
+                    style={{
+                        maxHeight: 'calc(100vh - 250px)',
+                        padding: '2px 16px 2px 2px',
+                    }}
+                >
+                    <TaskCard status={'done'} />
+                    <TaskCard status={'done'} />
+                    <TaskCard status={'done'} />
+                    <TaskCard status={'done'} />
+                    <TaskCard status={'done'} />
+                    <TaskCard status={'done'} />
+                    <TaskCard status={'done'} />
+                    <TaskCard status={'done'} />
+                    <TaskCard status={'done'} />
+                    <TaskCard status={'done'} />
+                    <TaskCard status={'done'} />
                 </PerfectScrollbar>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default Done;
+export default Done

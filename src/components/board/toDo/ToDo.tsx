@@ -1,14 +1,14 @@
 import React from 'react'
 import TaskCard from '../taskCard/TaskCard'
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import 'react-perfect-scrollbar/dist/css/styles.css';
+import PerfectScrollbar from 'react-perfect-scrollbar'
+import 'react-perfect-scrollbar/dist/css/styles.css'
 import './ToDo.css'
 
 const ToDo: React.FC = () => {
     return (
         <div style={{ paddingTop: '6px' }}>
             <div
-                className='todo-wraper'
+                className="todo-wraper"
                 style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -44,12 +44,17 @@ const ToDo: React.FC = () => {
                         To Do (1)
                     </div>
                 </div>
-                <PerfectScrollbar style={{ maxHeight: 'calc(100vh - 250px)', padding: '2px 16px 2px 2px' }}>
-                    <TaskCard />
-                    <TaskCard />
-                    <TaskCard />
-                    <TaskCard />
-                    <TaskCard />
+                <PerfectScrollbar
+                    style={{
+                        maxHeight: 'calc(100vh - 250px)',
+                        padding: '2px 16px 2px 2px',
+                    }}
+                >
+                    <TaskCard status="todo" />
+                    <TaskCard status="todo" />
+                    <TaskCard status="todo" />
+                    <TaskCard status="todo" />
+                    <TaskCard status="todo" />
                 </PerfectScrollbar>
             </div>
         </div>
