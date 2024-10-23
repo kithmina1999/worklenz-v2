@@ -95,7 +95,7 @@ const TeamsSettings = () => {
 
             <Card style={{ width: '100%' }}>
                 <Table
-                    className="homepage-table"
+                    className="custom-table"
                     columns={columns}
                     dataSource={teamList}
                     rowKey={(record) => record.teamId}

@@ -157,7 +157,7 @@ const JobTitlesSettings = () => {
             }
         >
             <Table
-                className="homepage-table"
+                className="custom-table"
                 dataSource={filteredJobTitlesData}
                 columns={columns}
                 rowKey={(record: any) => record.jobId}

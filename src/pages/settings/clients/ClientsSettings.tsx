@@ -179,7 +179,7 @@ const ClientsSettings = () => {
             }
         >
             <Table
-                className="homepage-table"
+                className="custom-table"
                 dataSource={filteredClientsData}
                 columns={columns}
                 rowKey={(record) => record.clientId}
