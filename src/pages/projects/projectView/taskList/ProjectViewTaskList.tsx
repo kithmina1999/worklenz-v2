@@ -1,5 +1,5 @@
 import React from 'react'
-import TaskListFilters from './taskFilters'
+import TaskListFilters from './taskListFilters'
 
 const ProjectViewTaskList = () => {
     return (
