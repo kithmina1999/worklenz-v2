@@ -1,7 +1,9 @@
-import { ConfigProvider, Input, Table, TableProps } from 'antd'
+import { ConfigProvider, Input, Progress, Table, TableProps } from 'antd'
 import React from 'react'
 import { TaskType } from '../../../../../types/task.types'
 import { useAppSelector } from '../../../../../hooks/useAppSelector'
+import StatusDropdown from '../../../../../components/taskListCommon/statusDropdown/StatusDropdown'
+import PriorityDropdown from '../../../../../components/taskListCommon/priorityDropdown/PriorityDropdown'
 
 type TaskListTableProps = {
     dataSource: TaskType[]
@@ -12,6 +14,43 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
     const columns = useAppSelector(
         (state) => state.projectViewTaskListColumnsReducer.columnsList
     )
+
+    const updatedColumns = columns?.map((col) => {
+        // render cell in status column
+        if (col.key === 'status') {
+            return {
+                ...col,
+                render: (record: TaskType) => (
+                    <StatusDropdown currentStatus={record.status} />
+                ),
+            }
+        }
+        // render cell in prioriy column
+        if (col.key === 'priority') {
+            return {
+                ...col,
+                render: (record: TaskType) => (
+                    <PriorityDropdown currentPriority={record.priority} />
+                ),
+            }
+        }
+
+        // render cell in status column
+        if (col.key === 'progress') {
+            return {
+                ...col,
+                render: (record: TaskType) => (
+                    <Progress
+                        percent={record.progress}
+                        type="circle"
+                        size={30}
+                    />
+                ),
+            }
+        }
+
+        return col
+    })
 
     // get theme from theme reducer
     const themeMode = useAppSelector((state) => state.themeReducer.mode)
@@ -52,7 +91,7 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
             <Table
                 className="custom-project-view-task-list-table"
                 dataSource={dataSource}
-                columns={columns}
+                columns={updatedColumns}
                 bordered
                 pagination={false}
                 rowSelection={{ ...rowSelection }}
