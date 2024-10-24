@@ -1,6 +1,6 @@
 import React from 'react'
-import TaskListFilters from './taskListFilters'
-import TaskListTable from './taskListTable'
+import TaskListFilters from './taskListFilters/TaskListFilters'
+import TaskListTable from './taskListTable/TaskListTable'
 import { Flex } from 'antd'
 import { TaskType } from '../../../../types/task.types'
 
@@ -11,7 +11,7 @@ const ProjectViewTaskList = () => {
             taskId: 'SP-1',
             task: 'Task 1',
             description: '-',
-            progress: '0%',
+            progress: 5,
             members: 'D',
             labels: '-',
             status: 'todo',
@@ -30,10 +30,10 @@ const ProjectViewTaskList = () => {
             taskId: 'SP-4',
             task: 'ads',
             description: '-',
-            progress: '0%',
+            progress: 30,
             members: '-',
             labels: '-',
-            status: 'todo',
+            status: 'doing',
             priority: 'medium',
             timeTracking: '-',
             estimation: '-',
@@ -49,7 +49,7 @@ const ProjectViewTaskList = () => {
             taskId: 'SP-5',
             task: 'asd',
             description: '-',
-            progress: '0%',
+            progress: 20,
             members: '-',
             labels: '-',
             status: 'todo',
@@ -68,10 +68,10 @@ const ProjectViewTaskList = () => {
             taskId: 'SP-12',
             task: 'asds',
             description: '-',
-            progress: '0%',
+            progress: 80,
             members: '-',
             labels: '-',
-            status: 'todo',
+            status: 'done',
             priority: 'medium',
             timeTracking: '-',
             estimation: '-',
@@ -85,10 +85,16 @@ const ProjectViewTaskList = () => {
         },
     ]
 
+    const todoData = dataSource.filter((item) => item.status === 'todo')
+    const doingData = dataSource.filter((item) => item.status === 'doing')
+    const doneData = dataSource.filter((item) => item.status === 'done')
+
     return (
         <Flex vertical gap={16}>
             <TaskListFilters />
-            <TaskListTable dataSource={dataSource} />
+            <TaskListTable dataSource={todoData} />
+            <TaskListTable dataSource={doingData} />
+            <TaskListTable dataSource={doneData} />
         </Flex>
     )
 }
