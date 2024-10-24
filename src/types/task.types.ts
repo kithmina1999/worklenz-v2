@@ -7,7 +7,7 @@ export type TaskType = {
     taskId: string
     task: string
     description?: string
-    progress?: string
+    progress?: number
     members?: string
     labels?: string
     status: TaskStatusType
