@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { Dropdown, Menu, Checkbox } from 'antd'
+import { Dropdown, Menu, Checkbox, Button, Input } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
+import './AddMembersDropdown.css'
 
 const AddMembersDropdown: React.FC = () => {
     const [checkedMembers, setCheckedMembers] = useState<string[]>([])
@@ -54,9 +55,9 @@ const AddMembersDropdown: React.FC = () => {
             key: '4',
             label: (
                 <Checkbox
-                    checked={checkedMembers.includes('Invite Member 3')}
+                    checked={checkedMembers.includes('Invite Member 4')}
                     onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
-                    onChange={() => handleCheck('Invite Member 3')}
+                    onChange={() => handleCheck('Invite Member 4')}
                 >
                     Invite Member 4
                 </Checkbox>
@@ -66,9 +67,9 @@ const AddMembersDropdown: React.FC = () => {
             key: '5',
             label: (
                 <Checkbox
-                    checked={checkedMembers.includes('Invite Member 3')}
+                    checked={checkedMembers.includes('Invite Member 5')}
                     onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
-                    onChange={() => handleCheck('Invite Member 3')}
+                    onChange={() => handleCheck('Invite Member 5')}
                 >
                     Invite Member 5
                 </Checkbox>
@@ -76,15 +77,49 @@ const AddMembersDropdown: React.FC = () => {
         },
     ]
 
+    // Define menu items with header and footer
+    const menu = (
+        <div>
+            {/* Header */}
+            <div style={{ backgroundColor: 'white', padding: '8px 16px', fontWeight: 'bold'}}>
+                <Input
+                    placeholder="Search by name"
+                />    
+            </div>
+
+            {/* Invite Items */}
+            <Menu
+                items={inviteItems}
+                style={{
+                    maxHeight: '300px',
+                    overflowY: 'auto',
+                }}
+            />
+
+            {/* Footer */}
+            <div style={{ padding: '8px', textAlign: 'right' }}>
+                <Button
+                    type="primary"
+                    size="small"
+                    onClick={() => {
+                        console.log('Selected Members:', checkedMembers)
+                    }}
+                >
+                    Ok
+                </Button>
+            </div>
+        </div>
+    )
+
     return (
         <Dropdown
             menu={{ items: inviteItems }}
             trigger={['click']}
+            dropdownRender={() => menu}  
+            overlayClassName="custom-dropdown-menu"
             overlayStyle={{
-                zIndex: 1000,
-                overflowY: 'auto',
-                maxHeight: '352px',
                 width: '300px',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
             }}
         >
             <PlusOutlined />

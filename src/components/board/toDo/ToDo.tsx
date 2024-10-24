@@ -3,8 +3,15 @@ import TaskCard from '../taskCard/TaskCard'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 import './ToDo.css'
+import { TaskType } from '../../../types/task.types'
+import { Button } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 
-const ToDo: React.FC = () => {
+interface ToDoProps {
+    dataSource: TaskType[]
+}
+
+const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
     return (
         <div style={{ paddingTop: '6px' }}>
             <div
@@ -41,21 +48,34 @@ const ToDo: React.FC = () => {
                             justifyContent: 'space-between',
                         }}
                     >
-                        To Do (1)
+                        To Do ({dataSource.length})
                     </div>
                 </div>
-                <PerfectScrollbar
+                <div
                     style={{
+                        overflowY: 'auto',
                         maxHeight: 'calc(100vh - 250px)',
-                        padding: '2px 16px 2px 2px',
+                        padding: '2px 2px 2px 2px',
                     }}
                 >
-                    <TaskCard status="todo" />
-                    <TaskCard status="todo" />
-                    <TaskCard status="todo" />
-                    <TaskCard status="todo" />
-                    <TaskCard status="todo" />
-                </PerfectScrollbar>
+                    {dataSource.map((task) => (
+                        <TaskCard key={task.taskId} task={task} />
+                    ))}
+                </div>
+
+                <div style={{ textAlign: 'center', paddingTop: '7px' }}>
+                    <Button
+                        type="text"
+                        style={{
+                            height: '38px',
+                            width: '100%',
+                            backgroundColor: 'white',
+                        }}
+                        icon={<PlusOutlined />}
+                    >
+                        Create Task
+                    </Button>
+                </div>
             </div>
         </div>
     )

@@ -15,6 +15,10 @@
     opacity: 1 !important;
 }
 
+.task-card:hover .hide-add-member-avatar {
+    opacity: 0.8 ;
+}
+
 .custom-placeholder .ant-picker-input input {
     font-size: 12px !important;
 }
@@ -33,4 +37,12 @@
 
 .sub-red-colored .ant-picker-input {
     color: red;
+}
+
+.add-member-avatar {
+    opacity: 0.8;
+}
+
+.hide-add-member-avatar {
+    opacity: 0;
 }

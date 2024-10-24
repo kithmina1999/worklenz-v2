@@ -9,6 +9,7 @@ import {
     Divider,
     Dropdown,
     MenuProps,
+    Button,
 } from 'antd'
 import {
     DoubleRightOutlined,
@@ -18,18 +19,20 @@ import {
     UserAddOutlined,
     InboxOutlined,
     DeleteOutlined,
+    MinusOutlined,
 } from '@ant-design/icons'
-import StatusDropdown from '../../../pages/home/taskList/statusDropdown/StatusDropdown'
 import './TaskCard.css'
 import dayjs, { Dayjs } from 'dayjs'
 import { avatarNamesMap } from '../../../shared/constants'
 import AddMembersDropdown from '../../addMembersDropdown/AddMembersDropdown'
+import StatusDropdown from '../../taskListCommon/statusDropdown/StatusDropdown'
+import { TaskType } from '../../../types/task.types'
 
-interface statusProps {
-    status: string
+interface taskProps {
+    task: TaskType
 }
 
-const TaskCard: React.FC<statusProps> = ({ status }) => {
+const TaskCard: React.FC<taskProps> = ({ task }) => {
     const [isSubTaskShow, setIsSubTaskShow] = useState(false)
     const [dueDate, setDueDate] = useState<Dayjs | null>(null)
     const [subTaskDueDate, setSubTaskDueDate] = useState<Dayjs | null>(null)
@@ -119,6 +122,8 @@ const TaskCard: React.FC<statusProps> = ({ status }) => {
         },
     ]
 
+    // const progress = (task.subTasks?.length || 0 + 1 )/ (task.subTasks?.length || 0 + 1)
+
     return (
         <Dropdown menu={{ items }} trigger={['contextMenu']}>
             <div
@@ -143,20 +148,11 @@ const TaskCard: React.FC<statusProps> = ({ status }) => {
                             justifyContent: 'space-between',
                         }}
                     >
-                        <div style={{ cursor: 'help', marginRight: '0.25rem' }}>
-                            <Tooltip title="Sub-task of Project list">
-                                <Tag bordered={false}>
-                                    <DoubleRightOutlined
-                                        style={{ color: '#000000a6' }}
-                                    />
-                                </Tag>
-                            </Tooltip>
-                        </div>
                         <Typography.Text
                             style={{ fontWeight: 500 }}
-                            delete={status === 'done'}
+                            delete={task.status === 'done'}
                         >
-                            Table
+                            {task.task}
                         </Typography.Text>
                     </div>
                     <div
@@ -166,32 +162,70 @@ const TaskCard: React.FC<statusProps> = ({ status }) => {
                             marginLeft: 'auto',
                         }}
                     >
-                        <Progress type="circle" percent={30} size={26} />
+                        <Progress
+                            type="circle"
+                            percent={task.progress}
+                            size={26}
+                        />
                     </div>
                 </div>
 
                 {/* Action Icons */}
                 <div style={{ display: 'flex' }}>
-                    <PauseOutlined
-                        style={{
-                            color: '#faad14',
-                            transform: 'rotate(90deg)',
-                            marginRight: '0.25rem',
-                        }}
-                    />
-                    <Tooltip title="Sub-task of Project list">
-                        <Tag
-                            bordered={false}
+                    {task.priority === 'low' ? (
+                        <MinusOutlined
                             style={{
-                                display: 'flex',
-                                color: '#000000a6',
+                                color: '#52c41a',
                                 marginRight: '0.25rem',
                             }}
+                        />
+                    ) : task.priority === 'medium' ? (
+                        <PauseOutlined
+                            style={{
+                                color: '#faad14',
+                                transform: 'rotate(90deg)',
+                                marginRight: '0.25rem',
+                            }}
+                        />
+                    ) : (
+                        <DoubleRightOutlined
+                            style={{
+                                color: '#f5222d',
+                                transform: 'rotate(-90deg)',
+                                marginRight: '0.25rem',
+                            }}
+                        />
+                    )}
+                    {task.labels?.length ? (
+                        <Tooltip
+                            overlay={
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                    }}
+                                >
+                                    {task.labels.map((label, index) => (
+                                        <span key={index}>{label}</span>
+                                    ))}
+                                </div>
+                            }
                         >
-                            <span>2</span>
-                            <TagsOutlined />
-                        </Tag>
-                    </Tooltip>
+                            <Tag
+                                bordered={false}
+                                style={{
+                                    display: 'flex',
+                                    color: '#000000a6',
+                                    marginRight: '0.25rem',
+                                }}
+                            >
+                                <span>{task.labels?.length}</span>
+                                <TagsOutlined />
+                            </Tag>
+                        </Tooltip>
+                    ) : (
+                        ''
+                    )}
                 </div>
 
                 {/* DatePicker and Avatars */}
@@ -231,23 +265,32 @@ const TaskCard: React.FC<statusProps> = ({ status }) => {
                             }}
                         >
                             <Avatar.Group>
-                                <Avatar
-                                    style={{
-                                        backgroundColor: avatarNamesMap['R'],
-                                        verticalAlign: 'middle',
-                                        fontSize: '12px',
-                                    }}
-                                    size="small"
-                                >
-                                    R
-                                </Avatar>
+                                {task.members?.map((member) => (
+                                    <Avatar
+                                        style={{
+                                            backgroundColor:
+                                                avatarNamesMap[
+                                                    member?.charAt(0)
+                                                ],
+                                            verticalAlign: 'middle',
+                                            fontSize: '12px',
+                                        }}
+                                        size="small"
+                                    >
+                                        {member.charAt(0)}
+                                    </Avatar>
+                                ))}
                             </Avatar.Group>
                             <Avatar
                                 size="small"
+                                className={
+                                    task.members?.length
+                                        ? 'add-member-avatar'
+                                        : 'hide-add-member-avatar'
+                                }
                                 style={{
                                     backgroundColor: '#fff',
                                     border: '1px dashed #c4c4c4',
-                                    opacity: '0.8',
                                     color: '#000000d9',
                                     fontSize: '12px',
                                 }}
@@ -259,99 +302,135 @@ const TaskCard: React.FC<statusProps> = ({ status }) => {
                 </div>
 
                 {/* Subtask Section */}
-                <div
-                    onClick={() => setIsSubTaskShow(!isSubTaskShow)}
-                    style={{
-                        cursor: 'help',
-                        marginTop: '0.5rem',
-                        display: 'flex',
-                        justifyContent: 'right',
-                    }}
-                >
-                    <Tooltip title="Sub-task of Project list">
-                        <Tag
-                            bordered={false}
-                            style={{
-                                display: 'flex',
-                                color: '#000000a6',
-                                margin: 0,
-                            }}
-                        >
-                            <span>2</span>
-                            <DoubleRightOutlined />
-                        </Tag>
-                    </Tooltip>
-                </div>
-
-                {isSubTaskShow && (
+                {task.subTasks?.length && (
                     <div
+                        onClick={() => setIsSubTaskShow(!isSubTaskShow)}
                         style={{
+                            cursor: 'help',
                             marginTop: '0.5rem',
                             display: 'flex',
-                            flexDirection: 'column',
+                            justifyContent: 'right',
                         }}
                     >
-                        <div
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                            }}
-                        >
-                            <Typography.Text
-                                style={{ fontWeight: 500 }}
-                                delete={status === 'done'}
+                        <Button size="small" style={{ padding: 0 }}>
+                            <Tooltip
+                                overlay={
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                        }}
+                                    >
+                                        <span
+                                            style={{
+                                                borderBottom: '1px solid',
+                                                paddingBottom: '4px',
+                                            }}
+                                        >
+                                            Sub-tasks
+                                        </span>
+                                        <div style={{ marginTop: '4px' }}>
+                                            {task.subTasks.map(
+                                                (subtask, index) => (
+                                                    <span
+                                                        key={index}
+                                                        style={{
+                                                            display: 'block',
+                                                        }}
+                                                    >
+                                                        {subtask.subTask}
+                                                    </span>
+                                                )
+                                            )}
+                                        </div>
+                                    </div>
+                                }
                             >
-                                Sub Task 01
-                            </Typography.Text>
-                            <StatusDropdown currentStatus="Todo" />
-                        </div>
-                        <div style={{ display: 'flex' }}>
-                            <Avatar.Group
-                                size="small"
-                                max={{
-                                    count: 1,
-                                    style: {
-                                        color: '#f56a00',
-                                        backgroundColor: '#fde3cf',
-                                    },
-                                }}
-                            >
-                                <Avatar
+                                <Tag
+                                    bordered={false}
                                     style={{
-                                        backgroundColor: avatarNamesMap['R'],
-                                        fontSize: '12px',
+                                        display: 'flex',
+                                        color: '#000000a6',
+                                        margin: 0,
                                     }}
-                                    size="small"
                                 >
-                                    R
-                                </Avatar>
-                                <Avatar
-                                    style={{
-                                        backgroundColor: avatarNamesMap['R'],
-                                        fontSize: '12px',
-                                    }}
-                                    size="small"
-                                >
-                                    R
-                                </Avatar>
-                            </Avatar.Group>
-                            <DatePicker
-                                className={`custom-placeholder ${!subTaskDueDate ? 'empty-date' : isSubToday || isSubTomorrow ? 'selected-date' : isItSubPrevDate ? 'red-colored' : ''}`}
-                                placeholder="Due date"
-                                style={{
-                                    fontSize: '12px',
-                                    opacity: subTaskDueDate ? 1 : 0,
-                                }}
-                                onChange={handleSubTaskDateChange}
-                                variant="borderless"
-                                size="small"
-                                suffixIcon={false}
-                                format={(value) => formatDate(value)}
-                            />
-                        </div>
-                        <Divider style={{ margin: '5px' }} />
+                                    <span>{task.subTasks?.length}</span>
+                                    <DoubleRightOutlined />
+                                </Tag>
+                            </Tooltip>
+                        </Button>
                     </div>
                 )}
+
+                {isSubTaskShow &&
+                    task.subTasks?.map((subtask) => (
+                        <div
+                            key={subtask.subTaskId}
+                            style={{
+                                marginTop: '0.5rem',
+                                display: 'flex',
+                                flexDirection: 'column',
+                            }}
+                        >
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                }}
+                            >
+                                <Typography.Text
+                                    style={{ fontWeight: 500 }}
+                                    delete={task.status === 'done'}
+                                >
+                                    {subtask.subTask}
+                                </Typography.Text>
+                                <StatusDropdown
+                                    currentStatus={subtask.subTaskStatus}
+                                />
+                            </div>
+                            <div style={{ display: 'flex' }}>
+                                <Avatar.Group
+                                    size="small"
+                                    max={{
+                                        count: 1,
+                                        style: {
+                                            color: '#f56a00',
+                                            backgroundColor: '#fde3cf',
+                                        },
+                                    }}
+                                >
+                                    {subtask.subTaskMembers?.map((members) => (
+                                        <Avatar
+                                            style={{
+                                                backgroundColor:
+                                                    avatarNamesMap[
+                                                        members.charAt(0)
+                                                    ],
+                                                fontSize: '12px',
+                                            }}
+                                            size="small"
+                                        >
+                                            {members.charAt(0)}
+                                        </Avatar>
+                                    ))}
+                                </Avatar.Group>
+                                <DatePicker
+                                    className={`custom-placeholder ${!subTaskDueDate ? 'empty-date' : isSubToday || isSubTomorrow ? 'selected-date' : isItSubPrevDate ? 'red-colored' : ''}`}
+                                    placeholder="Due date"
+                                    style={{
+                                        fontSize: '12px',
+                                        opacity: subTaskDueDate ? 1 : 0,
+                                    }}
+                                    onChange={handleSubTaskDateChange}
+                                    variant="borderless"
+                                    size="small"
+                                    suffixIcon={false}
+                                    format={(value) => formatDate(value)}
+                                />
+                            </div>
+                            <Divider style={{ margin: '5px' }} />
+                        </div>
+                    ))}
             </div>
         </Dropdown>
     )
