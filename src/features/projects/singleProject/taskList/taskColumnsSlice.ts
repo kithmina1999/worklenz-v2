@@ -33,7 +33,6 @@ const initialState: projectViewTaskListColumnsState = {
         },
         {
             key: 'progress',
-            dataIndex: 'progress',
             title: 'Progress',
             width: 100,
             hidden: false,
@@ -54,14 +53,12 @@ const initialState: projectViewTaskListColumnsState = {
         },
         {
             key: 'status',
-            dataIndex: 'status',
             title: 'Status',
             width: 200,
             hidden: false,
         },
         {
             key: 'priority',
-            dataIndex: 'priority',
             title: 'Priority',
             width: 200,
             hidden: false,
