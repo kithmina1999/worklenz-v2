@@ -1,4 +1,14 @@
-import { Button, Card, Flex, Input, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd'
+import {
+    Button,
+    Card,
+    Flex,
+    Input,
+    Popconfirm,
+    Table,
+    TableProps,
+    Tooltip,
+    Typography,
+} from 'antd'
 import React, { useMemo, useState } from 'react'
 
 import CreateJobTitlesDrawer from '../../../features/settings/job/CreateJobTitlesDrawer'
@@ -12,7 +22,12 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { JobType } from '../../../types/job.types'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
-import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons'
+import {
+    DeleteOutlined,
+    EditOutlined,
+    ExclamationCircleFilled,
+    SearchOutlined,
+} from '@ant-design/icons'
 import UpdateJobTitlesDrawer from '../../../features/settings/job/UpdateJobTitlesDrawer'
 import { useTranslation } from 'react-i18next'
 import { colors } from '../../../styles/colors'
@@ -33,7 +48,7 @@ const JobTitlesSettings = () => {
 
     const filteredJobTitlesData = useMemo(() => {
         return jobTitlesList.filter((item) =>
-            item.jobTitle.toLowerCase().includes(searchQuery.toLowerCase()),
+            item.jobTitle.toLowerCase().includes(searchQuery.toLowerCase())
         )
     }, [jobTitlesList, searchQuery])
 
@@ -55,7 +70,7 @@ const JobTitlesSettings = () => {
                         color:
                             hoverRow === record.jobId
                                 ? colors.skyBlue
-                                : colors.darkGray,
+                                : 'inherit',
                     }}
                 >
                     {record.jobTitle}
@@ -142,7 +157,7 @@ const JobTitlesSettings = () => {
             }
         >
             <Table
-                className="homepage-table"
+                className="custom-two-colors-row-table"
                 dataSource={filteredJobTitlesData}
                 columns={columns}
                 rowKey={(record: any) => record.jobId}

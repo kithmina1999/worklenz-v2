@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Scheduler, SchedulerData } from '@bitnoi.se/react-scheduler'
+import dayjs from 'dayjs'
 import '@bitnoi.se/react-scheduler/dist/style.css'
 import { useAppSelector } from '../../../../hooks/useAppSelector'
 import './projectViewWorkload.css'
@@ -112,7 +113,7 @@ const ProjectViewWorkload = () => {
                 // isLoading={isLoading}
                 onRangeChange={handleRangeChange}
                 onTileClick={(clickedResource) => console.log(clickedResource)}
-                onItemClick={( item) => console.log(item)}
+                onItemClick={(item) => console.log(item)}
                 onFilterData={() => {
                     // Some filtering logic...
                     setFilterButtonState(1)

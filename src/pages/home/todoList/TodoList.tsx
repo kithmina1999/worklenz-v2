@@ -1,5 +1,17 @@
 import { SyncOutlined } from '@ant-design/icons'
-import { Alert, Button, Card, Flex, Form, Input, InputRef, Skeleton, Table, TableProps, Typography } from 'antd'
+import {
+    Alert,
+    Button,
+    Card,
+    Flex,
+    Form,
+    Input,
+    InputRef,
+    Skeleton,
+    Table,
+    TableProps,
+    Typography,
+} from 'antd'
 import React, { useRef, useState } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { TodoType } from '../../../types/todo.types'
@@ -130,7 +142,7 @@ const TodoList = () => {
                         />
                     ) : (
                         <Table
-                            className="homepage-table"
+                            className="custom-two-colors-row-table"
                             rowKey={(record) => record.todoId}
                             dataSource={todoList}
                             columns={columns}

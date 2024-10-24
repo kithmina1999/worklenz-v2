@@ -1,5 +1,20 @@
-import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons'
-import { Button, Card, Flex, Input, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd'
+import {
+    DeleteOutlined,
+    EditOutlined,
+    ExclamationCircleFilled,
+    SearchOutlined,
+} from '@ant-design/icons'
+import {
+    Button,
+    Card,
+    Flex,
+    Input,
+    Popconfirm,
+    Table,
+    TableProps,
+    Tooltip,
+    Typography,
+} from 'antd'
 import React, { useMemo, useState } from 'react'
 import { colors } from '../../../styles/colors'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
@@ -24,12 +39,12 @@ const ClientsSettings = () => {
     const [hoverRow, setHoverRow] = useState<string | null>(null)
     // get currently selected client id
     const [selectedClientId, setSelectedClientId] = useState<string | null>(
-        null,
+        null
     )
 
     // get data from client reducer
     const clientsList = useAppSelector(
-        (state) => state.clientReducer.clientsList,
+        (state) => state.clientReducer.clientsList
     )
     const dispatch = useAppDispatch()
 
@@ -39,7 +54,7 @@ const ClientsSettings = () => {
     // used useMemo hook for re render the list when searching
     const filteredClientsData = useMemo(() => {
         return clientsList.filter((item) =>
-            item.clientName.toLowerCase().includes(searchQuery.toLowerCase()),
+            item.clientName.toLowerCase().includes(searchQuery.toLowerCase())
         )
     }, [clientsList, searchQuery])
 
@@ -61,7 +76,7 @@ const ClientsSettings = () => {
                         color:
                             hoverRow === record.clientId
                                 ? colors.skyBlue
-                                : colors.darkGray,
+                                : 'inherit',
                     }}
                 >
                     {record.clientName}
@@ -164,7 +179,7 @@ const ClientsSettings = () => {
             }
         >
             <Table
-                className="homepage-table"
+                className="custom-two-colors-row-table"
                 dataSource={filteredClientsData}
                 columns={columns}
                 rowKey={(record) => record.clientId}

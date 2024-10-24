@@ -6,12 +6,13 @@ import {
     Flex,
     Form,
     Input,
+    InputRef,
     message,
     Select,
     Tag,
     Typography,
 } from 'antd'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { createProject, toggleDrawer } from '../projectSlice'
@@ -133,9 +134,19 @@ const CreateProjectDrawer = () => {
         })),
     ]
 
+    // category input ref
+    const categoryInputRef = useRef<InputRef>(null)
+
+    const handleCategoryInputFocus = (open: boolean) => {
+        setTimeout(() => {
+            categoryInputRef.current?.focus()
+        }, 0)
+    }
+
     // show input to add new category
     const handleShowAddCategoryInput = () => {
         setIsAddCategoryInputShow(true)
+        handleCategoryInputFocus(true)
     }
 
     // function to handle category add
@@ -166,7 +177,7 @@ const CreateProjectDrawer = () => {
                 layout="vertical"
                 onFinish={handleFormSubmit}
                 initialValues={{
-                    color: '#154c9b',
+                    color: projectColors[0],
                     status: 'proposed',
                     health: 'notSet',
                     client: [],
@@ -227,6 +238,7 @@ const CreateProjectDrawer = () => {
                     ) : (
                         <Flex vertical gap={4}>
                             <Input
+                                ref={categoryInputRef}
                                 placeholder="Enter a name for the category"
                                 value={categoryText}
                                 onChange={(e) =>

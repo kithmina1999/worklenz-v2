@@ -1,4 +1,12 @@
-import { Button, Card, Flex, Table, TableProps, Tooltip, Typography } from 'antd'
+import {
+    Button,
+    Card,
+    Flex,
+    Table,
+    TableProps,
+    Tooltip,
+    Typography,
+} from 'antd'
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { TeamsType } from '../../../types/adminCenter/team.types'
@@ -87,7 +95,7 @@ const TeamsSettings = () => {
 
             <Card style={{ width: '100%' }}>
                 <Table
-                    className="homepage-table"
+                    className="custom-two-colors-row-table"
                     columns={columns}
                     dataSource={teamList}
                     rowKey={(record) => record.teamId}

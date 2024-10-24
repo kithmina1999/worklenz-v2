@@ -1,10 +1,10 @@
-import { Badge, Card, Dropdown, Flex, Menu, MenuProps } from 'antd'
+import { Badge, Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd'
 import React, { useState } from 'react'
-import { colors } from '../../../../styles/colors'
 import { DownOutlined } from '@ant-design/icons'
-import { TaskStatusType } from '../../../../types/task.types'
+import { TaskStatusType } from '../../../types/task.types'
 // custom css file
 import './statusDropdown.css'
+import { colors } from '../../../styles/colors'
 
 type StatusDropdownProps = {
     currentStatus: TaskStatusType
@@ -15,8 +15,8 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
 
     // fuction for get a color regariding the status
     const getStatuColor = (status: TaskStatusType) => {
-        if (status === 'Todo') return colors.deepLightGray
-        else if (status === 'Doing') return colors.midBlue
+        if (status === 'todo') return colors.deepLightGray
+        else if (status === 'doing') return colors.midBlue
         else return colors.lightGreen
     }
 
@@ -25,26 +25,26 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
     // status menu item
     const statusMenuItems: MenuItem[] = [
         {
-            key: 'Todo',
+            key: 'todo',
             label: (
                 <Flex gap={4}>
-                    <Badge color={getStatuColor('Todo')} /> Todo
+                    <Badge color={getStatuColor('todo')} /> Todo
                 </Flex>
             ),
         },
         {
-            key: 'Doing',
+            key: 'doing',
             label: (
                 <Flex gap={4}>
-                    <Badge color={getStatuColor('Doing')} /> Doing
+                    <Badge color={getStatuColor('doing')} /> Doing
                 </Flex>
             ),
         },
         {
-            key: 'Done',
+            key: 'done',
             label: (
                 <Flex gap={4}>
-                    <Badge color={getStatuColor('Done')} /> Done
+                    <Badge color={getStatuColor('done')} /> Done
                 </Flex>
             ),
         },
@@ -52,11 +52,11 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
 
     // handle status select
     const onClick: MenuProps['onClick'] = (e) => {
-        e.key === 'Todo'
-            ? setStatus('Todo')
-            : e.key === 'Doing'
-                ? setStatus('Doing')
-                : setStatus('Done')
+        e.key === 'todo'
+            ? setStatus('todo')
+            : e.key === 'doing'
+              ? setStatus('doing')
+              : setStatus('done')
     }
 
     //dropdown items
@@ -68,7 +68,7 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
                     <Menu
                         className="status-menu"
                         items={statusMenuItems}
-                        defaultValue={'Todo'}
+                        defaultValue={'todo'}
                         onClick={onClick}
                     />
                 </Card>
@@ -93,7 +93,9 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
                     backgroundColor: getStatuColor(status),
                 }}
             >
-                {status}
+                <Typography.Text style={{ textTransform: 'capitalize' }}>
+                    {status}
+                </Typography.Text>
                 <DownOutlined />
             </Flex>
         </Dropdown>
