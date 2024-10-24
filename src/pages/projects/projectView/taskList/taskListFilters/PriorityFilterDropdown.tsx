@@ -8,7 +8,7 @@ import {
 } from '../../../../../shared/constants'
 import { colors } from '../../../../../styles/colors'
 
-const PriorityDropdown = () => {
+const PriorityFilterDropdown = () => {
     const [selectedCount, setSelectedCount] = useState<number>(0)
 
     // handle selected filters count
@@ -97,4 +97,4 @@ const PriorityDropdown = () => {
     )
 }
 
-export default PriorityDropdown
+export default PriorityFilterDropdown
