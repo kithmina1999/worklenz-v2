@@ -5,10 +5,11 @@ import { CheckCircleFilled } from '@ant-design/icons'
 import { RootState } from '../../../app/store'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useTranslation } from 'react-i18next'
+import { timeZoneCurrencyMap } from '../../../utils/timeZoneCurrencyMap'
 
 const UpgradePlans: React.FC = () => {
     const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode)
-    const [selectedCard, setSelectedCard] = useState(2) // 2nd card selected by default
+    const [selectedCard, setSelectedCard] = useState(2)
 
     const handleCardSelect = (cardIndex: number) => {
         setSelectedCard(cardIndex)
@@ -29,6 +30,9 @@ const UpgradePlans: React.FC = () => {
     }
 
     const { t } = useTranslation('currentBill')
+
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const userCurrency = timeZoneCurrencyMap[userTimeZone] || 'USD'
 
     return (
         <div className="upgrade-plans" style={{ marginTop: '1.5rem', textAlign: 'center' }}>
@@ -63,7 +67,7 @@ const UpgradePlans: React.FC = () => {
                             rowGap: '10px',
                             padding: '20px 20px 0',
                         }}>
-                            <Typography.Title level={1}>RS 0.00</Typography.Title>
+                            <Typography.Title level={1}>{userCurrency} 0.00</Typography.Title>
                             <span>{t('freeSubtitle')}</span>
                             <Typography.Title level={5}>{t('freeUsers')}</Typography.Title>
                         </div>
@@ -105,7 +109,7 @@ const UpgradePlans: React.FC = () => {
                             rowGap: '10px',
                             padding: '20px 20px 0',
                         }}>
-                            <Typography.Title level={1}>RS 4990</Typography.Title>
+                            <Typography.Title level={1}>{userCurrency} 4990</Typography.Title>
                             <span>{t('startupSubtitle')}</span>
                             <Typography.Title level={5}>{t('startupUsers')}</Typography.Title>
                         </div>
@@ -113,9 +117,11 @@ const UpgradePlans: React.FC = () => {
                         <div style={{
                             display: 'grid',
                             gridTemplateRows: 'auto auto auto',
+                            gridTemplateColumns: '200px',
                             rowGap: '7px',
                             padding: '10px',
-                            justifyItems: 'flex-start',
+                            justifyItems: 'start',
+                            alignItems: 'start'
                         }}>
                             <div><CheckCircleFilled style={{ color: '#52c41a' }} />&nbsp;
                                 <span>{t('startupText01')}</span></div>
@@ -151,7 +157,7 @@ const UpgradePlans: React.FC = () => {
                             rowGap: '10px',
                             padding: '20px 20px 0',
                         }}>
-                            <Typography.Title level={1}>RS 300</Typography.Title>
+                            <Typography.Title level={1}>{userCurrency} 300</Typography.Title>
                             <span>{t('businessSubtitle')}</span>
                             <Typography.Title level={5}>16 - 200 users</Typography.Title>
                         </div>
@@ -159,9 +165,11 @@ const UpgradePlans: React.FC = () => {
                         <div style={{
                             display: 'grid',
                             gridTemplateRows: 'auto auto auto',
+                            gridTemplateColumns: '200px',
                             rowGap: '7px',
                             padding: '10px',
-                            justifyItems: 'flex-start',
+                            justifyItems: 'start',
+                            alignItems: 'start'
                         }}>
                             <div><CheckCircleFilled style={{ color: '#52c41a' }} />&nbsp;
                                 <span>{t('startupText01')}</span></div>
@@ -197,7 +205,7 @@ const UpgradePlans: React.FC = () => {
                             rowGap: '10px',
                             padding: '20px 20px 0',
                         }}>
-                            <Typography.Title level={1}>RS 250</Typography.Title>
+                            <Typography.Title level={1}>{userCurrency} 250</Typography.Title>
                             <span>{t('businessSubtitle')}</span>
                             <Typography.Title level={5}>{t('enterpriseUsers')}</Typography.Title>
                         </div>
@@ -205,9 +213,11 @@ const UpgradePlans: React.FC = () => {
                         <div style={{
                             display: 'grid',
                             gridTemplateRows: 'auto auto auto',
+                            gridTemplateColumns: '200px',
                             rowGap: '7px',
                             padding: '10px',
-                            justifyItems: 'flex-start',
+                            justifyItems: 'start',
+                            alignItems: 'start'
                         }}>
                             <div><CheckCircleFilled style={{ color: '#52c41a' }} />&nbsp;
                                 <span>{t('startupText01')}</span></div>

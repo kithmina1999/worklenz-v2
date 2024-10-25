@@ -1,9 +1,12 @@
 import React from 'react'
+import { Flex } from 'antd'
+
 import TaskListFilters from './taskListFilters/TaskListFilters'
 import TaskListTable from './taskListTable/TaskListTable'
-import { Flex } from 'antd'
+
 import { TaskType } from '../../../../types/task.types'
 import { useAppSelector } from '../../../../hooks/useAppSelector'
+import { doingData, doneData, todoData } from '../taskData'
 
 const ProjectViewTaskList = () => {
     // sample data from task reducer
