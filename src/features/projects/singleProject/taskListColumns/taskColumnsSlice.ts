@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TableProps } from 'antd'
 import { TaskType } from '../../../../types/task.types'
+import { TableColumnsType } from 'antd'
 
 type projectViewTaskListColumnsState = {
-    columnsList: TableProps<TaskType>['columns']
+    columnsList: TableColumnsType<TaskType>
 }
 
 const initialState: projectViewTaskListColumnsState = {
@@ -11,17 +11,14 @@ const initialState: projectViewTaskListColumnsState = {
     columnsList: [
         {
             key: 'taskId',
-            dataIndex: 'taskId',
             title: 'Key',
             width: 100,
             hidden: true,
         },
         {
             key: 'task',
-            dataIndex: 'task',
             title: 'Task',
             width: 400,
-            // hidden: false,
             fixed: 'left',
         },
         {
