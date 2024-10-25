@@ -3,7 +3,7 @@ import { Button, Card, Checkbox, Dropdown, Flex, List, Space } from 'antd'
 import React from 'react'
 import { useAppSelector } from '../../../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../../../hooks/useAppDispatch'
-import { toggleColumnVisibility } from '../../../../../features/projects/singleProject/taskList/taskColumnsSlice'
+import { toggleColumnVisibility } from '../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice'
 
 const ShowFieldsDropdown = () => {
     // get columns list without task name from projectViewTaskListColumn reducer
