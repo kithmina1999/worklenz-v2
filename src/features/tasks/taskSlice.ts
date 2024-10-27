@@ -134,9 +134,15 @@ const taskSlice = createSlice({
         addTask: (state, action: PayloadAction<TaskType>) => {
             state.tasks.push(action.payload)
         },
+
+        deleteTask: (state, action: PayloadAction<string>) => {
+            state.tasks = state.tasks.filter(
+                (task) => task.taskId !== action.payload
+            )
+        }
     },
 })
 
-export const { addTask, toggleCreateTaskDrawer, toggleUpdateTaskDrawer } =
+export const { addTask, toggleCreateTaskDrawer, toggleUpdateTaskDrawer, deleteTask } =
     taskSlice.actions
 export default taskSlice.reducer

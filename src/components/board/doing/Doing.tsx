@@ -6,12 +6,22 @@ import './Doing.css'
 import { TaskType } from '../../../types/task.types'
 import { Button } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
+import { setCardDisabled } from '../../../features/board/createCardSlice'
+import TaskCreateCard from '../taskCreateCard/TaskCreateCard'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
+import { RootState } from '../../../app/store'
 
 interface DoingProps {
     dataSource: TaskType[]
 }
 
-const Doing: React.FC<DoingProps> = ({dataSource}) => {
+const Doing: React.FC<DoingProps> = ({ dataSource }) => {
+    const isCardDisable = useAppSelector(
+        (state: RootState) => state.createCardReducer.isCardDisable
+    )
+    const dispatch = useAppDispatch()
+
     return (
         <div style={{ paddingTop: '6px' }}>
             <div
@@ -60,12 +70,21 @@ const Doing: React.FC<DoingProps> = ({dataSource}) => {
                         padding: '2px 2px 2px 2px',
                     }}
                 >
-                    {dataSource.map((task) =>
-                        <TaskCard key={task.taskId} task={task}/>
-                    )}
+                    {dataSource.map((task) => (
+                        <TaskCard key={task.taskId} task={task} />
+                    ))}
+
+                    {!isCardDisable && <TaskCreateCard status={"doing"}/>}
                 </div>
 
-                <div style={{ textAlign: 'center', marginTop: '7px', backgroundColor: 'white', padding: '0'}}>
+                <div
+                    style={{
+                        textAlign: 'center',
+                        marginTop: '7px',
+                        backgroundColor: 'white',
+                        padding: '0',
+                    }}
+                >
                     <Button
                         type="text"
                         style={{
@@ -73,6 +92,7 @@ const Doing: React.FC<DoingProps> = ({dataSource}) => {
                             width: '100%',
                         }}
                         icon={<PlusOutlined />}
+                        onClick={() => dispatch(setCardDisabled(false))}
                     >
                         Create Task
                     </Button>

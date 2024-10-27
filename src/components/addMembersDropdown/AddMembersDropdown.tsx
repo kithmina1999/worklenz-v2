@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { Dropdown, Menu, Checkbox, Button, Input } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { Dropdown, Menu, Checkbox, Button, Input, Avatar, Typography } from 'antd'
+import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons'
 import './AddMembersDropdown.css'
+import { avatarNamesMap } from '../../shared/constants'
 
 const AddMembersDropdown: React.FC = () => {
     const [checkedMembers, setCheckedMembers] = useState<string[]>([])
@@ -23,55 +24,15 @@ const AddMembersDropdown: React.FC = () => {
                     onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
                     onChange={() => handleCheck('Invite Member 1')}
                 >
-                    Invite Member 1
-                </Checkbox>
-            ),
-        },
-        {
-            key: '2',
-            label: (
-                <Checkbox
-                    checked={checkedMembers.includes('Invite Member 2')}
-                    onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
-                    onChange={() => handleCheck('Invite Member 2')}
-                >
-                    Invite Member 2
-                </Checkbox>
-            ),
-        },
-        {
-            key: '3',
-            label: (
-                <Checkbox
-                    checked={checkedMembers.includes('Invite Member 3')}
-                    onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
-                    onChange={() => handleCheck('Invite Member 3')}
-                >
-                    Invite Member 3
-                </Checkbox>
-            ),
-        },
-        {
-            key: '4',
-            label: (
-                <Checkbox
-                    checked={checkedMembers.includes('Invite Member 4')}
-                    onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
-                    onChange={() => handleCheck('Invite Member 4')}
-                >
-                    Invite Member 4
-                </Checkbox>
-            ),
-        },
-        {
-            key: '5',
-            label: (
-                <Checkbox
-                    checked={checkedMembers.includes('Invite Member 5')}
-                    onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
-                    onChange={() => handleCheck('Invite Member 5')}
-                >
-                    Invite Member 5
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <Avatar style={{backgroundColor: avatarNamesMap['R'], width: '28px', height: '28px', marginRight: '0.5rem'}}>
+                            R
+                        </Avatar>
+                        <div style={{lineHeight: '15px', display: 'flex', flexDirection: 'column'}}>
+                            <Typography.Text>Raveesha Dilanka</Typography.Text>
+                            <Typography.Text type='secondary' style={{fontSize: '80%'}}>raveeshadilanka1999@gmail.com</Typography.Text>
+                        </div>
+                    </div>
                 </Checkbox>
             ),
         },
@@ -96,8 +57,12 @@ const AddMembersDropdown: React.FC = () => {
                 }}
             />
 
+            <Button style={{width: '100%', backgroundColor: 'white'}} type='link'>
+                <UsergroupAddOutlined /> Invite a new member by email
+            </Button>
+
             {/* Footer */}
-            <div style={{ padding: '8px', textAlign: 'right' }}>
+            <div style={{ padding: '8px', textAlign: 'right', backgroundColor: 'white', borderTop: '1px solid rgba(0, 0, 0, 0.15)', color: '#1890ff'}}>
                 <Button
                     type="primary"
                     size="small"

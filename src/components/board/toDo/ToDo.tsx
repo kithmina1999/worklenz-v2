@@ -69,7 +69,7 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
                         <TaskCard key={task.taskId} task={task} />
                     ))}
 
-                    {!isCardDisable && <TaskCreateCard />}
+                    {!isCardDisable && <TaskCreateCard status={"todo"}/>}
                 </div>
 
                 <div style={{ textAlign: 'center',marginTop: '7px', backgroundColor: 'white', padding: '0'}}>

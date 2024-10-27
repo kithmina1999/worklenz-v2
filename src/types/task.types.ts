@@ -23,9 +23,9 @@ export type TaskType = {
     priority: TaskPriorityType
     timeTracking?: string
     estimation?: string
-    startDate?: Date
-    dueDate?: Date
-    completedDate?: Date
+    startDate?: Date | null
+    dueDate?: Date | null
+    completedDate?: Date | null
     createdDate?: Date
     lastUpdated?: Date
     reporter?: string

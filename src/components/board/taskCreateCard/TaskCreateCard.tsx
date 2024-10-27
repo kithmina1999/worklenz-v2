@@ -5,17 +5,24 @@ import dayjs, { Dayjs } from 'dayjs'
 import './TaskCreateCard.css'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { setCardDisabled } from '../../../features/board/createCardSlice'
+import { addTask } from '../../../features/tasks/taskSlice'
+interface StatusProps {
+    status: "todo" | "doing" | "done";
+}
 
-const TaskCreateCard: React.FC = () => {
+
+const TaskCreateCard: React.FC<StatusProps> = ({status}) => {
     const [characterLength, setCharacterLength] = useState<number>(0)
     const [dueDate, setDueDate] = useState<Dayjs | null>(null)
     const [isToday, setIsToday] = useState(false)
     const [isTomorrow, setIsTomorrow] = useState(false)
     const [isItPrevDate, setIsItPrevDate] = useState(false)
+    const [taskName, setTaskName] = useState('')
     const dispatch = useAppDispatch()
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCharacterLength(e.target.value.length)
+        setTaskName(e.target.value)
     }
 
     const handleDateChange = (date: Dayjs | null) => {
@@ -51,6 +58,32 @@ const TaskCreateCard: React.FC = () => {
         }
     }, [dueDate])
 
+    const handleAddTask = () => {
+        if (taskName.trim()) {
+            dispatch(addTask({
+                taskId: `SP-${Date.now()}`,
+                task: taskName,
+                description: '-',
+                progress: status === 'done' ? 100 : 0,
+                members: [],
+                labels: [],
+                status: status,
+                priority: 'medium',
+                timeTracking: '-',
+                estimation: '-',
+                startDate: new Date(),
+                dueDate: dueDate ? dueDate.toDate() : null,
+                completedDate: null,
+                createdDate: new Date(),
+                lastUpdated: new Date(),
+                reporter: '-',
+                phase: '-',
+                subTasks: [],
+            }))
+        }
+        setTaskName('')
+    }
+
     return (
         <div
             className="task-card"
@@ -67,20 +100,31 @@ const TaskCreateCard: React.FC = () => {
         >
             {/* Input field */}
             <div style={{ display: 'flex' }}>
-                <Input type='text'maxLength={100} onChange={handleChange}/>
+                <Input type="text" maxLength={100} onChange={handleChange} value={taskName}/>
             </div>
 
-            <div style={{ opacity : characterLength > 0 ? 1 : 0}}>
-            {/* Character Length */}
-            <div style={{position: 'absolute', zIndex: 1, right: '15px', top: '43px', color: '#00000073', fontSize: '10px'}}><span>{characterLength}/100</span></div>
+            <div style={{ opacity: characterLength > 0 ? 1 : 0 }}>
+                {/* Character Length */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        zIndex: 1,
+                        right: '15px',
+                        top: '43px',
+                        color: '#00000073',
+                        fontSize: '10px',
+                    }}
+                >
+                    <span>{characterLength}/100</span>
+                </div>
 
-            {/* DatePicker and Avatars */}
-            <div
+                {/* DatePicker and Avatars */}
+                <div
                     style={{
                         paddingTop: '0.25rem',
                         marginTop: '0.75rem',
                         display: 'flex',
-                        marginBottom: '16px'
+                        marginBottom: '16px',
                     }}
                 >
                     <div style={{ height: '100%', width: '100%' }}>
@@ -112,7 +156,7 @@ const TaskCreateCard: React.FC = () => {
                             }}
                         >
                             <Avatar.Group>
-                                    {/* <Avatar
+                                {/* <Avatar
                                         style={{
                                             backgroundColor:
                                                 avatarNamesMap[
@@ -142,12 +186,24 @@ const TaskCreateCard: React.FC = () => {
                 </div>
             </div>
 
-
-                {/* Add Task Button and Cancel Button*/}
-                <div>
-                    <Button size='small' style={{marginRight: '8px', fontSize: '12px'}} onClick={() => dispatch(setCardDisabled(true))}>Cancel</Button>
-                    <Button size='small' type='primary' style={{fontSize: '12px'}} >Add Task</Button>
-                </div>
+            {/* Add Task Button and Cancel Button*/}
+            <div>
+                <Button
+                    size="small"
+                    style={{ marginRight: '8px', fontSize: '12px' }}
+                    onClick={() => dispatch(setCardDisabled(true))}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    size="small"
+                    type="primary"
+                    style={{ fontSize: '12px' }}
+                    onClick={handleAddTask}
+                >
+                    Add Task
+                </Button>
+            </div>
         </div>
     )
 }
