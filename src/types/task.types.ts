@@ -18,7 +18,7 @@ export type TaskType = {
     description?: string
     progress?: number
     members?: MemberType[]
-    labels?: string
+    labels?: string[]
     status: TaskStatusType
     priority: TaskPriorityType
     timeTracking?: string

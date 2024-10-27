@@ -270,14 +270,14 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                                         style={{
                                             backgroundColor:
                                                 avatarNamesMap[
-                                                    member?.charAt(0)
+                                                    member.memberName.charAt(0)
                                                 ],
                                             verticalAlign: 'middle',
                                             fontSize: '12px',
                                         }}
                                         size="small"
                                     >
-                                        {member.charAt(0)}
+                                        {member.memberName.charAt(0)}
                                     </Avatar>
                                 ))}
                             </Avatar.Group>

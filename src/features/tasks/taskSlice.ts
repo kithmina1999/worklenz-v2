@@ -15,9 +15,26 @@ const initialState: TaskState = {
             taskId: 'SP-1',
             task: 'Workload',
             description: '-',
-            progress: 5,
-            members: [],
-            labels: '-',
+            progress: 0,
+            members: [
+                {
+                    memberId: '1',
+                    memberName: 'Raveesha Dilanka',
+                    memberEmail: "",
+                    memberRole: "owner",
+                    isActivate: null,
+                    isInivitationAccept: false
+                },
+                {
+                    memberId: '2',
+                    memberName: 'Sachintha Prasad',
+                    memberEmail: "",
+                    memberRole: "owner",
+                    isActivate: null,
+                    isInivitationAccept: false
+                }
+            ],
+            labels: [],
             status: 'todo',
             priority: 'high',
             timeTracking: '-',
@@ -29,6 +46,15 @@ const initialState: TaskState = {
             lastUpdated: new Date(),
             reporter: '-',
             phase: '-',
+            subTasks: [
+                {
+                    subTaskId: 'SP-1-1',
+                    subTask: 'Sub Task 1',
+                    subTaskMembers: ['Raveesha Dilanka', 'Sachintha Prasad'],
+                    subTaskStatus: 'todo',
+                    subTaskDueDate: new Date(),
+                }
+            ]
         },
         {
             taskId: 'SP-4',
@@ -36,7 +62,7 @@ const initialState: TaskState = {
             description: '-',
             progress: 30,
             members: [],
-            labels: '-',
+            labels: [],
             status: 'doing',
             priority: 'medium',
             timeTracking: '-',
@@ -53,9 +79,9 @@ const initialState: TaskState = {
             taskId: 'SP-5',
             task: 'Insights (tasks)',
             description: '-',
-            progress: 20,
+            progress: 0,
             members: [],
-            labels: '-',
+            labels: [],
             status: 'todo',
             priority: 'low',
             timeTracking: '-',
@@ -72,9 +98,8 @@ const initialState: TaskState = {
             taskId: 'SP-12',
             task: 'Settings (change password)',
             description: '-',
-            progress: 80,
-            members: [],
-            labels: '-',
+            progress: 100,
+            labels: [],
             status: 'done',
             priority: 'medium',
             timeTracking: '-',

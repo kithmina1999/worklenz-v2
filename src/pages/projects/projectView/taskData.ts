@@ -7,7 +7,24 @@ const dataSource: TaskType[] = [
         task: 'Task 1',
         description: '-',
         progress: 0,
-        members: ['Raveesha Dilanka', 'Sachintha Prasad'],
+        members: [
+            {
+                memberId: '1',
+                memberName: 'Raveesha Dilanka',
+                memberEmail: "",
+                memberRole: "owner",
+                isActivate: null,
+                isInivitationAccept: false
+            },
+            {
+                memberId: '2',
+                memberName: 'Sachintha Prasad',
+                memberEmail: "",
+                memberRole: "owner",
+                isActivate: null,
+                isInivitationAccept: false
+            }
+        ],
         labels: ['label 01', 'label 02'],
         status: 'todo',
         priority: 'high',
