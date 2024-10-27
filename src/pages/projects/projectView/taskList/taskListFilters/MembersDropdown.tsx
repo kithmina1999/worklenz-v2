@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { CaretDownFilled } from '@ant-design/icons'
 import {
-    Avatar,
     Badge,
     Button,
     Card,
@@ -17,8 +16,8 @@ import {
 } from 'antd'
 import React, { useMemo, useRef, useState } from 'react'
 import { useAppSelector } from '../../../../../hooks/useAppSelector'
-import { avatarNamesMap } from '../../../../../shared/constants'
 import { colors } from '../../../../../styles/colors'
+import CustomAvatar from '../../../../../components/CustomAvatar'
 
 const MembersDropdown = () => {
     const [selectedCount, setSelectedCount] = useState<number>(0)
@@ -59,57 +58,44 @@ const MembersDropdown = () => {
 
                 <List style={{ padding: 0 }}>
                     {filteredMembersData.length ? (
-                        filteredMembersData.map((member) => {
-                            const avatarCharacter =
-                                member.memberName[0].toUpperCase()
-
-                            return (
-                                <List.Item
-                                    className="custom-list-item"
-                                    key={member.memberId}
-                                    style={{
-                                        display: 'flex',
-                                        gap: 8,
-                                        padding: '4px 8px',
-                                        border: 'none',
-                                    }}
-                                >
-                                    <Checkbox
-                                        id={member.memberId}
-                                        onChange={(e) =>
-                                            handleSelectedFiltersCount(
-                                                e.target.checked
-                                            )
-                                        }
+                        filteredMembersData.map((member) => (
+                            <List.Item
+                                className="custom-list-item"
+                                key={member.memberId}
+                                style={{
+                                    display: 'flex',
+                                    gap: 8,
+                                    padding: '4px 8px',
+                                    border: 'none',
+                                }}
+                            >
+                                <Checkbox
+                                    id={member.memberId}
+                                    onChange={(e) =>
+                                        handleSelectedFiltersCount(
+                                            e.target.checked
+                                        )
+                                    }
+                                />
+                                <div>
+                                    <CustomAvatar
+                                        avatarCharacter={member.memberName[0].toUpperCase()}
                                     />
-                                    <div>
-                                        <Avatar
-                                            style={{
-                                                backgroundColor:
-                                                    avatarNamesMap[
-                                                        avatarCharacter
-                                                    ],
-                                                verticalAlign: 'middle',
-                                            }}
-                                        >
-                                            {avatarCharacter}
-                                        </Avatar>
-                                    </div>
-                                    <Flex vertical>
-                                        {member.memberName}
+                                </div>
+                                <Flex vertical>
+                                    {member.memberName}
 
-                                        <Typography.Text
-                                            style={{
-                                                fontSize: 12,
-                                                color: colors.lightGray,
-                                            }}
-                                        >
-                                            {member.memberEmail}
-                                        </Typography.Text>
-                                    </Flex>
-                                </List.Item>
-                            )
-                        })
+                                    <Typography.Text
+                                        style={{
+                                            fontSize: 12,
+                                            color: colors.lightGray,
+                                        }}
+                                    >
+                                        {member.memberEmail}
+                                    </Typography.Text>
+                                </Flex>
+                            </List.Item>
+                        ))
                     ) : (
                         <Empty />
                     )}

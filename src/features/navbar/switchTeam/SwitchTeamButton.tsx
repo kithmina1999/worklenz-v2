@@ -1,14 +1,18 @@
-import { BankOutlined, CaretDownFilled, CheckCircleFilled } from '@ant-design/icons'
-import { Avatar, Card, Dropdown, Flex, Tooltip, Typography } from 'antd'
+import {
+    BankOutlined,
+    CaretDownFilled,
+    CheckCircleFilled,
+} from '@ant-design/icons'
+import { Card, Dropdown, Flex, Tooltip, Typography } from 'antd'
 import React from 'react'
 import { colors } from '../../../styles/colors'
 import { useTranslation } from 'react-i18next'
 // custom css
 import './switchTeam.css'
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { avatarNamesMap } from '../../../shared/constants'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { setTeamActive } from '../../adminCenter/teams/teamSlice'
+import CustomAvatar from '../../../components/CustomAvatar'
 
 const SwitchTeamButton = () => {
     // localization
@@ -42,16 +46,9 @@ const SwitchTeamButton = () => {
                             style={{ padding: 12 }}
                         >
                             <Flex gap={8} align="center">
-                                <Avatar
-                                    style={{
-                                        backgroundColor:
-                                            avatarNamesMap[
-                                                team.teamName[0].toLocaleUpperCase()
-                                                ],
-                                    }}
-                                >
-                                    {team.teamName[0].toLocaleUpperCase()}
-                                </Avatar>
+                                <CustomAvatar
+                                    avatarCharacter={team.teamName[0].toUpperCase()}
+                                />
                                 <Flex vertical>
                                     <Typography.Text
                                         style={{

@@ -1,6 +1,5 @@
 import { UserOutlined } from '@ant-design/icons'
 import {
-    Avatar,
     Button,
     Card,
     Dropdown,
@@ -14,17 +13,14 @@ import { useTranslation } from 'react-i18next'
 // profile dropdown custom css
 import './profileDropdown.css'
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { avatarNamesMap } from '../../../shared/constants'
 import { Link } from 'react-router-dom'
+import CustomAvatar from '../../../components/CustomAvatar'
 
 const ProfileButton = () => {
     // get user data from redux - user reducer
     const userDetails = useAppSelector((state) => state.userReducer)
     // localization
     const { t } = useTranslation('navbar')
-
-    // get avatar character
-    const avatarCharacter = userDetails.name[0].toLocaleUpperCase()
 
     const profile: MenuProps['items'] = [
         {
@@ -37,15 +33,9 @@ const ProfileButton = () => {
                             <Typography.Text>Account</Typography.Text>
                             <Flex gap={8} align="center" justify="flex-start">
                                 <div>
-                                    <Avatar
-                                        style={{
-                                            backgroundColor:
-                                                avatarNamesMap[avatarCharacter],
-                                            verticalAlign: 'middle',
-                                        }}
-                                    >
-                                        {avatarCharacter}
-                                    </Avatar>
+                                    <CustomAvatar
+                                        avatarCharacter={userDetails.name[0].toLocaleUpperCase()}
+                                    />
                                 </div>
                                 <Flex vertical>
                                     <Typography.Text>
