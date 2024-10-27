@@ -1,7 +1,10 @@
-import { CaretDownFilled, SettingOutlined } from '@ant-design/icons'
-import { Button, ConfigProvider, Flex, Select } from 'antd'
+import { CaretDownFilled } from '@ant-design/icons'
+import { ConfigProvider, Flex, Select } from 'antd'
 import React, { useState } from 'react'
 import { colors } from '../../../../../styles/colors'
+import ConfigPhaseButton from '../../../../../features/projects/singleProject/phase/ConfigPhaseButton'
+import { useSelectedProject } from '../../../../../hooks/useSelectedProject'
+import { useAppSelector } from '../../../../../hooks/useAppSelector'
 
 const GroupByDropdown = () => {
     type GroupTypes = 'status' | 'priority' | 'phase'
@@ -12,10 +15,18 @@ const GroupByDropdown = () => {
         setActiveGroup(value as GroupTypes)
     }
 
+    // get selected project from useSelectedPro
+    const selectedProject = useSelectedProject()
+
+    //get phases details from phases slice
+    const phase = useAppSelector(
+        (state) => state.phaseReducer.phaseList
+    ).filter((phase) => phase.projectId === selectedProject?.projectId)
+
     const groupDropdownMenuItems = [
         { key: 'status', value: 'status', label: 'Status' },
         { key: 'priority', value: 'priority', label: 'Priority' },
-        { key: 'phase', value: 'phase', label: 'Phase' },
+        { key: 'phase', value: 'phase', label: phase[0].phase || 'Phase' },
     ]
 
     return (
@@ -29,14 +40,9 @@ const GroupByDropdown = () => {
             />
             {(activeGroup === 'status' || activeGroup === 'phase') && (
                 <ConfigProvider wave={{ disabled: true }}>
-                    <Button
-                        className="borderless-icon-btn"
-                        icon={
-                            <SettingOutlined
-                                style={{ color: colors.skyBlue }}
-                            />
-                        }
-                    />
+                    {activeGroup === 'phase' && (
+                        <ConfigPhaseButton color={colors.skyBlue} />
+                    )}
                 </ConfigProvider>
             )}
         </Flex>
