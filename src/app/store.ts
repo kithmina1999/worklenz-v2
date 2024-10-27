@@ -15,6 +15,7 @@ import teamReducer from '../features/adminCenter/teams/teamSlice'
 import billingReducer from '../features/adminCenter/billing/billingSlice'
 import projectMemberReducer from '../features/projects/singleProject/members/projectMembersSlice'
 import categoriesReducer from '../features/settings/categories/categoriesSlice'
+import projectViewTaskListColumnsReducer from '../features/projects/singleProject/taskListColumns/taskColumnsSlice'
 
 export const store = configureStore({
     // there is error  occured with day js package when use with redux it shows a non-serializable value was detected
@@ -39,6 +40,7 @@ export const store = configureStore({
         billingReducer: billingReducer,
         projectMemberReducer: projectMemberReducer,
         categoriesReducer: categoriesReducer,
+        projectViewTaskListColumnsReducer: projectViewTaskListColumnsReducer,
     },
 })
 

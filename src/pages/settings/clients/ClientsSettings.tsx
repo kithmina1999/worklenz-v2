@@ -76,7 +76,7 @@ const ClientsSettings = () => {
                         color:
                             hoverRow === record.clientId
                                 ? colors.skyBlue
-                                : colors.darkGray,
+                                : 'inherit',
                     }}
                 >
                     {record.clientName}
@@ -179,7 +179,7 @@ const ClientsSettings = () => {
             }
         >
             <Table
-                className="custom-table"
+                className="custom-two-colors-row-table"
                 dataSource={filteredClientsData}
                 columns={columns}
                 rowKey={(record) => record.clientId}

@@ -1,12 +1,30 @@
 import React from 'react'
-import TaskListFilters from './taskFilters'
+import { Flex } from 'antd'
+
+import TaskListFilters from './taskListFilters/TaskListFilters'
+import TaskListTable from './taskListTable/TaskListTable'
+
+import { TaskType } from '../../../../types/task.types'
+import { useAppSelector } from '../../../../hooks/useAppSelector'
+import { doingData, doneData, todoData } from '../taskData'
 
 const ProjectViewTaskList = () => {
+    // sample data from task reducer
+    const dataSource: TaskType[] = useAppSelector(
+        (state) => state.taskReducer.tasks
+    )
+
+    const todoData = dataSource.filter((item) => item.status === 'todo')
+    const doingData = dataSource.filter((item) => item.status === 'doing')
+    const doneData = dataSource.filter((item) => item.status === 'done')
+
     return (
-        <div>
+        <Flex vertical gap={16}>
             <TaskListFilters />
-            Task list tables
-        </div>
+            <TaskListTable dataSource={todoData} />
+            <TaskListTable dataSource={doingData} />
+            <TaskListTable dataSource={doneData} />
+        </Flex>
     )
 }
 

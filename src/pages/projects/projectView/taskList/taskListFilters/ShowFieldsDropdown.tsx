@@ -1,32 +1,33 @@
 import { MoreOutlined } from '@ant-design/icons'
 import { Button, Card, Checkbox, Dropdown, Flex, List, Space } from 'antd'
 import React from 'react'
+import { useAppSelector } from '../../../../../hooks/useAppSelector'
+import { useAppDispatch } from '../../../../../hooks/useAppDispatch'
+import { toggleColumnVisibility } from '../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice'
 
 const ShowFieldsDropdown = () => {
+    // get columns list without task name from projectViewTaskListColumn reducer
+    const columns =
+        useAppSelector(
+            (state) => state.projectViewTaskListColumnsReducer.columnsList
+        )?.filter((col) => col.title !== 'Task') || []
+
+    const dispatch = useAppDispatch()
+
     // showFields dropdown items
     type ShowFieldsType = {
         key: string
         label: string
+        hidden: boolean
     }
 
-    const showFieldsList: ShowFieldsType[] = [
-        { key: 'key', label: 'Key' },
-        { key: 'description', label: 'Description' },
-        { key: 'progress', label: 'Progress' },
-        { key: 'members', label: 'Members' },
-        { key: 'labels', label: 'Labels' },
-        { key: 'status', label: 'Status' },
-        { key: 'priority', label: 'Priority' },
-        { key: 'timeTracking', label: 'Time Tracking' },
-        { key: 'estimation', label: 'Estimation' },
-        { key: 'startDate', label: 'Start Date' },
-        { key: 'dueDate', label: 'Due Date' },
-        { key: 'completedDate', label: 'Completed Date' },
-        { key: 'createdDate', label: 'Created Date' },
-        { key: 'lastUpdated', label: 'Last Updated' },
-        { key: 'reporter', label: 'Reporter' },
-        { key: 'phase', label: 'Phase' },
-    ]
+    const showFieldsList: ShowFieldsType[] = columns
+        .filter((col) => col.key !== undefined)
+        .map((col) => ({
+            key: col.key as string,
+            label: col.title as string,
+            hidden: col.hidden as boolean,
+        }))
 
     // custom dropdown content
     const showFieldsDropdownContent = (
@@ -48,7 +49,13 @@ const ShowFieldsDropdown = () => {
                         }}
                     >
                         <Space>
-                            <Checkbox id={item.key} />
+                            <Checkbox
+                                id={item.key}
+                                checked={!item.hidden}
+                                onClick={() =>
+                                    dispatch(toggleColumnVisibility(item.key))
+                                }
+                            />
                             {item.label}
                         </Space>
                     </List.Item>

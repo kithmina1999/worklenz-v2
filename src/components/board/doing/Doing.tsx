@@ -1,10 +1,17 @@
 import React from 'react'
 import TaskCard from '../taskCard/TaskCard'
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import 'react-perfect-scrollbar/dist/css/styles.css';
+import PerfectScrollbar from 'react-perfect-scrollbar'
+import 'react-perfect-scrollbar/dist/css/styles.css'
 import './Doing.css'
+import { TaskType } from '../../../types/task.types'
+import { Button } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 
-const Doing: React.FC = () => {
+interface DoingProps {
+    dataSource: TaskType[]
+}
+
+const Doing: React.FC<DoingProps> = ({dataSource}) => {
     return (
         <div style={{ paddingTop: '6px' }}>
             <div
@@ -42,13 +49,35 @@ const Doing: React.FC = () => {
                             justifyContent: 'space-between',
                         }}
                     >
-                        Doing (1)
+                        Doing ({dataSource.length})
                     </div>
                 </div>
 
-                <PerfectScrollbar style={{ maxHeight: 'calc(100vh - 250px)', padding: '2px 16px 2px 2px' }}>
-                    <TaskCard />
-                </PerfectScrollbar>
+                <div
+                    style={{
+                        overflowY: 'auto',
+                        maxHeight: 'calc(100vh - 250px)',
+                        padding: '2px 16px 2px 2px',
+                    }}
+                >
+                    {dataSource.map((task) =>
+                        <TaskCard key={task.taskId} task={task}/>
+                    )}
+                </div>
+
+                <div style={{ textAlign: 'center', paddingTop: '7px' }}>
+                    <Button
+                        type="text"
+                        style={{
+                            height: '38px',
+                            width: '100%',
+                            backgroundColor: 'white',
+                        }}
+                        icon={<PlusOutlined />}
+                    >
+                        Create Task
+                    </Button>
+                </div>
             </div>
         </div>
     )

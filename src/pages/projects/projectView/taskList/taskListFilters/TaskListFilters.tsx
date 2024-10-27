@@ -1,11 +1,11 @@
 import { Checkbox, Flex, Typography } from 'antd'
 import SearchDropdown from './SearchDropdown'
 import SortDropdown from './SortDropdown'
-import PriorityDropdown from './PriorityDropdown'
 import LabelsDropdown from './LabelsDropdown'
 import MembersDropdown from './MembersDropdown'
 import GroupByDropdown from './GroupByDropdown'
 import ShowFieldsDropdown from './ShowFieldsDropdown'
+import PriorityFilterDropdown from './PriorityFilterDropdown'
 
 const TaskListFilters = () => {
     return (
@@ -16,7 +16,7 @@ const TaskListFilters = () => {
                 {/* sort dropdown  */}
                 <SortDropdown />
                 {/* prioriy dropdown  */}
-                <PriorityDropdown />
+                <PriorityFilterDropdown />
                 {/* labels dropdown  */}
                 <LabelsDropdown />
                 {/* members dropdown  */}
