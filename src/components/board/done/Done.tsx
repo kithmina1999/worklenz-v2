@@ -57,7 +57,7 @@ const Done: React.FC<DoneProps> = ({dataSource}) => {
                     style={{
                         overflowY: 'auto',
                         maxHeight: 'calc(100vh - 250px)',
-                        padding: '2px 8px 2px 2px',
+                        padding: '2px 2px 2px 2px',
                     }}
                 >
                     {dataSource.map((task) =>
@@ -65,13 +65,12 @@ const Done: React.FC<DoneProps> = ({dataSource}) => {
                     )}
                 </div>
 
-                <div style={{ textAlign: 'center', paddingTop: '7px' }}>
+                <div style={{ textAlign: 'center', marginTop: '7px', backgroundColor: 'white', padding: '0'}}>
                     <Button
                         type="text"
                         style={{
                             height: '38px',
                             width: '100%',
-                            backgroundColor: 'white',
                         }}
                         icon={<PlusOutlined />}
                     >

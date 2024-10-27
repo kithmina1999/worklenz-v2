@@ -1,17 +1,24 @@
 import React from 'react'
 import TaskCard from '../taskCard/TaskCard'
-import PerfectScrollbar from 'react-perfect-scrollbar'
-import 'react-perfect-scrollbar/dist/css/styles.css'
 import './ToDo.css'
 import { TaskType } from '../../../types/task.types'
 import { Button } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
+import TaskCreateCard from '../taskCreateCard/TaskCreateCard'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { RootState } from '../../../app/store'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
+import { setCardDisabled } from '../../../features/board/createCardSlice'
 
 interface ToDoProps {
     dataSource: TaskType[]
 }
 
 const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
+
+    const isCardDisable = useAppSelector((state: RootState) => state.createCardReducer.isCardDisable)
+    const dispatch = useAppDispatch()
+
     return (
         <div style={{ paddingTop: '6px' }}>
             <div
@@ -61,17 +68,19 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
                     {dataSource.map((task) => (
                         <TaskCard key={task.taskId} task={task} />
                     ))}
+
+                    {!isCardDisable && <TaskCreateCard />}
                 </div>
 
-                <div style={{ textAlign: 'center', paddingTop: '7px' }}>
+                <div style={{ textAlign: 'center',marginTop: '7px', backgroundColor: 'white', padding: '0'}}>
                     <Button
                         type="text"
                         style={{
                             height: '38px',
                             width: '100%',
-                            backgroundColor: 'white',
                         }}
                         icon={<PlusOutlined />}
+                        onClick={() => dispatch(setCardDisabled(false))}
                     >
                         Create Task
                     </Button>
