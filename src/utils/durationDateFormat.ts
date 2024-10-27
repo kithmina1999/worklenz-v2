@@ -1,4 +1,4 @@
-export const dateFormat = (date: Date | null): string => {
+export const durationDateFormat = (date: Date | null): string => {
     if (!date) return 'No due date'
 
     const givenDate = new Date(date)
