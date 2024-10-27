@@ -14,6 +14,8 @@ import ProjectMemberDrawer from '../../../features/projects/singleProject/member
 import { useDocumentTitle } from '../../../hooks/useDoumentTItle'
 import ProjectViewHeader from './ProjectViewHeader'
 import { useLocation, useNavigate } from 'react-router-dom'
+import CreateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/CreateTaskDrawer'
+import UpdateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/UpdateTaskDrawer'
 
 const ProjectView = () => {
     const location = useLocation()
@@ -119,6 +121,8 @@ const ProjectView = () => {
             {/* drawers  */}
             {/* add project members drawer */}
             <ProjectMemberDrawer />
+            {/* create task drawer  */}
+            <CreateTaskDrawer />
         </div>
     )
 }

@@ -17,10 +17,14 @@ import { useSelectedProject } from '../../../hooks/useSelectedProject'
 import { colors } from '../../../styles/colors'
 import dayjs from 'dayjs'
 import { statusData } from '../../../lib/project/projectConstants'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
+import { toggleCreateTaskDrawer } from '../../../features/tasks/taskSlice'
 
 const ProjectViewHeader = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const navigate = useNavigate()
+
+    const dispatch = useAppDispatch()
 
     // useSelectedProject custom hook returns currently selected project
     const selectedProject = useSelectedProject()
@@ -153,6 +157,7 @@ const ProjectViewHeader = () => {
                         type="primary"
                         icon={<DownOutlined />}
                         menu={{ items }}
+                        onClick={() => dispatch(toggleCreateTaskDrawer())}
                     >
                         <EditOutlined /> Create Task
                     </Dropdown.Button>

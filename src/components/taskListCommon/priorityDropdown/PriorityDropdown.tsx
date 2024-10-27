@@ -1,4 +1,4 @@
-import { Badge, Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd'
+import { Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd'
 import React, { useState } from 'react'
 import {
     DoubleLeftOutlined,
@@ -20,7 +20,7 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
 
     // fuction for get a color regariding the priority
     const getStatuColor = (priority: TaskPriorityType) => {
-        if (priority === 'low') return colors.deepLightGray
+        if (priority === 'low') return colors.lightGreen
         else if (priority === 'medium') return colors.lightBeige
         else return colors.vibrantOrange
     }
