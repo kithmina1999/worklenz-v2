@@ -1,22 +1,22 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice } from '@reduxjs/toolkit';
 
 interface createCardState {
-    isCardDisable: boolean
+  isCardDisable: boolean;
 }
 
 const initialState: createCardState = {
-    isCardDisable: true,
-}
+  isCardDisable: true,
+};
 
 const createCardSlice = createSlice({
-    name: 'createCard',
-    initialState,
-    reducers: {
-        setCardDisabled: (state, action) => {
-            state.isCardDisable = action.payload
-        }
-    }
-})
+  name: 'createCard',
+  initialState,
+  reducers: {
+    setCardDisabled: (state, action) => {
+      state.isCardDisable = action.payload;
+    },
+  },
+});
 
-export const { setCardDisabled } = createCardSlice.actions
-export default createCardSlice.reducer
+export const { setCardDisabled } = createCardSlice.actions;
+export default createCardSlice.reducer;

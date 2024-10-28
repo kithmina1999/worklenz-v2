@@ -1,7 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const ProjectViewFiles = () => {
-    return <div>ProjectViewFiles</div>
-}
+  return <div>ProjectViewFiles</div>;
+};
 
-export default ProjectViewFiles
+export default ProjectViewFiles;

@@ -1,4 +1,4 @@
 export type JobType = {
-    jobId: string
-    jobTitle: string
-}
+  jobId: string;
+  jobTitle: string;
+};

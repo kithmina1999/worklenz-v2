@@ -1,27 +1,27 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { MemberType } from '../../../../types/member.types'
+import { createSlice } from '@reduxjs/toolkit';
+import { MemberType } from '../../../../types/member.types';
 
 type ProjectMembersState = {
-    membersList: MemberType[] | null
-    isDrawerOpen: boolean
-}
+  membersList: MemberType[] | null;
+  isDrawerOpen: boolean;
+};
 
 const initialState: ProjectMembersState = {
-    membersList: [],
-    isDrawerOpen: false,
-}
+  membersList: [],
+  isDrawerOpen: false,
+};
 
 const projectMembersSlice = createSlice({
-    name: 'projectMemberSlice',
-    initialState,
-    reducers: {
-        toggleDrawer: (state) => {
-            state.isDrawerOpen
-                ? (state.isDrawerOpen = false)
-                : (state.isDrawerOpen = true)
-        },
+  name: 'projectMemberSlice',
+  initialState,
+  reducers: {
+    toggleDrawer: (state) => {
+      state.isDrawerOpen
+        ? (state.isDrawerOpen = false)
+        : (state.isDrawerOpen = true);
     },
-})
+  },
+});
 
-export const { toggleDrawer } = projectMembersSlice.actions
-export default projectMembersSlice.reducer
+export const { toggleDrawer } = projectMembersSlice.actions;
+export default projectMembersSlice.reducer;

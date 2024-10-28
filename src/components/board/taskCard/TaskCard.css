@@ -16,7 +16,7 @@
 }
 
 .task-card:hover .hide-add-member-avatar {
-    opacity: 0.8 ;
+    opacity: 0.8;
 }
 
 .custom-placeholder .ant-picker-input input {

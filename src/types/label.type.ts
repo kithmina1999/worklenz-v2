@@ -1,5 +1,5 @@
 export type LabelType = {
-    labelId: string
-    labelName: string
-    labelColor: string
-}
+  labelId: string;
+  labelName: string;
+  labelColor: string;
+};

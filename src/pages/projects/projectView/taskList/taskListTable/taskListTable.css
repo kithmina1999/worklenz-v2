@@ -31,8 +31,8 @@
 }
 
 :where(.css-dev-only-do-not-override-1w6wsvq).ant-collapse-ghost
-    > .ant-collapse-item
-    > .ant-collapse-content
-    > .ant-collapse-content-box {
+> .ant-collapse-item
+> .ant-collapse-content
+> .ant-collapse-content-box {
     padding: 0;
 }
