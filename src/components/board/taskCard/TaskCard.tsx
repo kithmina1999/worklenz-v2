@@ -214,7 +214,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                                     }}
                                 >
                                     {task.labels.map((label, index) => (
-                                        <span key={index}>{label}</span>
+                                        <span key={index}>{label.labelName}</span>
                                     ))}
                                 </div>
                             }
@@ -341,7 +341,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                         {isSubTaskShow &&
                             task.subTasks?.map((subtask) => (
                                 <div
-                                    key={subtask.subTaskId}
+                                    key={subtask.taskId}
                                     style={{
                                         marginTop: '0.5rem',
                                         display: 'flex',
@@ -358,11 +358,11 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                                             style={{ fontWeight: 500 }}
                                             delete={task.status === 'done'}
                                         >
-                                            {subtask.subTask}
+                                            {subtask.task}
                                         </Typography.Text>
                                         <StatusDropdown
                                             currentStatus={
-                                                subtask.subTaskStatus
+                                                subtask.status
                                             }
                                         />
                                     </div>
@@ -377,21 +377,19 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                                                 },
                                             }}
                                         >
-                                            {subtask.subTaskMembers?.map(
-                                                (members) => (
+                                            {subtask.members?.map(
+                                                (member) => (
                                                     <Avatar
                                                         style={{
                                                             backgroundColor:
                                                                 avatarNamesMap[
-                                                                    members.charAt(
-                                                                        0
-                                                                    )
+                                                                    member.memberName.charAt(0)
                                                                 ],
                                                             fontSize: '12px',
                                                         }}
                                                         size="small"
                                                     >
-                                                        {members.charAt(0)}
+                                                        {member.memberName.charAt(0)}
                                                     </Avatar>
                                                 )
                                             )}
