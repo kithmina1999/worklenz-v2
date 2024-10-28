@@ -189,14 +189,14 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
         ...col,
         title: (
           <Flex align="center" justify="space-between">
-            {phase[0].phase || 'Phase'}{' '}
+            {phase[0]?.phase || 'Phase'}{' '}
             <ConfigPhaseButton color={colors.darkGray} />
           </Flex>
         ),
         render: () => {
           return (
             <Select
-              options={phase[0].phaseOptions.map((option) => ({
+              options={phase[0]?.phaseOptions?.map((option) => ({
                 key: option.optionId,
                 value: option.optionId,
                 label: (

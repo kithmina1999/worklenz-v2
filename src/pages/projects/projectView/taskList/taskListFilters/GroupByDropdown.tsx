@@ -26,7 +26,7 @@ const GroupByDropdown = () => {
   const groupDropdownMenuItems = [
     { key: 'status', value: 'status', label: 'Status' },
     { key: 'priority', value: 'priority', label: 'Priority' },
-    { key: 'phase', value: 'phase', label: phase[0].phase || 'Phase' },
+    { key: 'phase', value: 'phase', label: phase[0]?.phase || 'Phase' },
   ];
 
   return (
