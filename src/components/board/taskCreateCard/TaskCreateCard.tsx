@@ -1,169 +1,172 @@
-import { Avatar, Button, DatePicker, Input } from 'antd';
-import React, { useEffect, useState } from 'react';
-import AddMembersDropdown from '../../addMembersDropdown/AddMembersDropdown';
-import dayjs, { Dayjs } from 'dayjs';
-import './TaskCreateCard.css';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { setCardDisabled } from '../../../features/board/createCardSlice';
-import { addTask } from '../../../features/tasks/taskSlice';
-
+import { Avatar, Button, DatePicker, Input } from 'antd'
+import React, { useEffect, useState } from 'react'
+import AddMembersDropdown from '../../addMembersDropdown/AddMembersDropdown'
+import dayjs, { Dayjs } from 'dayjs'
+import './TaskCreateCard.css'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
+import { setDoingCreatTaskCardDisabled, setDoneCreatTaskCardDisabled, setTodoCreatTaskCardDisabled } from '../../../features/board/createCardSlice'
+import { addTask } from '../../../features/tasks/taskSlice'
 interface StatusProps {
-  status: 'todo' | 'doing' | 'done';
+    status: "todo" | "doing" | "done";
 }
 
-const TaskCreateCard: React.FC<StatusProps> = ({ status }) => {
-  const [characterLength, setCharacterLength] = useState<number>(0);
-  const [dueDate, setDueDate] = useState<Dayjs | null>(null);
-  const [isToday, setIsToday] = useState(false);
-  const [isTomorrow, setIsTomorrow] = useState(false);
-  const [isItPrevDate, setIsItPrevDate] = useState(false);
-  const [taskName, setTaskName] = useState('');
-  const dispatch = useAppDispatch();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCharacterLength(e.target.value.length);
-    setTaskName(e.target.value);
-  };
+const TaskCreateCard: React.FC<StatusProps> = ({status}) => {
+    const [characterLength, setCharacterLength] = useState<number>(0)
+    const [dueDate, setDueDate] = useState<Dayjs | null>(null)
+    const [isToday, setIsToday] = useState(false)
+    const [isTomorrow, setIsTomorrow] = useState(false)
+    const [isItPrevDate, setIsItPrevDate] = useState(false)
+    const [taskName, setTaskName] = useState('')
+    const dispatch = useAppDispatch()
 
-  const handleDateChange = (date: Dayjs | null) => {
-    setDueDate(date);
-  };
-
-  const formatDate = (date: Dayjs | null) => {
-    if (!date) return '';
-
-    const today = dayjs();
-    const tomorrow = today.add(1, 'day');
-
-    if (date.isSame(today, 'day')) {
-      return 'Today';
-    } else if (date.isSame(tomorrow, 'day')) {
-      return 'Tomorrow';
-    } else {
-      return date.isSame(today, 'year')
-        ? date.format('MMM DD')
-        : date.format('MMM DD, YYYY');
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCharacterLength(e.target.value.length)
+        setTaskName(e.target.value)
     }
-  };
 
-  useEffect(() => {
-    if (dueDate) {
-      setIsToday(dueDate.isSame(dayjs(), 'day'));
-      setIsTomorrow(dueDate.isSame(dayjs().add(1, 'day'), 'day'));
-      setIsItPrevDate(dueDate.isBefore(dayjs()));
-    } else {
-      setIsToday(false);
-      setIsTomorrow(false);
-      setIsItPrevDate(false);
+    const handleDateChange = (date: Dayjs | null) => {
+        setDueDate(date)
     }
-  }, [dueDate]);
 
-  const handleAddTask = () => {
-    if (taskName.trim()) {
-      dispatch(
-        addTask({
-          taskId: `SP-${Date.now()}`,
-          task: taskName,
-          description: '-',
-          progress: status === 'done' ? 100 : 0,
-          members: [],
-          labels: [],
-          status: status,
-          priority: 'medium',
-          timeTracking: '-',
-          estimation: '-',
-          startDate: new Date(),
-          dueDate: dueDate ? dueDate.toDate() : null,
-          completedDate: null,
-          createdDate: new Date(),
-          lastUpdated: new Date(),
-          reporter: '-',
-          phase: '-',
-          subTasks: [],
-        })
-      );
+    const formatDate = (date: Dayjs | null) => {
+        if (!date) return ''
+
+        const today = dayjs()
+        const tomorrow = today.add(1, 'day')
+
+        if (date.isSame(today, 'day')) {
+            return 'Today'
+        } else if (date.isSame(tomorrow, 'day')) {
+            return 'Tomorrow'
+        } else {
+            return date.isSame(today, 'year')
+                ? date.format('MMM DD')
+                : date.format('MMM DD, YYYY')
+        }
     }
-    setTaskName('');
-  };
 
-  return (
-    <div
-      className="task-card"
-      style={{
-        zIndex: 99,
-        padding: '12px',
-        backgroundColor: 'white',
-        borderRadius: '4px',
-        marginBottom: '12px',
-        cursor: 'pointer',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Input field */}
-      <div style={{ display: 'flex' }}>
-        <Input
-          type="text"
-          maxLength={100}
-          onChange={handleChange}
-          value={taskName}
-        />
-      </div>
+    useEffect(() => {
+        if (dueDate) {
+            setIsToday(dueDate.isSame(dayjs(), 'day'))
+            setIsTomorrow(dueDate.isSame(dayjs().add(1, 'day'), 'day'))
+            setIsItPrevDate(dueDate.isBefore(dayjs()))
+        } else {
+            setIsToday(false)
+            setIsTomorrow(false)
+            setIsItPrevDate(false)
+        }
+    }, [dueDate])
 
-      <div style={{ opacity: characterLength > 0 ? 1 : 0 }}>
-        {/* Character Length */}
+    const handleAddTask = () => {
+        if (taskName.trim()) {
+            dispatch(addTask({
+                taskId: `SP-${Date.now()}`,
+                task: taskName,
+                description: '-',
+                progress: status === 'done' ? 100 : 0,
+                members: [],
+                labels: [],
+                status: status,
+                priority: 'medium',
+                timeTracking: '-',
+                estimation: '-',
+                startDate: new Date(),
+                dueDate: dueDate ? dueDate.toDate() : null,
+                completedDate: null,
+                createdDate: new Date(),
+                lastUpdated: new Date(),
+                reporter: '-',
+                phase: '-',
+                subTasks: [],
+            }))
+        }
+        setTaskName('')
+    }
+
+    const handleClose = () => {
+        if (status === 'todo') {
+            dispatch(setTodoCreatTaskCardDisabled(true))
+        } else if (status === 'doing') {
+            dispatch(setDoingCreatTaskCardDisabled(true))
+        } else if (status === 'done') {
+            dispatch(setDoneCreatTaskCardDisabled(true))
+        }
+    }
+
+    return (
         <div
-          style={{
-            position: 'absolute',
-            zIndex: 1,
-            right: '15px',
-            top: '43px',
-            color: '#00000073',
-            fontSize: '10px',
-          }}
-        >
-          <span>{characterLength}/100</span>
-        </div>
-
-        {/* DatePicker and Avatars */}
-        <div
-          style={{
-            paddingTop: '0.25rem',
-            marginTop: '0.75rem',
-            display: 'flex',
-            marginBottom: '16px',
-          }}
-        >
-          <div style={{ height: '100%', width: '100%' }}>
-            <DatePicker
-              className={`custom-placeholder ${!dueDate ? 'create-task-empty-date' : isToday ? 'selected-date' : isTomorrow ? 'selected-date' : isItPrevDate ? 'red-colored' : ''}`}
-              placeholder="Due date"
-              style={{
-                fontSize: '12px',
-                opacity: dueDate ? 1 : 0,
-              }}
-              onChange={handleDateChange}
-              variant="borderless"
-              size="small"
-              suffixIcon={false}
-              format={(value) => formatDate(value)}
-            />
-          </div>
-          <div style={{ marginLeft: 'auto' }}>
-            <div
-              style={{
-                opacity: 1,
+            className="task-card"
+            style={{
+                zIndex: 99,
+                padding: '12px',
+                backgroundColor: 'white',
                 borderRadius: '4px',
+                marginBottom: '12px',
                 cursor: 'pointer',
-                alignItems: 'center',
-                height: '100%',
-                width: '100%',
-                display: 'flex',
-                gap: '3px',
-              }}
-            >
-              <Avatar.Group>
-                {/* <Avatar
+                position: 'relative',
+                overflow: 'hidden',
+            }}
+        >
+            {/* Input field */}
+            <div style={{ display: 'flex' }}>
+                <Input type="text" maxLength={100} onChange={handleChange} value={taskName}/>
+            </div>
+
+            <div style={{ opacity: characterLength > 0 ? 1 : 0 }}>
+                {/* Character Length */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        zIndex: 1,
+                        right: '15px',
+                        top: '43px',
+                        color: '#00000073',
+                        fontSize: '10px',
+                    }}
+                >
+                    <span>{characterLength}/100</span>
+                </div>
+
+                {/* DatePicker and Avatars */}
+                <div
+                    style={{
+                        paddingTop: '0.25rem',
+                        marginTop: '0.75rem',
+                        display: 'flex',
+                        marginBottom: '16px',
+                    }}
+                >
+                    <div style={{ height: '100%', width: '100%' }}>
+                        <DatePicker
+                            className={`custom-placeholder ${!dueDate ? 'create-task-empty-date' : isToday ? 'selected-date' : isTomorrow ? 'selected-date' : isItPrevDate ? 'red-colored' : ''}`}
+                            placeholder="Due date"
+                            style={{
+                                fontSize: '12px',
+                                opacity: dueDate ? 1 : 0,
+                            }}
+                            onChange={handleDateChange}
+                            variant="borderless"
+                            size="small"
+                            suffixIcon={false}
+                            format={(value) => formatDate(value)}
+                        />
+                    </div>
+                    <div style={{ marginLeft: 'auto' }}>
+                        <div
+                            style={{
+                                opacity: 1,
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                alignItems: 'center',
+                                height: '100%',
+                                width: '100%',
+                                display: 'flex',
+                                gap: '3px',
+                            }}
+                        >
+                            <Avatar.Group>
+                                {/* <Avatar
                                         style={{
                                             backgroundColor:
                                                 avatarNamesMap[
@@ -176,43 +179,43 @@ const TaskCreateCard: React.FC<StatusProps> = ({ status }) => {
                                     >
                                         {member.charAt(0)}
                                     </Avatar> */}
-              </Avatar.Group>
-              <Avatar
-                size="small"
-                style={{
-                  backgroundColor: '#fff',
-                  border: '1px dashed #c4c4c4',
-                  color: '#000000d9',
-                  fontSize: '12px',
-                }}
-              >
-                <AddMembersDropdown />
-              </Avatar>
+                            </Avatar.Group>
+                            <Avatar
+                                size="small"
+                                style={{
+                                    backgroundColor: '#fff',
+                                    border: '1px dashed #c4c4c4',
+                                    color: '#000000d9',
+                                    fontSize: '12px',
+                                }}
+                            >
+                                <AddMembersDropdown />
+                            </Avatar>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
+
+            {/* Add Task Button and Cancel Button*/}
+            <div>
+                <Button
+                    size="small"
+                    style={{ marginRight: '8px', fontSize: '12px' }}
+                    onClick={handleClose}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    size="small"
+                    type="primary"
+                    style={{ fontSize: '12px' }}
+                    onClick={handleAddTask}
+                >
+                    Add Task
+                </Button>
+            </div>
         </div>
-      </div>
+    )
+}
 
-      {/* Add Task Button and Cancel Button*/}
-      <div>
-        <Button
-          size="small"
-          style={{ marginRight: '8px', fontSize: '12px' }}
-          onClick={() => dispatch(setCardDisabled(true))}
-        >
-          Cancel
-        </Button>
-        <Button
-          size="small"
-          type="primary"
-          style={{ fontSize: '12px' }}
-          onClick={handleAddTask}
-        >
-          Add Task
-        </Button>
-      </div>
-    </div>
-  );
-};
-
-export default TaskCreateCard;
+export default TaskCreateCard
