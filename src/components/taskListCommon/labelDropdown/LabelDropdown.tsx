@@ -23,7 +23,6 @@ import { addLabel } from '../../../features/settings/label/labelSlice';
 
 const LabelDropdown = () => {
   const labelInputRef = useRef<InputRef>(null);
-
   const dispatch = useAppDispatch();
 
   // get label list from label reducer

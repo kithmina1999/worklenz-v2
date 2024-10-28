@@ -153,7 +153,6 @@ const initialState: TaskState = {
       description: '-',
       progress: 0,
       members: [],
-
       labels: [{ labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' }],
       status: 'todo',
       priority: 'low',

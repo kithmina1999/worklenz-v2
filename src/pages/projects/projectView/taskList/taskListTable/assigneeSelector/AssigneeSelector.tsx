@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   Checkbox,
+  Divider,
   Dropdown,
   Empty,
   Flex,
@@ -17,11 +18,13 @@ import { useAppSelector } from '../../../../../../hooks/useAppSelector';
 import { toggleMember } from '../../../../../../features/tasks/taskSlice';
 import CustomAvatar from '../../../../../../components/CustomAvatar';
 import { colors } from '../../../../../../styles/colors';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { toggleDrawer } from '../../../../../../features/projects/singleProject/members/projectMembersSlice';
 
 const AssigneeSelector = ({ taskId }: { taskId: string }) => {
+  // statefor trrack overlay open or close
+  const [isOverlayOpen, setIsOverlayOpen] = useState<boolean>(false);
   const membersInputRef = useRef<InputRef>(null);
-
   const dispatch = useAppDispatch();
 
   // get members list from members reducer
@@ -39,6 +42,26 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
       member.memberName.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [membersList, searchQuery]);
+
+  // funcion to toggle drawer open
+  const handleOverlayToggle = () => {
+    setIsOverlayOpen((prev) => !prev);
+  };
+
+  // function to handle add project member drawer open
+  const handleProjectMemberDrawerOpen = () => {
+    setIsOverlayOpen(false);
+    dispatch(toggleDrawer());
+  };
+
+  // function to focus members input
+  const handleMembersDropdownOpen = (open: boolean) => {
+    if (open) {
+      setTimeout(() => {
+        membersInputRef.current?.focus();
+      }, 0);
+    }
+  };
 
   // custom dropdown content
   const membersDropdownContent = (
@@ -92,18 +115,29 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
             <Empty />
           )}
         </List>
+
+        <Divider style={{ margin: 0 }} />
+
+        <Button
+          icon={<UsergroupAddOutlined />}
+          style={{ border: 'none', color: colors.skyBlue }}
+          onClick={handleProjectMemberDrawerOpen}
+        >
+          Invite new member by email
+        </Button>
+
+        <Divider style={{ margin: 0 }} />
+
+        <Button
+          type="primary"
+          style={{ alignSelf: 'flex-end' }}
+          onClick={handleOverlayToggle}
+        >
+          OK
+        </Button>
       </Flex>
     </Card>
   );
-
-  // function to focus members input
-  const handleMembersDropdownOpen = (open: boolean) => {
-    if (open) {
-      setTimeout(() => {
-        membersInputRef.current?.focus();
-      }, 0);
-    }
-  };
 
   return (
     <Dropdown
@@ -111,12 +145,14 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
       trigger={['click']}
       dropdownRender={() => membersDropdownContent}
       onOpenChange={handleMembersDropdownOpen}
+      open={isOverlayOpen}
     >
       <Flex gap={4} align="center">
         <Button
           type="dashed"
           shape="circle"
           icon={<PlusOutlined style={{ fontSize: 12 }} />}
+          onClick={handleOverlayToggle}
         />
       </Flex>
     </Dropdown>
