@@ -16,8 +16,25 @@ const initialState: TaskState = {
             taskId: 'SP-1',
             task: 'Workload',
             description: '-',
-            progress: 5,
-            members: [],
+            progress: 0,
+            members: [
+                {
+                    memberId: '1',
+                    memberName: 'Raveesha Dilanka',
+                    memberEmail: "",
+                    memberRole: "owner",
+                    isActivate: null,
+                    isInivitationAccept: false
+                },
+                {
+                    memberId: '2',
+                    memberName: 'Sachintha Prasad',
+                    memberEmail: "",
+                    memberRole: "owner",
+                    isActivate: null,
+                    isInivitationAccept: false
+                }
+            ],
             labels: [
                 { labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' },
             ],
@@ -131,8 +148,9 @@ const initialState: TaskState = {
             taskId: 'SP-5',
             task: 'Insights (tasks)',
             description: '-',
-            progress: 20,
+            progress: 0,
             members: [],
+
             labels: [
                 { labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' },
             ],
@@ -190,6 +208,13 @@ const taskSlice = createSlice({
             state.tasks.push(action.payload)
         },
 
+
+        deleteTask: (state, action: PayloadAction<string>) => {
+            state.tasks = state.tasks.filter(
+                (task) => task.taskId !== action.payload
+            )
+        },
+
         toggleMember: (
             state,
             action: PayloadAction<{ taskId: string; member: MemberType }>
@@ -217,5 +242,7 @@ export const {
     toggleCreateTaskDrawer,
     toggleUpdateTaskDrawer,
     toggleMember,
+    deleteTask
 } = taskSlice.actions
+
 export default taskSlice.reducer

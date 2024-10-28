@@ -13,6 +13,10 @@ import { useTranslation } from 'react-i18next'
 // profile dropdown custom css
 import './profileDropdown.css'
 import { useAppSelector } from '../../../hooks/useAppSelector'
+import { avatarNamesMap } from '../../../shared/constants'
+import { RootState } from '../../../app/store'
+import './ProfileButton.css'
+
 import { Link } from 'react-router-dom'
 import CustomAvatar from '../../../components/CustomAvatar'
 
@@ -21,6 +25,14 @@ const ProfileButton = () => {
     const userDetails = useAppSelector((state) => state.userReducer)
     // localization
     const { t } = useTranslation('navbar')
+
+    // get avatar character
+    const avatarCharacter = userDetails.name[0].toLocaleUpperCase()
+    // get avatar character
+
+    const themeMode = useAppSelector(
+        (state: RootState) => state.themeReducer.mode
+    )
 
     const profile: MenuProps['items'] = [
         {
@@ -57,11 +69,30 @@ const ProfileButton = () => {
                     bordered={false}
                     style={{ width: 230 }}
                 >
-                    <Link to="/worklenz/admin-center/overview">
+                    <Link
+                        to="/worklenz/admin-center/overview"
+                        style={{
+                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
+                        }}
+                    >
                         Admin Center
                     </Link>
-                    <Link to="/worklenz/settings/profile">Settings</Link>
-                    <Link to="/auth/login">Log Out</Link>
+                    <Link
+                        to="/worklenz/settings/profile"
+                        style={{
+                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
+                        }}
+                    >
+                        Settings
+                    </Link>
+                    <Link
+                        to="/auth/login"
+                        style={{
+                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
+                        }}
+                    >
+                        Log Out
+                    </Link>
                 </Card>
             ),
         },
@@ -76,6 +107,7 @@ const ProfileButton = () => {
                 trigger={['click']}
             >
                 <Button
+                    className='profile-button'
                     style={{ height: '62px', width: '60px' }}
                     type="text"
                     icon={<UserOutlined style={{ fontSize: 20 }} />}

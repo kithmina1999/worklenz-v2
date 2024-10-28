@@ -5,6 +5,14 @@ import { ProjectType } from './project.types'
 export type TaskStatusType = 'doing' | 'todo' | 'done'
 export type TaskPriorityType = 'low' | 'medium' | 'high'
 
+export type SubTaskType = {
+    subTaskId: string;
+    subTask: string;
+    subTaskMembers?: string[];
+    subTaskStatus: TaskStatusType;
+    subTaskDueDate?: Date;
+};
+
 export type TaskType = {
     taskId: string
     task: string
@@ -25,4 +33,5 @@ export type TaskType = {
     phase?: string
     subTasks?: TaskType[]
     project?: ProjectType
+    subTasks?: SubTaskType[]
 }

@@ -16,6 +16,7 @@ import billingReducer from '../features/adminCenter/billing/billingSlice'
 import projectMemberReducer from '../features/projects/singleProject/members/projectMembersSlice'
 import categoriesReducer from '../features/settings/categories/categoriesSlice'
 import projectViewTaskListColumnsReducer from '../features/projects/singleProject/taskListColumns/taskColumnsSlice'
+import createCardReducer from '../features/board/createCardSlice'
 import phaseReducer from '../features/projects/singleProject/phase/phaseSlice'
 import labelReducer from '../features/settings/label/labelSlice'
 
@@ -43,6 +44,7 @@ export const store = configureStore({
         projectMemberReducer: projectMemberReducer,
         categoriesReducer: categoriesReducer,
         projectViewTaskListColumnsReducer: projectViewTaskListColumnsReducer,
+        createCardReducer: createCardReducer,
         phaseReducer: phaseReducer,
         labelReducer: labelReducer,
     },

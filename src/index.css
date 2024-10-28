@@ -27,6 +27,26 @@
     color: #1890ff; /* This is Ant Design's default link color */
 }
 
+.ps__rail-y {
+    opacity: 1 !important; /* Always show the scrollbar */
+    right: 0px; /* Position scrollbar to the right */
+    width: 8px !important; /* Set a consistent scrollbar width */
+}
+
+.ps__thumb-y {
+    width: 8px !important; /* Ensure the scrollbar thumb stays the same size */
+    background-color: #dbd6d6 !important; /* Customize scrollbar color */
+    border-radius: 4px; /* Rounded edges for the scrollbar */
+}
+
+.ps__rail-y:hover, .ps__rail-y:focus {
+    background-color: transparent !important; /* Prevent any changes on hover */
+}
+
+.ps__rail-y:hover .ps__thumb-y, .ps__rail-y:focus .ps__thumb-y {
+    background-color: #c4c4c4 !important; /* Keep the thumb color constant on hover */
+    width: 10px;
+}
 /* Customize website's scrollbar like Mac OS
 Not supports in Firefox and IE */
 

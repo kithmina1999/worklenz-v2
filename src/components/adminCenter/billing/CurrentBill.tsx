@@ -43,7 +43,7 @@ const CurrentBill: React.FC = () => {
         setIsModalOpen(false)
     }
 
-    const isTablet = useMediaQuery({ query: '(min-width: 1000px)' })
+    const isTablet = useMediaQuery({ query: '(min-width: 1025px)' })
 
     const { t } = useTranslation('currentBill')
 

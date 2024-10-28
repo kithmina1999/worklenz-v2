@@ -22,6 +22,8 @@ const ProjectMemberDrawer = () => {
 
     const [form] = Form.useForm()
 
+    console.log(membersList)
+
     const onChange = (value: string) => {
         console.log(`selected ${value}`)
     }
