@@ -1,7 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const ProjectViewMembers = () => {
-    return <div>ProjectViewMembers</div>
-}
+  return <div>ProjectViewMembers</div>;
+};
 
-export default ProjectViewMembers
+export default ProjectViewMembers;

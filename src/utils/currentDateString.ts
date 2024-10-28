@@ -1,7 +1,7 @@
-import dayjs from 'dayjs'
+import dayjs from 'dayjs';
 
 export const currentDateString = (): string => {
-    const date = dayjs()
+  const date = dayjs();
 
-    return `Today is ${date.format('dddd, MMMM DD, YYYY')}`
-}
+  return `Today is ${date.format('dddd, MMMM DD, YYYY')}`;
+};

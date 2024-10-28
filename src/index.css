@@ -14,8 +14,8 @@
     padding: 0;
     box-sizing: border-box;
     font-family: -apple-system, BlinkMacSystemFont, 'Inter', Roboto,
-        'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !important;
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !important;
 }
 
 /* helper classes  */
@@ -47,6 +47,7 @@
     background-color: #c4c4c4 !important; /* Keep the thumb color constant on hover */
     width: 10px;
 }
+
 /* Customize website's scrollbar like Mac OS
 Not supports in Firefox and IE */
 
@@ -67,6 +68,7 @@ Not supports in Firefox and IE */
     background-color: #cccccc;
     border-radius: 16px;
 }
+
 *::-webkit-scrollbar-thumb:hover {
     background-color: #ababab;
 }

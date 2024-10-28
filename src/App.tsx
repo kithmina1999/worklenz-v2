@@ -5,12 +5,12 @@ import ThemeWrapper from './features/theme/ThemeWrapper';
 import PreferenceSelector from './components/PreferenceSelector';
 
 const App: React.FC = () => {
-    return (
-        <ThemeWrapper>
-            <RouterProvider router={router} />
-            <PreferenceSelector />
-        </ThemeWrapper>
-    );
+  return (
+    <ThemeWrapper>
+      <RouterProvider router={router} />
+      <PreferenceSelector />
+    </ThemeWrapper>
+  );
 };
 
 export default App;

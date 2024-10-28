@@ -1,7 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const ProjectViewUpdates = () => {
-    return <div>ProjectViewUpdates</div>
-}
+  return <div>ProjectViewUpdates</div>;
+};
 
-export default ProjectViewUpdates
+export default ProjectViewUpdates;

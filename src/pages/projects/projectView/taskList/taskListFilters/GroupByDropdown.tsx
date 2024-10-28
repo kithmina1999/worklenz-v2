@@ -1,46 +1,52 @@
-import { CaretDownFilled, SettingOutlined } from '@ant-design/icons'
-import { Button, ConfigProvider, Flex, Select } from 'antd'
-import React, { useState } from 'react'
-import { colors } from '../../../../../styles/colors'
+import { CaretDownFilled } from '@ant-design/icons';
+import { ConfigProvider, Flex, Select } from 'antd';
+import React, { useState } from 'react';
+import { colors } from '../../../../../styles/colors';
+import ConfigPhaseButton from '../../../../../features/projects/singleProject/phase/ConfigPhaseButton';
+import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
+import { useAppSelector } from '../../../../../hooks/useAppSelector';
 
 const GroupByDropdown = () => {
-    type GroupTypes = 'status' | 'priority' | 'phase'
+  type GroupTypes = 'status' | 'priority' | 'phase';
 
-    const [activeGroup, setActiveGroup] = useState<GroupTypes>('status')
+  const [activeGroup, setActiveGroup] = useState<GroupTypes>('status');
 
-    const handleChange = (value: string) => {
-        setActiveGroup(value as GroupTypes)
-    }
+  const handleChange = (value: string) => {
+    setActiveGroup(value as GroupTypes);
+  };
 
-    const groupDropdownMenuItems = [
-        { key: 'status', value: 'status', label: 'Status' },
-        { key: 'priority', value: 'priority', label: 'Priority' },
-        { key: 'phase', value: 'phase', label: 'Phase' },
-    ]
+  // get selected project from useSelectedPro
+  const selectedProject = useSelectedProject();
 
-    return (
-        <Flex align="center" gap={4} style={{ marginInlineStart: 12 }}>
-            Group by:
-            <Select
-                defaultValue={'status'}
-                options={groupDropdownMenuItems}
-                onChange={handleChange}
-                suffixIcon={<CaretDownFilled />}
-            />
-            {(activeGroup === 'status' || activeGroup === 'phase') && (
-                <ConfigProvider wave={{ disabled: true }}>
-                    <Button
-                        className="borderless-icon-btn"
-                        icon={
-                            <SettingOutlined
-                                style={{ color: colors.skyBlue }}
-                            />
-                        }
-                    />
-                </ConfigProvider>
-            )}
-        </Flex>
-    )
-}
+  //get phases details from phases slice
+  const phase = useAppSelector((state) => state.phaseReducer.phaseList).filter(
+    (phase) => phase.projectId === selectedProject?.projectId
+  );
 
-export default GroupByDropdown
+  const groupDropdownMenuItems = [
+    { key: 'status', value: 'status', label: 'Status' },
+    { key: 'priority', value: 'priority', label: 'Priority' },
+    { key: 'phase', value: 'phase', label: phase[0].phase || 'Phase' },
+  ];
+
+  return (
+    <Flex align="center" gap={4} style={{ marginInlineStart: 12 }}>
+      Group by:
+      <Select
+        defaultValue={'status'}
+        options={groupDropdownMenuItems}
+        onChange={handleChange}
+        suffixIcon={<CaretDownFilled />}
+      />
+      {(activeGroup === 'status' || activeGroup === 'phase') && (
+        <ConfigProvider wave={{ disabled: true }}>
+          {activeGroup === 'phase' && (
+            <ConfigPhaseButton color={colors.skyBlue} />
+          )}
+        </ConfigProvider>
+      )}
+    </Flex>
+  );
+};
+
+export default GroupByDropdown;
