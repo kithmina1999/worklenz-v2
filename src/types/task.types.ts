@@ -19,10 +19,10 @@ export type TaskType = {
     startDate?: Date | null
     dueDate?: Date | null
     completedDate?: Date | null
-    createdDate?: Date
+    createdDate: Date
     lastUpdated?: Date
     reporter?: string
     phase?: string
-    subTasks?: TaskType[]
+    subTasks?: TaskType[] | null
     project?: ProjectType
 }

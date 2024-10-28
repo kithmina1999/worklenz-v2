@@ -1,5 +1,5 @@
 export const durationDateFormat = (date: Date | null): string => {
-    if (!date) return 'No due date'
+    if (!date) return '-'
 
     const givenDate = new Date(date)
     const currentDate = new Date()

@@ -61,6 +61,7 @@ const AddTaskInlineForm = () => {
             status: 'todo',
             priority: 'medium',
             project: values.project,
+            createdDate: new Date(),
         }
 
         dispatch(addTask(newTask))

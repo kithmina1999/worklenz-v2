@@ -20,6 +20,7 @@ import { useAppSelector } from '../../../../../hooks/useAppSelector'
 import StatusDropdown from '../../../../../components/taskListCommon/statusDropdown/StatusDropdown'
 import PriorityDropdown from '../../../../../components/taskListCommon/priorityDropdown/PriorityDropdown'
 import {
+    DownOutlined,
     ExpandAltOutlined,
     PlayCircleTwoTone,
     RightOutlined,
@@ -35,6 +36,7 @@ import ConfigPhaseButton from '../../../../../features/projects/singleProject/ph
 import { useSelectedProject } from '../../../../../hooks/useSelectedProject'
 import { simpleDateFormat } from '../../../../../utils/simpleDateFormat'
 import LabelDropdown from '../../../../../components/taskListCommon/labelDropdown/LabelDropdown'
+import { durationDateFormat } from '../../../../../utils/durationDateFormat'
 
 type TaskListTableProps = {
     dataSource: TaskType[]
@@ -83,45 +85,48 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
         if (col.key === 'task') {
             return {
                 ...col,
-                render: (record: TaskType) => (
-                    <Flex align="center" justify="space-between">
-                        <Flex gap={8} align="center">
-                            {/* {record.subTasks.length > 0 && (
+                render: (record: TaskType) => {
+                    console.log(record.subTasks)
+                    return (
+                        <Flex align="center" justify="space-between">
+                            <Flex gap={8} align="center">
+                                {record.subTasks && (
+                                    <Button
+                                        type="text"
+                                        icon={<DownOutlined />}
+                                        onClick={() =>
+                                            handleExpandRow(
+                                                !expandedRowKeys.includes(
+                                                    record.taskId
+                                                ),
+                                                record
+                                            )
+                                        }
+                                    />
+                                )}
+                                <Typography.Text>{record.task}</Typography.Text>
+                            </Flex>
+
+                            {hoverRow === record.taskId && (
                                 <Button
                                     type="text"
-                                    icon={<DownOutlined />}
-                                    onClick={() =>
-                                        handleExpandRow(
-                                            !expandedRowKeys.includes(
-                                                record.taskId
-                                            ),
-                                            record
-                                        )
-                                    }
-                                />
-                            )} */}
-                            <Typography.Text>{record.task}</Typography.Text>
+                                    icon={<ExpandAltOutlined />}
+                                    onClick={() => {
+                                        setSelectedTaskId(record.taskId)
+                                        dispatch(toggleUpdateTaskDrawer())
+                                    }}
+                                    style={{
+                                        backgroundColor: colors.transparent,
+                                        padding: 0,
+                                        height: 'fit-content',
+                                    }}
+                                >
+                                    Open
+                                </Button>
+                            )}
                         </Flex>
-
-                        {hoverRow === record.taskId && (
-                            <Button
-                                type="text"
-                                icon={<ExpandAltOutlined />}
-                                onClick={() => {
-                                    setSelectedTaskId(record.taskId)
-                                    dispatch(toggleUpdateTaskDrawer())
-                                }}
-                                style={{
-                                    backgroundColor: colors.transparent,
-                                    padding: 0,
-                                    height: 'fit-content',
-                                }}
-                            >
-                                Open
-                            </Button>
-                        )}
-                    </Flex>
-                ),
+                    )
+                },
             }
         }
 
@@ -193,7 +198,7 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
                         <ConfigPhaseButton color={colors.darkGray} />
                     </Flex>
                 ),
-                render: (record: TaskType) => {
+                render: () => {
                     return (
                         <Select
                             options={phase[0].phaseOptions.map((option) => ({
@@ -238,7 +243,7 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
         if (col.key === 'timeTracking') {
             return {
                 ...col,
-                render: (record: TaskType) => (
+                render: () => (
                     <Flex gap={8}>
                         <PlayCircleTwoTone />
                         <Typography.Text>0m 0s</Typography.Text>
@@ -251,9 +256,7 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
         if (col.key === 'estimation') {
             return {
                 ...col,
-                render: (record: TaskType) => (
-                    <Typography.Text>0h 0m</Typography.Text>
-                ),
+                render: () => <Typography.Text>0h 0m</Typography.Text>,
             }
         }
 
@@ -261,10 +264,10 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
         if (col.key === 'startDate') {
             return {
                 ...col,
-                render: (record: TaskType) =>
-                    record.startDate ? (
+                render: (record: Date) => {
+                    return record ? (
                         <Typography.Text>
-                            {simpleDateFormat(record.startDate)}
+                            {simpleDateFormat(record)}
                         </Typography.Text>
                     ) : (
                         <DatePicker
@@ -276,7 +279,8 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
                                 height: '100%',
                             }}
                         />
-                    ),
+                    )
+                },
             }
         }
 
@@ -284,10 +288,10 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
         if (col.key === 'dueDate') {
             return {
                 ...col,
-                render: (record: TaskType) =>
-                    record.dueDate ? (
+                render: (record: Date) =>
+                    record ? (
                         <Typography.Text>
-                            {simpleDateFormat(record.dueDate)}
+                            {simpleDateFormat(record)}
                         </Typography.Text>
                     ) : (
                         <DatePicker
@@ -297,9 +301,52 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
                                 border: 'none',
                                 width: '100%',
                                 height: '100%',
+                                padding: 0,
                             }}
                         />
                     ),
+            }
+        }
+
+        // render cell in completed date column
+        if (col.key === 'completedDate') {
+            return {
+                ...col,
+                render: (record: Date) => {
+                    return (
+                        <Typography.Text>
+                            {durationDateFormat(record)}
+                        </Typography.Text>
+                    )
+                },
+            }
+        }
+
+        // render cell in created date column
+        if (col.key === 'createdDate') {
+            return {
+                ...col,
+                render: (record: Date) => {
+                    return (
+                        <Typography.Text>
+                            {durationDateFormat(record)}
+                        </Typography.Text>
+                    )
+                },
+            }
+        }
+
+        // render cell in last updated column
+        if (col.key === 'lastUpdated') {
+            return {
+                ...col,
+                render: (record: Date) => {
+                    return (
+                        <Typography.Text>
+                            {durationDateFormat(record)}
+                        </Typography.Text>
+                    )
+                },
             }
         }
 
@@ -307,9 +354,9 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
         if (col.key === 'reporter') {
             return {
                 ...col,
-                render: (record: TaskType) => (
-                    <Typography.Text>Sachintha Prasad</Typography.Text>
-                ),
+                render: () => {
+                    return <Typography.Text>Sachintha Prasad</Typography.Text>
+                },
             }
         }
 
@@ -392,34 +439,31 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
                                         onMouseLeave: () => setHoverRow(null),
                                     }
                                 }}
-
                                 // expandable rows for sub tasks
 
-                                // expandable={{
-                                //     expandedRowKeys,
-                                //     onExpand: handleExpandRow,
-                                //     expandedRowRender: (record) => {
-                                //         return (
-                                //             <Table
-                                //                 dataSource={record.subTasks}
-                                //                 rowSelection={{
-                                //                     ...rowSelection,
-                                //                 }}
-                                //                 showHeader={false}
-                                //                 columns={updatedColumns}
-                                //                 scroll={{ x: 'max-content' }}
-                                //                 style={{
-                                //                     scrollbarColor:
-                                //                         'trasparent !important',
-                                //                 }}
-                                //                 pagination={false}
-                                //                 rowKey={(subTask) =>
-                                //                     subTask.taskId
-                                //                 }
-                                //             />
-                                //         )
-                                //     },
-                                // }}
+                                expandable={{
+                                    expandedRowKeys,
+                                    onExpand: handleExpandRow,
+                                    expandedRowRender: (record) => {
+                                        return (
+                                            <Table
+                                                dataSource={
+                                                    record.subTasks || []
+                                                }
+                                                rowSelection={{
+                                                    ...rowSelection,
+                                                }}
+                                                showHeader={false}
+                                                columns={updatedColumns}
+                                                scroll={{ x: 'max-content' }}
+                                                pagination={false}
+                                                rowKey={(subTask) =>
+                                                    subTask.taskId
+                                                }
+                                            />
+                                        )
+                                    },
+                                }}
                             />
                         ),
                     },

@@ -10,7 +10,7 @@ import PriorityFilterDropdown from './PriorityFilterDropdown'
 const TaskListFilters = () => {
     return (
         <Flex gap={8} align="center" justify="space-between">
-            <Flex gap={8}>
+            <Flex gap={8} wrap={'wrap'}>
                 {/* search dropdown  */}
                 <SearchDropdown />
                 {/* sort dropdown  */}
@@ -25,7 +25,7 @@ const TaskListFilters = () => {
                 <GroupByDropdown />
             </Flex>
 
-            <Flex gap={12}>
+            <Flex gap={12} wrap={'wrap'}>
                 <Flex gap={4} align="center">
                     <Checkbox />
                     <Typography.Text>Show archvied</Typography.Text>
