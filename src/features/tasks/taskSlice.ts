@@ -166,7 +166,7 @@ const initialState: TaskState = {
       lastUpdated: new Date('2023-10-10'),
       reporter: '-',
       phase: '-',
-      subTasks: null,
+      subTasks: [],
     },
     {
       taskId: 'SP-06',
@@ -192,7 +192,7 @@ const initialState: TaskState = {
       lastUpdated: new Date('2023-09-14'),
       reporter: '-',
       phase: '-',
-      subTasks: null,
+      subTasks: [],
     },
   ],
 };
