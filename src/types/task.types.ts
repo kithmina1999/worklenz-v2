@@ -1,3 +1,4 @@
+import { LabelType } from './label.type'
 import { MemberType } from './member.types'
 import { ProjectType } from './project.types'
 
@@ -18,7 +19,7 @@ export type TaskType = {
     description?: string
     progress?: number
     members?: MemberType[]
-    labels?: string[]
+    labels?: LabelType[]
     status: TaskStatusType
     priority: TaskPriorityType
     timeTracking?: string
@@ -30,6 +31,7 @@ export type TaskType = {
     lastUpdated?: Date
     reporter?: string
     phase?: string
+    subTasks?: TaskType[]
     project?: ProjectType
     subTasks?: SubTaskType[]
 }

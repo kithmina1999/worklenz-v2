@@ -1,6 +1,5 @@
 import { UserOutlined } from '@ant-design/icons'
 import {
-    Avatar,
     Button,
     Card,
     Dropdown,
@@ -17,7 +16,9 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { avatarNamesMap } from '../../../shared/constants'
 import { RootState } from '../../../app/store'
 import './ProfileButton.css'
+
 import { Link } from 'react-router-dom'
+import CustomAvatar from '../../../components/CustomAvatar'
 
 const ProfileButton = () => {
     // get user data from redux - user reducer
@@ -44,15 +45,9 @@ const ProfileButton = () => {
                             <Typography.Text>Account</Typography.Text>
                             <Flex gap={8} align="center" justify="flex-start">
                                 <div>
-                                    <Avatar
-                                        style={{
-                                            backgroundColor:
-                                                avatarNamesMap[avatarCharacter],
-                                            verticalAlign: 'middle',
-                                        }}
-                                    >
-                                        {avatarCharacter}
-                                    </Avatar>
+                                    <CustomAvatar
+                                        avatarCharacter={userDetails.name[0].toLocaleUpperCase()}
+                                    />
                                 </div>
                                 <Flex vertical>
                                     <Typography.Text>

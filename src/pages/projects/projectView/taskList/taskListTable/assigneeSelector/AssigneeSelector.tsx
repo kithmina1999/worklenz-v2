@@ -1,7 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { CaretDownFilled } from '@ant-design/icons'
 import {
-    Badge,
     Button,
     Card,
     Checkbox,
@@ -11,18 +9,20 @@ import {
     Input,
     InputRef,
     List,
-    Space,
     Typography,
 } from 'antd'
 import React, { useMemo, useRef, useState } from 'react'
-import { useAppSelector } from '../../../../../hooks/useAppSelector'
-import { colors } from '../../../../../styles/colors'
-import CustomAvatar from '../../../../../components/CustomAvatar'
+import { useAppDispatch } from '../../../../../../hooks/useAppDispatch'
+import { useAppSelector } from '../../../../../../hooks/useAppSelector'
+import { toggleMember } from '../../../../../../features/tasks/taskSlice'
+import CustomAvatar from '../../../../../../components/CustomAvatar'
+import { colors } from '../../../../../../styles/colors'
+import { PlusOutlined } from '@ant-design/icons'
 
-const MembersDropdown = () => {
-    const [selectedCount, setSelectedCount] = useState<number>(0)
-
+const AssigneeSelector = ({ taskId }: { taskId: string }) => {
     const membersInputRef = useRef<InputRef>(null)
+
+    const dispatch = useAppDispatch()
 
     // get members list from members reducer
     const membersList = [
@@ -39,11 +39,6 @@ const MembersDropdown = () => {
             member.memberName.toLowerCase().includes(searchQuery.toLowerCase())
         )
     }, [membersList, searchQuery])
-
-    // handle selected filters count
-    const handleSelectedFiltersCount = (checked: boolean) => {
-        setSelectedCount((prev) => (checked ? prev + 1 : prev - 1))
-    }
 
     // custom dropdown content
     const membersDropdownContent = (
@@ -71,9 +66,9 @@ const MembersDropdown = () => {
                             >
                                 <Checkbox
                                     id={member.memberId}
-                                    onChange={(e) =>
-                                        handleSelectedFiltersCount(
-                                            e.target.checked
+                                    onChange={() =>
+                                        dispatch(
+                                            toggleMember({ taskId, member })
                                         )
                                     }
                                 />
@@ -120,31 +115,15 @@ const MembersDropdown = () => {
             dropdownRender={() => membersDropdownContent}
             onOpenChange={handleMembersDropdownOpen}
         >
-            <Button
-                icon={<CaretDownFilled />}
-                iconPosition="end"
-                style={{
-                    backgroundColor:
-                        selectedCount > 0
-                            ? colors.paleBlue
-                            : colors.transparent,
-
-                    color: selectedCount > 0 ? colors.darkGray : 'inherit',
-                }}
-            >
-                <Space>
-                    Members
-                    {selectedCount > 0 && (
-                        <Badge
-                            size="small"
-                            count={selectedCount}
-                            color={colors.skyBlue}
-                        />
-                    )}
-                </Space>
-            </Button>
+            <Flex gap={4} align="center">
+                <Button
+                    type="dashed"
+                    shape="circle"
+                    icon={<PlusOutlined style={{ fontSize: 12 }} />}
+                />
+            </Flex>
         </Dropdown>
     )
 }
 
-export default MembersDropdown
+export default AssigneeSelector
