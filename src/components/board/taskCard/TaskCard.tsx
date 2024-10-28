@@ -15,7 +15,6 @@ import {
     DoubleRightOutlined,
     PauseOutlined,
     TagsOutlined,
-    PlusOutlined,
     UserAddOutlined,
     InboxOutlined,
     DeleteOutlined,
@@ -324,45 +323,6 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                                 }}
                             >
                                 <Button size="small" style={{ padding: 0 }}>
-                                    <Tooltip
-                                        overlay={
-                                            <div
-                                                style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                }}
-                                            >
-                                                <span
-                                                    style={{
-                                                        borderBottom:
-                                                            '1px solid',
-                                                        paddingBottom: '4px',
-                                                    }}
-                                                >
-                                                    Sub-tasks
-                                                </span>
-                                                <div
-                                                    style={{ marginTop: '4px' }}
-                                                >
-                                                    {task.subTasks.map(
-                                                        (subtask, index) => (
-                                                            <span
-                                                                key={index}
-                                                                style={{
-                                                                    display:
-                                                                        'block',
-                                                                }}
-                                                            >
-                                                                {
-                                                                    subtask.subTask
-                                                                }
-                                                            </span>
-                                                        )
-                                                    )}
-                                                </div>
-                                            </div>
-                                        }
-                                    >
                                         <Tag
                                             bordered={false}
                                             style={{
@@ -374,7 +334,6 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                                             <span>{task.subTasks?.length}</span>
                                             <DoubleRightOutlined />
                                         </Tag>
-                                    </Tooltip>
                                 </Button>
                             </div>
                         )}

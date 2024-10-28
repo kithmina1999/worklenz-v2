@@ -4,6 +4,7 @@ import Doing from '../../../../components/board/doing/Doing'
 import Done from '../../../../components/board/done/Done'
 import { useAppSelector } from '../../../../hooks/useAppSelector'
 import { TaskType } from '../../../../types/task.types'
+import TaskListFilters from '../taskList/taskListFilters/TaskListFilters'
 
 const ProjectViewBoard: React.FC = () => {
 
@@ -16,6 +17,8 @@ const ProjectViewBoard: React.FC = () => {
     const doneData = dataSource.filter((item) => item.status === 'done')
 
     return (
+        <div style={{width: '100%', display: 'flex', flexDirection: 'column'}}>
+            <TaskListFilters />
         <div
             style={{
                 width: '100%',
@@ -23,6 +26,8 @@ const ProjectViewBoard: React.FC = () => {
                 display: 'flex',
                 justifyContent: 'center',
                 backgroundColor: '#fafafa',
+                flexDirection: 'column',
+                marginTop: '14px'
             }}
         >
             <div
@@ -36,6 +41,7 @@ const ProjectViewBoard: React.FC = () => {
                 <Doing dataSource={doingData}/>
                 <Done dataSource={doneData}/>
             </div>
+        </div>
         </div>
     )
 }

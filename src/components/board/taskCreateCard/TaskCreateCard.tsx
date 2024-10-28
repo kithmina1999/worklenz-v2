@@ -4,7 +4,7 @@ import AddMembersDropdown from '../../addMembersDropdown/AddMembersDropdown'
 import dayjs, { Dayjs } from 'dayjs'
 import './TaskCreateCard.css'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
-import { setCardDisabled } from '../../../features/board/createCardSlice'
+import { setDoingCreatTaskCardDisabled, setDoneCreatTaskCardDisabled, setTodoCreatTaskCardDisabled } from '../../../features/board/createCardSlice'
 import { addTask } from '../../../features/tasks/taskSlice'
 interface StatusProps {
     status: "todo" | "doing" | "done";
@@ -82,6 +82,16 @@ const TaskCreateCard: React.FC<StatusProps> = ({status}) => {
             }))
         }
         setTaskName('')
+    }
+
+    const handleClose = () => {
+        if (status === 'todo') {
+            dispatch(setTodoCreatTaskCardDisabled(true))
+        } else if (status === 'doing') {
+            dispatch(setDoingCreatTaskCardDisabled(true))
+        } else if (status === 'done') {
+            dispatch(setDoneCreatTaskCardDisabled(true))
+        }
     }
 
     return (
@@ -191,7 +201,7 @@ const TaskCreateCard: React.FC<StatusProps> = ({status}) => {
                 <Button
                     size="small"
                     style={{ marginRight: '8px', fontSize: '12px' }}
-                    onClick={() => dispatch(setCardDisabled(true))}
+                    onClick={handleClose}
                 >
                     Cancel
                 </Button>

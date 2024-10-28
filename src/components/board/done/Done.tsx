@@ -1,6 +1,5 @@
 import React from 'react'
 import TaskCard from '../taskCard/TaskCard'
-import PerfectScrollbar from 'react-perfect-scrollbar'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 import './Done.css'
 import { TaskType } from '../../../types/task.types'
@@ -10,7 +9,7 @@ import TaskCreateCard from '../taskCreateCard/TaskCreateCard'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { RootState } from '../../../app/store'
-import { setCardDisabled } from '../../../features/board/createCardSlice'
+import { setDoneCreatTaskCardDisabled } from '../../../features/board/createCardSlice'
 
 interface DoneProps {
     dataSource: TaskType[]
@@ -18,7 +17,7 @@ interface DoneProps {
 
 const Done: React.FC<DoneProps> = ({ dataSource }) => {
     const isCardDisable = useAppSelector(
-        (state: RootState) => state.createCardReducer.isCardDisable
+        (state: RootState) => state.createCardReducer.isDoneCreatTaskCardDisable
     )
     const dispatch = useAppDispatch()
 
@@ -67,7 +66,7 @@ const Done: React.FC<DoneProps> = ({ dataSource }) => {
                     style={{
                         overflowY: 'auto',
                         maxHeight: 'calc(100vh - 250px)',
-                        padding: '2px 2px 2px 2px',
+                        padding: '2px 6px 2px 2px',
                     }}
                 >
                     {dataSource.map((task) => (
@@ -92,7 +91,7 @@ const Done: React.FC<DoneProps> = ({ dataSource }) => {
                             width: '100%',
                         }}
                         icon={<PlusOutlined />}
-                        onClick={() => dispatch(setCardDisabled(false))}
+                        onClick={() => dispatch(setDoneCreatTaskCardDisabled(false))}
                     >
                         Create Task
                     </Button>

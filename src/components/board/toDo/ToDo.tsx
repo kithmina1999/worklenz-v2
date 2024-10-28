@@ -8,7 +8,7 @@ import TaskCreateCard from '../taskCreateCard/TaskCreateCard'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { RootState } from '../../../app/store'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
-import { setCardDisabled } from '../../../features/board/createCardSlice'
+import { setTodoCreatTaskCardDisabled } from '../../../features/board/createCardSlice'
 
 interface ToDoProps {
     dataSource: TaskType[]
@@ -16,7 +16,7 @@ interface ToDoProps {
 
 const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
 
-    const isCardDisable = useAppSelector((state: RootState) => state.createCardReducer.isCardDisable)
+    const isCardDisable = useAppSelector((state: RootState) => state.createCardReducer.isTodoCreatTaskCardDisable)
     const dispatch = useAppDispatch()
 
     return (
@@ -62,7 +62,7 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
                     style={{
                         overflowY: 'auto',
                         maxHeight: 'calc(100vh - 250px)',
-                        padding: '2px 2px 2px 2px',
+                        padding: '2px 6px 2px 2px',
                     }}
                 >
                     {dataSource.map((task) => (
@@ -80,7 +80,7 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
                             width: '100%',
                         }}
                         icon={<PlusOutlined />}
-                        onClick={() => dispatch(setCardDisabled(false))}
+                        onClick={() => dispatch(setTodoCreatTaskCardDisabled(false))}
                     >
                         Create Task
                     </Button>
