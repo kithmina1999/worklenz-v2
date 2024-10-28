@@ -30,7 +30,7 @@ table td {
     display: none !important;
 }
 
-@media (max-width: 1000px) {
+/* @media (max-width: 1000px) {
     table th {
         font-size: 10px;
     }
@@ -38,4 +38,4 @@ table td {
     table td {
         font-size: 10px;
     }
-}
+} */

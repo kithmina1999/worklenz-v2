@@ -1,62 +1,57 @@
-import { Col, ConfigProvider, Layout } from 'antd'
-import React from 'react'
-import { Outlet } from 'react-router-dom'
-import Navbar from '../features/navbar/Navbar'
-import { useAppSelector } from '../hooks/useAppSelector'
-import { useMediaQuery } from 'react-responsive'
-import { colors } from '../styles/colors'
+import { Col, ConfigProvider, Layout } from 'antd';
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Navbar from '../features/navbar/Navbar';
+import { useAppSelector } from '../hooks/useAppSelector';
+import { useMediaQuery } from 'react-responsive';
+import { colors } from '../styles/colors';
 
 const MainLayout = () => {
-    const themeMode = useAppSelector((state) => state.themeReducer.mode)
-    const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' })
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
 
-    return (
-        <ConfigProvider
-            theme={{
-                components: {
-                    Layout: {
-                        colorBgLayout:
-                            themeMode === 'dark'
-                                ? colors.darkGray
-                                : colors.white,
-                        headerBg:
-                            themeMode === 'dark'
-                                ? colors.darkGray
-                                : colors.white,
-                    },
-                },
-            }}
+  return (
+    <ConfigProvider
+      theme={{
+        components: {
+          Layout: {
+            colorBgLayout:
+              themeMode === 'dark' ? colors.darkGray : colors.white,
+            headerBg: themeMode === 'dark' ? colors.darkGray : colors.white,
+          },
+        },
+      }}
+    >
+      <Layout
+        style={{
+          minHeight: '100vh',
+        }}
+      >
+        <Layout.Header
+          className={`shadow-md ${themeMode === 'dark' ? 'shadow-[#5f5f5f1f]' : 'shadow-[#18181811]'}`}
+          style={{
+            zIndex: 999,
+            position: 'fixed',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            padding: 0,
+          }}
         >
-            <Layout
-                style={{
-                    minHeight: '100vh',
-                }}
-            >
-                <Layout.Header
-                    className={`shadow-md ${themeMode === 'dark' ? 'shadow-[#5f5f5f1f]' : 'shadow-[#18181811]'}`}
-                    style={{
-                        zIndex: 999,
-                        position: 'fixed',
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: 0,
-                    }}
-                >
-                    <Navbar />
-                </Layout.Header>
+          <Navbar />
+        </Layout.Header>
 
-                <Layout.Content>
-                    <Col
-                        xxl={{ span: 18, offset: 3, flex: '100%' }}
-                        style={{ paddingInline: isDesktop ? 64 : 24 }}
-                    >
-                        <Outlet />
-                    </Col>
-                </Layout.Content>
-            </Layout>
-        </ConfigProvider>
-    )
-}
+        <Layout.Content>
+          <Col
+            xxl={{ span: 18, offset: 3, flex: '100%' }}
+            style={{ paddingInline: isDesktop ? 64 : 24 }}
+          >
+            <Outlet />
+          </Col>
+        </Layout.Content>
+      </Layout>
+    </ConfigProvider>
+  );
+};
 
-export default MainLayout
+export default MainLayout;

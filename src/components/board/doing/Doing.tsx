@@ -12,7 +12,7 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { RootState } from '../../../app/store'
 
 interface DoingProps {
-    dataSource: TaskType[]
+  dataSource: TaskType[];
 }
 
 const Doing: React.FC<DoingProps> = ({ dataSource }) => {
@@ -98,7 +98,7 @@ const Doing: React.FC<DoingProps> = ({ dataSource }) => {
                 </div>
             </div>
         </div>
-    )
-}
+  );
+};
 
-export default Doing
+export default Doing;

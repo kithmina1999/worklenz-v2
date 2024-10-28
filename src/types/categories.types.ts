@@ -1,5 +1,5 @@
 export type CategoryType = {
-    categoryId: string
-    categoryName: string
-    associatedTasks?: number
-}
+  categoryId: string;
+  categoryName: string;
+  associatedTasks?: number;
+};

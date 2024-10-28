@@ -1,7 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const ProjectViewRoadmap = () => {
-    return <div>ProjectViewRoadmap</div>
-}
+  return <div>ProjectViewRoadmap</div>;
+};
 
-export default ProjectViewRoadmap
+export default ProjectViewRoadmap;

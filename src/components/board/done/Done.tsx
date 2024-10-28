@@ -12,7 +12,7 @@ import { RootState } from '../../../app/store'
 import { setDoneCreatTaskCardDisabled } from '../../../features/board/createCardSlice'
 
 interface DoneProps {
-    dataSource: TaskType[]
+  dataSource: TaskType[];
 }
 
 const Done: React.FC<DoneProps> = ({ dataSource }) => {
@@ -98,7 +98,7 @@ const Done: React.FC<DoneProps> = ({ dataSource }) => {
                 </div>
             </div>
         </div>
-    )
-}
+  );
+};
 
-export default Done
+export default Done;
