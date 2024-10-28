@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Badge,
   Button,
   Collapse,
@@ -37,6 +38,8 @@ import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
 import { simpleDateFormat } from '../../../../../utils/simpleDateFormat';
 import LabelDropdown from '../../../../../components/taskListCommon/labelDropdown/LabelDropdown';
 import { durationDateFormat } from '../../../../../utils/durationDateFormat';
+import { MemberType } from '../../../../../types/member.types';
+import { LabelType } from '../../../../../types/label.type';
 
 type TaskListTableProps = {
   dataSource: TaskType[];
@@ -86,7 +89,6 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
       return {
         ...col,
         render: (record: TaskType) => {
-          console.log(record.subTasks);
           return (
             <Flex align="center" justify="space-between">
               <Flex gap={8} align="center">
@@ -142,16 +144,20 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
     if (col.key === 'members') {
       return {
         ...col,
-        render: (record: TaskType) => {
-          return (
-            <Flex gap={8} align="center">
-              <Typography>
-                {record.members?.map((member) => (
-                  <CustomAvatar avatarCharacter={member.memberName[0]} />
-                ))}
-              </Typography>
+        render: (record: MemberType[]) => {
+          setSelectedTaskId(hoverRow);
 
-              <AssigneeSelector taskId={record.taskId} />
+          return (
+            <Flex gap={4} align="center">
+              <Avatar.Group>
+                {record?.map((member) => (
+                  <CustomAvatar
+                    avatarCharacter={member.memberName[0].toUpperCase()}
+                  />
+                ))}
+              </Avatar.Group>
+
+              <AssigneeSelector taskId={selectedTaskId || '0'} />
             </Flex>
           );
         },
@@ -162,10 +168,10 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
     if (col.key === 'labels') {
       return {
         ...col,
-        render: (record: TaskType) => {
+        render: (record: LabelType[]) => {
           return (
             <Flex gap={8}>
-              {record.labels?.map((label) => (
+              {record.map((label) => (
                 <Tag key={label.labelId} color={label.labelColor}>
                   {label.labelName}
                 </Tag>

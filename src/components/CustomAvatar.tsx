@@ -6,11 +6,11 @@ const CustomAvatar = ({ avatarCharacter }: { avatarCharacter: string }) => {
   return (
     <Avatar
       style={{
-        backgroundColor: avatarNamesMap[avatarCharacter],
+        backgroundColor: avatarNamesMap[avatarCharacter.toUpperCase()],
         verticalAlign: 'middle',
       }}
     >
-      {avatarCharacter}
+      {avatarCharacter.toUpperCase()}
     </Avatar>
   );
 };

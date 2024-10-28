@@ -88,7 +88,13 @@ const initialState: TaskState = {
       description: '-',
       progress: 30,
       members: [],
-      labels: [],
+      labels: [
+        {
+          labelId: 'label2',
+          labelName: 'Documentation',
+          labelColor: '#a3c4dc',
+        },
+      ],
       status: 'doing',
       priority: 'medium',
       timeTracking: '-',
@@ -168,7 +174,13 @@ const initialState: TaskState = {
       description: '-',
       progress: 100,
       members: [],
-      labels: [],
+      labels: [
+        {
+          labelId: 'label4',
+          labelName: 'UI',
+          labelColor: '#dce3a3',
+        },
+      ],
       status: 'done',
       priority: 'medium',
       timeTracking: '-',

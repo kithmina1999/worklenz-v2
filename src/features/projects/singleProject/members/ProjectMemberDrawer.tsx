@@ -1,9 +1,8 @@
-import { Avatar, Drawer, Flex, Form, Select, Typography } from 'antd';
+import { Drawer, Flex, Form, Select, Typography } from 'antd';
 import React from 'react';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 import { toggleDrawer } from './projectMembersSlice';
-import { avatarNamesMap } from '../../../../shared/constants';
 import { colors } from '../../../../styles/colors';
 import CustomAvatar from '../../../../components/CustomAvatar';
 
