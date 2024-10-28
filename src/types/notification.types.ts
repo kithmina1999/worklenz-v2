@@ -1,1 +1,1 @@
-export type NotificationType = {}
+export type NotificationType = {};

@@ -1,24 +1,24 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice } from '@reduxjs/toolkit';
 
 interface billingState {
-    isDrawerOpen: boolean
+  isDrawerOpen: boolean;
 }
 
 const initialState: billingState = {
-    isDrawerOpen: false
-}
+  isDrawerOpen: false,
+};
 
 const billingSlice = createSlice({
-    name: 'billingReducer',
-    initialState,
-    reducers: {
-        toggleDrawer: (state) => {
-            state.isDrawerOpen
-                ? (state.isDrawerOpen = false)
-                : (state.isDrawerOpen = true)
-        }
-    }
-})
+  name: 'billingReducer',
+  initialState,
+  reducers: {
+    toggleDrawer: (state) => {
+      state.isDrawerOpen
+        ? (state.isDrawerOpen = false)
+        : (state.isDrawerOpen = true);
+    },
+  },
+});
 
-export const {toggleDrawer} = billingSlice.actions
-export default billingSlice.reducer
+export const { toggleDrawer } = billingSlice.actions;
+export default billingSlice.reducer;

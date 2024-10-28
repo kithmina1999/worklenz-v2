@@ -1,11 +1,11 @@
-import React from 'react'
-import { Navigate, RouteObject } from 'react-router-dom'
+import React from 'react';
+import { Navigate, RouteObject } from 'react-router-dom';
 
 const rootRoutes: RouteObject[] = [
-    {
-        path: '/',
-        element: <Navigate to="/auth/login" replace />,
-    },
-]
+  {
+    path: '/',
+    element: <Navigate to="/auth/login" replace />,
+  },
+];
 
-export default rootRoutes
+export default rootRoutes;

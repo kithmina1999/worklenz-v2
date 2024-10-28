@@ -1,10 +1,10 @@
-import React from 'react'
-import { RouteObject } from 'react-router-dom'
-import NotFoundPage from '../pages/notFoundPage/NotFoundPage'
+import React from 'react';
+import { RouteObject } from 'react-router-dom';
+import NotFoundPage from '../pages/notFoundPage/NotFoundPage';
 
 const notFoundRoute: RouteObject = {
-    path: '*',
-    element: <NotFoundPage />,
-}
+  path: '*',
+  element: <NotFoundPage />,
+};
 
-export default notFoundRoute
+export default notFoundRoute;
