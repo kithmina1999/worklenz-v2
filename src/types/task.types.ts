@@ -33,5 +33,4 @@ export type TaskType = {
     phase?: string
     subTasks?: TaskType[]
     project?: ProjectType
-    subTasks?: SubTaskType[]
 }
