@@ -1,4 +1,14 @@
-import { Avatar, Button, Drawer, Form, Input, message, Select, Table, TableProps, Typography } from 'antd'
+import {
+    Button,
+    Drawer,
+    Form,
+    Input,
+    message,
+    Select,
+    Table,
+    TableProps,
+    Typography,
+} from 'antd'
 import React from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { RootState } from '../../../app/store'
@@ -6,6 +16,7 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleSettingDrawer, updateTeam } from './teamSlice'
 import { TeamsType } from '../../../types/adminCenter/team.types'
 import './SettingTeamDrawer.css'
+import CustomAvatar from '../../../components/CustomAvatar'
 
 interface SettingTeamDrawerProps {
     teamId: string
@@ -13,12 +24,12 @@ interface SettingTeamDrawerProps {
 
 const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
     const isSettingDrawerOpen = useAppSelector(
-        (state: RootState) => state.teamReducer.isSettingDrawerOpen,
+        (state: RootState) => state.teamReducer.isSettingDrawerOpen
     )
     const dispatch = useAppDispatch()
     const [form] = Form.useForm()
     const teamsLists = useAppSelector(
-        (state: RootState) => state.teamReducer.teamsList,
+        (state: RootState) => state.teamReducer.teamsList
     )
 
     const team = teamsLists.find((team) => team.teamId === teamId)
@@ -52,16 +63,9 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
             key: 'user',
             render: (record: { memberName: string }) => (
                 <span>
-                    <Avatar
-                        style={{
-                            width: '28px',
-                            backgroundColor: '#bf4949',
-                            height: '28px',
-                            marginRight: '8px',
-                        }}
-                    >
-                        {record.memberName.charAt(0).toUpperCase()}
-                    </Avatar>
+                    <CustomAvatar
+                        avatarCharacter={record.memberName[0].toUpperCase()}
+                    />
                     <Typography.Text>{record.memberName}</Typography.Text>
                 </span>
             ),
@@ -123,10 +127,10 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
                                 return membersDataSource.length > 0
                                     ? Promise.resolve()
                                     : Promise.reject(
-                                        new Error(
-                                            'Please add at least one user',
-                                        ),
-                                    )
+                                          new Error(
+                                              'Please add at least one user'
+                                          )
+                                      )
                             },
                         },
                     ]}

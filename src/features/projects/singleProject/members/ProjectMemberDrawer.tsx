@@ -5,6 +5,7 @@ import { useAppDispatch } from '../../../../hooks/useAppDispatch'
 import { toggleDrawer } from './projectMembersSlice'
 import { avatarNamesMap } from '../../../../shared/constants'
 import { colors } from '../../../../styles/colors'
+import CustomAvatar from '../../../../components/CustomAvatar'
 
 const ProjectMemberDrawer = () => {
     // get member list from members slice where which is updated with navbar invite button
@@ -72,17 +73,9 @@ const ProjectMemberDrawer = () => {
                             value: member.memberName,
                             label: (
                                 <Flex gap={8} align="center">
-                                    <Avatar
-                                        style={{
-                                            backgroundColor:
-                                                avatarNamesMap[
-                                                    member.memberName[0]?.toUpperCase()
-                                                ],
-                                            verticalAlign: 'middle',
-                                        }}
-                                    >
-                                        {member.memberName[0]?.toUpperCase()}
-                                    </Avatar>
+                                    <CustomAvatar
+                                        avatarCharacter={member.memberName[0].toUpperCase()}
+                                    />
                                     <Flex vertical>
                                         <Typography.Text
                                             style={{

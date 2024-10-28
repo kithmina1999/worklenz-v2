@@ -10,7 +10,7 @@ import {
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { TeamsType } from '../../../types/adminCenter/team.types'
-import { dateFormat } from '../../../utils/dateFormat'
+import { durationDateFormat } from '../../../utils/durationDateFormat'
 import { EditOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import EditTeamModal from '../../../features/adminCenter/teams/EditTeamModal'
@@ -40,7 +40,9 @@ const TeamsSettings = () => {
             key: 'created',
             title: 'Created',
             render: (record: TeamsType) => (
-                <Typography.Text>{dateFormat(record.created)}</Typography.Text>
+                <Typography.Text>
+                    {durationDateFormat(record.created)}
+                </Typography.Text>
             ),
         },
         {

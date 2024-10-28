@@ -7,7 +7,6 @@ import {
     UserSwitchOutlined,
 } from '@ant-design/icons'
 import {
-    Avatar,
     Badge,
     Button,
     Card,
@@ -31,9 +30,9 @@ import {
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { MemberType } from '../../../types/member.types'
 import { colors } from '../../../styles/colors'
-import { avatarNamesMap } from '../../../shared/constants'
 import UpdateMemberDrawer from '../../../features/settings/member/UpdateMemberDrawer'
 import { useTranslation } from 'react-i18next'
+import CustomAvatar from '../../../components/CustomAvatar'
 
 const TeamMembersSettings = () => {
     // localization
@@ -132,15 +131,9 @@ const TeamMembersSettings = () => {
                                     : 'inherit',
                         }}
                     >
-                        <Avatar
-                            style={{
-                                backgroundColor:
-                                    avatarNamesMap[name[0].toLocaleUpperCase()],
-                                verticalAlign: 'middle',
-                            }}
-                        >
-                            {name[0].toLocaleUpperCase()}
-                        </Avatar>
+                        <CustomAvatar
+                            avatarCharacter={name[0].toLocaleUpperCase()}
+                        />
                         {name}
                         {/* shows when activate status */}
                         {record.isActivate ? (

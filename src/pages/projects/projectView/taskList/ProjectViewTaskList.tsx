@@ -13,16 +13,10 @@ const ProjectViewTaskList = () => {
         (state) => state.taskReducer.tasks
     )
 
-    const todoData = dataSource.filter((item) => item.status === 'todo')
-    const doingData = dataSource.filter((item) => item.status === 'doing')
-    const doneData = dataSource.filter((item) => item.status === 'done')
-
     return (
         <Flex vertical gap={16}>
             <TaskListFilters />
-            <TaskListTable dataSource={todoData} />
-            <TaskListTable dataSource={doingData} />
-            <TaskListTable dataSource={doneData} />
+            <TaskListTable dataSource={dataSource} />
         </Flex>
     )
 }

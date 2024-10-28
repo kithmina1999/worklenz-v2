@@ -34,11 +34,10 @@ const UpdateTaskDrawer = ({ taskId }: UpdateTaskDrawerProps) => {
     const isDrawerOpen = useAppSelector(
         (state) => state.taskReducer.isUpdateTaskDrawerOpen
     )
+
+    // get currently selected task
     const taskList = useAppSelector((state) => state.taskReducer.tasks)
-
     const selectedTask = taskList.find((task) => task.taskId === taskId)
-
-    console.log(selectedTask)
 
     // Load task details into state when selectedTask changes
     useEffect(() => {
