@@ -46,9 +46,7 @@ const SwitchTeamButton = () => {
               style={{ padding: 12 }}
             >
               <Flex gap={8} align="center">
-                <CustomAvatar
-                  avatarCharacter={team.teamName[0].toUpperCase()}
-                />
+                <CustomAvatar avatarName={team.teamName} />
                 <Flex vertical>
                   <Typography.Text
                     style={{

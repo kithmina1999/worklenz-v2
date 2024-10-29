@@ -13,7 +13,6 @@ import { useTranslation } from 'react-i18next';
 // profile dropdown custom css
 import './profileDropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import { avatarNamesMap } from '../../../shared/constants';
 import { RootState } from '../../../app/store';
 import './ProfileButton.css';
 
@@ -25,10 +24,6 @@ const ProfileButton = () => {
   const userDetails = useAppSelector((state) => state.userReducer);
   // localization
   const { t } = useTranslation('navbar');
-
-  // get avatar character
-  const avatarCharacter = userDetails.name[0].toLocaleUpperCase();
-  // get avatar character
 
   const themeMode = useAppSelector(
     (state: RootState) => state.themeReducer.mode
@@ -45,9 +40,7 @@ const ProfileButton = () => {
               <Typography.Text>Account</Typography.Text>
               <Flex gap={8} align="center" justify="flex-start">
                 <div>
-                  <CustomAvatar
-                    avatarCharacter={userDetails.name[0].toLocaleUpperCase()}
-                  />
+                  <CustomAvatar avatarName={userDetails.name} />
                 </div>
                 <Flex vertical>
                   <Typography.Text>{userDetails.name}</Typography.Text>
