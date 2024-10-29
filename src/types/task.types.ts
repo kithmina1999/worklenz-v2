@@ -16,7 +16,7 @@ export type SubTaskType = {
 export type TaskType = {
   taskId: string;
   task: string;
-  description?: string;
+  description?: string | null;
   progress?: number;
   members?: MemberType[];
   labels?: LabelType[];
@@ -27,10 +27,10 @@ export type TaskType = {
   startDate?: Date | null;
   dueDate?: Date | null;
   completedDate?: Date | null;
-  createdDate: Date;
+  createdDate?: Date;
   lastUpdated?: Date;
   reporter?: string;
   phase?: string;
-  subTasks?: TaskType[] | null;
+  subTasks?: TaskType[];
   project?: ProjectType;
 };

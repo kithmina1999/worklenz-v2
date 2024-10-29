@@ -25,6 +25,9 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
   // statefor trrack overlay open or close
   const [isOverlayOpen, setIsOverlayOpen] = useState<boolean>(false);
   const membersInputRef = useRef<InputRef>(null);
+  const [isOverlayOpen, setIsOverlayOpen] = useState<boolean>(false);
+  // this is for get the current string that type on search bar
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const dispatch = useAppDispatch();
 
   // get members list from members reducer
@@ -33,9 +36,6 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
     useAppSelector((state) => state.memberReducer.owner),
   ];
 
-  // this is for get the current string that type on search bar
-  const [searchQuery, setSearchQuery] = useState<string>('');
-
   // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
     return membersList.filter((member) =>
@@ -43,13 +43,12 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
     );
   }, [membersList, searchQuery]);
 
-  // funcion to toggle drawer open
+  // fuction to handle overlay open
   const handleOverlayToggle = () => {
     setIsOverlayOpen((prev) => !prev);
   };
-
-  // function to handle add project member drawer open
-  const handleProjectMemberDrawerOpen = () => {
+  // function to handle invite project member drawer
+  const handleInviteProjectMemberDrawer = () => {
     setIsOverlayOpen(false);
     dispatch(toggleDrawer());
   };
@@ -116,17 +115,23 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
           )}
         </List>
 
-        <Divider style={{ margin: 0 }} />
+        <Divider style={{ marginBlock: 0 }} />
 
         <Button
           icon={<UsergroupAddOutlined />}
-          style={{ border: 'none', color: colors.skyBlue }}
-          onClick={handleProjectMemberDrawerOpen}
+          type="text"
+          style={{
+            color: colors.skyBlue,
+            border: 'none',
+            backgroundColor: colors.transparent,
+            width: '100%',
+          }}
+          onClick={handleInviteProjectMemberDrawer}
         >
-          Invite new member by email
+          Invite a new member by email
         </Button>
 
-        <Divider style={{ margin: 0 }} />
+        <Divider style={{ marginBlock: 8 }} />
 
         <Button
           type="primary"

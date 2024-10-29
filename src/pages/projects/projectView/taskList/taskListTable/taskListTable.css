@@ -1,17 +1,17 @@
 /* Project view table CSS */
 .custom-project-view-task-list-table table {
-    border-radius: 0 !important;
+  border-radius: 0 !important;
 }
 
 .custom-project-view-task-list-table table th {
-    font-weight: 400 !important;
-    border-bottom: 1px solid #f0f0f0 !important;
-    border-right: 1px solid #f0f0f0 !important;
+  font-weight: 400 !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  border-right: 1px solid #f0f0f0 !important;
 }
 
 .custom-project-view-task-list-table .ant-table-footer {
-    padding: 4px;
-    border-top: 1px solid #f0f0f0 !important;
+  padding: 4px;
+  border-top: 1px solid #f0f0f0 !important;
 }
 
 /* this property for when adding a scrollbar to the table it appears an empty row this help to hide it */
@@ -22,17 +22,17 @@
 
 /* custom collapse styles for content box and the left border  */
 .ant-collapse-header {
-    margin-bottom: 6px !important;
+  margin-bottom: 6px !important;
 }
 
 .custom-collapse-content-box .ant-collapse-content-box {
-    border-left: 4px solid #d1d0d3;
-    padding: 0 !important;
+  border-left: 4px solid #d1d0d3;
+  padding: 0 !important;
 }
 
 :where(.css-dev-only-do-not-override-1w6wsvq).ant-collapse-ghost
-> .ant-collapse-item
-> .ant-collapse-content
-> .ant-collapse-content-box {
-    padding: 0;
+  > .ant-collapse-item
+  > .ant-collapse-content
+  > .ant-collapse-content-box {
+  padding: 0;
 }
