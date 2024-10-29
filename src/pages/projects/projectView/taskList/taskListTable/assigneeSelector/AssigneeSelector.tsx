@@ -25,7 +25,6 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
   // statefor trrack overlay open or close
   const [isOverlayOpen, setIsOverlayOpen] = useState<boolean>(false);
   const membersInputRef = useRef<InputRef>(null);
-  const [isOverlayOpen, setIsOverlayOpen] = useState<boolean>(false);
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
   const dispatch = useAppDispatch();
@@ -92,9 +91,7 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
                   onChange={() => dispatch(toggleMember({ taskId, member }))}
                 />
                 <div>
-                  <CustomAvatar
-                    avatarCharacter={member.memberName[0].toUpperCase()}
-                  />
+                  <CustomAvatar avatarName={member.memberName} />
                 </div>
                 <Flex vertical>
                   {member.memberName}

@@ -7,7 +7,7 @@ import './i18n';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import { applyCssVariables } from './styles/colors';
-import { Spin } from 'antd';
+import { Layout, Spin } from 'antd';
 
 applyCssVariables();
 
@@ -18,15 +18,17 @@ root.render(
   //? there is an error occured "A component suspended while responding to synchronous input. This will cause the UI to be replaced with a loading indicator. To fix, updates that suspend should be wrapped with startTransition." thats why this suspend method added
   <Suspense
     fallback={
-      <Spin
-        size="large"
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translateX(-50%) and translateY(-50%)',
-        }}
-      />
+      <Layout style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+        <Spin
+          size="large"
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translateX(-50%) and translateY(-50%)',
+          }}
+        />
+      </Layout>
     }
   >
     <Provider store={store}>

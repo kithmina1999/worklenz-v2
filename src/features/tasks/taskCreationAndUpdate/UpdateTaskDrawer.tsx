@@ -16,8 +16,8 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { toggleUpdateTaskDrawer } from '../taskSlice';
 import StatusDropdown from '../../../components/taskListCommon/statusDropdown/StatusDropdown';
 import { colors } from '../../../styles/colors';
-import DescriptionEditor from './taskDrawerComponents/DescriptionEditor';
 import TaskDetailsForm from './taskDrawerComponents/TaskDetailsForm';
+import DescriptionEditor from './taskDrawerComponents/DescriptionEditor';
 
 type UpdateTaskDrawerProps = {
   taskId: string | null;

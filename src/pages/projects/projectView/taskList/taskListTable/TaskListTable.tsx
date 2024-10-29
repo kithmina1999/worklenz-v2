@@ -1,479 +1,320 @@
+import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { columnList } from './columns/columnList';
+import AddTaskListRow from './AddTaskListRow';
+import { TaskType } from '../../../../../types/task.types';
 import {
   Avatar,
   Badge,
   Button,
-  Collapse,
-  ConfigProvider,
+  Checkbox,
   DatePicker,
   Flex,
-  Input,
   Progress,
   Select,
-  Table,
-  TableProps,
   Tag,
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useState } from 'react';
-import { TaskType } from '../../../../../types/task.types';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import StatusDropdown from '../../../../../components/taskListCommon/statusDropdown/StatusDropdown';
-import PriorityDropdown from '../../../../../components/taskListCommon/priorityDropdown/PriorityDropdown';
-import {
-  DownOutlined,
-  ExpandAltOutlined,
-  PlayCircleTwoTone,
-  RightOutlined,
-} from '@ant-design/icons';
+import { ExpandAltOutlined, PlayCircleTwoTone } from '@ant-design/icons';
 import { colors } from '../../../../../styles/colors';
+import { useMemo, useState } from 'react';
 import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
 import { toggleUpdateTaskDrawer } from '../../../../../features/tasks/taskSlice';
-import UpdateTaskDrawer from '../../../../../features/tasks/taskCreationAndUpdate/UpdateTaskDrawer';
-import './taskListTable.css';
-import AssigneeSelector from './assigneeSelector/AssigneeSelector';
 import CustomAvatar from '../../../../../components/CustomAvatar';
-import ConfigPhaseButton from '../../../../../features/projects/singleProject/phase/ConfigPhaseButton';
-import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
-import { simpleDateFormat } from '../../../../../utils/simpleDateFormat';
+import AssigneeSelector from './assigneeSelector/AssigneeSelector';
 import LabelDropdown from '../../../../../components/taskListCommon/labelDropdown/LabelDropdown';
+import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
+import StatusDropdown from '../../../../../components/taskListCommon/statusDropdown/StatusDropdown';
+import PriorityDropdown from '../../../../../components/taskListCommon/priorityDropdown/PriorityDropdown';
+import { simpleDateFormat } from '../../../../../utils/simpleDateFormat';
 import { durationDateFormat } from '../../../../../utils/durationDateFormat';
-import { MemberType } from '../../../../../types/member.types';
-import { LabelType } from '../../../../../types/label.type';
 
-type TaskListTableProps = {
-  dataSource: TaskType[];
-};
-
-const TaskListTable = ({ dataSource }: TaskListTableProps) => {
-  // this states for track the currently hover row and show the open button
+const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
   const [hoverRow, setHoverRow] = useState<string | null>(null);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   // this can be used to get the currently selected task id
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
-
-  // get theme from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  // get selected project from useSelectedPro
-  const selectedProject = useSelectedProject();
-  // get columns list from projectViewTaskListColumn reducer
-  const columns = useAppSelector(
-    (state) => state.projectViewTaskListColumnsReducer.columnsList
-  );
-  //get phases details from phases slice
-  const phase =
-    useAppSelector((state) => state.phaseReducer.phaseList).find(
-      (phase) => phase.projectId === selectedProject?.projectId
-    ) || null;
-
   const dispatch = useAppDispatch();
 
-  const handleExpandRow = (expanded: boolean, record: TaskType) => {
-    setExpandedRowKeys(expanded ? [record.taskId] : []);
-  };
+  // get data theme data from redux
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  // get phase data from redux
+  const phaseList = useAppSelector((state) => state.phaseReducer.phaseList);
+  // get the selected project details
+  const selectedProject = useSelectedProject();
 
-  // rowSelection object indicates the need for row selection
-  const rowSelection: TableProps<TaskType>['rowSelection'] = {
-    fixed: 'left',
-  };
-  // main task row footer
-  const defaultFooter = () => (
-    <Input placeholder="Add task" style={{ width: 400 }} />
+  // get columns list details
+  const columnsVisibility = useAppSelector(
+    (state) => state.projectViewTaskListColumnsReducer.columnsVisibility
+  );
+  const visibleColumns = columnList.filter(
+    (column) => columnsVisibility[column.key as keyof typeof columnsVisibility]
   );
 
-  const updatedColumns = columns?.map((col) => {
-    // render cell in taskId column
-    if (col.key === 'taskId') {
-      return {
-        ...col,
-        render: (record: TaskType) => (
-          <Tooltip title={record.taskId}>
-            <Tag>{record.taskId}</Tag>
-          </Tooltip>
-        ),
-      };
-    }
+  //get phases details from phases slice
+  const phaseOptions = useMemo(() => {
+    const phase = phaseList.find(
+      (el) => el.projectId === selectedProject?.projectId
+    );
 
-    // render cell in task column
-    if (col.key === 'task') {
-      return {
-        ...col,
-        render: (record: TaskType) => {
-          return (
-            <Flex align="center" justify="space-between">
-              <Flex gap={8} align="center">
-                {record.subTasks && (
-                  <Button
-                    type="text"
-                    icon={<DownOutlined />}
-                    onClick={() =>
-                      handleExpandRow(
-                        !expandedRowKeys.includes(record.taskId),
-                        record
-                      )
-                    }
-                  />
-                )}
-                <Typography.Text>{record.task}</Typography.Text>
-              </Flex>
-
-              {hoverRow === record.taskId && (
-                <Button
-                  type="text"
-                  icon={<ExpandAltOutlined />}
-                  onClick={() => {
-                    setSelectedTaskId(record.taskId);
-                    dispatch(toggleUpdateTaskDrawer());
-                  }}
-                  style={{
-                    backgroundColor: colors.transparent,
-                    padding: 0,
-                    height: 'fit-content',
-                  }}
-                >
-                  Open
-                </Button>
-              )}
-            </Flex>
-          );
-        },
-      };
-    }
-
-    // render cell in status column
-    if (col.key === 'description') {
-      return {
-        ...col,
-        render: (record: TaskType) => {
-          return (
-            <Typography.Paragraph
-              ellipsis={{ expandable: 'collapsible' }}
-              style={{ width: 260 }}
-            >
-              {record.description}
-            </Typography.Paragraph>
-          );
-        },
-      };
-    }
-
-    // render cell in status column
-    if (col.key === 'progress') {
-      return {
-        ...col,
-        render: (record: TaskType) => (
-          <Progress percent={record.progress} type="circle" size={30} />
-        ),
-      };
-    }
-
-    // render cell in members column
-    if (col.key === 'members') {
-      return {
-        ...col,
-        render: (record: MemberType[]) => {
-          setSelectedTaskId(hoverRow);
-
-          return (
-            <Flex gap={4} align="center">
-              <Avatar.Group>
-                {record?.map((member) => (
-                  <CustomAvatar
-                    avatarCharacter={member.memberName[0].toUpperCase()}
-                  />
-                ))}
-              </Avatar.Group>
-
-              <AssigneeSelector taskId={selectedTaskId || '0'} />
-            </Flex>
-          );
-        },
-      };
-    }
-
-    // render cell in labels column
-    if (col.key === 'labels') {
-      return {
-        ...col,
-        render: (record: LabelType[]) => {
-          return (
+    return phase
+      ? phase.phaseOptions.map((option) => ({
+          key: option.optionId,
+          value: option.optionId,
+          label: (
             <Flex gap={8}>
-              {record.map((label) => (
-                <Tag key={label.labelId} color={label.labelColor}>
-                  {label.labelName}
-                </Tag>
-              ))}
-              <LabelDropdown />
+              <Badge color={option.optionColor} /> {option.optionName}
             </Flex>
-          );
-        },
-      };
-    }
+          ),
+        }))
+      : [];
+  }, [phaseList, selectedProject]);
 
-    // render cell in phase column
-    if (col.key === 'phase') {
-      return {
-        ...col,
-        title: (
+  // Toggle selected row
+  const toggleRowSelection = (taskId: string) => {
+    setSelectedRows((prevSelectedRows) =>
+      prevSelectedRows.includes(taskId)
+        ? prevSelectedRows.filter((id) => id !== taskId)
+        : [...prevSelectedRows, taskId]
+    );
+  };
+
+  // layout styles for table and the columns
+  const customBorderColor = themeMode === 'dark' && ' border-[#303030]';
+
+  const customHeaderColumnStyles = (key: string) =>
+    `border p-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && 'sticky left-[33px] z-10'} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-white'}`;
+  const customBodyColumnStyles = (key: string) =>
+    `border p-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && 'sticky left-[33px] z-10'} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
+
+  const getRowStyle = (taskId: string) =>
+    selectedRows.includes(taskId) ? 'bg-blue-100' : '';
+
+  // function to render the column content based on column key
+  const renderColumnContent = (columnKey: string, task: TaskType) => {
+    switch (columnKey) {
+      // selector column
+      case 'selector':
+        return (
+          <Checkbox
+            checked={selectedRows.includes(task.taskId)}
+            onChange={() => toggleRowSelection(task.taskId)}
+          />
+        );
+
+      // task ID column
+      case 'taskId':
+        return (
+          <Tooltip title={task.taskId} className="flex justify-center">
+            <Tag>{task.taskId}</Tag>
+          </Tooltip>
+        );
+
+      // task column
+      case 'task':
+        return (
           <Flex align="center" justify="space-between">
-            {phase ? phase?.phase : 'Phase'}
-            <ConfigPhaseButton color={colors.darkGray} />
+            <Flex gap={8} align="center">
+              <Typography.Text>{task.task}</Typography.Text>
+            </Flex>
+            {hoverRow === task.taskId && (
+              <Button
+                type="text"
+                icon={<ExpandAltOutlined />}
+                onClick={() => {
+                  setSelectedTaskId(task.taskId);
+                  dispatch(toggleUpdateTaskDrawer());
+                }}
+                style={{
+                  backgroundColor: colors.transparent,
+                  padding: 0,
+                  height: 'fit-content',
+                }}
+              >
+                Open
+              </Button>
+            )}
           </Flex>
-        ),
-        render: () => {
-          return (
-            <Select
-              options={
-                phase
-                  ? phase?.phaseOptions.map((option) => ({
-                      key: option.optionId,
-                      value: option.optionId,
-                      label: (
-                        <Flex gap={8}>
-                          <Badge color={option.optionColor} />{' '}
-                          {option.optionName}
-                        </Flex>
-                      ),
-                    }))
-                  : []
-              }
-              placeholder={'Select'}
-              style={{ width: '100%' }}
-            />
-          );
-        },
-      };
-    }
+        );
 
-    // render cell in status column
-    if (col.key === 'status') {
-      return {
-        ...col,
-        render: (record: TaskType) => (
-          <StatusDropdown currentStatus={record.status} />
-        ),
-      };
-    }
+      // description column
+      case 'description':
+        return (
+          <Typography.Paragraph
+            ellipsis={{ expandable: 'collapsible' }}
+            style={{ width: 260, marginBlockEnd: 0 }}
+          >
+            {task.description}
+          </Typography.Paragraph>
+        );
 
-    // render cell in prioriy column
-    if (col.key === 'priority') {
-      return {
-        ...col,
-        render: (record: TaskType) => (
-          <PriorityDropdown currentPriority={record.priority} />
-        ),
-      };
-    }
+      // progress column
+      case 'progress':
+        return <Progress percent={task.progress} type="circle" size={30} />;
 
-    // render cell in time tracking column
-    if (col.key === 'timeTracking') {
-      return {
-        ...col,
-        render: () => (
+      // members column
+      case 'members':
+        return (
+          <Flex gap={4} align="center">
+            <Avatar.Group>
+              {task.members?.map((member) => (
+                <CustomAvatar
+                  key={member.memberId}
+                  avatarName={member.memberName}
+                />
+              ))}
+            </Avatar.Group>
+
+            <AssigneeSelector taskId={selectedTaskId || '0'} />
+          </Flex>
+        );
+
+      // labels column
+      case 'labels':
+        return (
+          <Flex gap={8}>
+            {task?.labels?.map((label) => (
+              <Tag key={label.labelId} color={label.labelColor}>
+                {label.labelName}
+              </Tag>
+            ))}
+            <LabelDropdown />
+          </Flex>
+        );
+
+      // phase column
+      case 'phases':
+        return (
+          <Select
+            options={phaseOptions}
+            placeholder={'Select'}
+            style={{ width: '100%' }}
+          />
+        );
+
+      // status column
+      case 'status':
+        return <StatusDropdown currentStatus={task.status} />;
+
+      // priority column
+      case 'priority':
+        return <PriorityDropdown currentPriority={task.priority} />;
+
+      // time tracking column
+      case 'timeTracking':
+        return (
           <Flex gap={8}>
             <PlayCircleTwoTone />
             <Typography.Text>0m 0s</Typography.Text>
           </Flex>
-        ),
-      };
-    }
+        );
 
-    // render cell in estimation column
-    if (col.key === 'estimation') {
-      return {
-        ...col,
-        render: () => <Typography.Text>0h 0m</Typography.Text>,
-      };
-    }
+      // estimation column
+      case 'estimation':
+        return <Typography.Text>0h 0m</Typography.Text>;
 
-    // render cell in start date column
-    if (col.key === 'startDate') {
-      return {
-        ...col,
-        render: (record: Date) => {
-          return record ? (
-            <Typography.Text>{simpleDateFormat(record)}</Typography.Text>
-          ) : (
-            <DatePicker
-              placeholder="Set a start date"
-              suffixIcon={null}
-              style={{
-                border: 'none',
-                width: '100%',
-                height: '100%',
-              }}
-            />
-          );
-        },
-      };
-    }
+      // start date column
+      case 'startDate':
+        return task.startDate ? (
+          <Typography.Text>{simpleDateFormat(task.startDate)}</Typography.Text>
+        ) : (
+          <DatePicker
+            placeholder="Set a start date"
+            suffixIcon={null}
+            style={{ border: 'none', width: '100%', height: '100%' }}
+          />
+        );
 
-    // render cell in due date column
-    if (col.key === 'dueDate') {
-      return {
-        ...col,
-        render: (record: Date) =>
-          record ? (
-            <Typography.Text>{simpleDateFormat(record)}</Typography.Text>
-          ) : (
-            <DatePicker
-              placeholder="Set a due date"
-              suffixIcon={null}
-              style={{
-                border: 'none',
-                width: '100%',
-                height: '100%',
-                padding: 0,
-              }}
-            />
-          ),
-      };
-    }
+      // due date column
+      case 'dueDate':
+        return task.dueDate ? (
+          <Typography.Text>{simpleDateFormat(task.dueDate)}</Typography.Text>
+        ) : (
+          <DatePicker
+            placeholder="Set a due date"
+            suffixIcon={null}
+            style={{ border: 'none', width: '100%', height: '100%' }}
+          />
+        );
 
-    // render cell in completed date column
-    if (col.key === 'completedDate') {
-      return {
-        ...col,
-        render: (record: Date) => {
-          return (
-            <Typography.Text>{durationDateFormat(record)}</Typography.Text>
-          );
-        },
-      };
-    }
+      // completed date column
+      case 'completedDate':
+        return (
+          <Typography.Text>
+            {durationDateFormat(task.completedDate || null)}
+          </Typography.Text>
+        );
 
-    // render cell in created date column
-    if (col.key === 'createdDate') {
-      return {
-        ...col,
-        render: (record: Date) => {
-          return (
-            <Typography.Text>{durationDateFormat(record)}</Typography.Text>
-          );
-        },
-      };
-    }
+      // created date column
+      case 'createdDate':
+        return (
+          <Typography.Text>
+            {durationDateFormat(task.createdDate || null)}
+          </Typography.Text>
+        );
 
-    // render cell in last updated column
-    if (col.key === 'lastUpdated') {
-      return {
-        ...col,
-        render: (record: Date) => {
-          return (
-            <Typography.Text>{durationDateFormat(record)}</Typography.Text>
-          );
-        },
-      };
-    }
+      // last updated column
+      case 'lastUpdated':
+        return (
+          <Typography.Text>
+            {durationDateFormat(task.lastUpdated || null)}
+          </Typography.Text>
+        );
 
-    // render cell in reporter column
-    if (col.key === 'reporter') {
-      return {
-        ...col,
-        render: () => {
-          return <Typography.Text>Sachintha Prasad</Typography.Text>;
-        },
-      };
-    }
+      // recorder column
+      case 'recorder':
+        return <Typography.Text>Sachintha Prasad</Typography.Text>;
 
-    return col;
-  });
+      // default case for unsupported columns
+      default:
+        return null;
+    }
+  };
 
   return (
-    <ConfigProvider
-      wave={{ disabled: true }}
-      theme={{
-        components: {
-          Collapse: {
-            headerPadding: 0,
-            contentPadding: 0,
-          },
+    <div className={`border-x border-b ${customBorderColor}`}>
+      <div className={`min-h-0 max-w-full overflow-x-auto`}>
+        <table className={`rounded-2 w-full min-w-max border-collapse`}>
+          <thead className="h-[52px]">
+            <tr>
+              {visibleColumns.map((column) => (
+                <th
+                  key={column.key}
+                  className={`${customHeaderColumnStyles(column.key)} font-semibold`}
+                  style={{ width: column.width }}
+                >
+                  {column.columnHeader}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {taskList?.map((task) => (
+              <tr
+                key={task.taskId}
+                onMouseEnter={() => setHoverRow(task.taskId)}
+                onMouseLeave={() => setHoverRow(null)}
+                className={`${taskList.length === 0 ? 'h-0' : 'h-12'} ${getRowStyle(task.taskId)}`}
+              >
+                {visibleColumns.map((column) => (
+                  <td
+                    key={column.key}
+                    className={customBodyColumnStyles(column.key)}
+                    style={{
+                      width: column.width,
+                    }}
+                  >
+                    {renderColumnContent(column.key, task)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-          Table: {
-            rowHoverBg: themeMode === 'dark' ? '#000000' : '#f8f7f9',
-            stickyScrollBarBg: 'unset',
-            selectionColumnWidth: 4,
-          },
-
-          Select: {
-            colorBorder: colors.transparent,
-          },
-        },
-      }}
-    >
-      <Collapse
-        collapsible="header"
-        bordered={false}
-        ghost={true}
-        expandIcon={({ isActive }) => (
-          <Button
-            className="custom-collapse-button"
-            style={{
-              backgroundColor: colors.deepLightGray,
-              border: 'none',
-              borderBottomLeftRadius: isActive ? 0 : 4,
-              borderBottomRightRadius: isActive ? 0 : 4,
-            }}
-            icon={<RightOutlined rotate={isActive ? 90 : 0} />}
-          >
-            <Typography.Text style={{ fontSize: 14 }}>
-              Todo ({dataSource.length})
-            </Typography.Text>
-          </Button>
-        )}
-        defaultActiveKey={['1']}
-        items={[
-          {
-            key: '1',
-            className: 'custom-collapse-content-box',
-            children: (
-              <Table
-                className="custom-project-view-task-list-table"
-                dataSource={dataSource}
-                columns={updatedColumns}
-                bordered
-                pagination={false}
-                rowSelection={{ ...rowSelection }}
-                rowKey={(record) => record.taskId}
-                scroll={{ x: 'max-content' }}
-                locale={{ emptyText: 'No task available' }}
-                footer={defaultFooter}
-                onRow={(record) => {
-                  return {
-                    onMouseEnter: () => setHoverRow(record.taskId),
-                    onMouseLeave: () => setHoverRow(null),
-                  };
-                }}
-                // expandable rows for sub tasks
-
-                expandable={{
-                  expandedRowKeys,
-                  onExpand: handleExpandRow,
-                  expandedRowRender: (record) => {
-                    return (
-                      <Table
-                        dataSource={record.subTasks || []}
-                        rowSelection={{
-                          ...rowSelection,
-                        }}
-                        showHeader={false}
-                        columns={updatedColumns}
-                        scroll={{ x: 'max-content' }}
-                        pagination={false}
-                        rowKey={(subTask) => subTask.taskId}
-                      />
-                    );
-                  },
-                }}
-              />
-            ),
-          },
-        ]}
-      />
-
-      {/* update task drawer  */}
-      <UpdateTaskDrawer taskId={'SP-1'} />
-    </ConfigProvider>
+      <AddTaskListRow />
+    </div>
   );
 };
 
