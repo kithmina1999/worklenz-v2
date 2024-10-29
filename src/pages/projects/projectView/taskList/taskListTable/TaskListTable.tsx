@@ -46,30 +46,40 @@ type TaskListTableProps = {
 };
 
 const TaskListTable = ({ dataSource }: TaskListTableProps) => {
-  const dispatch = useAppDispatch();
-  // get theme from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
   // this states for track the currently hover row and show the open button
   const [hoverRow, setHoverRow] = useState<string | null>(null);
+  // this can be used to get the currently selected task id
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
 
+  // get theme from theme reducer
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  // get selected project from useSelectedPro
+  const selectedProject = useSelectedProject();
   // get columns list from projectViewTaskListColumn reducer
   const columns = useAppSelector(
     (state) => state.projectViewTaskListColumnsReducer.columnsList
   );
-
-  // get selected project from useSelectedPro
-  const selectedProject = useSelectedProject();
-
   //get phases details from phases slice
-  const phase = useAppSelector((state) => state.phaseReducer.phaseList).filter(
-    (phase) => phase.projectId === selectedProject?.projectId
-  );
+  const phase =
+    useAppSelector((state) => state.phaseReducer.phaseList).find(
+      (phase) => phase.projectId === selectedProject?.projectId
+    ) || null;
+
+  const dispatch = useAppDispatch();
 
   const handleExpandRow = (expanded: boolean, record: TaskType) => {
     setExpandedRowKeys(expanded ? [record.taskId] : []);
   };
+
+  // rowSelection object indicates the need for row selection
+  const rowSelection: TableProps<TaskType>['rowSelection'] = {
+    fixed: 'left',
+  };
+  // main task row footer
+  const defaultFooter = () => (
+    <Input placeholder="Add task" style={{ width: 400 }} />
+  );
 
   const updatedColumns = columns?.map((col) => {
     // render cell in taskId column
@@ -125,6 +135,23 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
                 </Button>
               )}
             </Flex>
+          );
+        },
+      };
+    }
+
+    // render cell in status column
+    if (col.key === 'description') {
+      return {
+        ...col,
+        render: (record: TaskType) => {
+          return (
+            <Typography.Paragraph
+              ellipsis={{ expandable: 'collapsible' }}
+              style={{ width: 260 }}
+            >
+              {record.description}
+            </Typography.Paragraph>
           );
         },
       };
@@ -189,22 +216,27 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
         ...col,
         title: (
           <Flex align="center" justify="space-between">
-            {phase[0].phase || 'Phase'}{' '}
+            {phase ? phase?.phase : 'Phase'}
             <ConfigPhaseButton color={colors.darkGray} />
           </Flex>
         ),
         render: () => {
           return (
             <Select
-              options={phase[0].phaseOptions.map((option) => ({
-                key: option.optionId,
-                value: option.optionId,
-                label: (
-                  <Flex gap={8}>
-                    <Badge color={option.optionColor} /> {option.optionName}
-                  </Flex>
-                ),
-              }))}
+              options={
+                phase
+                  ? phase?.phaseOptions.map((option) => ({
+                      key: option.optionId,
+                      value: option.optionId,
+                      label: (
+                        <Flex gap={8}>
+                          <Badge color={option.optionColor} />{' '}
+                          {option.optionName}
+                        </Flex>
+                      ),
+                    }))
+                  : []
+              }
               placeholder={'Select'}
               style={{ width: '100%' }}
             />
@@ -347,15 +379,6 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
     return col;
   });
 
-  // rowSelection object indicates the need for row selection
-  const rowSelection: TableProps<TaskType>['rowSelection'] = {
-    fixed: 'left',
-  };
-
-  const defaultFooter = () => (
-    <Input placeholder="Add task" style={{ width: 400 }} />
-  );
-
   return (
     <ConfigProvider
       wave={{ disabled: true }}
@@ -449,7 +472,7 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
       />
 
       {/* update task drawer  */}
-      <UpdateTaskDrawer taskId={selectedTaskId} />
+      <UpdateTaskDrawer taskId={'SP-1'} />
     </ConfigProvider>
   );
 };

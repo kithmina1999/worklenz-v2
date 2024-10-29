@@ -15,7 +15,8 @@ const initialState: TaskState = {
     {
       taskId: 'SP-1',
       task: 'Workload',
-      description: '-',
+      description:
+        'Define the basic structure for task templates. Define the basic structure for task templates Define the basic structure for task templates Define the basic structure for task templates',
       progress: 0,
       members: [
         {
@@ -85,7 +86,7 @@ const initialState: TaskState = {
     {
       taskId: 'SP-4',
       task: 'Settings (task templates)',
-      description: '-',
+      description: null,
       progress: 30,
       members: [],
       labels: [
@@ -150,7 +151,7 @@ const initialState: TaskState = {
     {
       taskId: 'SP-5',
       task: 'Insights (tasks)',
-      description: '-',
+      description: 'Define the basic',
       progress: 0,
       members: [],
 
@@ -171,7 +172,7 @@ const initialState: TaskState = {
     {
       taskId: 'SP-06',
       task: 'Settings (change password)',
-      description: '-',
+      description: 'Define the basic structure for task templates.',
       progress: 100,
       members: [],
       labels: [

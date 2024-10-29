@@ -23,14 +23,14 @@ import { addLabel } from '../../../features/settings/label/labelSlice';
 
 const LabelDropdown = () => {
   const labelInputRef = useRef<InputRef>(null);
+  const [isOverlayOpen, setIsOverlayOpen] = useState<boolean>(false);
+  // this is for get the current string that type on search bar
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const dispatch = useAppDispatch();
 
   // get label list from label reducer
   const labelList = useAppSelector((state) => state.labelReducer.labelList);
-
-  // this is for get the current string that type on search bar
-  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // used useMemo hook for re render the list when searching
   const filteredLabelData = useMemo(() => {
@@ -50,6 +50,13 @@ const LabelDropdown = () => {
       dispatch(addLabel(newLabel));
       setSearchQuery('');
     }
+
+    setIsOverlayOpen(false);
+  };
+
+  // fuction to handle overlay open
+  const handleOverlayToggle = () => {
+    setIsOverlayOpen((prev) => !prev);
   };
 
   // custom dropdown content
@@ -133,11 +140,13 @@ const LabelDropdown = () => {
       trigger={['click']}
       dropdownRender={() => labelDropdownContent}
       onOpenChange={handleLabelDropdownOpen}
+      open={isOverlayOpen}
     >
       <Button
         type="dashed"
         icon={<PlusOutlined style={{ fontSize: 12 }} />}
         size="small"
+        onClick={handleOverlayToggle}
       />
     </Dropdown>
   );

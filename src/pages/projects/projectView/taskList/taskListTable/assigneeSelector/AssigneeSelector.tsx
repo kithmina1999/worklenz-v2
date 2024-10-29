@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   Checkbox,
+  Divider,
   Dropdown,
   Empty,
   Flex,
@@ -17,11 +18,14 @@ import { useAppSelector } from '../../../../../../hooks/useAppSelector';
 import { toggleMember } from '../../../../../../features/tasks/taskSlice';
 import CustomAvatar from '../../../../../../components/CustomAvatar';
 import { colors } from '../../../../../../styles/colors';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { toggleDrawer } from '../../../../../../features/projects/singleProject/members/projectMembersSlice';
 
 const AssigneeSelector = ({ taskId }: { taskId: string }) => {
   const membersInputRef = useRef<InputRef>(null);
-
+  const [isOverlayOpen, setIsOverlayOpen] = useState<boolean>(false);
+  // this is for get the current string that type on search bar
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const dispatch = useAppDispatch();
 
   // get members list from members reducer
@@ -30,15 +34,31 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
     useAppSelector((state) => state.memberReducer.owner),
   ];
 
-  // this is for get the current string that type on search bar
-  const [searchQuery, setSearchQuery] = useState<string>('');
-
   // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
     return membersList.filter((member) =>
       member.memberName.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [membersList, searchQuery]);
+
+  // fuction to handle overlay open
+  const handleOverlayToggle = () => {
+    setIsOverlayOpen((prev) => !prev);
+  };
+  // function to handle invite project member drawer
+  const handleInviteProjectMemberDrawer = () => {
+    setIsOverlayOpen(false);
+    dispatch(toggleDrawer());
+  };
+
+  // function to focus members input
+  const handleMembersDropdownOpen = (open: boolean) => {
+    if (open) {
+      setTimeout(() => {
+        membersInputRef.current?.focus();
+      }, 0);
+    }
+  };
 
   // custom dropdown content
   const membersDropdownContent = (
@@ -92,18 +112,35 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
             <Empty />
           )}
         </List>
+
+        <Divider style={{ marginBlock: 0 }} />
+
+        <Button
+          icon={<UsergroupAddOutlined />}
+          type="text"
+          style={{
+            color: colors.skyBlue,
+            border: 'none',
+            backgroundColor: colors.transparent,
+            width: '100%',
+          }}
+          onClick={handleInviteProjectMemberDrawer}
+        >
+          Invite a new member by email
+        </Button>
+
+        <Divider style={{ marginBlock: 8 }} />
+
+        <Button
+          type="primary"
+          style={{ alignSelf: 'flex-end' }}
+          onClick={handleOverlayToggle}
+        >
+          OK
+        </Button>
       </Flex>
     </Card>
   );
-
-  // function to focus members input
-  const handleMembersDropdownOpen = (open: boolean) => {
-    if (open) {
-      setTimeout(() => {
-        membersInputRef.current?.focus();
-      }, 0);
-    }
-  };
 
   return (
     <Dropdown
@@ -111,12 +148,14 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
       trigger={['click']}
       dropdownRender={() => membersDropdownContent}
       onOpenChange={handleMembersDropdownOpen}
+      open={isOverlayOpen}
     >
       <Flex gap={4} align="center">
         <Button
           type="dashed"
           shape="circle"
           icon={<PlusOutlined style={{ fontSize: 12 }} />}
+          onClick={handleOverlayToggle}
         />
       </Flex>
     </Dropdown>
