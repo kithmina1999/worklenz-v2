@@ -3,7 +3,7 @@ import TaskCard from '../taskCard/TaskCard'
 import './ToDo.css'
 import { TaskType } from '../../../types/task.types'
 import { Button } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { MoreOutlined, PlusOutlined } from '@ant-design/icons'
 import TaskCreateCard from '../taskCreateCard/TaskCreateCard'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { RootState } from '../../../app/store'
@@ -28,12 +28,13 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
                     flexDirection: 'column',
                     flexGrow: 1,
                     flexBasis: 0,
-                    maxWidth: '325px',
-                    width: '325px',
+                    maxWidth: '375px',
+                    width: '375px',
                     marginRight: '8px',
                     padding: '8px',
-                    borderRadius: '4px',
+                    borderRadius: '25px',
                     maxHeight: 'calc(100vh - 250px)',
+                    backgroundColor: '#F8FAFC'
                 }}
             >
                 <div
@@ -49,13 +50,25 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
                     <div
                         style={{
                             fontWeight: 600,
-                            marginBottom: '16px',
+                            marginBottom: '12px',
                             alignItems: 'center',
+                            padding: '8px',
                             display: 'flex',
                             justifyContent: 'space-between',
+                            backgroundColor: '#d1d0d3',
+                            borderTopLeftRadius: '19px',
+                            borderBottomLeftRadius: '19px',
+                            borderTopRightRadius: '19px',
+                            borderBottomRightRadius: '19px',                    
                         }}
                     >
-                        To Do ({dataSource.length})
+                        <div style={{display: 'flex', gap: '5px'}}>
+                        <Button type='text' size='small' shape='circle' style={{backgroundColor: 'white', }}>{dataSource.length}</Button>To Do
+                        </div>
+                        <div style={{display: 'flex'}}>
+                            <Button type='text' size='small' shape='circle'><PlusOutlined /></Button>
+                            <Button type='text' size='small' shape='circle'><MoreOutlined style={{rotate: '90deg', fontSize: '25px'}}/></Button>
+                        </div>
                     </div>
                 </div>
                 <div

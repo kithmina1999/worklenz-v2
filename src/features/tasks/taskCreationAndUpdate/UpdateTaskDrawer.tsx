@@ -186,7 +186,7 @@ const UpdateTaskDrawer = ({ taskId }: UpdateTaskDrawerProps) => {
             placeholder="Type your Task"
             style={{ maxWidth: 500 }}
           />
-          <StatusDropdown currentStatus={selectedTask?.status || 'todo'} />
+          <StatusDropdown currentStatus={selectedTask?.status || 'todo'} size='default'/>
         </div>
       }
       footer={

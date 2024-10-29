@@ -218,7 +218,7 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
       return {
         ...col,
         render: (record: TaskType) => (
-          <StatusDropdown currentStatus={record.status} />
+          <StatusDropdown currentStatus={record.status} size='default'/>
         ),
       };
     }

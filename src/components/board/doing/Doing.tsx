@@ -4,7 +4,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 import './Doing.css'
 import { TaskType } from '../../../types/task.types'
 import { Button } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { MoreOutlined, PlusOutlined } from '@ant-design/icons'
 import { setDoingCreatTaskCardDisabled } from '../../../features/board/createCardSlice'
 import TaskCreateCard from '../taskCreateCard/TaskCreateCard'
 import { useAppSelector } from '../../../hooks/useAppSelector'
@@ -34,8 +34,9 @@ const Doing: React.FC<DoingProps> = ({ dataSource }) => {
                     width: '325px',
                     marginRight: '8px',
                     padding: '8px',
-                    borderRadius: '4px',
-                    maxHeight: 'calc(100vh - 220px)',
+                    borderRadius: '25px',
+                    maxHeight: 'calc(100vh - 250px)',
+                    backgroundColor: '#F8FAFC'
                 }}
             >
                 <div
@@ -50,15 +51,26 @@ const Doing: React.FC<DoingProps> = ({ dataSource }) => {
                 >
                     <div
                         style={{
-                            color: '#000000d9',
                             fontWeight: 600,
-                            marginBottom: '16px',
+                            marginBottom: '12px',
                             alignItems: 'center',
+                            padding: '8px',
                             display: 'flex',
                             justifyContent: 'space-between',
+                            backgroundColor: '#b9cef1',
+                            borderTopLeftRadius: '19px',
+                            borderBottomLeftRadius: '19px',
+                            borderTopRightRadius: '19px',
+                            borderBottomRightRadius: '19px',
                         }}
                     >
-                        Doing ({dataSource.length})
+                        <div style={{display: 'flex', gap: '5px'}}>
+                        <Button type='text' size='small' shape='circle' style={{backgroundColor: 'white', }}>{dataSource.length}</Button>Doing
+                        </div>
+                        <div style={{display: 'flex'}}>
+                            <Button type='text' size='small' shape='circle'><PlusOutlined /></Button>
+                            <Button type='text' size='small' shape='circle'><MoreOutlined style={{rotate: '90deg', fontSize: '25px'}}/></Button>
+                        </div>
                     </div>
                 </div>
 

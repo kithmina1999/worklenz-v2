@@ -25,7 +25,6 @@ const ProjectViewBoard: React.FC = () => {
                 padding: '0 12px',
                 display: 'flex',
                 justifyContent: 'center',
-                backgroundColor: '#fafafa',
                 flexDirection: 'column',
                 marginTop: '14px'
             }}
@@ -35,6 +34,7 @@ const ProjectViewBoard: React.FC = () => {
                     paddingTop: '6px',
                     display: 'flex',
                     justifyContent: 'center',
+                    gap: '10px'
                 }}
             >
                 <ToDo dataSource={todoData}/>

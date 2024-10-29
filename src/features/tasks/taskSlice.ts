@@ -35,7 +35,11 @@ const initialState: TaskState = {
           isInivitationAccept: false,
         },
       ],
-      labels: [{ labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' }],
+      labels: [
+        { labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' },
+        { labelId: 'label1', labelName: 'AI', labelColor: '#a3c4dc' },
+        { labelId: 'label1', labelName: 'Admin', labelColor: '#dce3a3' },
+      ],
       status: 'todo',
       priority: 'high',
       timeTracking: '-',
@@ -52,7 +56,24 @@ const initialState: TaskState = {
           taskId: 'SP-09',
           task: 'Define workload requirements',
           description: 'Identify and document requirements.',
-          members: [],
+          members: [
+            {
+              memberId: '1',
+              memberName: 'Raveesha Dilanka',
+              memberEmail: '',
+              memberRole: 'owner',
+              isActivate: null,
+              isInivitationAccept: false,
+            },
+            {
+              memberId: '2',
+              memberName: 'Sachintha Prasad',
+              memberEmail: '',
+              memberRole: 'owner',
+              isActivate: null,
+              isInivitationAccept: false,
+            },
+          ],
           labels: [
             {
               labelId: 'label2',
