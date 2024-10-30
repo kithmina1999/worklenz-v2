@@ -35,7 +35,11 @@ const initialState: TaskState = {
           isInivitationAccept: false,
         },
       ],
-      labels: [{ labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' }],
+      labels: [
+        { labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' },
+        { labelId: 'label1', labelName: 'AI', labelColor: '#a3c4dc' },
+        { labelId: 'label1', labelName: 'Admin', labelColor: '#dce3a3' },
+      ],
       status: 'todo',
       priority: 'high',
       timeTracking: '-',
@@ -52,7 +56,24 @@ const initialState: TaskState = {
           taskId: 'SP-09',
           task: 'Define workload requirements',
           description: 'Identify and document requirements.',
-          members: [],
+          members: [
+            {
+              memberId: '1',
+              memberName: 'Raveesha Dilanka',
+              memberEmail: '',
+              memberRole: 'owner',
+              isActivate: null,
+              isInivitationAccept: false,
+            },
+            {
+              memberId: '2',
+              memberName: 'Sachintha Prasad',
+              memberEmail: '',
+              memberRole: 'owner',
+              isActivate: null,
+              isInivitationAccept: false,
+            },
+          ],
           labels: [
             {
               labelId: 'label2',
@@ -88,7 +109,13 @@ const initialState: TaskState = {
       description: '-',
       progress: 30,
       members: [],
-      labels: [],
+      labels: [
+        {
+          labelId: 'label2',
+          labelName: 'Documentation',
+          labelColor: '#a3c4dc',
+        },
+      ],
       status: 'doing',
       priority: 'medium',
       timeTracking: '-',
@@ -160,6 +187,7 @@ const initialState: TaskState = {
       lastUpdated: new Date('2023-10-10'),
       reporter: '-',
       phase: '-',
+      subTasks: [],
     },
     {
       taskId: 'SP-06',
@@ -167,7 +195,13 @@ const initialState: TaskState = {
       description: '-',
       progress: 100,
       members: [],
-      labels: [],
+      labels: [
+        {
+          labelId: 'label4',
+          labelName: 'UI',
+          labelColor: '#dce3a3',
+        },
+      ],
       status: 'done',
       priority: 'medium',
       timeTracking: '-',
@@ -179,6 +213,7 @@ const initialState: TaskState = {
       lastUpdated: new Date('2023-09-14'),
       reporter: '-',
       phase: '-',
+      subTasks: [],
     },
   ],
 };

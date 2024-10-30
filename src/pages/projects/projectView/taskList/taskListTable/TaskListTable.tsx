@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Badge,
   Button,
   Collapse,
@@ -20,6 +21,7 @@ import { useAppSelector } from '../../../../../hooks/useAppSelector';
 import StatusDropdown from '../../../../../components/taskListCommon/statusDropdown/StatusDropdown';
 import PriorityDropdown from '../../../../../components/taskListCommon/priorityDropdown/PriorityDropdown';
 import {
+  DownOutlined,
   ExpandAltOutlined,
   PlayCircleTwoTone,
   RightOutlined,
@@ -35,6 +37,9 @@ import ConfigPhaseButton from '../../../../../features/projects/singleProject/ph
 import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
 import { simpleDateFormat } from '../../../../../utils/simpleDateFormat';
 import LabelDropdown from '../../../../../components/taskListCommon/labelDropdown/LabelDropdown';
+import { durationDateFormat } from '../../../../../utils/durationDateFormat';
+import { MemberType } from '../../../../../types/member.types';
+import { LabelType } from '../../../../../types/label.type';
 
 type TaskListTableProps = {
   dataSource: TaskType[];
@@ -83,45 +88,45 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
     if (col.key === 'task') {
       return {
         ...col,
-        render: (record: TaskType) => (
-          <Flex align="center" justify="space-between">
-            <Flex gap={8} align="center">
-              {/* {record.subTasks.length > 0 && (
-                                <Button
-                                    type="text"
-                                    icon={<DownOutlined />}
-                                    onClick={() =>
-                                        handleExpandRow(
-                                            !expandedRowKeys.includes(
-                                                record.taskId
-                                            ),
-                                            record
-                                        )
-                                    }
-                                />
-                            )} */}
-              <Typography.Text>{record.task}</Typography.Text>
-            </Flex>
+        render: (record: TaskType) => {
+          return (
+            <Flex align="center" justify="space-between">
+              <Flex gap={8} align="center">
+                {record.subTasks && (
+                  <Button
+                    type="text"
+                    icon={<DownOutlined />}
+                    onClick={() =>
+                      handleExpandRow(
+                        !expandedRowKeys.includes(record.taskId),
+                        record
+                      )
+                    }
+                  />
+                )}
+                <Typography.Text>{record.task}</Typography.Text>
+              </Flex>
 
-            {hoverRow === record.taskId && (
-              <Button
-                type="text"
-                icon={<ExpandAltOutlined />}
-                onClick={() => {
-                  setSelectedTaskId(record.taskId);
-                  dispatch(toggleUpdateTaskDrawer());
-                }}
-                style={{
-                  backgroundColor: colors.transparent,
-                  padding: 0,
-                  height: 'fit-content',
-                }}
-              >
-                Open
-              </Button>
-            )}
-          </Flex>
-        ),
+              {hoverRow === record.taskId && (
+                <Button
+                  type="text"
+                  icon={<ExpandAltOutlined />}
+                  onClick={() => {
+                    setSelectedTaskId(record.taskId);
+                    dispatch(toggleUpdateTaskDrawer());
+                  }}
+                  style={{
+                    backgroundColor: colors.transparent,
+                    padding: 0,
+                    height: 'fit-content',
+                  }}
+                >
+                  Open
+                </Button>
+              )}
+            </Flex>
+          );
+        },
       };
     }
 
@@ -139,16 +144,20 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
     if (col.key === 'members') {
       return {
         ...col,
-        render: (record: TaskType) => {
-          return (
-            <Flex gap={8} align="center">
-              <Typography>
-                {record.members?.map((member) => (
-                  <CustomAvatar avatarCharacter={member.memberName[0]} />
-                ))}
-              </Typography>
+        render: (record: MemberType[]) => {
+          setSelectedTaskId(hoverRow);
 
-              <AssigneeSelector taskId={record.taskId} />
+          return (
+            <Flex gap={4} align="center">
+              <Avatar.Group>
+                {record?.map((member) => (
+                  <CustomAvatar
+                    avatarCharacter={member.memberName[0].toUpperCase()}
+                  />
+                ))}
+              </Avatar.Group>
+
+              <AssigneeSelector taskId={selectedTaskId || '0'} />
             </Flex>
           );
         },
@@ -159,10 +168,10 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
     if (col.key === 'labels') {
       return {
         ...col,
-        render: (record: TaskType) => {
+        render: (record: LabelType[]) => {
           return (
             <Flex gap={8}>
-              {record.labels?.map((label) => (
+              {record.map((label) => (
                 <Tag key={label.labelId} color={label.labelColor}>
                   {label.labelName}
                 </Tag>
@@ -184,7 +193,7 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
             <ConfigPhaseButton color={colors.darkGray} />
           </Flex>
         ),
-        render: (record: TaskType) => {
+        render: () => {
           return (
             <Select
               options={phase[0]?.phaseOptions?.map((option) => ({
@@ -209,7 +218,7 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
       return {
         ...col,
         render: (record: TaskType) => (
-          <StatusDropdown currentStatus={record.status} />
+          <StatusDropdown currentStatus={record.status} size='default'/>
         ),
       };
     }
@@ -228,7 +237,7 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
     if (col.key === 'timeTracking') {
       return {
         ...col,
-        render: (record: TaskType) => (
+        render: () => (
           <Flex gap={8}>
             <PlayCircleTwoTone />
             <Typography.Text>0m 0s</Typography.Text>
@@ -241,7 +250,7 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
     if (col.key === 'estimation') {
       return {
         ...col,
-        render: (record: TaskType) => <Typography.Text>0h 0m</Typography.Text>,
+        render: () => <Typography.Text>0h 0m</Typography.Text>,
       };
     }
 
@@ -249,11 +258,9 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
     if (col.key === 'startDate') {
       return {
         ...col,
-        render: (record: TaskType) =>
-          record.startDate ? (
-            <Typography.Text>
-              {simpleDateFormat(record.startDate)}
-            </Typography.Text>
+        render: (record: Date) => {
+          return record ? (
+            <Typography.Text>{simpleDateFormat(record)}</Typography.Text>
           ) : (
             <DatePicker
               placeholder="Set a start date"
@@ -264,7 +271,8 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
                 height: '100%',
               }}
             />
-          ),
+          );
+        },
       };
     }
 
@@ -272,11 +280,9 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
     if (col.key === 'dueDate') {
       return {
         ...col,
-        render: (record: TaskType) =>
-          record.dueDate ? (
-            <Typography.Text>
-              {simpleDateFormat(record.dueDate)}
-            </Typography.Text>
+        render: (record: Date) =>
+          record ? (
+            <Typography.Text>{simpleDateFormat(record)}</Typography.Text>
           ) : (
             <DatePicker
               placeholder="Set a due date"
@@ -285,9 +291,46 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
                 border: 'none',
                 width: '100%',
                 height: '100%',
+                padding: 0,
               }}
             />
           ),
+      };
+    }
+
+    // render cell in completed date column
+    if (col.key === 'completedDate') {
+      return {
+        ...col,
+        render: (record: Date) => {
+          return (
+            <Typography.Text>{durationDateFormat(record)}</Typography.Text>
+          );
+        },
+      };
+    }
+
+    // render cell in created date column
+    if (col.key === 'createdDate') {
+      return {
+        ...col,
+        render: (record: Date) => {
+          return (
+            <Typography.Text>{durationDateFormat(record)}</Typography.Text>
+          );
+        },
+      };
+    }
+
+    // render cell in last updated column
+    if (col.key === 'lastUpdated') {
+      return {
+        ...col,
+        render: (record: Date) => {
+          return (
+            <Typography.Text>{durationDateFormat(record)}</Typography.Text>
+          );
+        },
       };
     }
 
@@ -295,9 +338,9 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
     if (col.key === 'reporter') {
       return {
         ...col,
-        render: (record: TaskType) => (
-          <Typography.Text>Sachintha Prasad</Typography.Text>
-        ),
+        render: () => {
+          return <Typography.Text>Sachintha Prasad</Typography.Text>;
+        },
       };
     }
 
@@ -378,34 +421,27 @@ const TaskListTable = ({ dataSource }: TaskListTableProps) => {
                     onMouseLeave: () => setHoverRow(null),
                   };
                 }}
-
                 // expandable rows for sub tasks
 
-                // expandable={{
-                //     expandedRowKeys,
-                //     onExpand: handleExpandRow,
-                //     expandedRowRender: (record) => {
-                //         return (
-                //             <Table
-                //                 dataSource={record.subTasks}
-                //                 rowSelection={{
-                //                     ...rowSelection,
-                //                 }}
-                //                 showHeader={false}
-                //                 columns={updatedColumns}
-                //                 scroll={{ x: 'max-content' }}
-                //                 style={{
-                //                     scrollbarColor:
-                //                         'trasparent !important',
-                //                 }}
-                //                 pagination={false}
-                //                 rowKey={(subTask) =>
-                //                     subTask.taskId
-                //                 }
-                //             />
-                //         )
-                //     },
-                // }}
+                expandable={{
+                  expandedRowKeys,
+                  onExpand: handleExpandRow,
+                  expandedRowRender: (record) => {
+                    return (
+                      <Table
+                        dataSource={record.subTasks || []}
+                        rowSelection={{
+                          ...rowSelection,
+                        }}
+                        showHeader={false}
+                        columns={updatedColumns}
+                        scroll={{ x: 'max-content' }}
+                        pagination={false}
+                        rowKey={(subTask) => subTask.taskId}
+                      />
+                    );
+                  },
+                }}
               />
             ),
           },

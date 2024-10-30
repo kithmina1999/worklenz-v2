@@ -8,9 +8,10 @@ import { colors } from '../../../styles/colors';
 
 type StatusDropdownProps = {
   currentStatus: TaskStatusType;
+  size: 'small' | 'default'
 };
 
-const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
+const StatusDropdown = ({ currentStatus, size }: StatusDropdownProps) => {
   const [status, setStatus] = useState<TaskStatusType>(currentStatus);
 
   // fuction for get a color regariding the status
@@ -88,12 +89,13 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
         style={{
           width: 'fit-content',
           borderRadius: 24,
-          padding: '2px 12px',
-          fontSize: 13,
+          padding: size === 'small' ? '2px 6px' : '2px 12px',
+          fontSize: size === 'small' ? '10px' : '13px',
           backgroundColor: getStatuColor(status),
+          whiteSpace: 'nowrap'
         }}
       >
-        <Typography.Text style={{ textTransform: 'capitalize' }}>
+        <Typography.Text style={{ textTransform: 'capitalize', fontSize: size === 'small' ? '10px' : '13px'}}>
           {status}
         </Typography.Text>
         <DownOutlined />

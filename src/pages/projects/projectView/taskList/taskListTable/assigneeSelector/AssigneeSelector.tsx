@@ -1,12 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Card, Checkbox, Dropdown, Empty, Flex, Input, InputRef, List, Typography } from 'antd'
-import React, { useMemo, useRef, useState } from 'react'
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch'
-import { useAppSelector } from '../../../../../../hooks/useAppSelector'
-import { toggleMember } from '../../../../../../features/tasks/taskSlice'
-import CustomAvatar from '../../../../../../components/CustomAvatar'
-import { colors } from '../../../../../../styles/colors'
-import { PlusOutlined } from '@ant-design/icons'
+import {
+  Button,
+  Card,
+  Checkbox,
+  Dropdown,
+  Empty,
+  Flex,
+  Input,
+  InputRef,
+  List,
+  Typography,
+} from 'antd';
+import React, { useMemo, useRef, useState } from 'react';
+import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
+import { useAppSelector } from '../../../../../../hooks/useAppSelector';
+import { toggleMember } from '../../../../../../features/tasks/taskSlice';
+import CustomAvatar from '../../../../../../components/CustomAvatar';
+import { colors } from '../../../../../../styles/colors';
+import { PlusOutlined } from '@ant-design/icons';
 
 const AssigneeSelector = ({ taskId }: { taskId: string }) => {
   const membersInputRef = useRef<InputRef>(null);
@@ -49,6 +60,7 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
                 style={{
                   display: 'flex',
                   gap: 8,
+                  justifyContent: 'flex-start',
                   padding: '4px 8px',
                   border: 'none',
                 }}
