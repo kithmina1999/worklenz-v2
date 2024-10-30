@@ -1,11 +1,9 @@
 import React from 'react';
 import { Flex } from 'antd';
-
 import TaskListFilters from './taskListFilters/TaskListFilters';
-import TaskListTable from './taskListTable/TaskListTable';
-
 import { TaskType } from '../../../../types/task.types';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
+import TaskListTableWrapper from './taskListTable/TaskListTableWrapper';
 
 const ProjectViewTaskList = () => {
   // sample data from task reducer
@@ -16,7 +14,7 @@ const ProjectViewTaskList = () => {
   return (
     <Flex vertical gap={16}>
       <TaskListFilters />
-      <TaskListTable dataSource={dataSource} />
+      <TaskListTableWrapper taskList={dataSource} />
     </Flex>
   );
 };

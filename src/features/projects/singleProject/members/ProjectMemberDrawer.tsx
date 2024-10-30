@@ -1,9 +1,8 @@
-import { Avatar, Drawer, Flex, Form, Select, Typography } from 'antd';
+import { Drawer, Flex, Form, Select, Typography } from 'antd';
 import React from 'react';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 import { toggleDrawer } from './projectMembersSlice';
-import { avatarNamesMap } from '../../../../shared/constants';
 import { colors } from '../../../../styles/colors';
 import CustomAvatar from '../../../../components/CustomAvatar';
 
@@ -21,8 +20,6 @@ const ProjectMemberDrawer = () => {
   const dispatch = useAppDispatch();
 
   const [form] = Form.useForm();
-
-  console.log(membersList);
 
   const onChange = (value: string) => {
     console.log(`selected ${value}`);
@@ -73,9 +70,7 @@ const ProjectMemberDrawer = () => {
               value: member.memberName,
               label: (
                 <Flex gap={8} align="center">
-                  <CustomAvatar
-                    avatarCharacter={member.memberName[0].toUpperCase()}
-                  />
+                  <CustomAvatar avatarName={member.memberName} />
                   <Flex vertical>
                     <Typography.Text
                       style={{

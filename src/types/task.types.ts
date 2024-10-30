@@ -16,7 +16,7 @@ export type SubTaskType = {
 export type TaskType = {
   taskId: string;
   task: string;
-  description?: string;
+  description?: string | null;
   progress?: number;
   members?: MemberType[];
   labels?: LabelType[];

@@ -89,9 +89,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
     <Drawer
       title={
         <Flex gap={8} align="center">
-          <CustomAvatar
-            avatarCharacter={selectedMemberName[0]?.toUpperCase()}
-          />
+          <CustomAvatar avatarName={selectedMemberName} />
 
           <Flex vertical gap={4}>
             <Typography.Text

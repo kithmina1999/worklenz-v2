@@ -126,7 +126,7 @@ const TeamMembersSettings = () => {
               color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
             }}
           >
-            <CustomAvatar avatarCharacter={name[0].toLocaleUpperCase()} />
+            <CustomAvatar avatarName={name} />
             {name}
             {/* shows when activate status */}
             {record.isActivate ? (

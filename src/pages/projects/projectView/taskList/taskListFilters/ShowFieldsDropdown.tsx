@@ -1,60 +1,37 @@
 import { MoreOutlined } from '@ant-design/icons';
-import { Button, Card, Checkbox, Dropdown, Flex, List, Space } from 'antd';
+import { Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
 import React from 'react';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
-import { toggleColumnVisibility } from '../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice';
+import {
+  projectViewTaskListColumnsState,
+  toggleColumnVisibility,
+} from '../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice';
+import { columnList } from '../taskListTable/columns/columnList';
 
 const ShowFieldsDropdown = () => {
-  // get columns list without task name from projectViewTaskListColumn reducer
-  const columns =
-    useAppSelector(
-      (state) => state.projectViewTaskListColumnsReducer.columnsList
-    )?.filter((col) => col.title !== 'Task') || [];
-
   const dispatch = useAppDispatch();
 
-  // showFields dropdown items
-  type ShowFieldsType = {
-    key: string;
-    label: string;
-    hidden: boolean;
-  };
+  const columnsVisibility = useAppSelector(
+    (state) => state.projectViewTaskListColumnsReducer.columnsVisibility
+  );
 
-  const showFieldsList: ShowFieldsType[] = columns
-    .filter((col) => col.key !== undefined)
-    .map((col) => ({
-      key: col.key as string,
-      label: col.title as string,
-      hidden: col.hidden as boolean,
-    }));
-
-  // custom dropdown content
   const showFieldsDropdownContent = (
-    <Card
-      className="custom-card"
-      style={{ height: 300, overflowY: 'scroll' }}
-      styles={{ body: { padding: 0 } }}
-    >
-      <List style={{ padding: 0 }}>
-        {showFieldsList.map((item) => (
-          <List.Item
-            className="custom-list-item"
-            key={item.key}
-            style={{
-              display: 'flex',
-              gap: 8,
-              padding: '4px 8px',
-              border: 'none',
-            }}
-          >
+    <Card style={{ height: 300, overflowY: 'scroll' }}>
+      <List>
+        {columnList.map((col) => (
+          <List.Item key={col.key} style={{ padding: '4px 8px' }}>
             <Space>
               <Checkbox
-                id={item.key}
-                checked={!item.hidden}
-                onClick={() => dispatch(toggleColumnVisibility(item.key))}
-              />
-              {item.label}
+                checked={
+                  columnsVisibility[
+                    col.key as keyof projectViewTaskListColumnsState['columnsVisibility']
+                  ]
+                }
+                onClick={() => dispatch(toggleColumnVisibility(col.key))}
+              >
+                {col.columnHeader}
+              </Checkbox>
             </Space>
           </List.Item>
         ))}
@@ -63,14 +40,8 @@ const ShowFieldsDropdown = () => {
   );
 
   return (
-    <Dropdown
-      overlayClassName="custom-dropdown"
-      trigger={['click']}
-      dropdownRender={() => showFieldsDropdownContent}
-    >
-      <Flex align="center" gap={4}>
-        <Button icon={<MoreOutlined />}>Show fields</Button>
-      </Flex>
+    <Dropdown overlay={showFieldsDropdownContent} trigger={['click']}>
+      <Button icon={<MoreOutlined />}>Show fields</Button>
     </Dropdown>
   );
 };
