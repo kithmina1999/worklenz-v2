@@ -11,7 +11,7 @@ import {
   Space,
   Typography,
 } from 'antd';
-import googleIcon from '../../assets/images/google-icon.png';
+import googleIcon from '@assets/images/google-icon.png';
 import { Link, useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from 'react-i18next';

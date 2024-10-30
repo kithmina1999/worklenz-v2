@@ -5,6 +5,31 @@
 @tailwind components;
 @tailwind utilities;
 
+.theme-light,
+.theme-dark {
+    transition: background-color 0.3s ease;
+}
+
+.theme-light {
+    background-color: #ffffff;
+    color: #181818;
+}
+
+.theme-dark {
+    background-color: #181818;
+    color: #ffffff;
+}
+
+/* Prevent flash during page transitions */
+#__next {
+    transition: background-color 0.3s ease;
+}
+
+/* If you're using standard React Router without Next.js */
+#root {
+    transition: background-color 0.3s ease;
+}
+
 /* antdesign override imports  */
 
 *,

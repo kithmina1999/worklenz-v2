@@ -15,12 +15,10 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  //? there is an error occured "A component suspended while responding to synchronous input. This will cause the UI to be replaced with a loading indicator. To fix, updates that suspend should be wrapped with startTransition." thats why this suspend method added
   <Suspense
     fallback={
       <Layout style={{ position: 'relative', width: '100vw', height: '100vh' }}>
         <Spin
-          size="large"
           style={{
             position: 'absolute',
             top: '50%',

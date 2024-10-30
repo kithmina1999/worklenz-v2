@@ -1,31 +1,78 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-type ThemeType = 'default' | 'dark';
+type ThemeType = 'light' | 'dark';
 
 type ThemeState = {
   mode: ThemeType;
+  isInitialized: boolean;
 };
 
-// Function to detect the system's theme preference
+const isBrowser = typeof window !== 'undefined';
+
+// Get preloaded theme state from window
+const getPreloadedTheme = (): ThemeType => {
+  if (!isBrowser) return 'light';
+  return (window as any).__THEME_STATE__ || 'light';
+};
+
 const getSystemTheme = (): ThemeType => {
+  if (!isBrowser) return 'light';
   return window.matchMedia('(prefers-color-scheme: dark)').matches
     ? 'dark'
-    : 'default';
+    : 'light';
 };
 
-// Function for getting the current theme value from localStorage or system theme
 const getThemeModeFromLocalStorage = (): ThemeType => {
-  const savedTheme = localStorage.getItem('theme') as ThemeType | null;
-  return savedTheme || getSystemTheme(); // If no theme is saved, fallback to system preference
+  if (!isBrowser) return 'light';
+  try {
+    const savedTheme = localStorage.getItem('theme') as ThemeType | null;
+    return savedTheme || getSystemTheme();
+  } catch (error) {
+    return 'light';
+  }
 };
 
-// Function for saving the current theme value in localStorage
 const saveThemeModeToLocalStorage = (themeMode: ThemeType) => {
-  localStorage.setItem('theme', themeMode);
+  if (!isBrowser) return;
+  try {
+    localStorage.setItem('theme', themeMode);
+    updateDocumentTheme(themeMode);
+  } catch (error) {
+    console.error('Failed to save theme to localStorage:', error);
+  }
 };
 
+const updateDocumentTheme = (themeMode: ThemeType) => {
+  if (!isBrowser) return;
+  
+  // Update root element
+  const root = document.documentElement;
+  const oppositeTheme = themeMode === 'dark' ? 'light' : 'dark';
+  
+  root.classList.remove(oppositeTheme);
+  root.classList.add(themeMode);
+  
+  // Update body
+  document.body.classList.remove(oppositeTheme);
+  document.body.classList.add(themeMode);
+  
+  // Update color scheme
+  root.style.colorScheme = themeMode;
+  
+  // Update theme color
+  const themeColor = themeMode === 'dark' ? '#181818' : '#ffffff';
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', themeColor);
+    
+  // Store theme for page transitions
+  (window as any).__THEME_STATE__ = themeMode;
+};
+
+// Initialize with preloaded state
 const initialState: ThemeState = {
-  mode: getThemeModeFromLocalStorage(),
+  mode: getPreloadedTheme(),
+  isInitialized: false
 };
 
 const themeSlice = createSlice({
@@ -33,15 +80,22 @@ const themeSlice = createSlice({
   initialState,
   reducers: {
     toggleTheme: (state) => {
-      state.mode = state.mode === 'default' ? 'dark' : 'default';
+      state.mode = state.mode === 'light' ? 'dark' : 'light';
       saveThemeModeToLocalStorage(state.mode);
     },
     setTheme: (state, action) => {
       state.mode = action.payload;
       saveThemeModeToLocalStorage(state.mode);
     },
+    initializeTheme: (state) => {
+      if (!state.isInitialized) {
+        state.mode = getThemeModeFromLocalStorage();
+        state.isInitialized = true;
+        updateDocumentTheme(state.mode);
+      }
+    },
   },
 });
 
-export const { toggleTheme, setTheme } = themeSlice.actions;
+export const { toggleTheme, setTheme, initializeTheme } = themeSlice.actions;
 export default themeSlice.reducer;

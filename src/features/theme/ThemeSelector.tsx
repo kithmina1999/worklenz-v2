@@ -1,7 +1,8 @@
+// ThemeSelector.tsx
 import { Button } from 'antd';
 import React from 'react';
-import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { useAppSelector } from '../../hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { toggleTheme } from './themeSlice';
 import { MoonOutlined, SunOutlined } from '@ant-design/icons';
 
@@ -19,6 +20,7 @@ const ThemeSelector = () => {
       icon={themeMode === 'dark' ? <SunOutlined /> : <MoonOutlined />}
       shape="circle"
       onClick={handleDarkModeToggle}
+      className="transition-all duration-300" // Optional: add smooth transition
     />
   );
 };

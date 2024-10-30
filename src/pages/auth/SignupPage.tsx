@@ -187,9 +187,13 @@ const SignupPage = () => {
               {t('alreadyHaveAccountText')}
             </Typography.Text>
 
-            <Typography.Link href="/auth/login" style={{ fontSize: 14 }}>
+            <Link
+              to="/auth/login"
+              className="ant-typography ant-typography-link blue-link"
+              style={{ fontSize: 14 }}
+            >
               {t('loginButton')}
-            </Typography.Link>
+            </Link>
           </Space>
         </Form.Item>
       </Form>
