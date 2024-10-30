@@ -19,7 +19,7 @@ import { useAppSelector } from '../../../../../hooks/useAppSelector';
 import { colors } from '../../../../../styles/colors';
 import CustomAvatar from '../../../../../components/CustomAvatar';
 
-const MembersDropdown = () => {
+const MembersFilterDropdown = () => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
 
   const membersInputRef = useRef<InputRef>(null);
@@ -135,4 +135,4 @@ const MembersDropdown = () => {
   );
 };
 
-export default MembersDropdown;
+export default MembersFilterDropdown;

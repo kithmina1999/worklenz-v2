@@ -6,7 +6,7 @@ import ConfigPhaseButton from '../../../../../features/projects/singleProject/ph
 import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
 
-const GroupByDropdown = () => {
+const GroupByFilterDropdown = () => {
   type GroupTypes = 'status' | 'priority' | 'phase';
 
   const [activeGroup, setActiveGroup] = useState<GroupTypes>('status');
@@ -50,4 +50,4 @@ const GroupByDropdown = () => {
   );
 };
 
-export default GroupByDropdown;
+export default GroupByFilterDropdown;

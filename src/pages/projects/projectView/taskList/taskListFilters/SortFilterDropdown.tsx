@@ -7,7 +7,7 @@ import { Badge, Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
 import React, { useState } from 'react';
 import { colors } from '../../../../../styles/colors';
 
-const SortDropdown = () => {
+const SortFilterDropdown = () => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
   const [sortState, setSortState] = useState<
     Record<string, 'ascending' | 'descending'>
@@ -109,4 +109,4 @@ const SortDropdown = () => {
   );
 };
 
-export default SortDropdown;
+export default SortFilterDropdown;

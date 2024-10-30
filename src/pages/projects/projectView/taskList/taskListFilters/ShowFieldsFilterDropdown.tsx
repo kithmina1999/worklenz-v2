@@ -9,7 +9,7 @@ import {
 } from '../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice';
 import { columnList } from '../taskListTable/columns/columnList';
 
-const ShowFieldsDropdown = () => {
+const ShowFieldsFilterDropdown = () => {
   const dispatch = useAppDispatch();
 
   const columnsVisibility = useAppSelector(
@@ -46,4 +46,4 @@ const ShowFieldsDropdown = () => {
   );
 };
 
-export default ShowFieldsDropdown;
+export default ShowFieldsFilterDropdown;

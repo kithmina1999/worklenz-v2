@@ -1,10 +1,10 @@
 import { Checkbox, Flex, Typography } from 'antd';
 import SearchDropdown from './SearchDropdown';
-import SortDropdown from './SortDropdown';
-import LabelsDropdown from './LabelsDropdown';
-import MembersDropdown from './MembersDropdown';
-import GroupByDropdown from './GroupByDropdown';
-import ShowFieldsDropdown from './ShowFieldsDropdown';
+import SortFilterDropdown from './SortFilterDropdown';
+import LabelsFilterDropdown from './LabelsFilterDropdown';
+import MembersFilterDropdown from './MembersFilterDropdown';
+import GroupByFilterDropdown from './GroupByFilterDropdown';
+import ShowFieldsFilterDropdown from './ShowFieldsFilterDropdown';
 import PriorityFilterDropdown from './PriorityFilterDropdown';
 
 const TaskListFilters = () => {
@@ -14,15 +14,15 @@ const TaskListFilters = () => {
         {/* search dropdown  */}
         <SearchDropdown />
         {/* sort dropdown  */}
-        <SortDropdown />
+        <SortFilterDropdown />
         {/* prioriy dropdown  */}
         <PriorityFilterDropdown />
         {/* labels dropdown  */}
-        <LabelsDropdown />
+        <LabelsFilterDropdown />
         {/* members dropdown  */}
-        <MembersDropdown />
+        <MembersFilterDropdown />
         {/* group by dropdown */}
-        <GroupByDropdown />
+        <GroupByFilterDropdown />
       </Flex>
 
       <Flex gap={12} wrap={'wrap'}>
@@ -31,7 +31,7 @@ const TaskListFilters = () => {
           <Typography.Text>Show archvied</Typography.Text>
         </Flex>
         {/* show fields dropdown  */}
-        <ShowFieldsDropdown />
+        <ShowFieldsFilterDropdown />
       </Flex>
     </Flex>
   );
