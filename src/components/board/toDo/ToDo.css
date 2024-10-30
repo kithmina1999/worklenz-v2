@@ -1,3 +1,12 @@
 .todo-wraper:hover {
     border: 1px solid #f0f0f0;
 }
+
+.todo-threedot-dropdown .ant-dropdown-menu-item {
+    padding: 0 !important;
+}
+
+.todo-threedot-dropdown-button .ant-btn{
+    display: flex;
+    justify-content: left;
+}

@@ -1,5 +1,5 @@
-import { Avatar, Button, DatePicker, Input } from 'antd'
-import React, { useEffect, useState } from 'react'
+import { Avatar, Button, DatePicker, Input, InputRef } from 'antd'
+import React, { forwardRef, useEffect, useRef, useState } from 'react'
 import AddMembersDropdown from '../../addMembersDropdown/AddMembersDropdown'
 import dayjs, { Dayjs } from 'dayjs'
 import './TaskCreateCard.css'
@@ -11,7 +11,7 @@ interface StatusProps {
 }
 
 
-const TaskCreateCard: React.FC<StatusProps> = ({status}) => {
+const TaskCreateCard = forwardRef<InputRef, StatusProps>(({status}, ref) => {
     const [characterLength, setCharacterLength] = useState<number>(0)
     const [dueDate, setDueDate] = useState<Dayjs | null>(null)
     const [isToday, setIsToday] = useState(false)
@@ -28,6 +28,17 @@ const TaskCreateCard: React.FC<StatusProps> = ({status}) => {
     const handleDateChange = (date: Dayjs | null) => {
         setDueDate(date)
     }
+
+    const cardRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (cardRef.current) {
+            cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+        if (ref && typeof ref === 'object' && ref.current) {
+            ref.current.focus()
+        }
+    }, [])
 
     const formatDate = (date: Dayjs | null) => {
         if (!date) return ''
@@ -96,6 +107,7 @@ const TaskCreateCard: React.FC<StatusProps> = ({status}) => {
 
     return (
         <div
+            ref={cardRef}
             className="task-card"
             style={{
                 zIndex: 99,
@@ -110,7 +122,7 @@ const TaskCreateCard: React.FC<StatusProps> = ({status}) => {
         >
             {/* Input field */}
             <div style={{ display: 'flex' }}>
-                <Input type="text" maxLength={100} onChange={handleChange} value={taskName}/>
+                <Input ref={ref} type="text" maxLength={100} onChange={handleChange} value={taskName}/>
             </div>
 
             <div style={{ opacity: characterLength > 0 ? 1 : 0 }}>
@@ -216,6 +228,6 @@ const TaskCreateCard: React.FC<StatusProps> = ({status}) => {
             </div>
         </div>
     )
-}
+})
 
 export default TaskCreateCard

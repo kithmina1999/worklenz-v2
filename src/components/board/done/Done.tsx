@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import TaskCard from '../taskCard/TaskCard'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 import './Done.css'
 import { TaskType } from '../../../types/task.types'
-import { Button } from 'antd'
+import { Button, InputRef } from 'antd'
 import { MoreOutlined, PlusOutlined } from '@ant-design/icons'
 import TaskCreateCard from '../taskCreateCard/TaskCreateCard'
 import { useAppSelector } from '../../../hooks/useAppSelector'
@@ -20,6 +20,22 @@ const Done: React.FC<DoneProps> = ({ dataSource }) => {
         (state: RootState) => state.createCardReducer.isDoneCreatTaskCardDisable
     )
     const dispatch = useAppDispatch()
+    const createTaskInputRef = useRef<InputRef>(null)
+    const taskCardRef = useRef<HTMLDivElement>(null)
+    const [addTaskCount, setAddTaskCount] = useState(0);
+
+    const handleAddTaskClick = () => {
+        dispatch(setDoneCreatTaskCardDisabled(false))
+        setAddTaskCount(prev => prev + 1)
+    }
+
+    useEffect(() => {
+        createTaskInputRef.current?.focus();
+        taskCardRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }, [dataSource, addTaskCount]);
 
     return (
         <div style={{ paddingTop: '6px' }}>
@@ -30,8 +46,8 @@ const Done: React.FC<DoneProps> = ({ dataSource }) => {
                     flexDirection: 'column',
                     flexGrow: 1,
                     flexBasis: 0,
-                    maxWidth: '325px',
-                    width: '325px',
+                    maxWidth: '375px',
+                    width: '375px',
                     marginRight: '8px',
                     padding: '8px',
                     borderRadius: '25px',
@@ -68,7 +84,7 @@ const Done: React.FC<DoneProps> = ({ dataSource }) => {
                         <Button type='text' size='small' shape='circle' style={{backgroundColor: 'white', }}>{dataSource.length}</Button>Done
                         </div>
                         <div style={{display: 'flex'}}>
-                            <Button type='text' size='small' shape='circle'><PlusOutlined /></Button>
+                            <Button type='text' size='small' shape='circle' onClick={handleAddTaskClick}><PlusOutlined /></Button>
                             <Button type='text' size='small' shape='circle'><MoreOutlined style={{rotate: '90deg', fontSize: '25px'}}/></Button>
                         </div>
                     </div>
@@ -86,7 +102,7 @@ const Done: React.FC<DoneProps> = ({ dataSource }) => {
                         <TaskCard key={task.taskId} task={task} />
                     ))}
 
-                    {!isCardDisable && <TaskCreateCard status={"done"} />}
+                    {!isCardDisable && <TaskCreateCard status={"done"} ref={createTaskInputRef}/>}
                 </div>
 
                 <div
@@ -104,9 +120,9 @@ const Done: React.FC<DoneProps> = ({ dataSource }) => {
                             width: '100%',
                         }}
                         icon={<PlusOutlined />}
-                        onClick={() => dispatch(setDoneCreatTaskCardDisabled(false))}
+                        onClick={handleAddTaskClick}
                     >
-                        Create Task
+                        Add Task
                     </Button>
                 </div>
             </div>
