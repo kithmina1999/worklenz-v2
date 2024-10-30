@@ -1,10 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { CaretDownFilled } from '@ant-design/icons'
-import { Badge, Button, Card, Checkbox, Dropdown, Empty, Flex, Input, InputRef, List, Space, Typography } from 'antd'
-import React, { useMemo, useRef, useState } from 'react'
-import { useAppSelector } from '../../../../../hooks/useAppSelector'
-import { colors } from '../../../../../styles/colors'
-import CustomAvatar from '../../../../../components/CustomAvatar'
+import { CaretDownFilled } from '@ant-design/icons';
+import {
+  Badge,
+  Button,
+  Card,
+  Checkbox,
+  Dropdown,
+  Empty,
+  Flex,
+  Input,
+  InputRef,
+  List,
+  Space,
+  Typography,
+} from 'antd';
+import React, { useMemo, useRef, useState } from 'react';
+import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { colors } from '../../../../../styles/colors';
+import CustomAvatar from '../../../../../components/CustomAvatar';
 
 const MembersDropdown = () => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
@@ -61,9 +74,7 @@ const MembersDropdown = () => {
                   onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
                 />
                 <div>
-                  <CustomAvatar
-                    avatarCharacter={member.memberName[0].toUpperCase()}
-                  />
+                  <CustomAvatar avatarName={member.memberName} />
                 </div>
                 <Flex vertical>
                   {member.memberName}

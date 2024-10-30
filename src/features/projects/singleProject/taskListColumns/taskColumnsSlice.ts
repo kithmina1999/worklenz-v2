@@ -1,128 +1,49 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TaskType } from '../../../../types/task.types';
-import { TableColumnsType } from 'antd';
 
-type projectViewTaskListColumnsState = {
-  columnsList: TableColumnsType<TaskType>;
+export type projectViewTaskListColumnsState = {
+  columnsVisibility: {
+    selector: boolean;
+    taskId: boolean;
+    task: boolean;
+    description: boolean;
+    progress: boolean;
+    members: boolean;
+    labels: boolean;
+    phases: boolean;
+    status: boolean;
+    priority: boolean;
+    timeTracking: boolean;
+    estimation: boolean;
+    startDate: boolean;
+    dueDate: boolean;
+    completedDate: boolean;
+    createdDate: boolean;
+    lastUpdated: boolean;
+    reporter: boolean;
+  };
 };
 
 const initialState: projectViewTaskListColumnsState = {
-  // table columns
-  columnsList: [
-    {
-      key: 'taskId',
-      title: 'Key',
-      width: 100,
-      hidden: false,
-    },
-    {
-      key: 'task',
-      title: 'Task',
-      width: 400,
-      fixed: 'left',
-    },
-    {
-      key: 'description',
-      title: 'Description',
-      width: 300,
-      hidden: false,
-    },
-    {
-      key: 'progress',
-      title: 'Progress',
-      width: 100,
-      hidden: false,
-    },
-    {
-      key: 'members',
-      dataIndex: 'members',
-      title: 'Members',
-      width: 150,
-      hidden: false,
-    },
-    {
-      key: 'labels',
-      dataIndex: 'labels',
-      title: 'Labels',
-      width: 150,
-      hidden: false,
-    },
-    {
-      // in here the phase title also render in task list table
-      key: 'phase',
-      title: 'Phase',
-      width: 150,
-      hidden: false,
-    },
-    {
-      key: 'status',
-      title: 'Status',
-      width: 150,
-      hidden: false,
-    },
-    {
-      key: 'priority',
-      title: 'Priority',
-      width: 150,
-      hidden: false,
-    },
-    {
-      key: 'timeTracking',
-      dataIndex: 'timeTracking',
-      title: 'TimeTracking',
-      width: 150,
-      hidden: false,
-    },
-    {
-      key: 'estimation',
-      dataIndex: 'estimation',
-      title: 'Estimation',
-      width: 150,
-      hidden: false,
-    },
-    {
-      key: 'startDate',
-      dataIndex: 'startDate',
-      title: 'StartDate',
-      width: 150,
-      hidden: false,
-    },
-    {
-      key: 'dueDate',
-      dataIndex: 'dueDate',
-      title: 'DueDate',
-      width: 150,
-      hidden: false,
-    },
-    {
-      key: 'completedDate',
-      dataIndex: 'completedDate',
-      title: 'CompletedDate',
-      width: 150,
-      hidden: false,
-    },
-    {
-      key: 'createdDate',
-      dataIndex: 'createdDate',
-      title: 'CreatedDate',
-      width: 150,
-      hidden: false,
-    },
-    {
-      key: 'lastUpdated',
-      dataIndex: 'lastUpdated',
-      title: 'LastUpdated',
-      width: 150,
-      hidden: false,
-    },
-    {
-      key: 'reporter',
-      dataIndex: 'reporter',
-      title: 'Reporter',
-      width: 150,
-      hidden: false,
-    },
-  ],
+  columnsVisibility: {
+    selector: true,
+    taskId: true,
+    task: true,
+    description: true,
+    progress: true,
+    members: true,
+    labels: true,
+    phases: true,
+    status: true,
+    priority: true,
+    timeTracking: true,
+    estimation: true,
+    startDate: true,
+    dueDate: true,
+    completedDate: true,
+    createdDate: true,
+    lastUpdated: true,
+    reporter: true,
+  },
 };
 
 const projectViewTaskListColumnsSlice = createSlice({
@@ -130,18 +51,9 @@ const projectViewTaskListColumnsSlice = createSlice({
   initialState,
   reducers: {
     toggleColumnVisibility: (state, action: PayloadAction<string>) => {
-      if (state.columnsList) {
-        const columnIndex = state.columnsList?.findIndex(
-          (col) => col.key === action.payload
-        );
-
-        if (columnIndex !== -1) {
-          state.columnsList[columnIndex] = {
-            ...state.columnsList[columnIndex],
-            hidden: !state.columnsList[columnIndex].hidden,
-          };
-        }
-      }
+      const columnKey =
+        action.payload as keyof projectViewTaskListColumnsState['columnsVisibility'];
+      state.columnsVisibility[columnKey] = !state.columnsVisibility[columnKey];
     },
   },
 });

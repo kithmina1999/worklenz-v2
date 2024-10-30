@@ -63,7 +63,7 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
       key: 'user',
       render: (record: { memberName: string }) => (
         <span>
-          <CustomAvatar avatarCharacter={record.memberName[0].toUpperCase()} />
+          <CustomAvatar avatarName={record.memberName} />
           <Typography.Text>{record.memberName}</Typography.Text>
         </span>
       ),

@@ -1,4 +1,4 @@
-type PhaseOption = {
+export type PhaseOption = {
   optionId: string;
   optionName: string;
   optionColor: string;

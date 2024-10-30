@@ -19,14 +19,15 @@ const GroupByDropdown = () => {
   const selectedProject = useSelectedProject();
 
   //get phases details from phases slice
-  const phase = useAppSelector((state) => state.phaseReducer.phaseList).filter(
-    (phase) => phase.projectId === selectedProject?.projectId
-  );
+  const phase =
+    useAppSelector((state) => state.phaseReducer.phaseList).find(
+      (phase) => phase.projectId === selectedProject?.projectId
+    ) || null;
 
   const groupDropdownMenuItems = [
     { key: 'status', value: 'status', label: 'Status' },
     { key: 'priority', value: 'priority', label: 'Priority' },
-    { key: 'phase', value: 'phase', label: phase[0]?.phase || 'Phase' },
+    { key: 'phase', value: 'phase', label: phase ? phase?.phase : 'Phase' },
   ];
 
   return (

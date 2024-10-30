@@ -2,15 +2,11 @@ import React, { useEffect, useState } from 'react';
 import {
   Button,
   Collapse,
-  DatePicker,
+  ConfigProvider,
   Drawer,
-  Form,
   Input,
-  InputNumber,
   Progress,
-  Select,
   Tabs,
-  Tag,
   Typography,
   Upload,
 } from 'antd';
@@ -20,6 +16,8 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { toggleUpdateTaskDrawer } from '../taskSlice';
 import StatusDropdown from '../../../components/taskListCommon/statusDropdown/StatusDropdown';
 import { colors } from '../../../styles/colors';
+import TaskDetailsForm from './taskDrawerComponents/TaskDetailsForm';
+import DescriptionEditor from './taskDrawerComponents/DescriptionEditor';
 
 type UpdateTaskDrawerProps = {
   taskId: string | null;
@@ -36,10 +34,12 @@ const UpdateTaskDrawer = ({ taskId }: UpdateTaskDrawerProps) => {
   );
 
   // get currently selected task
-  const taskList = useAppSelector((state) => state.taskReducer.tasks);
-  const selectedTask = taskList.find((task) => task.taskId === taskId);
+  const selectedTask = useAppSelector((state) => state.taskReducer.tasks).find(
+    (task) => task.taskId === taskId
+  );
 
   // Load task details into state when selectedTask changes
+  // Update form fields when selectedTask changes
   useEffect(() => {
     if (selectedTask) {
       setTaskName(selectedTask.task);
@@ -55,54 +55,13 @@ const UpdateTaskDrawer = ({ taskId }: UpdateTaskDrawerProps) => {
     {
       key: 'details',
       label: <Typography.Text strong>Details</Typography.Text>,
-      children: (
-        <Form
-          layout="horizontal"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 24 }}
-          initialValues={{
-            phase: selectedTask?.phase,
-            // assignees: selectedTask?.assignees,
-            dueDate: selectedTask?.dueDate,
-            // timeEstimation: selectedTask?.timeEstimation,
-            priority: selectedTask?.priority,
-          }}
-        >
-          <Form.Item name="taskId" label="Task Key">
-            <Tag>{selectedTask?.taskId}</Tag>
-          </Form.Item>
-          <Form.Item name="phase" label="Phase">
-            <Select placeholder="Select Phase" style={{ maxWidth: 180 }} />
-          </Form.Item>
-          <Form.Item name="assignees" label="Assignees">
-            <Button
-              type="dashed"
-              shape="circle"
-              icon={<PlusOutlined style={{ fontSize: 12 }} />}
-            />
-          </Form.Item>
-          <Form.Item name="dueDate" label="Due Date">
-            <DatePicker placeholder="End date" width={100} />
-          </Form.Item>
-          <Form.Item name="timeEstimation" label="Time Estimation">
-            <InputNumber min={0} />
-          </Form.Item>
-          <Form.Item name="priority" label="Priority">
-            <Select style={{ maxWidth: 180 }} />
-          </Form.Item>
-        </Form>
-      ),
+      children: <TaskDetailsForm selectedTask={selectedTask || null} />,
       style: panelStyle,
     },
     {
       key: 'description',
       label: <Typography.Text strong>Description</Typography.Text>,
-      children: (
-        <Input.TextArea
-          defaultValue={selectedTask?.description}
-          placeholder="Add a more detailed description..."
-        />
-      ),
+      children: <DescriptionEditor selectedTask={selectedTask || null} />,
       style: panelStyle,
     },
     {
@@ -166,43 +125,45 @@ const UpdateTaskDrawer = ({ taskId }: UpdateTaskDrawerProps) => {
     { key: 'activityLog', label: 'Activity Log' },
   ];
 
-  // Handle update
-  const handleUpdate = () => {
-    // dispatch(updateTask({ id: selectedTask?.id, name: taskName }))
-    dispatch(toggleUpdateTaskDrawer());
-  };
-
   return (
-    <Drawer
-      open={isDrawerOpen}
-      onClose={() => dispatch(toggleUpdateTaskDrawer())}
-      width={720}
-      title={
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <Input
-            size="large"
-            value={taskName}
-            onChange={(e) => setTaskName(e.currentTarget.value)}
-            placeholder="Type your Task"
-            style={{ maxWidth: 500 }}
-          />
-          <StatusDropdown currentStatus={selectedTask?.status || 'todo'} size='default'/>
-        </div>
-      }
-      footer={
-        <div>
+    <ConfigProvider
+      theme={{
+        components: {
+          Form: {
+            verticalLabelPadding: '0 0 4px',
+          },
+          Collapse: {
+            headerPadding: 8,
+          },
+        },
+      }}
+    >
+      <Drawer
+        open={isDrawerOpen}
+        onClose={() => dispatch(toggleUpdateTaskDrawer())}
+        width={720}
+        title={
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <Input
+              size="large"
+              value={taskName}
+              onChange={(e) => setTaskName(e.currentTarget.value)}
+              placeholder="Type your Task"
+              style={{ maxWidth: 500 }}
+            />
+            <StatusDropdown currentStatus={selectedTask?.status || 'todo'} size={"default"}/>
+          </div>
+        }
+        footer={
           <Input.TextArea
             placeholder="Add a comment"
-            style={{ marginTop: 12 }}
+            style={{ marginBlock: 12 }}
           />
-          <Button type="primary" onClick={handleUpdate}>
-            Update Task
-          </Button>
-        </div>
-      }
-    >
-      <Tabs type="card" items={tabItems} />
-    </Drawer>
+        }
+      >
+        <Tabs type="card" items={tabItems} />
+      </Drawer>
+    </ConfigProvider>
   );
 };
 

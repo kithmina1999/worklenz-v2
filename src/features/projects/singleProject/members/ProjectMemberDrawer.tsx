@@ -21,8 +21,6 @@ const ProjectMemberDrawer = () => {
 
   const [form] = Form.useForm();
 
-  console.log(membersList);
-
   const onChange = (value: string) => {
     console.log(`selected ${value}`);
   };
@@ -72,9 +70,7 @@ const ProjectMemberDrawer = () => {
               value: member.memberName,
               label: (
                 <Flex gap={8} align="center">
-                  <CustomAvatar
-                    avatarCharacter={member.memberName[0].toUpperCase()}
-                  />
+                  <CustomAvatar avatarName={member.memberName} />
                   <Flex vertical>
                     <Typography.Text
                       style={{

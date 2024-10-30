@@ -1,5 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { PhaseType } from '../../../../types/phase.types';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PhaseOption, PhaseType } from '../../../../types/phase.types';
 
 type PhaseState = {
   isPhaseDrawerOpen: boolean;
@@ -19,6 +19,11 @@ const initialState: PhaseState = {
           optionName: 'Phase 1',
           optionColor: '#cb9878',
         },
+        {
+          optionId: 'option2',
+          optionName: 'Hello',
+          optionColor: '#cb9878',
+        },
       ],
     },
   ],
@@ -33,8 +38,66 @@ const phaseSlice = createSlice({
         ? (state.isPhaseDrawerOpen = false)
         : (state.isPhaseDrawerOpen = true);
     },
+
+    changePhaseName: (
+      state,
+      action: PayloadAction<{ phaseId: string; phase: string }>
+    ) => {
+      const { phaseId, phase } = action.payload;
+
+      const index = state.phaseList.findIndex(
+        (phase) => phase.phaseId === phaseId
+      );
+
+      if (index !== -1) {
+        state.phaseList[index] = { ...state.phaseList[index], phase };
+      }
+    },
+
+    addPhaseOption: (
+      state,
+      action: PayloadAction<{ phaseId: string; option: PhaseOption }>
+    ) => {
+      const { phaseId, option } = action.payload;
+
+      const index = state.phaseList.findIndex(
+        (phase) => phase.phaseId === phaseId
+      );
+
+      if (index !== -1) {
+        state.phaseList[index] = {
+          ...state.phaseList[index],
+          phaseOptions: [...state.phaseList[index].phaseOptions, option],
+        };
+      }
+    },
+
+    deletePhaseOption: (
+      state,
+      action: PayloadAction<{ phaseId: string; optionId: string }>
+    ) => {
+      const { phaseId, optionId } = action.payload;
+
+      const index = state.phaseList.findIndex(
+        (phase) => phase.phaseId === phaseId
+      );
+
+      if (index !== -1) {
+        state.phaseList[index] = {
+          ...state.phaseList[index],
+          phaseOptions: state.phaseList[index].phaseOptions.filter(
+            (option) => option.optionId !== optionId
+          ),
+        };
+      }
+    },
   },
 });
 
-export const { toggleDrawer } = phaseSlice.actions;
+export const {
+  toggleDrawer,
+  changePhaseName,
+  addPhaseOption,
+  deletePhaseOption,
+} = phaseSlice.actions;
 export default phaseSlice.reducer;
