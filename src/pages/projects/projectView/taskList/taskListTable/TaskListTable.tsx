@@ -164,10 +164,40 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
                 />
               ))}
             </Avatar.Group>
-
             <AssigneeSelector taskId={selectedTaskId || '0'} />
           </Flex>
         );
+
+//    // render cell in phase column
+//    if (col.key === 'phase') {
+//      return {
+//        ...col,
+//        title: (
+//          <Flex align="center" justify="space-between">
+//            {phase[0]?.phase || 'Phase'}{' '}
+//            <ConfigPhaseButton color={colors.darkGray} />
+//          </Flex>
+//        ),
+//        render: (record: TaskType) => {
+//          return (
+//            <Select
+//              options={phase[0]?.phaseOptions?.map((option) => ({
+//                key: option.optionId,
+//                value: option.optionId,
+//                label: (
+//                  <Flex gap={8}>
+//                    <Badge color={option.optionColor} /> {option.optionName}
+//                  </Flex>
+//                ),
+//              }))}
+//              placeholder={'Select'}
+//              style={{ width: '100%' }}
+//             />
+//           );
+//         },
+//       };
+//    }
+
 
       // labels column
       case 'labels':
