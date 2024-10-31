@@ -4,30 +4,31 @@ import AddTaskListRow from './AddTaskListRow';
 import { TaskType } from '../../../../../types/task.types';
 import {
   Avatar,
-  Badge,
   Button,
   Checkbox,
   DatePicker,
   Flex,
   Progress,
-  Select,
   Tag,
   Tooltip,
   Typography,
 } from 'antd';
 import { ExpandAltOutlined, PlayCircleTwoTone } from '@ant-design/icons';
 import { colors } from '../../../../../styles/colors';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
 import { toggleUpdateTaskDrawer } from '../../../../../features/tasks/taskSlice';
 import CustomAvatar from '../../../../../components/CustomAvatar';
-import AssigneeSelector from './assigneeSelector/AssigneeSelector';
-import LabelDropdown from '../../../../../components/taskListCommon/labelDropdown/LabelDropdown';
+import LabelsSelector from '../../../../../components/taskListCommon/labelsSelector/LabelsSelector';
 import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
 import StatusDropdown from '../../../../../components/taskListCommon/statusDropdown/StatusDropdown';
 import PriorityDropdown from '../../../../../components/taskListCommon/priorityDropdown/PriorityDropdown';
 import { simpleDateFormat } from '../../../../../utils/simpleDateFormat';
 import { durationDateFormat } from '../../../../../utils/durationDateFormat';
+import CustomColordLabel from '../../../../../components/taskListCommon/labelsSelector/CustomColordLabel';
+import CustomNumberLabel from '../../../../../components/taskListCommon/labelsSelector/CustomNumberLabel';
+import PhaseDropdown from '../../../../../components/taskListCommon/phaseDropdown/PhaseDropdown';
+import AssigneeSelector from '../../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
 
 const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
   const [hoverRow, setHoverRow] = useState<string | null>(null);
@@ -38,8 +39,7 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
 
   // get data theme data from redux
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  // get phase data from redux
-  const phaseList = useAppSelector((state) => state.phaseReducer.phaseList);
+
   // get the selected project details
   const selectedProject = useSelectedProject();
 
@@ -50,25 +50,6 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
   const visibleColumns = columnList.filter(
     (column) => columnsVisibility[column.key as keyof typeof columnsVisibility]
   );
-
-  //get phases details from phases slice
-  const phaseOptions = useMemo(() => {
-    const phase = phaseList.find(
-      (el) => el.projectId === selectedProject?.projectId
-    );
-
-    return phase
-      ? phase.phaseOptions.map((option) => ({
-          key: option.optionId,
-          value: option.optionId,
-          label: (
-            <Flex gap={8}>
-              <Badge color={option.optionColor} /> {option.optionName}
-            </Flex>
-          ),
-        }))
-      : [];
-  }, [phaseList, selectedProject]);
 
   // Toggle selected row
   const toggleRowSelection = (taskId: string) => {
@@ -168,59 +149,34 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
           </Flex>
         );
 
-//    // render cell in phase column
-//    if (col.key === 'phase') {
-//      return {
-//        ...col,
-//        title: (
-//          <Flex align="center" justify="space-between">
-//            {phase[0]?.phase || 'Phase'}{' '}
-//            <ConfigPhaseButton color={colors.darkGray} />
-//          </Flex>
-//        ),
-//        render: (record: TaskType) => {
-//          return (
-//            <Select
-//              options={phase[0]?.phaseOptions?.map((option) => ({
-//                key: option.optionId,
-//                value: option.optionId,
-//                label: (
-//                  <Flex gap={8}>
-//                    <Badge color={option.optionColor} /> {option.optionName}
-//                  </Flex>
-//                ),
-//              }))}
-//              placeholder={'Select'}
-//              style={{ width: '100%' }}
-//             />
-//           );
-//         },
-//       };
-//    }
-
-
       // labels column
       case 'labels':
         return (
-          <Flex gap={8}>
-            {task?.labels?.map((label) => (
-              <Tag key={label.labelId} color={label.labelColor}>
-                {label.labelName}
-              </Tag>
-            ))}
-            <LabelDropdown />
+          <Flex>
+            {task?.labels && task?.labels?.length <= 2 ? (
+              task?.labels?.map((label) => <CustomColordLabel label={label} />)
+            ) : (
+              <Flex>
+                <CustomColordLabel
+                  label={task?.labels ? task.labels[0] : null}
+                />
+                <CustomColordLabel
+                  label={task?.labels ? task.labels[1] : null}
+                />
+                {/* this component show other label names  */}
+                <CustomNumberLabel
+                  // this label list get the labels without 1, 2 elements
+                  labelList={task?.labels ? task.labels : null}
+                />
+              </Flex>
+            )}
+            <LabelsSelector taskId={task.taskId} />
           </Flex>
         );
 
       // phase column
       case 'phases':
-        return (
-          <Select
-            options={phaseOptions}
-            placeholder={'Select'}
-            style={{ width: '100%' }}
-          />
-        );
+        return <PhaseDropdown projectId={selectedProject?.projectId || ''} />;
 
       // status column
       case 'status':
@@ -292,7 +248,7 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
         );
 
       // recorder column
-      case 'recorder':
+      case 'reporter':
         return <Typography.Text>Sachintha Prasad</Typography.Text>;
 
       // default case for unsupported columns
@@ -310,8 +266,8 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
               {visibleColumns.map((column) => (
                 <th
                   key={column.key}
-                  className={`${customHeaderColumnStyles(column.key)} font-semibold`}
-                  style={{ width: column.width }}
+                  className={`${customHeaderColumnStyles(column.key)}`}
+                  style={{ width: column.width, fontWeight: 500 }}
                 >
                   {column.columnHeader}
                 </th>

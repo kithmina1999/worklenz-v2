@@ -40,7 +40,7 @@ const TaskListTableWrapper = ({ taskList }: { taskList: TaskType[] }) => {
             icon={<RightOutlined rotate={isActive ? 90 : 0} />}
           >
             <Typography.Text style={{ fontSize: 14 }}>
-              Todo ({taskList.length})
+              To do ({taskList.length})
             </Typography.Text>
           </Button>
         )}
