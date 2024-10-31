@@ -12,15 +12,33 @@ import { columnList } from '../taskListTable/columns/columnList';
 const ShowFieldsFilterDropdown = () => {
   const dispatch = useAppDispatch();
 
+  // remove the task and selector column from the list because those are fixrd columns
+  const changableColumnList = columnList.filter(
+    (column) => column.key !== 'selector' && column.key !== 'task'
+  );
+
   const columnsVisibility = useAppSelector(
     (state) => state.projectViewTaskListColumnsReducer.columnsVisibility
   );
 
   const showFieldsDropdownContent = (
-    <Card style={{ height: 300, overflowY: 'scroll' }}>
-      <List>
-        {columnList.map((col) => (
-          <List.Item key={col.key} style={{ padding: '4px 8px' }}>
+    <Card
+      className="custom-card"
+      style={{ height: 300, overflowY: 'scroll' }}
+      styles={{ body: { padding: 0 } }}
+    >
+      <List style={{ padding: 0 }}>
+        {changableColumnList.map((col) => (
+          <List.Item
+            key={col.key}
+            className="custom-list-item"
+            style={{
+              display: 'flex',
+              gap: 8,
+              padding: '4px 8px',
+              border: 'none',
+            }}
+          >
             <Space>
               <Checkbox
                 checked={
@@ -30,7 +48,7 @@ const ShowFieldsFilterDropdown = () => {
                 }
                 onClick={() => dispatch(toggleColumnVisibility(col.key))}
               >
-                {col.columnHeader}
+                {col.columnName}
               </Checkbox>
             </Space>
           </List.Item>
