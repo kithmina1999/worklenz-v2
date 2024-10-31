@@ -1,33 +1,81 @@
 import {
+  Button,
   Card,
   Flex,
   Input,
+  Popconfirm,
   Table,
   TableProps,
   Tooltip,
   Typography,
 } from 'antd';
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton';
 import { useTranslation } from 'react-i18next';
-import { SearchOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  ExclamationCircleFilled,
+  SearchOutlined,
+} from '@ant-design/icons';
+import { useAppSelector } from '../../../hooks/useAppSelector';
+import { LabelType } from '../../../types/label.type';
+import CustomColordLabel from '../../../components/taskListCommon/labelsSelector/CustomColordLabel';
+import { colors } from '../../../styles/colors';
+import { deleteLabel } from '../../../features/settings/label/labelSlice';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
 
 const LabelsSettings = () => {
   // localization
   const { t } = useTranslation('labelsSettings');
+  // get currently hover row
+  const [hoverRow, setHoverRow] = useState<string | null>(null);
+
+  // get label data from label slice
+  const labelList = useAppSelector((state) => state.labelReducer.labelList);
+  const dispatch = useAppDispatch();
+
+  // this is for get the current string that type on search bar
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // used useMemo hook for re render the list when searching
+  const filteredLabelsData = useMemo(() => {
+    return labelList.filter((item) =>
+      item.labelName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [labelList, searchQuery]);
 
   // table columns
   const columns: TableProps['columns'] = [
     {
       key: 'label',
       title: t('labelColumn'),
-      dataIndex: 'label',
+      render: (record: LabelType) => <CustomColordLabel label={record} />,
     },
     {
       key: 'associatedTask',
       title: t('associatedTaskColumn'),
-      dataIndex: 'associatedTask',
+      render: () => <Typography.Text>0</Typography.Text>,
+    },
+    {
+      key: 'actionBtns',
+      width: 60,
+      render: (record: LabelType) =>
+        hoverRow === record.labelId && (
+          <Popconfirm
+            title={t('deleteConfirmationTitle')}
+            icon={
+              <ExclamationCircleFilled
+                style={{ color: colors.vibrantOrange }}
+              />
+            }
+            okText={t('deleteConfirmationOk')}
+            cancelText={t('deleteConfirmationCancel')}
+            onConfirm={() => dispatch(deleteLabel(record.labelId))}
+          >
+            <Button shape="default" icon={<DeleteOutlined />} size="small" />
+          </Popconfirm>
+        ),
     },
   ];
 
@@ -43,6 +91,8 @@ const LabelsSettings = () => {
             style={{ width: '100%', maxWidth: 400 }}
           >
             <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.currentTarget.value)}
               placeholder={t('searchPlaceholder')}
               style={{ maxWidth: 232 }}
               suffix={<SearchOutlined />}
@@ -63,7 +113,24 @@ const LabelsSettings = () => {
         locale={{
           emptyText: <Typography.Text>{t('emptyText')}</Typography.Text>,
         }}
+        className="custom-two-colors-row-table"
+        dataSource={filteredLabelsData}
         columns={columns}
+        rowKey={(record) => record.labelId}
+        pagination={{
+          showSizeChanger: true,
+          defaultPageSize: 20,
+        }}
+        onRow={(record) => {
+          return {
+            onMouseEnter: () => setHoverRow(record.labelId),
+            onMouseLeave: () => setHoverRow(null),
+            style: {
+              cursor: 'pointer',
+              height: 36,
+            },
+          };
+        }}
       />
     </Card>
   );

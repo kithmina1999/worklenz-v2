@@ -20,17 +20,21 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { LabelType } from '../../../types/label.type';
 import { nanoid } from '@reduxjs/toolkit';
 import { addLabel } from '../../../features/settings/label/labelSlice';
+import { toggleLabel } from '../../../features/tasks/taskSlice';
 
-const LabelDropdown = () => {
+const LabelsSelector = ({ taskId }: { taskId: string }) => {
   const labelInputRef = useRef<InputRef>(null);
-  const [isOverlayOpen, setIsOverlayOpen] = useState<boolean>(false);
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const dispatch = useAppDispatch();
-
   // get label list from label reducer
   const labelList = useAppSelector((state) => state.labelReducer.labelList);
+  const dispatch = useAppDispatch();
+
+  // get task list from redux and find the selected task
+  const selectedTask = useAppSelector((state) => state.taskReducer.tasks).find(
+    (task) => task.taskId === taskId
+  );
 
   // used useMemo hook for re render the list when searching
   const filteredLabelData = useMemo(() => {
@@ -50,13 +54,6 @@ const LabelDropdown = () => {
       dispatch(addLabel(newLabel));
       setSearchQuery('');
     }
-
-    setIsOverlayOpen(false);
-  };
-
-  // fuction to handle overlay open
-  const handleOverlayToggle = () => {
-    setIsOverlayOpen((prev) => !prev);
   };
 
   // custom dropdown content
@@ -68,6 +65,17 @@ const LabelDropdown = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.currentTarget.value)}
           placeholder="Search by name"
+          onKeyDown={(e) => {
+            const isLabel = filteredLabelData.findIndex(
+              (label) => label.labelName.toLowerCase === searchQuery.toLowerCase
+            );
+
+            if (isLabel === -1) {
+              if (e.key === 'Enter') {
+                handleCreateLabel(searchQuery);
+              }
+            }
+          }}
         />
 
         <List style={{ padding: 0 }}>
@@ -86,11 +94,15 @@ const LabelDropdown = () => {
               >
                 <Checkbox
                   id={label.labelId}
-                  // onChange={() =>
-                  //     handleSelectedFiltersCount(
-                  //         e.target.checked
-                  //     )
-                  // }
+                  checked={
+                    selectedTask?.labels
+                      ? selectedTask?.labels.some(
+                          (existingLabel) =>
+                            existingLabel.labelId === label.labelId
+                        )
+                      : false
+                  }
+                  onChange={() => dispatch(toggleLabel({ taskId, label }))}
                 />
 
                 <Flex gap={8}>
@@ -115,9 +127,6 @@ const LabelDropdown = () => {
           type="primary"
           style={{ alignSelf: 'flex-end' }}
           onClick={() => handleCreateLabel(searchQuery)}
-          onKeyDownCapture={(e) =>
-            e.key === 'Enter' && handleCreateLabel(searchQuery)
-          }
         >
           OK
         </Button>
@@ -140,16 +149,14 @@ const LabelDropdown = () => {
       trigger={['click']}
       dropdownRender={() => labelDropdownContent}
       onOpenChange={handleLabelDropdownOpen}
-      open={isOverlayOpen}
     >
       <Button
         type="dashed"
         icon={<PlusOutlined style={{ fontSize: 12 }} />}
         size="small"
-        onClick={handleOverlayToggle}
       />
     </Dropdown>
   );
 };
 
-export default LabelDropdown;
+export default LabelsSelector;
