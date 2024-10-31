@@ -13,17 +13,15 @@ import {
   Typography,
 } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import { toggleMember } from '../../../../../../features/tasks/taskSlice';
-import CustomAvatar from '../../../../../../components/CustomAvatar';
-import { colors } from '../../../../../../styles/colors';
+import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { toggleDrawer } from '../../../features/projects/singleProject/members/projectMembersSlice';
+import { toggleMember } from '../../../features/tasks/taskSlice';
+import CustomAvatar from '../../CustomAvatar';
+import { colors } from '../../../styles/colors';
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
-import { toggleDrawer } from '../../../../../../features/projects/singleProject/members/projectMembersSlice';
 
 const AssigneeSelector = ({ taskId }: { taskId: string }) => {
-  // statefor trrack overlay open or close
-  const [isOverlayOpen, setIsOverlayOpen] = useState<boolean>(false);
   const membersInputRef = useRef<InputRef>(null);
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -42,13 +40,8 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
     );
   }, [membersList, searchQuery]);
 
-  // fuction to handle overlay open
-  const handleOverlayToggle = () => {
-    setIsOverlayOpen((prev) => !prev);
-  };
   // function to handle invite project member drawer
   const handleInviteProjectMemberDrawer = () => {
-    setIsOverlayOpen(false);
     dispatch(toggleDrawer());
   };
 
@@ -130,11 +123,7 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
 
         <Divider style={{ marginBlock: 8 }} />
 
-        <Button
-          type="primary"
-          style={{ alignSelf: 'flex-end' }}
-          onClick={handleOverlayToggle}
-        >
+        <Button type="primary" style={{ alignSelf: 'flex-end' }}>
           OK
         </Button>
       </Flex>
@@ -147,14 +136,12 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
       trigger={['click']}
       dropdownRender={() => membersDropdownContent}
       onOpenChange={handleMembersDropdownOpen}
-      open={isOverlayOpen}
     >
       <Flex gap={4} align="center">
         <Button
           type="dashed"
           shape="circle"
           icon={<PlusOutlined style={{ fontSize: 12 }} />}
-          onClick={handleOverlayToggle}
         />
       </Flex>
     </Dropdown>
