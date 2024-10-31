@@ -109,9 +109,12 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
           padding: '2px 12px',
           fontSize: 13,
           backgroundColor: getStatuColor(priority),
+          color: colors.darkGray,
         }}
       >
-        <Typography.Text style={{ textTransform: 'capitalize' }}>
+        <Typography.Text
+          style={{ textTransform: 'capitalize', color: colors.darkGray }}
+        >
           {priority}
         </Typography.Text>
         <DownOutlined />
