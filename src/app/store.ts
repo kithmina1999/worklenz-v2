@@ -19,6 +19,7 @@ import projectViewTaskListColumnsReducer from '../features/projects/singleProjec
 import createCardReducer from '../features/board/createCardSlice';
 import phaseReducer from '../features/projects/singleProject/phase/phaseSlice';
 import labelReducer from '../features/settings/label/labelSlice';
+import authReducer from '../features/auth/authSlice';
 
 export const store = configureStore({
   // there is error  occured with day js package when use with redux it shows a non-serializable value was detected
@@ -29,6 +30,7 @@ export const store = configureStore({
   reducer: {
     themeReducer: themeReducer,
     localesReducer: localesReducer,
+    auth: authReducer,
     todoReducer: todoReducer,
     dateReducer: dateReducer,
     projectReducer: projectReducer,

@@ -1,5 +1,7 @@
 export type UserType = {
-  name: string;
-  email: string;
-  userRole: 'owner' | 'member';
+  id?: string;
+  name?: string;
+  password?: string;
+  email?: string;
+  userRole: 'owner' | 'member' | 'admin';
 };

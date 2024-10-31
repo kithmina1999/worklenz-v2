@@ -1,57 +1,55 @@
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Card,
-  Checkbox,
-  Flex,
-  Form,
-  Input,
-  message,
-  Space,
-  Typography,
-} from 'antd';
-import googleIcon from '@assets/images/google-icon.png';
+import { Button, Card, Checkbox, Flex, Form, Input, message, Space, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import PageHeader from '../../components/PageHeader';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 
-const LoginPage = () => {
-  const [loading, setLoading] = useState(false);
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import PageHeader from '@components/PageHeader';
+import googleIcon from '@assets/images/google-icon.png';
+import { login } from '@/features/auth/authSlice';
+
+interface LoginFormValues {
+  email: string;
+  password: string;
+  remember?: boolean;
+}
+
+const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-
-  // Localization
   const { t } = useTranslation('loginPage');
-
-  // media queries from react-responsive package
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
+  const dispatch = useAppDispatch();
+  
+  // Get loading state from Redux store instead of local state
+  const { isLoading } = useAppSelector(state => state.auth);
 
-  const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
-    setLoading(true);
+  const onFinish = useCallback(
+    async (values: LoginFormValues) => {
+      try {
+        const result = await dispatch(login(values)).unwrap();
+        console.log(result);
+        if (result.authenticated) {
+          message.success(t('loginSuccess'));
+          navigate('/dashboard');
+        }
+      } catch (error) {
+        message.error(t('loginError'));
+      }
+    },
+    [dispatch, navigate, t]
+  );
 
-    setTimeout(() => {
-      setLoading(false);
-      message.success(t('successMessage'));
-
-      setTimeout(() => {
-        navigate('/worklenz/home');
-      }, 500);
-    }, 1500);
+  const handleGoogleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL}/secure/auth/google`;
   };
 
   return (
     <Card
-      style={{
-        width: '100%',
-        boxShadow: 'none',
-      }}
-      styles={{
-        body: {
-          paddingInline: isMobile ? 24 : 48,
-        },
-      }}
+      style={{ width: '100%', boxShadow: 'none' }}
+      styles={{ body: { paddingInline: isMobile ? 24 : 48 } }}
       bordered={false}
     >
       <PageHeader description={t('headerDescription')} />
@@ -66,13 +64,7 @@ const LoginPage = () => {
       >
         <Form.Item
           name="email"
-          rules={[
-            {
-              required: true,
-              type: 'email',
-              message: t('emailRequired'),
-            },
-          ]}
+          rules={[{ required: true, type: 'email', message: t('emailRequired') }]}
         >
           <Input
             prefix={<UserOutlined />}
@@ -84,13 +76,7 @@ const LoginPage = () => {
 
         <Form.Item
           name="password"
-          rules={[
-            {
-              required: true,
-              message: t('passwordRequired'),
-              min: 8,
-            },
-          ]}
+          rules={[{ required: true, message: t('passwordRequired'), min: 8 }]}
         >
           <Input.Password
             prefix={<LockOutlined />}
@@ -105,7 +91,6 @@ const LoginPage = () => {
             <Form.Item name="remember" valuePropName="checked" noStyle>
               <Checkbox>{t('rememberMe')}</Checkbox>
             </Form.Item>
-
             <Link
               to="/auth/forgot-password"
               className="ant-typography ant-typography-link blue-link"
@@ -123,29 +108,25 @@ const LoginPage = () => {
               type="primary"
               htmlType="submit"
               size="large"
-              loading={loading}
+              loading={isLoading}
               style={{ borderRadius: 4 }}
             >
               {t('loginButton')}
             </Button>
-            <Typography.Text style={{ textAlign: 'center' }}>
-              {t('orText')}
-            </Typography.Text>
+            <Typography.Text style={{ textAlign: 'center' }}>{t('orText')}</Typography.Text>
             <Button
               block
               type="default"
               size="large"
+              onClick={handleGoogleLogin}
               style={{
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 borderRadius: 4,
               }}
             >
-              <img
-                src={googleIcon}
-                alt="google icon"
-                style={{ maxWidth: 20, width: '100%' }}
-              />
+              <img src={googleIcon} alt="google icon" style={{ maxWidth: 20, marginRight: 8 }} />
               {t('signInWithGoogleButton')}
             </Button>
           </Flex>
@@ -153,10 +134,7 @@ const LoginPage = () => {
 
         <Form.Item>
           <Space>
-            <Typography.Text style={{ fontSize: 14 }}>
-              {t('dontHaveAccountText')}
-            </Typography.Text>
-
+            <Typography.Text style={{ fontSize: 14 }}>{t('dontHaveAccountText')}</Typography.Text>
             <Link
               to="/auth/signup"
               className="ant-typography ant-typography-link blue-link"
