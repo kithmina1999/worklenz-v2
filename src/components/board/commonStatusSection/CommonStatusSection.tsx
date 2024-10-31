@@ -1,34 +1,51 @@
-import React, { useEffect, useRef, useState } from 'react';
-import TaskCard from '../taskCard/TaskCard';
-import './ToDo.css';
-import { TaskType } from '../../../types/task.types';
-import { Button, Dropdown, Input, InputRef, MenuProps } from 'antd';
-import { DeleteOutlined, EditOutlined, LoadingOutlined, MoreOutlined, PlusOutlined, RetweetOutlined, RightOutlined } from '@ant-design/icons';
-import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { RootState } from '../../../app/store';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { setTodoCreatTaskCardDisabled } from '../../../features/board/createCardSlice';
+import React, { useEffect, useRef, useState } from "react";
+import { Button, Dropdown, Input, InputRef, MenuProps, Typography } from "antd";
+import { DeleteOutlined, EditOutlined, LoadingOutlined, MoreOutlined, PlusOutlined, RetweetOutlined, RightOutlined } from "@ant-design/icons";
+import { setTaskCardDisabled, initializeStatus } from "../../../features/board/createCardSlice";
+import { TaskType } from "../../../types/task.types";
+import TaskCreateCard from "../taskCreateCard/TaskCreateCard";
+import TaskCard from "../taskCard/TaskCard";
+import { useAppSelector } from "../../../hooks/useAppSelector";
+import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import './CommonStatusSection.css'
 
-interface ToDoProps {
+interface CommonStatusSectionProps {
+  status: string;
   dataSource: TaskType[];
+  color: string;
 }
 
-const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
-  const isCardDisable = useAppSelector(
-    (state: RootState) => state.createCardReducer.isTodoCreatTaskCardDisable
-  );
+const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({ status, dataSource, color }) => {
   const dispatch = useAppDispatch();
   const createTaskInputRef = useRef<InputRef>(null);
-  const taskCardRef = useRef<HTMLDivElement>(null);
+
+  // Initialize status in the Redux store if not already set
+  useEffect(() => {
+    dispatch(initializeStatus(status));
+  }, [dispatch, status]);
+
+  // Get status-specific disable controls from Redux state
+  const isTopCardDisabled = useAppSelector(
+    (state) => state.createCardReducer.taskCardDisabledStatus[status]?.top
+  );
+  const isBottomCardDisabled = useAppSelector(
+    (state) => state.createCardReducer.taskCardDisabledStatus[status]?.bottom
+  );
+
   const [addTaskCount, setAddTaskCount] = useState(0);
+  const [name, setName] = useState(status);
   const [isEditable, setIsEditable] = useState(false);
-  const [name, setName] = useState('To Do');
   const inputRef = useRef<InputRef>(null);
   const [isLoading, setIsLoading] =  useState(false)
+  const taskCardRef = useRef<HTMLDivElement>(null);
 
   const handleAddTaskClick = () => {
-    dispatch(setTodoCreatTaskCardDisabled(false));
+    dispatch(setTaskCardDisabled({ status, position: "bottom", disabled: false }));
+    setAddTaskCount((prev) => prev + 1);
+  };
+
+  const handleTopAddTaskClick = () => {
+    dispatch(setTaskCardDisabled({ status, position: "top", disabled: false }));
     setAddTaskCount((prev) => prev + 1);
   };
 
@@ -40,14 +57,14 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
   }, [isEditable]);
 
   useEffect(() => {
-    createTaskInputRef.current?.focus();
-    taskCardRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-    });
-  }, [dataSource, addTaskCount]);
+      createTaskInputRef.current?.focus();
+      taskCardRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }, [dataSource, addTaskCount]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   };
 
@@ -58,6 +75,15 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
       setIsLoading(false)
     }, 3000)
   };
+
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+};
 
   const items: MenuProps['items'] = [
     {
@@ -87,7 +113,7 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
   ];
 
   return (
-    <div style={{ paddingTop: '6px' }}>
+<div style={{ paddingTop: '6px' }}>
       <div
         className="todo-wraper"
         style={{
@@ -123,11 +149,8 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
               padding: '8px',
               display: 'flex',
               justifyContent: 'space-between',
-              backgroundColor: '#d1d0d3',
-              borderTopLeftRadius: '19px',
-              borderBottomLeftRadius: '19px',
-              borderTopRightRadius: '19px',
-              borderBottomRightRadius: '19px',
+              backgroundColor: color,
+              borderRadius: '19px'
             }}
           >
             <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }} onClick={() => setIsEditable(true)}>
@@ -151,7 +174,7 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
                   onPressEnter={handleBlur}
                 />
               ) : (
-                <span>{name}</span>
+                <Typography.Text style={{textTransform: 'capitalize'}}>{name}</Typography.Text>
               )}
             </div>
             <div style={{ display: 'flex' }}>
@@ -159,7 +182,7 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
                 type="text"
                 size="small"
                 shape="circle"
-                onClick={handleAddTaskClick}
+                onClick={handleTopAddTaskClick}
               >
                 <PlusOutlined />
               </Button>
@@ -178,12 +201,16 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
             padding: '2px 6px 2px 2px',
           }}
         >
+          {!isTopCardDisabled && (
+            <TaskCreateCard ref={createTaskInputRef} status={status} position={"top"}/>
+          )}
+
           {dataSource.map((task) => (
             <TaskCard key={task.taskId} task={task} />
           ))}
 
-          {!isCardDisable && (
-            <TaskCreateCard ref={createTaskInputRef} status={'todo'} />
+          {!isBottomCardDisabled && (
+            <TaskCreateCard ref={createTaskInputRef} status={status} position={"bottom"}/>
           )}
         </div>
 
@@ -212,4 +239,4 @@ const ToDo: React.FC<ToDoProps> = ({ dataSource }) => {
   );
 };
 
-export default ToDo;
+export default CommonStatusSection;

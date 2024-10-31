@@ -14,7 +14,7 @@ import React, { useState } from 'react';
 import { RootState } from '../../../app/store';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleDrawer } from './StatusSlice';
+import { addStatus, toggleDrawer } from './StatusSlice';
 import { TaskStatusType } from '../../../types/task.types';
 import { colors } from '../../../styles/colors';
 import { DownOutlined } from '@ant-design/icons';
@@ -33,14 +33,32 @@ const StatusDrawer: React.FC = () => {
     else return colors.lightGreen;
   };
 
-  const handleMenuClick = (e: any) => {
-    if (e.key === 'todo') {
-      setCurrentStatus('Todo');
-    } else if (e.key === 'doing') {
-      setCurrentStatus('Doing');
-    } else if (e.key === 'done') {
-      setCurrentStatus('Done');
-    }
+  const getRandomLightColor = () => {
+    const letters = 'CDEF'; // Higher values for lighter colors
+    let color;
+
+    // List of colors to avoid
+    const excludedColors = ['#c2e4d0', '#b9cef1', '#d1d0d3'];
+
+    do {
+      color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * letters.length)];
+      }
+    } while (excludedColors.includes(color.toLowerCase())); // Retry if color is in the excluded list
+
+    return color;
+  };
+
+  const handleFormSubmit = (values: { name: string; category: string }) => {
+    dispatch(
+      addStatus({
+        name: values.name,
+        category: currentStatus,
+        color: getRandomLightColor(),
+      })
+    );
+    dispatch(toggleDrawer());
   };
 
   // menu type
@@ -105,7 +123,7 @@ const StatusDrawer: React.FC = () => {
       onClose={() => dispatch(toggleDrawer())}
       open={isCreateStatusDrawerOpen}
     >
-      <Form layout="vertical">
+      <Form layout="vertical" onFinish={handleFormSubmit}>
         <Form.Item
           name="name"
           label="Name"
@@ -117,9 +135,14 @@ const StatusDrawer: React.FC = () => {
         <Form.Item
           name="category"
           label="Category"
+          initialValue={currentStatus}
           rules={[{ required: true, message: 'Please select a category!' }]}
         >
-          <Dropdown overlayClassName='status-drawer-dropdown' menu={{ items: statusDropdownItems }} trigger={['click']}>
+          <Dropdown
+            overlayClassName="status-drawer-dropdown"
+            menu={{ items: statusDropdownItems }}
+            trigger={['click']}
+          >
             <div className="custom-input-status">
               <Flex gap={4} align="center">
                 {currentStatus}
@@ -129,7 +152,7 @@ const StatusDrawer: React.FC = () => {
           </Dropdown>
         </Form.Item>
         <Form.Item>
-          <Button type="primary" style={{ width: '100%' }}>
+          <Button htmlType="submit" type="primary" style={{ width: '100%' }}>
             Create
           </Button>
         </Form.Item>

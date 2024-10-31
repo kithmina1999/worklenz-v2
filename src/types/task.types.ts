@@ -2,7 +2,7 @@ import { LabelType } from './label.type'
 import { MemberType } from './member.types'
 import { ProjectType } from './project.types'
 
-export type TaskStatusType = 'doing' | 'todo' | 'done'
+export type TaskStatusType = string
 export type TaskPriorityType = 'low' | 'medium' | 'high'
 
 export type SubTaskType = {

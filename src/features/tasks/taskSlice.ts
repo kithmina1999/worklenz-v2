@@ -238,6 +238,10 @@ const taskSlice = createSlice({
       state.tasks.push(action.payload);
     },
 
+    addTaskToTop: (state, action: PayloadAction<TaskType>) => {
+      state.tasks.unshift(action.payload);
+    },
+
     deleteTask: (state, action: PayloadAction<string>) => {
       state.tasks = state.tasks.filter(
         (task) => task.taskId !== action.payload
@@ -270,6 +274,7 @@ export const {
   toggleUpdateTaskDrawer,
   toggleMember,
   deleteTask,
+  addTaskToTop,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;
