@@ -26,6 +26,7 @@ const StatusDrawer: React.FC = () => {
   );
   const dispatch = useAppDispatch();
   const [currentStatus, setCurrentStatus] = useState('Todo');
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   const getStatuColor = (status: TaskStatusType) => {
     if (status === 'todo') return colors.deepLightGray;
@@ -33,29 +34,12 @@ const StatusDrawer: React.FC = () => {
     else return colors.lightGreen;
   };
 
-  const getRandomLightColor = () => {
-    const letters = 'CDEF'; // Higher values for lighter colors
-    let color;
-
-    // List of colors to avoid
-    const excludedColors = ['#c2e4d0', '#b9cef1', '#d1d0d3'];
-
-    do {
-      color = '#';
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * letters.length)];
-      }
-    } while (excludedColors.includes(color.toLowerCase())); // Retry if color is in the excluded list
-
-    return color;
-  };
-
   const handleFormSubmit = (values: { name: string; category: string }) => {
     dispatch(
       addStatus({
+        id: new Date().toISOString(),
         name: values.name,
-        category: currentStatus,
-        color: getRandomLightColor(),
+        category: currentStatus.toLowerCase()
       })
     );
     dispatch(toggleDrawer());
@@ -143,7 +127,7 @@ const StatusDrawer: React.FC = () => {
             menu={{ items: statusDropdownItems }}
             trigger={['click']}
           >
-            <div className="custom-input-status">
+            <div className={`custom-input-status ${themeMode === 'dark' ? 'dark-mode' : ''}`}>
               <Flex gap={4} align="center">
                 {currentStatus}
               </Flex>

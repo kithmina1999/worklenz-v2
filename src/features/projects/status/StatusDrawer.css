@@ -10,6 +10,11 @@
     cursor: pointer;
     transition: border-color 0.3s;
   }
+
+  .custom-input-status.dark-mode {
+    background-color: #141414;
+    border: 1px solid #424242;
+  }
   
   .custom-input-status:hover,
   .custom-input-status:focus-within {

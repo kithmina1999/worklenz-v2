@@ -7,7 +7,11 @@ import GroupByDropdown from './GroupByDropdown';
 import ShowFieldsDropdown from './ShowFieldsDropdown';
 import PriorityFilterDropdown from './PriorityFilterDropdown';
 
-const TaskListFilters = () => {
+interface TaskListFiltersProps {
+  position: 'board' | 'list';
+}
+
+const TaskListFilters: React.FC<TaskListFiltersProps> = ({position}) => {
   return (
     <Flex gap={8} align="center" justify="space-between">
       <Flex gap={8} wrap={'wrap'}>
@@ -22,9 +26,10 @@ const TaskListFilters = () => {
         {/* members dropdown  */}
         <MembersDropdown />
         {/* group by dropdown */}
-        <GroupByDropdown />
+        {position === 'list' && <GroupByDropdown />}
       </Flex>
 
+      {position === 'list' && 
       <Flex gap={12} wrap={'wrap'}>
         <Flex gap={4} align="center">
           <Checkbox />
@@ -33,6 +38,7 @@ const TaskListFilters = () => {
         {/* show fields dropdown  */}
         <ShowFieldsDropdown />
       </Flex>
+      }
     </Flex>
   );
 };

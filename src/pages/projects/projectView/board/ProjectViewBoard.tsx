@@ -8,18 +8,19 @@ import { useDispatch } from 'react-redux';
 import { toggleDrawer } from '../../../../features/projects/status/StatusSlice';
 import StatusDrawer from '../../../../features/projects/status/StatusDrawer';
 import CommonStatusSection from '../../../../components/board/commonStatusSection/CommonStatusSection';
+import { useMediaQuery } from 'react-responsive';
 
 const ProjectViewBoard: React.FC = () => {
   const dataSource: TaskType[] = useAppSelector(
     (state) => state.taskReducer.tasks
   );
   const setOfStatus = useAppSelector((state) => state.statusReducer.status);
-
   const dispatch = useDispatch();
+  const isTablet = useMediaQuery({ query: '(max-width: 1275px)' })
 
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-      <TaskListFilters />
+      <TaskListFilters position={'board'} />
       <div
         style={{
           width: '100%',
@@ -34,9 +35,10 @@ const ProjectViewBoard: React.FC = () => {
           style={{
             paddingTop: '6px',
             display: 'flex',
-            justifyContent: 'center',
+            justifyContent: setOfStatus.length > 3 ? 'flex-start' : isTablet ? 'flex-start' : 'center',
             gap: '10px',
-            overflowX: 'auto',
+            overflowX: 'scroll',
+            paddingBottom: '10px'
           }}
         >
           {setOfStatus.map((status) => {
@@ -48,7 +50,8 @@ const ProjectViewBoard: React.FC = () => {
               <CommonStatusSection
                 key={status.name}
                 status={status.name}
-                color={status.color}
+                category={status.category}
+                id={status.id}
                 dataSource={filteredTasks}
               />
             );

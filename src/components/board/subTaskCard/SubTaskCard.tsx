@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { TaskType } from '../../../types/task.types';
-import { Avatar, Col, DatePicker, Divider, Flex, Row, Typography } from 'antd';
+import { Avatar, Col, DatePicker, Divider, Flex, Row, Tooltip, Typography } from 'antd';
 import StatusDropdown from '../../taskListCommon/statusDropdown/StatusDropdown';
 import { avatarNamesMap } from '../../../shared/constants';
 import dayjs, { Dayjs } from 'dayjs';
@@ -77,15 +77,17 @@ const SubTaskCard: React.FC<subtaskProps> = ({ subtask }) => {
           }}
         >
           {subtask.members?.map((member) => (
-            <Avatar
-              style={{
-                backgroundColor: avatarNamesMap[member.memberName.charAt(0)],
-                fontSize: '12px',
-              }}
-              size="small"
-            >
-              {member.memberName.charAt(0)}
-            </Avatar>
+            <Tooltip title={member.memberName}>
+              <Avatar
+                style={{
+                  backgroundColor: avatarNamesMap[member.memberName.charAt(0)],
+                  fontSize: '12px',
+                }}
+                size="small"
+              >
+                {member.memberName.charAt(0)}
+              </Avatar>
+            </Tooltip>
           ))}
         </Avatar.Group>
       </Col>

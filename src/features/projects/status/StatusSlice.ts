@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
 interface Status {
+  id: string;
   name: string;
   category: string;
-  color: string;
 }
 
 interface StatusState {
@@ -14,19 +15,19 @@ const initialState: StatusState = {
   isCreateStatusDrawerOpen: false,
   status: [
     {
+      id: '1',
       name: 'todo',
       category: 'todo',
-      color: '#d1d0d3',
     },
     {
+      id: '2',
       name: 'doing',
       category: 'doing',
-      color: '#b9cef1',
     },
     {
+      id: '3',
       name: 'done',
       category: 'done',
-      color: '#c2e4d0',
     },
   ],
 };
@@ -36,15 +37,22 @@ const statusSlice = createSlice({
   initialState,
   reducers: {
     toggleDrawer: (state) => {
-      state.isCreateStatusDrawerOpen
-        ? (state.isCreateStatusDrawerOpen = false)
-        : (state.isCreateStatusDrawerOpen = true);
+      state.isCreateStatusDrawerOpen = !state.isCreateStatusDrawerOpen;
     },
     addStatus: (state, action: PayloadAction<Status>) => {
       state.status.push(action.payload);
     },
+    updateStatusCategory: (state, action: PayloadAction<{ id: string; category: string }>) => {
+      const status = state.status.find((status) => status.id === action.payload.id);
+      if (status) {
+        status.category = action.payload.category;
+      }
+    },
+    deleteStatus: (state, action: PayloadAction<string>) => {
+      state.status = state.status.filter((status) => status.id !== action.payload);
+    },
   },
 });
 
-export const { toggleDrawer, addStatus } = statusSlice.actions;
+export const { toggleDrawer, addStatus, updateStatusCategory, deleteStatus } = statusSlice.actions;
 export default statusSlice.reducer;

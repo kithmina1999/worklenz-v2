@@ -6,6 +6,7 @@ import './TaskCreateCard.css';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { addTask, addTaskToTop } from '../../../features/tasks/taskSlice';
 import { setTaskCardDisabled } from '../../../features/board/createCardSlice';
+import { useAppSelector } from '../../../hooks/useAppSelector';
 interface StatusProps {
   status: string;
   position: 'top' | 'bottom';
@@ -20,6 +21,7 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
     const [isItPrevDate, setIsItPrevDate] = useState(false);
     const [taskName, setTaskName] = useState('');
     const dispatch = useAppDispatch();
+    const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setCharacterLength(e.target.value.length);
@@ -130,11 +132,11 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
     return (
       <div
         ref={cardRef}
-        className="task-card"
+        className={`task-card ${themeMode === 'dark' ? 'dark-mode' : ''}`}
         style={{
           zIndex: 99,
           padding: '12px',
-          backgroundColor: 'white',
+          backgroundColor: themeMode === 'dark' ? '#383838' : 'white',
           borderRadius: '4px',
           marginBottom: '12px',
           cursor: 'pointer',
@@ -162,7 +164,7 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
               zIndex: 1,
               right: '15px',
               top: '43px',
-              color: '#00000073',
+              color: themeMode === 'dark' ? '#ffffffd9' : '#00000073',
               fontSize: '10px',
             }}
           >
