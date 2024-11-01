@@ -1,7 +1,7 @@
 import { Input } from 'antd';
 import React, { useState } from 'react';
-import { colors } from '../../../../../styles/colors';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { useAppSelector } from '../../../../../../hooks/useAppSelector';
+import { colors } from '../../../../../../styles/colors';
 
 const AddTaskListRow = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
