@@ -19,7 +19,7 @@ export const columnList: CustomTableColumnsType[] = [
     width: 20,
   },
   { key: 'taskId', columnName: 'Key', columnHeader: 'Key', width: 20 },
-  { key: 'task', columnName: 'Task', columnHeader: 'Task', width: 300 },
+  { key: 'task', columnName: 'Task', columnHeader: 'Task', width: 400 },
   {
     key: 'description',
     columnName: 'Description',

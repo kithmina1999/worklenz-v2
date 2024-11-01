@@ -3,7 +3,6 @@ import React from 'react';
 import { TaskType } from '../../../../../types/task.types';
 import { RightOutlined } from '@ant-design/icons';
 import { colors } from '../../../../../styles/colors';
-import UpdateTaskDrawer from '../../../../../features/tasks/taskCreationAndUpdate/UpdateTaskDrawer';
 import './taskListTableWrapper.css';
 import TaskListTable from './TaskListTable';
 
@@ -36,10 +35,11 @@ const TaskListTableWrapper = ({ taskList }: { taskList: TaskType[] }) => {
               border: 'none',
               borderBottomLeftRadius: isActive ? 0 : 4,
               borderBottomRightRadius: isActive ? 0 : 4,
+              color: colors.darkGray,
             }}
             icon={<RightOutlined rotate={isActive ? 90 : 0} />}
           >
-            <Typography.Text style={{ fontSize: 14 }}>
+            <Typography.Text style={{ fontSize: 14, color: colors.darkGray }}>
               To do ({taskList.length})
             </Typography.Text>
           </Button>
@@ -53,9 +53,6 @@ const TaskListTableWrapper = ({ taskList }: { taskList: TaskType[] }) => {
           },
         ]}
       />
-
-      {/* update task drawer  */}
-      <UpdateTaskDrawer taskId={'SP-1'} />
     </ConfigProvider>
   );
 };

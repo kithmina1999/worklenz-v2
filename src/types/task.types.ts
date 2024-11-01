@@ -22,7 +22,7 @@ export type TaskType = {
   labels?: LabelType[];
   status: TaskStatusType;
   priority: TaskPriorityType;
-  timeTracking?: string;
+  timeTracking?: number;
   estimation?: string;
   startDate?: Date | null;
   dueDate?: Date | null;

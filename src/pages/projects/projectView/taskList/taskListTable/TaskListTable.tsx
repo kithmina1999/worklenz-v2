@@ -1,10 +1,9 @@
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
 import { columnList } from './columns/columnList';
-import AddTaskListRow from './AddTaskListRow';
+import AddTaskListRow from './taskListTableRows/AddTaskListRow';
 import { TaskType } from '../../../../../types/task.types';
 import {
   Avatar,
-  Button,
   Checkbox,
   DatePicker,
   Flex,
@@ -13,11 +12,8 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import { ExpandAltOutlined, PlayCircleTwoTone } from '@ant-design/icons';
-import { colors } from '../../../../../styles/colors';
-import { useState } from 'react';
-import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
-import { toggleUpdateTaskDrawer } from '../../../../../features/tasks/taskSlice';
+import { PlayCircleTwoTone } from '@ant-design/icons';
+import React, { useState } from 'react';
 import CustomAvatar from '../../../../../components/CustomAvatar';
 import LabelsSelector from '../../../../../components/taskListCommon/labelsSelector/LabelsSelector';
 import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
@@ -29,13 +25,18 @@ import CustomColordLabel from '../../../../../components/taskListCommon/labelsSe
 import CustomNumberLabel from '../../../../../components/taskListCommon/labelsSelector/CustomNumberLabel';
 import PhaseDropdown from '../../../../../components/taskListCommon/phaseDropdown/PhaseDropdown';
 import AssigneeSelector from '../../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
+import TaskCell from './taskListTableCells/TaskCell';
+import AddSubTaskListRow from './taskListTableRows/AddSubTaskListRow';
+import UpdateTaskDrawer from '../../../../../features/tasks/taskCreationAndUpdate/UpdateTaskDrawer';
+import { colors } from '../../../../../styles/colors';
+import TimeTracker from './taskListTableCells/TimeTracker';
 
 const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
+  // these states manage the necessary states
   const [hoverRow, setHoverRow] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  // this can be used to get the currently selected task id
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const dispatch = useAppDispatch();
+  const [expandedTasks, setExpandedTasks] = useState<string[]>([]);
 
   // get data theme data from redux
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
@@ -51,13 +52,27 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
     (column) => columnsVisibility[column.key as keyof typeof columnsVisibility]
   );
 
-  // Toggle selected row
-  const toggleRowSelection = (taskId: string) => {
-    setSelectedRows((prevSelectedRows) =>
-      prevSelectedRows.includes(taskId)
-        ? prevSelectedRows.filter((id) => id !== taskId)
-        : [...prevSelectedRows, taskId]
+  // toggle subtasks visibility
+  const toggleTaskExpansion = (taskId: string) => {
+    setExpandedTasks((prev) =>
+      prev.includes(taskId)
+        ? prev.filter((id) => id !== taskId)
+        : [...prev, taskId]
     );
+  };
+
+  // toggle selected row
+  const toggleRowSelection = (task: TaskType) => {
+    setSelectedRows((prevSelectedRows) =>
+      prevSelectedRows.includes(task.taskId)
+        ? prevSelectedRows.filter((id) => id !== task.taskId)
+        : [...prevSelectedRows, task.taskId]
+    );
+
+    // log the task object when selected
+    if (!selectedRows.includes(task.taskId)) {
+      console.log('Selected task:', task);
+    }
   };
 
   // layout styles for table and the columns
@@ -68,18 +83,19 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
   const customBodyColumnStyles = (key: string) =>
     `border p-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && 'sticky left-[33px] z-10'} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
 
-  const getRowStyle = (taskId: string) =>
-    selectedRows.includes(taskId) ? 'bg-blue-100' : '';
-
   // function to render the column content based on column key
-  const renderColumnContent = (columnKey: string, task: TaskType) => {
+  const renderColumnContent = (
+    columnKey: string,
+    task: TaskType,
+    isSubtask: boolean = false
+  ) => {
     switch (columnKey) {
       // selector column
       case 'selector':
         return (
           <Checkbox
             checked={selectedRows.includes(task.taskId)}
-            onChange={() => toggleRowSelection(task.taskId)}
+            onChange={() => toggleRowSelection(task)}
           />
         );
 
@@ -94,35 +110,22 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
       // task column
       case 'task':
         return (
-          <Flex align="center" justify="space-between">
-            <Flex gap={8} align="center">
-              <Typography.Text>{task.task}</Typography.Text>
-            </Flex>
-            {hoverRow === task.taskId && (
-              <Button
-                type="text"
-                icon={<ExpandAltOutlined />}
-                onClick={() => {
-                  setSelectedTaskId(task.taskId);
-                  dispatch(toggleUpdateTaskDrawer());
-                }}
-                style={{
-                  backgroundColor: colors.transparent,
-                  padding: 0,
-                  height: 'fit-content',
-                }}
-              >
-                Open
-              </Button>
-            )}
-          </Flex>
+          // custom task cell component
+          <TaskCell
+            task={task}
+            isSubTask={isSubtask}
+            expandedTasks={expandedTasks}
+            hoverRow={hoverRow}
+            setSelectedTaskId={setSelectedTaskId}
+            toggleTaskExpansion={toggleTaskExpansion}
+          />
         );
 
       // description column
       case 'description':
         return (
           <Typography.Paragraph
-            ellipsis={{ expandable: 'collapsible' }}
+            ellipsis={{ expandable: false }}
             style={{ width: 260, marginBlockEnd: 0 }}
           >
             {task.description}
@@ -130,8 +133,13 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
         );
 
       // progress column
-      case 'progress':
-        return <Progress percent={task.progress} type="circle" size={30} />;
+      case 'progress': {
+        return task?.progress || task?.progress === 0 ? (
+          <Progress percent={task.progress} type="circle" size={30} />
+        ) : (
+          <div></div>
+        );
+      }
 
       // members column
       case 'members':
@@ -189,10 +197,10 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
       // time tracking column
       case 'timeTracking':
         return (
-          <Flex gap={8}>
-            <PlayCircleTwoTone />
-            <Typography.Text>0m 0s</Typography.Text>
-          </Flex>
+          <TimeTracker
+            taskId={task.taskId}
+            initialTime={task.timeTracking || 0}
+          />
         );
 
       // estimation column
@@ -276,30 +284,90 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
           </thead>
           <tbody>
             {taskList?.map((task) => (
-              <tr
-                key={task.taskId}
-                onMouseEnter={() => setHoverRow(task.taskId)}
-                onMouseLeave={() => setHoverRow(null)}
-                className={`${taskList.length === 0 ? 'h-0' : 'h-12'} ${getRowStyle(task.taskId)}`}
-              >
-                {visibleColumns.map((column) => (
-                  <td
-                    key={column.key}
-                    className={customBodyColumnStyles(column.key)}
-                    style={{
-                      width: column.width,
-                    }}
-                  >
-                    {renderColumnContent(column.key, task)}
-                  </td>
-                ))}
-              </tr>
+              <React.Fragment key={task.taskId}>
+                <tr
+                  key={task.taskId}
+                  onMouseEnter={() => setHoverRow(task.taskId)}
+                  onMouseLeave={() => setHoverRow(null)}
+                  className={`${taskList.length === 0 ? 'h-0' : 'h-12'}`}
+                >
+                  {visibleColumns.map((column) => (
+                    <td
+                      key={column.key}
+                      className={customBodyColumnStyles(column.key)}
+                      style={{
+                        width: column.width,
+                        backgroundColor: selectedRows.includes(task.taskId)
+                          ? themeMode === 'dark'
+                            ? colors.skyBlue
+                            : '#dceeff'
+                          : hoverRow === task.taskId
+                            ? themeMode === 'dark'
+                              ? '#000'
+                              : '#f8f7f9'
+                            : themeMode === 'dark'
+                              ? '#181818'
+                              : '#fff',
+                      }}
+                    >
+                      {renderColumnContent(column.key, task)}
+                    </td>
+                  ))}
+                </tr>
+
+                {/* this is for sub tasks  */}
+                {expandedTasks.includes(task.taskId) &&
+                  task?.subTasks?.map((subtask) => (
+                    <tr
+                      key={subtask.taskId}
+                      onMouseEnter={() => setHoverRow(subtask.taskId)}
+                      onMouseLeave={() => setHoverRow(null)}
+                      className={`${taskList.length === 0 ? 'h-0' : 'h-12'}`}
+                    >
+                      {visibleColumns.map((column) => (
+                        <td
+                          key={column.key}
+                          className={customBodyColumnStyles(column.key)}
+                          style={{
+                            width: column.width,
+                            backgroundColor: selectedRows.includes(
+                              subtask.taskId
+                            )
+                              ? themeMode === 'dark'
+                                ? '#1866e9'
+                                : '#dceeff'
+                              : hoverRow === subtask.taskId
+                                ? themeMode === 'dark'
+                                  ? '#000'
+                                  : '#f8f7f9'
+                                : themeMode === 'dark'
+                                  ? '#181818'
+                                  : '#fff',
+                          }}
+                        >
+                          {renderColumnContent(column.key, subtask, true)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+
+                {expandedTasks.includes(task.taskId) && (
+                  <tr>
+                    <td colSpan={visibleColumns.length}>
+                      <AddSubTaskListRow />
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
             ))}
           </tbody>
         </table>
       </div>
 
       <AddTaskListRow />
+
+      {/* update task drawer  */}
+      <UpdateTaskDrawer taskId={selectedTaskId} />
     </div>
   );
 };
