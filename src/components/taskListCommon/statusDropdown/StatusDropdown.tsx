@@ -10,9 +10,10 @@ import { useSelectedProject } from '../../../hooks/useSelectedProject';
 
 type StatusDropdownProps = {
   currentStatus: TaskStatusType;
+  size: 'small' | 'default';
 };
 
-const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
+const StatusDropdown = ({ currentStatus, size }: StatusDropdownProps) => {
   const [status, setStatus] = useState<TaskStatusType>(currentStatus);
   const [statusName, setStatusName] = useState<string>('');
 
@@ -93,8 +94,8 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
         style={{
           width: 'fit-content',
           borderRadius: 24,
-          padding: '2px 12px',
-          fontSize: 13,
+          padding: size === 'small' ? '2px 6px' : '2px 12px',
+          fontSize: size === 'small' ? '10px' : '13px',
           backgroundColor: getStatuColor(status),
           color: colors.darkGray,
         }}

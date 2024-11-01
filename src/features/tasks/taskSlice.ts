@@ -37,7 +37,11 @@ const initialState: TaskState = {
           isInivitationAccept: false,
         },
       ],
-      labels: [{ labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' }],
+      labels: [
+        { labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' },
+        { labelId: 'label1', labelName: 'AI', labelColor: '#a3c4dc' },
+        { labelId: 'label1', labelName: 'Admin', labelColor: '#dce3a3' },
+      ],
       status: 'todo',
       priority: 'high',
       timeTracking: 320,
@@ -54,7 +58,24 @@ const initialState: TaskState = {
           taskId: 'SP-09',
           task: 'Define workload requirements',
           description: 'Identify and document requirements.',
-          members: [],
+          members: [
+            {
+              memberId: '1',
+              memberName: 'Raveesha Dilanka',
+              memberEmail: '',
+              memberRole: 'owner',
+              isActivate: null,
+              isInivitationAccept: false,
+            },
+            {
+              memberId: '2',
+              memberName: 'Sachintha Prasad',
+              memberEmail: '',
+              memberRole: 'owner',
+              isActivate: null,
+              isInivitationAccept: false,
+            },
+          ],
           labels: [
             {
               labelId: 'label3',
@@ -210,6 +231,11 @@ const taskSlice = createSlice({
     addTask: (state, action: PayloadAction<TaskType>) => {
       state.tasks.push(action.payload);
     },
+
+    addTaskToTop: (state, action: PayloadAction<TaskType>) => {
+      state.tasks.unshift(action.payload);
+    },
+
     deleteTask: (state, action: PayloadAction<string>) => {
       state.tasks = state.tasks.filter(
         (task) => task.taskId !== action.payload
@@ -262,7 +288,8 @@ export const {
   addTask,
   deleteTask,
   toggleMember,
-  toggleLabel,
+  deleteTask,
+  addTaskToTop,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;
