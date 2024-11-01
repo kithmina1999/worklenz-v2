@@ -13,7 +13,17 @@ const CustomNumberLabel = ({
 
   return (
     <Tooltip title={labelNamesStirng}>
-      <Tag>+{list?.length}</Tag>
+      <Tag
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyItems: 'center',
+          height: 18,
+          fontSize: 11,
+        }}
+      >
+        +{list?.length}
+      </Tag>
     </Tooltip>
   );
 };

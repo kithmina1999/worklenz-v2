@@ -71,26 +71,31 @@ const PhaseDropdown = ({ projectId }: { projectId: string }) => {
         style={{
           width: 'fit-content',
           borderRadius: 24,
-          padding: '2px 12px',
+          paddingInline: 6,
           fontSize: 13,
           backgroundColor: currentPhaseOption?.optionColor,
           color: colors.darkGray,
+          cursor: 'pointer',
         }}
       >
         {currentPhaseOption ? (
           <Typography.Text
             ellipsis={{ expanded: false }}
-            style={{ textTransform: 'capitalize', color: colors.darkGray }}
+            style={{
+              textTransform: 'capitalize',
+              color: colors.darkGray,
+              fontSize: 13,
+            }}
           >
             {currentPhaseOption?.optionName}
           </Typography.Text>
         ) : (
-          <Typography.Text style={{ color: colors.lightGray }}>
+          <Typography.Text style={{ color: colors.lightGray, fontSize: 13 }}>
             Select
           </Typography.Text>
         )}
 
-        <DownOutlined />
+        <DownOutlined style={{ fontSize: 12 }} />
       </Flex>
     </Dropdown>
   );

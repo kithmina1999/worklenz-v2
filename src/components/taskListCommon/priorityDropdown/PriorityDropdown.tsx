@@ -20,9 +20,9 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
 
   // fuction for get a color regariding the priority
   const getStatuColor = (priority: TaskPriorityType) => {
-    if (priority === 'low') return colors.lightGreen;
-    else if (priority === 'medium') return colors.lightBeige;
-    else return colors.vibrantOrange;
+    if (priority === 'low') return '#c2e4d0';
+    else if (priority === 'medium') return '#f9e3b1';
+    else return '#f6bfc0';
   };
 
   // menu type
@@ -106,17 +106,22 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
         style={{
           width: 'fit-content',
           borderRadius: 24,
-          padding: '2px 12px',
-          fontSize: 13,
+          paddingInline: 6,
           backgroundColor: getStatuColor(priority),
           color: colors.darkGray,
+          cursor: 'pointer',
         }}
       >
         <Typography.Text
-          style={{ textTransform: 'capitalize', color: colors.darkGray }}
+          style={{
+            textTransform: 'capitalize',
+            color: colors.darkGray,
+            fontSize: 13,
+          }}
         >
           {priority}
         </Typography.Text>
+
         <DownOutlined />
       </Flex>
     </Dropdown>

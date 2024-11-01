@@ -152,7 +152,8 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
     >
       <Button
         type="dashed"
-        icon={<PlusOutlined style={{ fontSize: 12 }} />}
+        icon={<PlusOutlined style={{ fontSize: 11 }} />}
+        style={{ height: 18 }}
         size="small"
       />
     </Dropdown>

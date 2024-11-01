@@ -137,13 +137,23 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
       dropdownRender={() => membersDropdownContent}
       onOpenChange={handleMembersDropdownOpen}
     >
-      <Flex gap={4} align="center">
-        <Button
-          type="dashed"
-          shape="circle"
-          icon={<PlusOutlined style={{ fontSize: 12 }} />}
-        />
-      </Flex>
+      <Button
+        type="dashed"
+        shape="circle"
+        size="small"
+        icon={
+          <PlusOutlined
+            style={{
+              fontSize: 12,
+              width: 22,
+              height: 22,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          />
+        }
+      />
     </Dropdown>
   );
 };

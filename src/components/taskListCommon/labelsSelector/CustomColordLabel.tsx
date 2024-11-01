@@ -5,8 +5,17 @@ import { colors } from '../../../styles/colors';
 
 const CustomColordLabel = ({ label }: { label: LabelType | null }) => {
   return (
-    <Tag key={label?.labelId} color={label?.labelColor}>
-      <Typography.Text style={{ fontSize: 12, color: colors.darkGray }}>
+    <Tag
+      key={label?.labelId}
+      color={label?.labelColor}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyItems: 'center',
+        height: 18,
+      }}
+    >
+      <Typography.Text style={{ fontSize: 11, color: colors.darkGray }}>
         {label?.labelName}
       </Typography.Text>
     </Tag>
