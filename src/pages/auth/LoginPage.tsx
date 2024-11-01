@@ -10,6 +10,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import PageHeader from '@components/PageHeader';
 import googleIcon from '@assets/images/google-icon.png';
 import { login } from '@/features/auth/authSlice';
+import logger from '@/utils/errorLogger';
 
 interface LoginFormValues {
   email: string;
@@ -36,7 +37,7 @@ const LoginPage: React.FC = () => {
           navigate('/dashboard');
         }
       } catch (error) {
-        message.error(t('loginError'));
+        logger.error('LoginPage', error);
       }
     },
     [dispatch, navigate, t]

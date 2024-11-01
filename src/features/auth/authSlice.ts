@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { authService } from '@/api/auth/authService';
 import { AuthState, IUserLoginRequest } from '@/types/auth/login.types';
+import logger from '@/utils/errorLogger';
 
 const initialState: AuthState = {
   user: null,
@@ -28,7 +29,7 @@ export const login = createAsyncThunk(
 
       return authorizeResponse;
     } catch (error: any) {
-      console.log(error);
+      logger.error('Login', error);
       return rejectWithValue(error.response?.data?.message || 'An unknown error has occurred');
     }
   }
@@ -44,7 +45,7 @@ export const logout = createAsyncThunk(
       }
       return response;
     } catch (error: any) {
-      console.log(error);
+      logger.error('Logout', error);
       return rejectWithValue(error.response?.data?.message || 'An unknown error has occurred');
     }
   }

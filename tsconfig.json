@@ -26,7 +26,8 @@
       "@features/*": ["src/features/*"],
       "@assets/*": ["src/assets/*"],
       "@utils/*": ["src/utils/*"],
-      "@api/*": ["src/api/*"]
+      "@api/*": ["src/api/*"],
+      "@services/*": ["src/services/*"]
     }
   },
   "include": [
