@@ -31,6 +31,7 @@ import { TaskType } from '../../../types/task.types';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { deleteTask } from '../../../features/tasks/taskSlice';
 import SubTaskCard from '../subTaskCard/SubTaskCard';
+import { useAppSelector } from '../../../hooks/useAppSelector';
 
 interface taskProps {
   task: TaskType;
@@ -42,7 +43,8 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
   const [isToday, setIsToday] = useState(false);
   const [isTomorrow, setIsTomorrow] = useState(false);
   const [isItPrevDate, setIsItPrevDate] = useState(false);
-  
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+
   const dispatch = useAppDispatch();
 
   const handleDateChange = (date: Dayjs | null) => {
@@ -77,7 +79,6 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
       setIsItPrevDate(false);
     }
   }, [dueDate]);
-
 
   const handleDelete = () => {
     dispatch(deleteTask(task.taskId)); // Call delete function with taskId
@@ -115,11 +116,11 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
   return (
     <Dropdown menu={{ items }} trigger={['contextMenu']}>
       <div
-        className="task-card"
+        className={`task-card ${themeMode === 'dark' ? 'dark-mode' : ''}`}
         style={{
           zIndex: 99,
           padding: '12px',
-          backgroundColor: 'white',
+          backgroundColor: themeMode === 'dark' ? '#383838' : 'white',
           borderRadius: '4px',
           marginBottom: '12px',
           cursor: 'pointer',
@@ -141,7 +142,11 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                     style={{ marginRight: '4px' }}
                     color={label.labelColor}
                   >
-                    {label.labelName}
+                    <span
+                      style={{ color: themeMode === 'dark' ? '#383838' : '' }}
+                    >
+                      {label.labelName}
+                    </span>
                   </Tag>
                 ))}
                 {task.labels?.length > 2 && (
@@ -159,7 +164,9 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
               marginLeft: 'auto',
             }}
           >
-            <Progress type="circle" percent={task.progress} size={26} />
+            <Tooltip title="1/1">
+              <Progress type="circle" percent={task.progress} size={26} />
+            </Tooltip>
           </div>
         </div>
 
@@ -191,7 +198,6 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
           )}
           <Typography.Text
             style={{ fontWeight: 500 }}
-            delete={task.status === 'done'}
           >
             {task.task}
           </Typography.Text>
@@ -220,17 +226,19 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
             >
               <Avatar.Group>
                 {task.members?.map((member) => (
-                  <Avatar
-                    style={{
-                      backgroundColor:
-                        avatarNamesMap[member.memberName.charAt(0)],
-                      verticalAlign: 'middle',
-                      fontSize: '12px',
-                    }}
-                    size="small"
-                  >
-                    {member.memberName.charAt(0)}
-                  </Avatar>
+                  <Tooltip title= {member.memberName}>
+                    <Avatar
+                      style={{
+                        backgroundColor:
+                          avatarNamesMap[member.memberName.charAt(0)],
+                        verticalAlign: 'middle',
+                        fontSize: '12px',
+                      }}
+                      size="small"
+                    >
+                      {member.memberName.charAt(0)}
+                    </Avatar>
+                  </Tooltip>
                 ))}
               </Avatar.Group>
               <Avatar
@@ -251,52 +259,65 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
               </Avatar>
             </div>
             <div
-  style={{
-    display: 'flex',
-    justifyContent: 'right',
-    alignItems: 'center',
-  }}
->
-  <div>
-    <DatePicker
-      className={`custom-placeholder ${
-        !dueDate ? 'empty-date' : isToday ? 'selected-date' : isTomorrow ? 'selected-date' : isItPrevDate ? 'red-colored' : ''
-      }`}
-      placeholder="Due date"
-      style={{
-        fontSize: '12px',
-        opacity: dueDate ? 1 : 0,
-        width: dueDate ? 'auto' : '100%',
-        maxWidth: '100px',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-      }}
-      onChange={handleDateChange}
-      variant="borderless"
-      size="small"
-      suffixIcon={false}
-      format={(value) => formatDate(value)}
-    />
-  </div>
-  {task.subTasks && task.subTasks.length > 0 && (
-    <Button onClick={() => setIsSubTaskShow(!isSubTaskShow)} size="small" style={{ padding: 0 }}>
-      <Tag bordered={false} style={{ display: 'flex', alignItems: 'center', margin: 0 }}>
-        <ForkOutlined rotate={90} />
-        <span>{task.subTasks?.length}</span>
-        {isSubTaskShow ? <CaretDownFilled /> : <CaretRightFilled />}
-      </Tag>
-    </Button>
-  )}
-</div>
-
+              style={{
+                display: 'flex',
+                justifyContent: 'right',
+                alignItems: 'center',
+              }}
+            >
+              <div>
+                <DatePicker
+                  className={`custom-placeholder ${
+                    !dueDate
+                      ? 'empty-date'
+                      : isToday
+                        ? 'selected-date'
+                        : isTomorrow
+                          ? 'selected-date'
+                          : isItPrevDate
+                            ? 'red-colored'
+                            : ''
+                  }`}
+                  placeholder="Due date"
+                  style={{
+                    fontSize: '12px',
+                    opacity: dueDate ? 1 : 0,
+                    width: dueDate ? 'auto' : '100%',
+                    maxWidth: '100px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                  onChange={handleDateChange}
+                  variant="borderless"
+                  size="small"
+                  suffixIcon={false}
+                  format={(value) => formatDate(value)}
+                />
+              </div>
+              {task.subTasks && task.subTasks.length > 0 && (
+                <Button
+                  onClick={() => setIsSubTaskShow(!isSubTaskShow)}
+                  size="small"
+                  style={{ padding: 0 }}
+                  type='text'
+                >
+                  <Tag
+                    bordered={false}
+                    style={{ display: 'flex', alignItems: 'center', margin: 0 }}
+                  >
+                    <ForkOutlined rotate={90} />
+                    <span>{task.subTasks?.length}</span>
+                    {isSubTaskShow ? <CaretDownFilled /> : <CaretRightFilled />}
+                  </Tag>
+                </Button>
+              )}
+            </div>
           </div>
 
           {isSubTaskShow &&
             task.subTasks?.length &&
-            task.subTasks?.map((subtask) => (
-              <SubTaskCard subtask = {subtask}/>
-            ))}
+            task.subTasks?.map((subtask) => <SubTaskCard subtask={subtask} />)}
         </div>
       </div>
     </Dropdown>

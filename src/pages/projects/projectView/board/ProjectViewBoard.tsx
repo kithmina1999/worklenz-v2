@@ -6,28 +6,19 @@ import { Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import CommonStatusSection from '../../../../components/board/commonStatusSection/CommonStatusSection';
-import { toggleDrawer } from '../../../../features/projects/singleProject/status/statusSlice';
-import { useSelectedProject } from '../../../../hooks/useSelectedProject';
+import { useMediaQuery } from 'react-responsive';
 
 const ProjectViewBoard: React.FC = () => {
   const dataSource: TaskType[] = useAppSelector(
     (state) => state.taskReducer.tasks
   );
-
-  // get selected project details
-  const selectedProject = useSelectedProject();
-
-  const projectStatusList = useAppSelector(
-    (state) => state.statusReducer.projectWiseStatusList
-  ).find(
-    (project) => project.projectId === selectedProject?.projectId
-  )?.statusList;
-
+  const setOfStatus = useAppSelector((state) => state.statusReducer.status);
   const dispatch = useDispatch();
+  const isTablet = useMediaQuery({ query: '(max-width: 1275px)' });
 
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-      <TaskListFilters />
+      <TaskListFilters position={'board'} />
       <div
         style={{
           width: '100%',
@@ -42,9 +33,15 @@ const ProjectViewBoard: React.FC = () => {
           style={{
             paddingTop: '6px',
             display: 'flex',
-            justifyContent: 'center',
+            justifyContent:
+              setOfStatus.length > 3
+                ? 'flex-start'
+                : isTablet
+                  ? 'flex-start'
+                  : 'center',
             gap: '10px',
-            overflowX: 'auto',
+            overflowX: 'scroll',
+            paddingBottom: '10px',
           }}
         >
           {projectStatusList?.map((status) => {
@@ -54,9 +51,10 @@ const ProjectViewBoard: React.FC = () => {
             );
             return (
               <CommonStatusSection
-                key={status.statusId}
-                statusId={status.statusId}
-                status={status.statusName}
+                key={status.name}
+                status={status.name}
+                category={status.category}
+                id={status.id}
                 dataSource={filteredTasks}
               />
             );

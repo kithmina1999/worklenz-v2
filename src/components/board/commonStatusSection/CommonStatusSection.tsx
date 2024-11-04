@@ -13,24 +13,28 @@ import {
   setTaskCardDisabled,
   initializeStatus,
 } from '../../../features/board/createCardSlice';
-import { TaskStatusType, TaskType } from '../../../types/task.types';
+import { TaskType } from '../../../types/task.types';
 import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
 import TaskCard from '../taskCard/TaskCard';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import './CommonStatusSection.css';
-import { useSelectedProject } from '../../../hooks/useSelectedProject';
+import ChangeCategoryDropdown from '../changeCategoryDropdown/ChangeCategoryDropdown';
+import { deleteStatus } from '../../../features/projects/status/StatusSlice';
 
 interface CommonStatusSectionProps {
   statusId: string;
   status: string;
   dataSource: TaskType[];
+  category: string;
+  id: string;
 }
 
 const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
-  statusId,
   status,
   dataSource,
+  category,
+  id,
 }) => {
   const dispatch = useAppDispatch();
   const createTaskInputRef = useRef<InputRef>(null);
@@ -47,6 +51,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
   const isBottomCardDisabled = useAppSelector(
     (state) => state.createCardReducer.taskCardDisabledStatus[status]?.bottom
   );
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   const [addTaskCount, setAddTaskCount] = useState(0);
   const [name, setName] = useState(status);
@@ -94,37 +99,6 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
     }, 3000);
   };
 
-  // const getRandomColor = () => {
-  //   const letters = '0123456789ABCDEF';
-  //   let color = '#';
-  //   for (let i = 0; i < 6; i++) {
-  //     color += letters[Math.floor(Math.random() * 16)];
-  //   }
-  //   return color;
-  // };
-
-  // get the current selected project
-  const selectedProject = useSelectedProject();
-  // get the status category
-  const statusCategory =
-    useAppSelector((state) => state.statusReducer.projectWiseStatusList)
-      .find((project) => project.projectId === selectedProject?.projectId)
-      ?.statusList.find((status) => status.statusId)?.statusCategory || 'todo';
-
-  // add the color by category
-  const getStatusColor = (status: TaskStatusType) => {
-    switch (status) {
-      case 'todo':
-        return '#d8d7d8';
-      case 'doing':
-        return '#c0d5f6';
-      case 'done':
-        return '#c2e4d0';
-      default:
-        return '#d8d7d8';
-    }
-  };
-
   const items: MenuProps['items'] = [
     {
       key: '1',
@@ -145,20 +119,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
     },
     {
       key: '2',
-      label: (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-start',
-            width: '100%',
-            padding: '5px 12px',
-            gap: '8px',
-          }}
-        >
-          <RetweetOutlined /> <span>Change category</span>{' '}
-          <RightOutlined style={{ color: '#00000073', fontSize: '10px' }} />
-        </div>
-      ),
+      label: <ChangeCategoryDropdown id={id} />,
     },
     {
       key: '3',
@@ -171,6 +132,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
             padding: '5px 12px',
             gap: '8px',
           }}
+          onClick={() => dispatch(deleteStatus(id))}
         >
           <DeleteOutlined /> <span>Delete</span>
         </div>
@@ -181,7 +143,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
   return (
     <div style={{ paddingTop: '6px' }}>
       <div
-        className="todo-wraper"
+        className={`todo-wraper ${themeMode === 'dark' ? 'dark-mode' : ''}`}
         style={{
           display: 'flex',
           flexDirection: 'column',
@@ -193,7 +155,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
           padding: '8px',
           borderRadius: '25px',
           maxHeight: 'calc(100vh - 250px)',
-          backgroundColor: '#F8FAFC',
+          backgroundColor: themeMode === 'dark' ? '#282828' : '#F8FAFC',
         }}
       >
         <div
@@ -214,7 +176,12 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
               padding: '8px',
               display: 'flex',
               justifyContent: 'space-between',
-              backgroundColor: getStatusColor(statusCategory),
+              backgroundColor:
+                category === 'todo'
+                  ? '#d1d0d3'
+                  : category === 'doing'
+                    ? '#b9cef1'
+                    : '#c2e4d0',
               borderRadius: '19px',
             }}
           >
@@ -229,7 +196,9 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
                   type="text"
                   size="small"
                   shape="circle"
-                  style={{ backgroundColor: 'white' }}
+                  style={{
+                    backgroundColor: themeMode === 'dark' ? '#383838' : 'white',
+                  }}
                 >
                   {dataSource.length}
                 </Button>
@@ -239,13 +208,20 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
                   ref={inputRef}
                   value={name}
                   variant="borderless"
-                  style={{ backgroundColor: 'white' }}
+                  style={{
+                    backgroundColor: themeMode === 'dark' ? 'black' : 'white',
+                  }}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   onPressEnter={handleBlur}
                 />
               ) : (
-                <Typography.Text style={{ textTransform: 'capitalize' }}>
+                <Typography.Text
+                  style={{
+                    textTransform: 'capitalize',
+                    color: themeMode === 'dark' ? '#383838' : '',
+                  }}
+                >
                   {name}
                 </Typography.Text>
               )}
@@ -256,6 +232,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
                 size="small"
                 shape="circle"
                 onClick={handleTopAddTaskClick}
+                style={{ color: themeMode === 'dark' ? '#383838' : '' }}
               >
                 <PlusOutlined />
               </Button>
@@ -266,7 +243,13 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
                 placement="bottomLeft"
               >
                 <Button type="text" size="small" shape="circle">
-                  <MoreOutlined style={{ rotate: '90deg', fontSize: '25px' }} />
+                  <MoreOutlined
+                    style={{
+                      rotate: '90deg',
+                      fontSize: '25px',
+                      color: themeMode === 'dark' ? '#383838' : '',
+                    }}
+                  />
                 </Button>
               </Dropdown>
             </div>
@@ -303,8 +286,8 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
         <div
           style={{
             textAlign: 'center',
-            marginTop: '7px',
-            backgroundColor: 'white',
+            margin: '7px 8px 8px 8px',
+            backgroundColor: themeMode === 'dark' ? '#383838' : 'white',
             padding: '0',
           }}
         >

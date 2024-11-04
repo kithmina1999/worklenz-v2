@@ -13,8 +13,8 @@ const ProjectViewTaskList = () => {
 
   return (
     <Flex vertical gap={16}>
-      <TaskListFilters />
-      <TaskListTableWrapper taskList={dataSource} />
+      <TaskListFilters position="list" />
+      <TaskListTable dataSource={dataSource} />
     </Flex>
   );
 };
