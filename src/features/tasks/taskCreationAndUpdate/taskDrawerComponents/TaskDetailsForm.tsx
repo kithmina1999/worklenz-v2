@@ -69,7 +69,7 @@ const TaskDetailsForm = ({
         <Flex gap={4} align="center">
           <Avatar.Group>
             {selectedTask?.members?.map((member) => (
-              <CustomAvatar avatarName={member.memberName} />
+              <CustomAvatar avatarName={member.memberName} size={26} />
             ))}
           </Avatar.Group>
 

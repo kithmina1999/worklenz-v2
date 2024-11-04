@@ -1,4 +1,3 @@
-import { Checkbox } from 'antd';
 import React, { ReactNode } from 'react';
 import PhaseHeader from '../../../../../../features/projects/singleProject/phase/PhaseHeader';
 
@@ -12,12 +11,6 @@ export type CustomTableColumnsType = {
 const phaseHeader = React.createElement(PhaseHeader);
 
 export const columnList: CustomTableColumnsType[] = [
-  {
-    key: 'selector',
-    columnName: 'Selector',
-    columnHeader: React.createElement(Checkbox),
-    width: 20,
-  },
   { key: 'taskId', columnName: 'Key', columnHeader: 'Key', width: 20 },
   { key: 'task', columnName: 'Task', columnHeader: 'Task', width: 400 },
   {

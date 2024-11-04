@@ -5,15 +5,23 @@ import TaskListFilters from '../taskList/taskListFilters/TaskListFilters';
 import { Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { toggleDrawer } from '../../../../features/projects/status/StatusSlice';
-import StatusDrawer from '../../../../features/projects/status/StatusDrawer';
 import CommonStatusSection from '../../../../components/board/commonStatusSection/CommonStatusSection';
+import { toggleDrawer } from '../../../../features/projects/singleProject/status/statusSlice';
+import { useSelectedProject } from '../../../../hooks/useSelectedProject';
 
 const ProjectViewBoard: React.FC = () => {
   const dataSource: TaskType[] = useAppSelector(
     (state) => state.taskReducer.tasks
   );
-  const setOfStatus = useAppSelector((state) => state.statusReducer.status);
+
+  // get selected project details
+  const selectedProject = useSelectedProject();
+
+  const projectStatusList = useAppSelector(
+    (state) => state.statusReducer.projectWiseStatusList
+  ).find(
+    (project) => project.projectId === selectedProject?.projectId
+  )?.statusList;
 
   const dispatch = useDispatch();
 
@@ -39,16 +47,16 @@ const ProjectViewBoard: React.FC = () => {
             overflowX: 'auto',
           }}
         >
-          {setOfStatus.map((status) => {
+          {projectStatusList?.map((status) => {
             // Filter tasks based on the current status
             const filteredTasks = dataSource.filter(
-              (task) => task.status === status.name
+              (task) => task.status === status.statusName
             );
             return (
               <CommonStatusSection
-                key={status.name}
-                status={status.name}
-                color={status.color}
+                key={status.statusId}
+                statusId={status.statusId}
+                status={status.statusName}
                 dataSource={filteredTasks}
               />
             );
@@ -58,7 +66,6 @@ const ProjectViewBoard: React.FC = () => {
             onClick={() => dispatch(toggleDrawer())}
             style={{ flexShrink: 0 }}
           />
-          <StatusDrawer />
         </div>
       </div>
     </div>

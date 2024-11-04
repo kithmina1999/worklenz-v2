@@ -67,28 +67,30 @@ const TaskCell = ({
   // render the double arrow icon and count label for tasks with subtasks
   const renderSubtasksCountLabel = (
     taskId: string,
-    hasSubtasks: boolean,
+    isSubTask: boolean,
     subTasksCount: number
   ) => {
-    if (hasSubtasks) {
-      return (
+    return (
+      !isSubTask && (
         <Button
           onClick={() => toggleTaskExpansion(taskId)}
           size="small"
           style={{
-            fontSize: 12,
             display: 'flex',
             gap: 2,
             paddingInline: 4,
+            alignItems: 'center',
+            justifyItems: 'center',
             border: 'none',
           }}
         >
-          {subTasksCount}
-          <DoubleRightOutlined />
+          <Typography.Text style={{ fontSize: 12, lineHeight: 1 }}>
+            {subTasksCount}
+          </Typography.Text>
+          <DoubleRightOutlined style={{ fontSize: 10 }} />
         </Button>
-      );
-    }
-    return null;
+      )
+    );
   };
 
   return (
@@ -113,7 +115,7 @@ const TaskCell = ({
 
         {renderSubtasksCountLabel(
           task.taskId,
-          !!task?.subTasks?.length,
+          isSubTask,
           task?.subTasks?.length || 0
         )}
       </Flex>

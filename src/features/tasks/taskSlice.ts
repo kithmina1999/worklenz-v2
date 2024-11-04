@@ -288,7 +288,7 @@ export const {
   addTask,
   deleteTask,
   toggleMember,
-  deleteTask,
+  toggleLabel,
   addTaskToTop,
 } = taskSlice.actions;
 

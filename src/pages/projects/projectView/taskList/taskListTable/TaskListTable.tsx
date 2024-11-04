@@ -7,13 +7,12 @@ import {
   Checkbox,
   DatePicker,
   Flex,
-  Progress,
   Tag,
   Tooltip,
   Typography,
 } from 'antd';
-import { PlayCircleTwoTone } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import CustomAvatar from '../../../../../components/CustomAvatar';
 import LabelsSelector from '../../../../../components/taskListCommon/labelsSelector/LabelsSelector';
 import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
@@ -30,6 +29,9 @@ import AddSubTaskListRow from './taskListTableRows/AddSubTaskListRow';
 import UpdateTaskDrawer from '../../../../../features/tasks/taskCreationAndUpdate/UpdateTaskDrawer';
 import { colors } from '../../../../../styles/colors';
 import TimeTracker from './taskListTableCells/TimeTracker';
+import TaskContextMenu from './contextMenu/TaskContextMenu';
+import TaskProgress from './taskListTableCells/TaskProgress';
+import BulkTasksActionContainer from './bulkActionContainer/BulkTasksActionContainer';
 
 const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
   // these states manage the necessary states
@@ -37,6 +39,15 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [expandedTasks, setExpandedTasks] = useState<string[]>([]);
+  const [isSelectAll, setIsSelectAll] = useState(false);
+  // context menu state
+  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState({
+    x: 0,
+    y: 0,
+  });
+  // state to check scroll
+  const [isScrolling, setIsScrolling] = useState(false);
 
   // get data theme data from redux
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
@@ -61,6 +72,23 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
     );
   };
 
+  // toggle all task select  when header checkbox click
+  const toggleSelectAll = () => {
+    if (isSelectAll) {
+      setSelectedRows([]);
+    } else {
+      const allTaskIds =
+        taskList?.flatMap((task) => [
+          task.taskId,
+          ...(task.subTasks?.map((subtask) => subtask.taskId) || []),
+        ]) || [];
+
+      setSelectedRows(allTaskIds);
+      console.log('selected tasks and subtasks (all):', allTaskIds);
+    }
+    setIsSelectAll(!isSelectAll);
+  };
+
   // toggle selected row
   const toggleRowSelection = (task: TaskType) => {
     setSelectedRows((prevSelectedRows) =>
@@ -68,6 +96,16 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
         ? prevSelectedRows.filter((id) => id !== task.taskId)
         : [...prevSelectedRows, task.taskId]
     );
+  };
+
+  // this use effect for realtime update the selected rows
+  useEffect(() => {
+    console.log('Selected tasks and subtasks:', selectedRows);
+  }, [selectedRows]);
+
+  // select one row this triggers only in handle the context menu ==> righ click mouse event
+  const selectOneRow = (task: TaskType) => {
+    setSelectedRows([task.taskId]);
 
     // log the task object when selected
     if (!selectedRows.includes(task.taskId)) {
@@ -75,13 +113,41 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
     }
   };
 
+  // handle custom task context menu
+  const handleContextMenu = (e: React.MouseEvent, task: TaskType) => {
+    e.preventDefault();
+    setSelectedTaskId(task.taskId);
+    selectOneRow(task);
+    setContextMenuPosition({ x: e.clientX, y: e.clientY });
+    setContextMenuVisible(true);
+  };
+
+  // const handle bulk action container close
+  const handleBulkActionContainerClose = () => {
+    setSelectedRows([]);
+  };
+
+  // trigger the table scrolling
+  useEffect(() => {
+    const tableContainer = document.querySelector('.tasklist-container');
+
+    const handleScroll = () => {
+      if (tableContainer) {
+        setIsScrolling(tableContainer.scrollLeft > 0);
+      }
+    };
+    tableContainer?.addEventListener('scroll', handleScroll);
+    return () => tableContainer?.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // layout styles for table and the columns
   const customBorderColor = themeMode === 'dark' && ' border-[#303030]';
 
   const customHeaderColumnStyles = (key: string) =>
-    `border p-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && 'sticky left-[33px] z-10'} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-white'}`;
+    `border px-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content z-10 h-[42px] after:absolute after:inset-0 after:-z-10 after:w-full after:bg-transparent ${isScrolling ? 'after:shadow-[inset_-10px_0_8px_-8px_rgba(0,0,0,0.15)]' : ''}`} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-white'}`;
+
   const customBodyColumnStyles = (key: string) =>
-    `border p-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && 'sticky left-[33px] z-10'} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
+    `border px-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content z-10 h-[42px] after:absolute after:inset-0 after:-z-10 after:w-full after:bg-transparent ${isScrolling ? 'after:shadow-[inset_-10px_0_8px_-8px_rgba(0,0,0,0.15)]' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
 
   // function to render the column content based on column key
   const renderColumnContent = (
@@ -90,15 +156,6 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
     isSubtask: boolean = false
   ) => {
     switch (columnKey) {
-      // selector column
-      case 'selector':
-        return (
-          <Checkbox
-            checked={selectedRows.includes(task.taskId)}
-            onChange={() => toggleRowSelection(task)}
-          />
-        );
-
       // task ID column
       case 'taskId':
         return (
@@ -135,7 +192,10 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
       // progress column
       case 'progress': {
         return task?.progress || task?.progress === 0 ? (
-          <Progress percent={task.progress} type="circle" size={30} />
+          <TaskProgress
+            progress={task?.progress}
+            numberOfSubTasks={task?.subTasks?.length || 0}
+          />
         ) : (
           <div></div>
         );
@@ -150,6 +210,7 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
                 <CustomAvatar
                   key={member.memberId}
                   avatarName={member.memberName}
+                  size={26}
                 />
               ))}
             </Avatar.Group>
@@ -267,10 +328,19 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
 
   return (
     <div className={`border-x border-b ${customBorderColor}`}>
-      <div className={`min-h-0 max-w-full overflow-x-auto`}>
+      <div className={`tasklist-container min-h-0 max-w-full overflow-x-auto`}>
         <table className={`rounded-2 w-full min-w-max border-collapse`}>
-          <thead className="h-[52px]">
+          <thead className="h-[42px]">
             <tr>
+              {/* this cell render the select all task checkbox  */}
+              <th
+                key={'selector'}
+                className={`${customHeaderColumnStyles('selector')}`}
+                style={{ width: 20, fontWeight: 500 }}
+              >
+                <Checkbox checked={isSelectAll} onChange={toggleSelectAll} />
+              </th>
+              {/* other header cells  */}
               {visibleColumns.map((column) => (
                 <th
                   key={column.key}
@@ -287,10 +357,36 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
               <React.Fragment key={task.taskId}>
                 <tr
                   key={task.taskId}
+                  onContextMenu={(e) => handleContextMenu(e, task)}
                   onMouseEnter={() => setHoverRow(task.taskId)}
                   onMouseLeave={() => setHoverRow(null)}
-                  className={`${taskList.length === 0 ? 'h-0' : 'h-12'}`}
+                  className={`${taskList.length === 0 ? 'h-0' : 'h-[42px]'}`}
                 >
+                  {/* this cell render the select the related task checkbox  */}
+                  <td
+                    key={'selector'}
+                    className={customBodyColumnStyles('selector')}
+                    style={{
+                      width: 20,
+                      backgroundColor: selectedRows.includes(task.taskId)
+                        ? themeMode === 'dark'
+                          ? colors.skyBlue
+                          : '#dceeff'
+                        : hoverRow === task.taskId
+                          ? themeMode === 'dark'
+                            ? '#000'
+                            : '#f8f7f9'
+                          : themeMode === 'dark'
+                            ? '#181818'
+                            : '#fff',
+                    }}
+                  >
+                    <Checkbox
+                      checked={selectedRows.includes(task.taskId)}
+                      onChange={() => toggleRowSelection(task)}
+                    />
+                  </td>
+                  {/* other cells  */}
                   {visibleColumns.map((column) => (
                     <td
                       key={column.key}
@@ -299,7 +395,7 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
                         width: column.width,
                         backgroundColor: selectedRows.includes(task.taskId)
                           ? themeMode === 'dark'
-                            ? colors.skyBlue
+                            ? '#000'
                             : '#dceeff'
                           : hoverRow === task.taskId
                             ? themeMode === 'dark'
@@ -320,10 +416,37 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
                   task?.subTasks?.map((subtask) => (
                     <tr
                       key={subtask.taskId}
+                      onContextMenu={(e) => handleContextMenu(e, subtask)}
                       onMouseEnter={() => setHoverRow(subtask.taskId)}
                       onMouseLeave={() => setHoverRow(null)}
-                      className={`${taskList.length === 0 ? 'h-0' : 'h-12'}`}
+                      className={`${taskList.length === 0 ? 'h-0' : 'h-[42px]'}`}
                     >
+                      {/* this cell render the select the related task checkbox  */}
+                      <td
+                        key={'selector'}
+                        className={customBodyColumnStyles('selector')}
+                        style={{
+                          width: 20,
+                          backgroundColor: selectedRows.includes(subtask.taskId)
+                            ? themeMode === 'dark'
+                              ? colors.skyBlue
+                              : '#dceeff'
+                            : hoverRow === subtask.taskId
+                              ? themeMode === 'dark'
+                                ? '#000'
+                                : '#f8f7f9'
+                              : themeMode === 'dark'
+                                ? '#181818'
+                                : '#fff',
+                        }}
+                      >
+                        <Checkbox
+                          checked={selectedRows.includes(subtask.taskId)}
+                          onChange={() => toggleRowSelection(subtask)}
+                        />
+                      </td>
+
+                      {/* other sub tasks cells  */}
                       {visibleColumns.map((column) => (
                         <td
                           key={column.key}
@@ -334,7 +457,7 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
                               subtask.taskId
                             )
                               ? themeMode === 'dark'
-                                ? '#1866e9'
+                                ? '#000'
                                 : '#dceeff'
                               : hoverRow === subtask.taskId
                                 ? themeMode === 'dark'
@@ -364,7 +487,33 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
         </table>
       </div>
 
+      {/* add a main task to the table  */}
       <AddTaskListRow />
+
+      {/* custom task context menu  */}
+      <TaskContextMenu
+        visible={contextMenuVisible}
+        position={contextMenuPosition}
+        selectedTask={selectedRows[0]}
+        onClose={() => setContextMenuVisible(false)}
+      />
+
+      {/* bulk action container ==> used tailwind to recreate the animation */}
+      {createPortal(
+        <div
+          className={`absolute bottom-0 left-1/2 -translate-x-1/2 ${selectedRows.length > 0 ? 'overflow-visible' : 'h-[1px] overflow-hidden'}`}
+        >
+          <div
+            className={`${selectedRows.length > 0 ? 'bottom-4' : 'bottom-0'} absolute left-1/2 z-[1000] -translate-x-1/2 transition-all duration-300`}
+          >
+            <BulkTasksActionContainer
+              selectedTaskIds={selectedRows}
+              closeContainer={handleBulkActionContainerClose}
+            />
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* update task drawer  */}
       <UpdateTaskDrawer taskId={selectedTaskId} />

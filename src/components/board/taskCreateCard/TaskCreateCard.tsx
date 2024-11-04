@@ -6,8 +6,9 @@ import './TaskCreateCard.css';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { addTask, addTaskToTop } from '../../../features/tasks/taskSlice';
 import { setTaskCardDisabled } from '../../../features/board/createCardSlice';
+import { TaskStatusType } from '../../../types/task.types';
 interface StatusProps {
-  status: string;
+  status: TaskStatusType;
   position: 'top' | 'bottom';
 }
 

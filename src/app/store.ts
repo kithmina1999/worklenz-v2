@@ -49,7 +49,6 @@ export const store = configureStore({
     phaseReducer: phaseReducer,
     labelReducer: labelReducer,
     statusReducer: statusReducer,
-    statusReducer: statusReducer,
   },
 });
 

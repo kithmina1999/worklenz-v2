@@ -14,7 +14,7 @@ type StatusState = {
 export const defaultStatusList: StatusType[] = [
   {
     statusId: '1',
-    statusName: 'To do',
+    statusName: 'To Do',
     statusCategory: 'todo',
   },
   {

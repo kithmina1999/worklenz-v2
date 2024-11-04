@@ -50,23 +50,22 @@ const SubTaskCard: React.FC<subtaskProps> = ({ subtask }) => {
 
   return (
     <Row
-      key={subtask.taskId}    
+      key={subtask.taskId}
       style={{
         marginTop: '0.5rem',
-        width: '100%'
+        width: '100%',
       }}
     >
-
       <Col span={10}>
-      <Typography.Text
-          style={{ fontWeight: 500,  fontSize: '12px'}}
+        <Typography.Text
+          style={{ fontWeight: 500, fontSize: '12px' }}
           delete={subtask.status === 'done'}
         >
           {subtask.task}
         </Typography.Text>
       </Col>
       <Col span={4}>
-      <Avatar.Group
+        <Avatar.Group
           size="small"
           max={{
             count: 1,
@@ -90,25 +89,24 @@ const SubTaskCard: React.FC<subtaskProps> = ({ subtask }) => {
         </Avatar.Group>
       </Col>
       <Col span={10}>
-      <Flex >
-      <DatePicker
-          className={`custom-placeholder ${!subTaskDueDate ? 'empty-date' : isSubToday || isSubTomorrow ? 'selected-date' : isItSubPrevDate ? 'red-colored' : ''}`}
-          placeholder="Due date"
-          style={{
-            fontSize: '12px',
-            opacity: subTaskDueDate ? 1 : 0,
-          }}
-          onChange={handleSubTaskDateChange}
-          variant="borderless"
-          size="small"
-          suffixIcon={false}
-          format={(value) => formatDate(value)}
-        />
-        <div>
-        <StatusDropdown currentStatus={subtask.status} size='small'/>
-        </div>
-      
-      </Flex>
+        <Flex>
+          <DatePicker
+            className={`custom-placeholder ${!subTaskDueDate ? 'empty-date' : isSubToday || isSubTomorrow ? 'selected-date' : isItSubPrevDate ? 'red-colored' : ''}`}
+            placeholder="Due date"
+            style={{
+              fontSize: '12px',
+              opacity: subTaskDueDate ? 1 : 0,
+            }}
+            onChange={handleSubTaskDateChange}
+            variant="borderless"
+            size="small"
+            suffixIcon={false}
+            format={(value) => formatDate(value)}
+          />
+          <div>
+            <StatusDropdown currentStatus={subtask.status} />
+          </div>
+        </Flex>
       </Col>
 
       {/* <div
