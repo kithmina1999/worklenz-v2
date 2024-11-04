@@ -1,8 +1,4 @@
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-}
+import { ILocalSession } from "./local-session.types";
 
 export interface IUser {
   id?: string;
@@ -22,12 +18,12 @@ export interface IUserLoginResponse extends IUser {}
 
 export interface IAuthorizeResponse {
   authenticated: boolean;
-  user: IUser;
+  user: ILocalSession;
   auth_error: string;
   message: string;
 }
 
-export interface AuthState {
+export interface IAuthState {
   user: IUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;

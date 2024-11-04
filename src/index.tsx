@@ -13,8 +13,10 @@ import { colors } from './styles/colors';
 // Initialize theme
 const getInitialTheme = () => {
   try {
-    return localStorage.getItem('theme') || 
-           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    return (
+      localStorage.getItem('theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    );
   } catch {
     return 'light';
   }
@@ -44,9 +46,9 @@ const ThemedLoading = () => {
         },
       }}
     >
-      <Layout 
+      <Layout
         className="app-loading-container"
-        style={{ 
+        style={{
           position: 'fixed',
           width: '100vw',
           height: '100vh',
@@ -68,22 +70,34 @@ const ThemedLoading = () => {
   );
 };
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 // Apply initial theme to document
 document.documentElement.classList.add(initialTheme);
 document.documentElement.style.colorScheme = initialTheme;
 
 root.render(
-  <Suspense fallback={<ThemedLoading />}>
-    <Provider store={store}>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    </Provider>
-  </Suspense>
+  <ConfigProvider
+    theme={{
+      algorithm: initialTheme === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
+      components: {
+        Layout: {
+          colorBgLayout: initialTheme === 'dark' ? colors.darkGray : '#fafafa',
+        },
+        Spin: {
+          colorPrimary: initialTheme === 'dark' ? '#fff' : '#1890ff',
+        },
+      },
+    }}
+  >
+    <Suspense fallback={<ThemedLoading />}>
+      <Provider store={store}>
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      </Provider>
+    </Suspense>
+  </ConfigProvider>
 );
 
 reportWebVitals();

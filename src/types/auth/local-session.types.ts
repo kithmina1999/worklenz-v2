@@ -1,11 +1,11 @@
-import {UserType} from "../user.types";
+import {IUserType} from "../user.types";
 
-export interface WorklenzAlert {
+export interface IWorklenzAlert {
   description: string;
   type: "success" | "info" | "warning" | "error";
 }
 
-export interface LocalSession extends UserType {
+export interface ILocalSession extends IUserType {
   team_id?: string;
   team_name?: string;
   owner?: boolean;
@@ -23,6 +23,6 @@ export interface LocalSession extends UserType {
   last_updated?: string;
   user_no?: number;
   team_member_id?: string;
-  alerts?: Array<WorklenzAlert>;
+  alerts?: Array<IWorklenzAlert>;
   is_expired?: boolean;
 }

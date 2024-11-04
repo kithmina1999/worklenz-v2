@@ -22,6 +22,7 @@ import CustomAvatar from '../../../components/CustomAvatar';
 const ProfileButton = () => {
   // get user data from redux - user reducer
   const userDetails = useAppSelector((state) => state.userReducer);
+  console.log(userDetails);
   // localization
   const { t } = useTranslation('navbar');
 
@@ -40,7 +41,7 @@ const ProfileButton = () => {
               <Typography.Text>Account</Typography.Text>
               <Flex gap={8} align="center" justify="flex-start">
                 <div>
-                  <CustomAvatar avatarName={userDetails.name} />
+                  <CustomAvatar avatarName={[userDetails?.name]} />
                 </div>
                 <Flex vertical>
                   <Typography.Text>{userDetails.name}</Typography.Text>

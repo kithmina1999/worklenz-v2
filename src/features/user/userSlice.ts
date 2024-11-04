@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UserType } from '../../types/user.types';
+import { IUser } from '@/types/auth/login.types';
+import { ILocalSession } from '@/types/auth/local-session.types';
 
-const initialState: UserType = {
-  name: 'Sachintha Prasad',
-  email: 'prasadsachintha1231@gmail.com',
-  userRole: 'owner',
+const initialState: IUser = {
+  id: '',
+  name: '',
+  email: '',
 };
 
 const userSlice = createSlice({
@@ -14,8 +15,11 @@ const userSlice = createSlice({
     changeUserName: (state, action: PayloadAction<string>) => {
       state.name = action.payload;
     },
+    setUser: (state, action: PayloadAction<ILocalSession>) => {
+      state = action.payload;
+    },
   },
 });
 
-export const { changeUserName } = userSlice.actions;
+export const { changeUserName, setUser } = userSlice.actions;
 export default userSlice.reducer;

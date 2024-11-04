@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Checkbox, Flex, Form, Input, message, Space, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
@@ -9,8 +9,10 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import PageHeader from '@components/PageHeader';
 import googleIcon from '@assets/images/google-icon.png';
-import { login } from '@/features/auth/authSlice';
+import { login, verifyAuth } from '@/features/auth/authSlice';
 import logger from '@/utils/errorLogger';
+import { setUser } from '@/features/user/userSlice';
+import { createAuthService } from '@/services/auth/auth.service';
 
 interface LoginFormValues {
   email: string;
@@ -23,10 +25,22 @@ const LoginPage: React.FC = () => {
   const { t } = useTranslation('loginPage');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
   const dispatch = useAppDispatch();
+  const authService = createAuthService(navigate);
   
   // Get loading state from Redux store instead of local state
   const { isLoading } = useAppSelector(state => state.auth);
-
+  useEffect(() => {
+    const verifyAuthStatus = async () => {
+      const result = await dispatch(verifyAuth()).unwrap();
+      if(result.authenticated) {
+        dispatch(setUser(result.user));
+        authService.setCurrentSession(result.user);
+        navigate('/worklenz/home');
+      }
+    };
+    verifyAuthStatus();
+  }, [dispatch]);
+  
   const onFinish = useCallback(
     async (values: LoginFormValues) => {
       try {
@@ -34,7 +48,7 @@ const LoginPage: React.FC = () => {
         console.log(result);
         if (result.authenticated) {
           message.success(t('loginSuccess'));
-          navigate('/dashboard');
+          navigate('/worklenz/home');
         }
       } catch (error) {
         logger.error('LoginPage', error);

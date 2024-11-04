@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { authService } from '@/api/auth/authService';
-import { AuthState, IUserLoginRequest } from '@/types/auth/login.types';
+import { IAuthState, IUserLoginRequest } from '@/types/auth/login.types';
 import logger from '@/utils/errorLogger';
 
-const initialState: AuthState = {
+const initialState: IAuthState = {
   user: null,
   isAuthenticated: false,
   isLoading: false,
@@ -18,9 +18,10 @@ export const login = createAsyncThunk(
   async (credentials: IUserLoginRequest, { rejectWithValue }) => {
     try {
       const loginResponse = await authService.login(credentials);
-      if (!loginResponse.done) {
-        return rejectWithValue(loginResponse.message || 'Login failed');
-      }
+
+      // if (!loginResponse.authenticated) {
+      //   return rejectWithValue(loginResponse.message || 'Login failed');
+      // }
       
       const authorizeResponse = await authService.verify();
       if (!authorizeResponse.authenticated) {

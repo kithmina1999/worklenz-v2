@@ -25,7 +25,7 @@ const apiClient = axios.create({
 
 // Request interceptor to add CSRF token
 apiClient.interceptors.request.use(
-  (config) => {
+  config => {
     const token = getCsrfToken();
     if (token) {
       const decodedToken = decodeURIComponent(token);
@@ -35,51 +35,46 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
 // Response interceptor with notification handling based on done flag
 apiClient.interceptors.response.use(
-  (response) => {
-    const data = response.data as IServerResponse<unknown>;
-    console.log('data', data);
+  response => {
+    if (response.data) {
+      const { title, message, auth_error, done } = response.data;
 
-    // Only show notification if there's a message
-      if (data.done) {
-        // Success notification
-        alertService.success(data.title || 'Success', data?.message || '');
-      } else {
-        // Error notification even for successful HTTP response
-        alertService.error(data.title || 'Error', data?.message || '');
+      if (message && message.charAt(0) !== '$') {
+        if (done) {
+          alertService.success(title || '', message);
+        } else {
+          alertService.error(title || '', message);
+        }
+      } else if (auth_error) {
+        alertService.error(title || 'Authentication Error', auth_error);
       }
-    
-    // If done is false, reject the promise to trigger error handling
-    if (!data.done) {
-      return Promise.reject({ response: { data } });
     }
-    
     return response;
   },
-  async (error) => {
-    // Handle error responses
-    const errorResponse = error.response?.data as IServerResponse<unknown>;
-    
-    if (errorResponse?.message) {
-      alertService.error(errorResponse.title || 'Error', errorResponse.message);
-    } else {
-      // Generic error if no specific message
-      alertService.error('Error', 'An unexpected error occurred. Please try again.');
-    }
+  async error => {
+    console.log(error.response);
+
+    // Handle errors
+    const { status, data } = error.response || {};
+    const errorMessage = data?.message || 'An unexpected error occurred';
+
+    // Show error notification
+    alertService.error('Error', errorMessage);
 
     // Development logging
     if (import.meta.env.VITE_APP_ENV === 'development') {
       console.error('API Error:', {
-        status: error.response?.status,
-        data: error.response?.data,
+        status,
+        data,
         headers: error.config?.headers,
-        cookies: document.cookie
+        cookies: document.cookie,
       });
     }
 
