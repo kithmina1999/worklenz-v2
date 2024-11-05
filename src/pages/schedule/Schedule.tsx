@@ -2,7 +2,6 @@ import {
   Button,
   DatePicker,
   DatePickerProps,
-  Radio,
   Select,
   Space,
 } from 'antd';
@@ -28,41 +27,23 @@ const Schedule: React.FC = () => {
 
   return (
     <div style={{ marginBlock: 65, minHeight: '90vh' }}>
-      <div
-        style={{
-          padding: '16px 0',
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '64px' }}>
-          <Radio.Group>
-            <Radio.Button value="team">Team</Radio.Button>
-            <Radio.Button value="project">Project</Radio.Button>
-          </Radio.Group>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <Button>Today</Button>
-            <Space>
-              <Select
-                value={type}
-                onChange={(value) => setType(value as PickerType)}
-              >
-                <Option value="week">Week</Option>
-                <Option value="month">Month</Option>
-              </Select>
-              <PickerWithType
-                type={type}
-                onChange={(value) => console.log(value)}
-              />
-            </Space>
-          </div>
-        </div>
-
-        <div>
-          <Button type="primary">Allocate</Button>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingTop: '25px', paddingBottom: '20px'}}>
+        <Button>Today</Button>
+        <Space>
+          <Select
+            value={type}
+            onChange={(value) => setType(value as PickerType)}
+          >
+            <Option value="week">Week</Option>
+            <Option value="month">Month</Option>
+          </Select>
+          <PickerWithType
+            type={type}
+            onChange={(value) => console.log(value)}
+          />
+        </Space>
       </div>
+
       <div>
         <Team />
       </div>
