@@ -23,7 +23,7 @@ import {
   deleteTeam,
   toggleDrawer,
   toggleSettingDrawer,
-} from '../../../features/adminCenter/teams/teamSlice';
+} from '../../../features/teams/teamSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import CreateTeamDrawer from '../../../features/adminCenter/teams/CreateTeamDrawer';
 import { useAppSelector } from '../../../hooks/useAppSelector';

@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IUser } from '@/types/auth/login.types';
 import { ILocalSession } from '@/types/auth/local-session.types';
 
-const initialState: IUser = {
-  id: '',
-  name: '',
-  email: '',
+const sessionData = JSON.parse(localStorage.getItem('session') || '{}');
+const initialState: ILocalSession = {
+  id: sessionData?.id || '',
+  name: sessionData?.name || '',
+  email: sessionData?.email || '',
 };
+
 
 const userSlice = createSlice({
   name: 'userReducer',

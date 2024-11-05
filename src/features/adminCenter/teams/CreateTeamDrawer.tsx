@@ -4,7 +4,7 @@ import { RootState } from '../../../app/store';
 import { Button, Drawer, Form, Input, message, Typography } from 'antd';
 import { TeamsType } from '../../../types/adminCenter/team.types';
 import { nanoid } from '@reduxjs/toolkit';
-import { addTeam, toggleDrawer } from './teamSlice';
+import { addTeam, toggleDrawer } from '../../teams/teamSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
 

@@ -14,7 +14,7 @@ import { durationDateFormat } from '../../../utils/durationDateFormat';
 import { EditOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import EditTeamModal from '../../../features/adminCenter/teams/EditTeamModal';
-import { toggleUpdateTeamNameModal } from '../../../features/adminCenter/teams/teamSlice';
+import { toggleUpdateTeamNameModal } from '../../../features/teams/teamSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 
 const TeamsSettings = () => {

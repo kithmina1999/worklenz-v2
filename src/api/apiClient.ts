@@ -1,8 +1,5 @@
 import axios from 'axios';
-import { useTranslation } from 'react-i18next';
-import i18next from 'i18next';
 
-import { IServerResponse } from '@/types/common.types';
 import alertService from '@/services/alerts/alertService';
 
 const getCsrfToken = (): string | null => {

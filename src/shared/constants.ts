@@ -1,30 +1,30 @@
-export const avatarNamesMap: { [x: string]: string } = {
-  A: '#154c9b',
-  B: '#3b7ad4',
-  C: '#70a6f3',
-  D: '#7781ca',
-  E: '#9877ca',
-  F: '#c178c9',
-  G: '#ee87c5',
-  H: '#ca7881',
-  I: '#75c9c0',
-  J: '#75c997',
-  K: '#80ca79',
-  L: '#aacb78',
-  M: '#cbbc78',
-  N: '#cb9878',
-  O: '#bb774c',
-  P: '#905b39',
-  Q: '#903737',
-  R: '#bf4949',
-  S: '#f37070',
-  T: '#ff9c3c',
-  U: '#fbc84c',
-  V: '#cbc8a1',
-  W: '#a9a9a9',
-  X: '#767676',
-  Y: '#cb9878',
-  Z: '#903737',
+export const AvatarNamesMap: { [x: string]: string } = {
+  "A": '#154c9b',
+  "B": '#3b7ad4',
+  "C": '#70a6f3',
+  "D": '#7781ca',
+  "E": '#9877ca',
+  "F": '#c178c9',
+  "G": '#ee87c5',
+  "H": '#ca7881',
+  "I": '#75c9c0',
+  "J": '#75c997',
+  "K": '#80ca79',
+  "L": '#aacb78',
+  "M": '#cbbc78',
+  "N": '#cb9878',
+  "O": '#bb774c',
+  "P": '#905b39',
+  "Q": '#903737',
+  "R": '#bf4949',
+  "S": '#f37070',
+  "T": '#ff9c3c',
+  "U": '#fbc84c',
+  "V": '#cbc8a1',
+  "W": '#a9a9a9',
+  "X": '#767676',
+  "Y": '#cb9878',
+  "Z": '#903737',
   '+': '#9e9e9e',
 };
 
@@ -40,6 +40,87 @@ export const NumbersColorMap: { [x: string]: string } = {
   '8': '#75c9c0',
   '9': '#75c997',
 };
+
+export const ProjectsDefaultColorCodes = [
+  "#154c9b",
+  "#3b7ad4",
+  "#70a6f3",
+  "#7781ca",
+  "#9877ca",
+  "#c178c9",
+  "#ee87c5",
+  "#ca7881",
+  "#75c9c0",
+  "#75c997",
+  "#80ca79",
+  "#aacb78",
+  "#cbbc78",
+  "#cb9878",
+  "#bb774c",
+  "#905b39",
+  "#903737",
+  "#bf4949",
+  "#f37070",
+  "#ff9c3c",
+  "#fbc84c",
+  "#cbc8a1",
+  "#a9a9a9",
+  "#767676"
+];
+
+export const PhaseColorCodes = [
+  "#154c9b",
+  "#3b7ad4",
+  "#70a6f3",
+  "#7781ca",
+  "#9877ca",
+  "#c178c9",
+  "#ee87c5",
+  "#ca7881",
+  "#75c9c0",
+  "#75c997",
+  "#80ca79",
+  "#aacb78",
+  "#cbbc78",
+  "#cb9878",
+  "#bb774c",
+  "#905b39",
+  "#903737",
+  "#bf4949",
+  "#f37070",
+  "#ff9c3c",
+  "#fbc84c",
+  "#cbc8a1",
+  "#a9a9a9",
+  "#767676",
+  "#cb9878",
+  "#903737",
+  "#9e9e9e"
+];
+
+export const PriorityColorCodes: { [x: number]: string; } = {
+  0: "#75c997",
+  1: "#fbc84c",
+  2: "#f37070"
+}
+
+export const API_BASE_URL = "/api/v1";
+export const AUTH_API_BASE_URL = "/secure";
+
+export const DEFAULT_TASK_NAME = "Untitled Task";
+
+export const YESTERDAY = "YESTERDAY";
+export const LAST_WEEK = "LAST_WEEK";
+export const LAST_MONTH = "LAST_MONTH";
+export const LAST_QUARTER = "LAST_QUARTER";
+export const PREV_WEEK = "PREV_WEEK";
+export const PREV_MONTH = "PREV_MONTH";
+export const ALL_TIME = "ALL_TIME";
+
+export const PASSWORD_POLICY = "Minimum of 8 characters, with upper and lowercase and a number and a symbol.";
+
+export const HTML_TAG_REGEXP = /<\/?[^>]+>/gi;
+export const UNMAPPED = "Unmapped";
 
 export const TASK_STATUS_TODO_COLOR = '#a9a9a9';
 export const TASK_STATUS_DOING_COLOR = '#70a6f3';

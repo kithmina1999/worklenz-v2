@@ -1,52 +1,58 @@
-import {
-  BankOutlined,
-  CaretDownFilled,
-  CheckCircleFilled,
-} from '@ant-design/icons';
+import { BankOutlined, CaretDownFilled, CheckCircleFilled } from '@ant-design/icons';
 import { Card, Dropdown, Flex, Tooltip, Typography } from 'antd';
-import React from 'react';
 import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
 // custom css
 import './switchTeam.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { setTeamActive } from '../../adminCenter/teams/teamSlice';
 import CustomAvatar from '../../../components/CustomAvatar';
+import { useAuth } from '@/hooks/useAuth';
+import { RootState } from '@/app/store';
+import { useEffect } from 'react';
+import { initializeTeams } from '@/features/teams/teamSlice';
 
 const SwitchTeamButton = () => {
-  // localization
   const { t } = useTranslation('navbar');
-  // get team data from team reducer
-  const teamsDetails = useAppSelector((state) => state.teamReducer.teamsList);
-
-  // get the active team
-  const activeTeam = teamsDetails.find((team) => team.isActive);
-
   const dispatch = useAppDispatch();
 
+  const { teamsList, loading, error, initialized } = useAppSelector(
+    (state: RootState) => state.teamReducer
+  );
+  const teamsDetails = useAppSelector(state => state.teamReducer.teamsList);
+  const session = useAuth().getCurrentSession();
+
+  // get the active team
+  const isActiveTeam = (teamId: string | undefined) => {
+    if (!teamId) return false;
+    return (teamId = session?.team_id);
+  };
+
+  const selectTeam = (id: string | undefined) => {
+    if (!id) return;
+  };
+
+  useEffect(() => {
+    dispatch(initializeTeams());
+  }, [dispatch]);
+  
   // switch teams dropdown items
   const items = [
-    ...teamsDetails.map((team) => ({
-      key: team.teamId,
+    ...teamsDetails.map(team => ({
+      key: team.id,
       label: (
         <Card
           className="switch-team-card"
-          onClick={() => dispatch(setTeamActive(team.teamId))}
+          onClick={() => selectTeam(team.id)}
           bordered={false}
           style={{
             width: 230,
           }}
         >
           <Flex vertical gap={8}>
-            <Flex
-              gap={12}
-              align="center"
-              justify="space-between"
-              style={{ padding: 12 }}
-            >
+            <Flex gap={12} align="center" justify="space-between" style={{ padding: 12 }}>
               <Flex gap={8} align="center">
-                <CustomAvatar avatarName={team.teamName} />
+                <CustomAvatar avatarName={team.name} />
                 <Flex vertical>
                   <Typography.Text
                     style={{
@@ -55,15 +61,15 @@ const SwitchTeamButton = () => {
                       color: colors.lightGray,
                     }}
                   >
-                    Owned by {team.owner.split(' ')[0]}
+                    {/* Owned by {team.owner.split(' ')[0]} */}
                   </Typography.Text>
-                  <Typography.Text>{team.teamName}</Typography.Text>
+                  <Typography.Text>{team.name}</Typography.Text>
                 </Flex>
               </Flex>
               <CheckCircleFilled
                 style={{
                   fontSize: 16,
-                  color: team.isActive ? colors.limeGreen : colors.lightGray,
+                  color: isActiveTeam(team.id) ? colors.limeGreen : colors.lightGray,
                 }}
               />
             </Flex>
@@ -75,11 +81,7 @@ const SwitchTeamButton = () => {
 
   return (
     <Tooltip title={t('switchTeamTooltip')} trigger={'hover'}>
-      <Dropdown
-        overlayClassName="switch-team-dropdown"
-        menu={{ items }}
-        trigger={['click']}
-      >
+      <Dropdown overlayClassName="switch-team-dropdown" menu={{ items }} trigger={['click']}>
         <Flex
           gap={12}
           align="center"
@@ -95,7 +97,7 @@ const SwitchTeamButton = () => {
         >
           <BankOutlined />
           <Typography.Text strong style={{ color: colors.skyBlue }}>
-            {activeTeam?.teamName}
+            {session?.team_name}
           </Typography.Text>
           <CaretDownFilled />
         </Flex>

@@ -57,7 +57,6 @@ class AuthService {
     try {
       if (hasSession()) {
         deleteSession();
-        // API call removed
       }
     } catch (e) {
       // ignored

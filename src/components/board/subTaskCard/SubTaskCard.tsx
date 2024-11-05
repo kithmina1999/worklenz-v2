@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { TaskType } from '../../../types/task.types';
 import { Avatar, Col, DatePicker, Divider, Flex, Row, Typography } from 'antd';
 import StatusDropdown from '../../taskListCommon/statusDropdown/StatusDropdown';
-import { avatarNamesMap } from '../../../shared/constants';
+import { AvatarNamesMap } from '../../../shared/constants';
 import dayjs, { Dayjs } from 'dayjs';
 
 interface subtaskProps {
@@ -79,7 +79,7 @@ const SubTaskCard: React.FC<subtaskProps> = ({ subtask }) => {
           {subtask.members?.map((member) => (
             <Avatar
               style={{
-                backgroundColor: avatarNamesMap[member.memberName.charAt(0)],
+                backgroundColor: AvatarNamesMap[member.memberName.charAt(0)],
                 fontSize: '12px',
               }}
               size="small"

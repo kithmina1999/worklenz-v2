@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { authService } from '@/api/auth/authService';
+import { authApiService } from '@/api/auth/auth.api.service';
 import { IAuthState, IUserLoginRequest } from '@/types/auth/login.types';
 import logger from '@/utils/errorLogger';
 
@@ -17,13 +17,13 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials: IUserLoginRequest, { rejectWithValue }) => {
     try {
-      const loginResponse = await authService.login(credentials);
+      const loginResponse = await authApiService.login(credentials);
 
       // if (!loginResponse.authenticated) {
       //   return rejectWithValue(loginResponse.message || 'Login failed');
       // }
       
-      const authorizeResponse = await authService.verify();
+      const authorizeResponse = await authApiService.verify();
       if (!authorizeResponse.authenticated) {
         return rejectWithValue(authorizeResponse.auth_error || 'Authorization failed');
       }
@@ -40,7 +40,7 @@ export const logout = createAsyncThunk(
   'secure/logout',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authService.logout();
+      const response = await authApiService.logout();
       if (!response.done) {
         return rejectWithValue(response.message || 'Logout failed');
       }
@@ -55,7 +55,7 @@ export const logout = createAsyncThunk(
 export const verifyAuth = createAsyncThunk(
   'secure/verify',
   async () => {
-    const user = await authService.verify();
+    const user = await authApiService.verify();
     return user;
   }
 );

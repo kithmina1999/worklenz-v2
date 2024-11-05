@@ -3,16 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { alertService } from '@/services/alerts/alertService';
 import { showAlert } from '@/services/alerts/alertSlice';
-import { AlertMessage, AlertType } from '@/types/alert.types';
+import { AlertType } from '@/types/alert.types';
 
 export const useAlert = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  // Set translation function in service
-  alertService.setTranslation(t);
-
-  const show = (type: AlertType, title: AlertMessage, message: AlertMessage, duration?: number) => {
+  const show = (type: AlertType, title: string, message: string, duration?: number) => {
     // Update Redux state
     dispatch(showAlert({ type, title, message, duration }));
     // Show alert via service
@@ -20,13 +17,13 @@ export const useAlert = () => {
   };
 
   return {
-    success: (title: AlertMessage, message: AlertMessage, duration?: number) => 
+    success: (title: string, message: string, duration?: number) => 
       show('success', title, message, duration),
-    error: (title: AlertMessage, message: AlertMessage, duration?: number) => 
+    error: (title: string, message: string, duration?: number) => 
       show('error', title, message, duration),
-    info: (title: AlertMessage, message: AlertMessage, duration?: number) => 
+    info: (title: string, message: string, duration?: number) => 
       show('info', title, message, duration),
-    warning: (title: AlertMessage, message: AlertMessage, duration?: number) => 
+    warning: (title: string, message: string, duration?: number) => 
       show('warning', title, message, duration),
     clearAll: alertService.clearAll
   };

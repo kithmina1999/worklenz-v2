@@ -2,7 +2,7 @@ import { IServerResponse } from '@/types/common.types';
 import apiClient from '../apiClient';
 import { IUserLoginRequest, IUserLoginResponse, IAuthorizeResponse } from '@/types/auth/login.types';
 
-export const authService = {
+export const authApiService = {
   login: async (credentials: IUserLoginRequest): Promise<IAuthorizeResponse> => {
     const response = await apiClient.post<IAuthorizeResponse>(
       '/secure/login',

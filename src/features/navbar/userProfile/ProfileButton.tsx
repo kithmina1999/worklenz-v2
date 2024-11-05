@@ -1,34 +1,26 @@
 import { UserOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Card,
-  Dropdown,
-  Flex,
-  MenuProps,
-  Tooltip,
-  Typography,
-} from 'antd';
+import { Avatar, Button, Card, Dropdown, Flex, MenuProps, Tooltip, Typography } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 // profile dropdown custom css
 import './profileDropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAuth } from '../../../hooks/useAuth';
 import { RootState } from '../../../app/store';
 import './ProfileButton.css';
 
 import { Link } from 'react-router-dom';
-import CustomAvatar from '../../../components/CustomAvatar';
+import { AvatarNamesMap } from '@/shared/constants';
 
 const ProfileButton = () => {
   // get user data from redux - user reducer
-  const userDetails = useAppSelector((state) => state.userReducer);
-  console.log(userDetails);
+  const userDetails = useAppSelector(state => state.userReducer);
+  const role = useAuth().role;
+
   // localization
   const { t } = useTranslation('navbar');
 
-  const themeMode = useAppSelector(
-    (state: RootState) => state.themeReducer.mode
-  );
+  const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
 
   const profile: MenuProps['items'] = [
     {
@@ -41,15 +33,24 @@ const ProfileButton = () => {
               <Typography.Text>Account</Typography.Text>
               <Flex gap={8} align="center" justify="flex-start">
                 <div>
-                  <CustomAvatar avatarName={[userDetails?.name]} />
+                  {userDetails.avatar_url ? (
+                    <Avatar src={userDetails.avatar_url} />
+                  ) : (
+                    <Avatar
+                      style={{
+                        backgroundColor: AvatarNamesMap[userDetails.name?.charAt(0) || ''],
+                        verticalAlign: 'middle',
+                      }}
+                    >
+                      {userDetails.name?.charAt(0)}
+                    </Avatar>
+                  )}
                 </div>
                 <Flex vertical>
                   <Typography.Text>{userDetails.name}</Typography.Text>
-                  <Typography.Text style={{ fontSize: 12 }}>
-                    {userDetails.email}
-                  </Typography.Text>
+                  <Typography.Text style={{ fontSize: 12 }}>{userDetails.email}</Typography.Text>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                    ({userDetails.userRole})
+                    ({role})
                   </Typography.Text>
                 </Flex>
               </Flex>

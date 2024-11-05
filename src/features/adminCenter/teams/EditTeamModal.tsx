@@ -2,7 +2,7 @@ import { Divider, Form, Input, message, Modal, Typography } from 'antd';
 import React, { useEffect } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { editTeamName, toggleUpdateTeamNameModal } from './teamSlice';
+import { editTeamName, toggleUpdateTeamNameModal } from '../../teams/teamSlice';
 import { TeamsType } from '../../../types/adminCenter/team.types';
 
 type EditTeamProps = {

@@ -1,6 +1,5 @@
 import { Avatar, Tooltip } from 'antd';
-import React from 'react';
-import { avatarNamesMap } from '../shared/constants';
+import { AvatarNamesMap } from '../shared/constants';
 
 const CustomAvatar = ({ avatarName }: { avatarName: string | null }) => {
   const avatarCharacter = avatarName?.[0].toUpperCase() || '';
@@ -9,7 +8,7 @@ const CustomAvatar = ({ avatarName }: { avatarName: string | null }) => {
     <Tooltip title={avatarName}>
       <Avatar
         style={{
-          backgroundColor: avatarNamesMap[avatarCharacter],
+          backgroundColor: AvatarNamesMap[avatarCharacter],
           verticalAlign: 'middle',
         }}
       >

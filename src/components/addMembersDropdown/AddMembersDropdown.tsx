@@ -10,7 +10,7 @@ import {
 } from 'antd';
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import './AddMembersDropdown.css';
-import { avatarNamesMap } from '../../shared/constants';
+import { AvatarNamesMap } from '../../shared/constants';
 
 const AddMembersDropdown: React.FC = () => {
   const [checkedMembers, setCheckedMembers] = useState<string[]>([]);
@@ -41,7 +41,7 @@ const AddMembersDropdown: React.FC = () => {
           >
             <Avatar
               style={{
-                backgroundColor: avatarNamesMap['R'],
+                backgroundColor: AvatarNamesMap['R'],
                 width: '28px',
                 height: '28px',
                 marginRight: '0.5rem',

@@ -24,7 +24,7 @@ import {
 } from '@ant-design/icons';
 import './TaskCard.css';
 import dayjs, { Dayjs } from 'dayjs';
-import { avatarNamesMap } from '../../../shared/constants';
+import { AvatarNamesMap } from '../../../shared/constants';
 import AddMembersDropdown from '../../addMembersDropdown/AddMembersDropdown';
 import StatusDropdown from '../../taskListCommon/statusDropdown/StatusDropdown';
 import { TaskType } from '../../../types/task.types';
@@ -223,7 +223,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                   <Avatar
                     style={{
                       backgroundColor:
-                        avatarNamesMap[member.memberName.charAt(0)],
+                        AvatarNamesMap[member.memberName.charAt(0)],
                       verticalAlign: 'middle',
                       fontSize: '12px',
                     }}
