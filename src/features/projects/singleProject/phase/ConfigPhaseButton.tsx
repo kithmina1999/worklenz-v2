@@ -5,15 +5,19 @@ import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 import { toggleDrawer } from './phaseSlice';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { colors } from '../../../../styles/colors';
+import { useTranslation } from 'react-i18next';
 
 const ConfigPhaseButton = ({ color }: { color: string }) => {
   // get theme details from redux
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
+  // localization
+  const { t } = useTranslation('taskListFilters');
+
   const dispatch = useAppDispatch();
 
   return (
-    <Tooltip title={`Phase settings`}>
+    <Tooltip title={t('configPhaseButtonTooltip')}>
       <Button
         className="borderless-icon-btn"
         onClick={() => dispatch(toggleDrawer())}

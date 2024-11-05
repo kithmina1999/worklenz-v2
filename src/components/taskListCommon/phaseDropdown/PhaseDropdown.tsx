@@ -6,10 +6,14 @@ import './phaseDropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { PhaseOption } from '../../../types/phase.types';
 import { colors } from '../../../styles/colors';
+import { useTranslation } from 'react-i18next';
 
 const PhaseDropdown = ({ projectId }: { projectId: string }) => {
   const [currentPhaseOption, setCurrentPhaseOption] =
     useState<PhaseOption | null>(null);
+
+  // localization
+  const { t } = useTranslation('taskListTable');
 
   // get phase data from redux
   const phaseList = useAppSelector((state) => state.phaseReducer.phaseList);
@@ -50,7 +54,6 @@ const PhaseDropdown = ({ projectId }: { projectId: string }) => {
           <Menu
             className="phase-menu"
             items={phaseMenuItems}
-            defaultValue={'todo'}
             onClick={handlePhaseOptionSelect}
           />
         </Card>
@@ -91,7 +94,7 @@ const PhaseDropdown = ({ projectId }: { projectId: string }) => {
           </Typography.Text>
         ) : (
           <Typography.Text style={{ color: colors.lightGray, fontSize: 13 }}>
-            Select
+            {t('selectText')}
           </Typography.Text>
         )}
 

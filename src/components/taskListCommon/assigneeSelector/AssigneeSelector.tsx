@@ -20,11 +20,16 @@ import { toggleMember } from '../../../features/tasks/taskSlice';
 import CustomAvatar from '../../CustomAvatar';
 import { colors } from '../../../styles/colors';
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 const AssigneeSelector = ({ taskId }: { taskId: string }) => {
   const membersInputRef = useRef<InputRef>(null);
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // localization
+  const { t } = useTranslation('taskListTable');
+
   const dispatch = useAppDispatch();
 
   // get members list from members reducer
@@ -62,7 +67,7 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
           ref={membersInputRef}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.currentTarget.value)}
-          placeholder="Search by name"
+          placeholder={t('searchInputPlaceholder')}
         />
 
         <List style={{ padding: 0 }}>
@@ -118,13 +123,13 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
           }}
           onClick={handleInviteProjectMemberDrawer}
         >
-          Invite a new member by email
+          {t('assigneeSelectorInviteButton')}
         </Button>
 
         <Divider style={{ marginBlock: 8 }} />
 
         <Button type="primary" style={{ alignSelf: 'flex-end' }}>
-          OK
+          {t('okButton')}
         </Button>
       </Flex>
     </Card>

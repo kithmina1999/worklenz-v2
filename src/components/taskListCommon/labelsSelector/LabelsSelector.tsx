@@ -21,11 +21,15 @@ import { LabelType } from '../../../types/label.type';
 import { nanoid } from '@reduxjs/toolkit';
 import { addLabel } from '../../../features/settings/label/labelSlice';
 import { toggleLabel } from '../../../features/tasks/taskSlice';
+import { useTranslation } from 'react-i18next';
 
 const LabelsSelector = ({ taskId }: { taskId: string }) => {
   const labelInputRef = useRef<InputRef>(null);
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // localization
+  const { t } = useTranslation('taskListTable');
 
   // get label list from label reducer
   const labelList = useAppSelector((state) => state.labelReducer.labelList);
@@ -64,7 +68,7 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
           ref={labelInputRef}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.currentTarget.value)}
-          placeholder="Search by name"
+          placeholder={t('searchInputPlaceholder')}
           onKeyDown={(e) => {
             const isLabel = filteredLabelData.findIndex(
               (label) => label.labelName.toLowerCase === searchQuery.toLowerCase
@@ -116,7 +120,7 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
               style={{ color: colors.lightGray }}
               onClick={() => handleCreateLabel(searchQuery)}
             >
-              Hit enter to create!
+              {t('labelSelectorInputTip')}
             </Typography.Text>
           )}
         </List>
@@ -128,7 +132,7 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
           style={{ alignSelf: 'flex-end' }}
           onClick={() => handleCreateLabel(searchQuery)}
         >
-          OK
+          {t('okButton')}
         </Button>
       </Flex>
     </Card>

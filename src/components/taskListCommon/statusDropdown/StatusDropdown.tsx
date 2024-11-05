@@ -4,6 +4,7 @@ import { DownOutlined } from '@ant-design/icons';
 import './statusDropdown.css';
 import { colors } from '../../../styles/colors';
 import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
 
 type StatusDropdownProps = {
   currentStatus: string;
@@ -12,6 +13,9 @@ type StatusDropdownProps = {
 const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
   const [status, setStatus] = useState<string>(currentStatus);
   const [statusName, setStatusName] = useState<string>('');
+
+  // localization
+  const { t } = useTranslation('taskListTable');
 
   const statusList = useAppSelector((state) => state.statusReducer.status);
 
@@ -42,8 +46,12 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
         label: (
           <Flex gap={8} align="center">
             <Badge color={getStatusColor(status.category)} />
-            <Typography.Text style={{ textTransform: 'capitalize' }}>
-              {status.name}
+            <Typography.Text>
+              {status.name === 'To do' ||
+              status.name === 'Doing' ||
+              status.name === 'Done'
+                ? t(status.category + 'SelectorText')
+                : status.name}
             </Typography.Text>
           </Flex>
         ),
@@ -53,7 +61,13 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
   const handleStatusOptionSelect: MenuProps['onClick'] = (e) => {
     const selectedOption = statusList.find((el) => el.id === e.key);
     if (selectedOption) {
-      setStatusName(selectedOption.name);
+      setStatusName(
+        selectedOption.name === 'To do' ||
+          selectedOption.name === 'Doing' ||
+          selectedOption.name === 'Done'
+          ? t(selectedOption.category + 'SelectorText')
+          : selectedOption.name
+      );
       setStatus(selectedOption.category);
     }
   };

@@ -7,9 +7,13 @@ import {
   TASK_PRIORITY_MEDIUM_COLOR,
 } from '../../../../../shared/constants';
 import { colors } from '../../../../../styles/colors';
+import { useTranslation } from 'react-i18next';
 
 const PriorityFilterDropdown = () => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
+
+  // localization
+  const { t } = useTranslation('taskListFilters');
 
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {
@@ -24,9 +28,13 @@ const PriorityFilterDropdown = () => {
   };
 
   const priorityFieldsList: PriorityFieldsType[] = [
-    { key: 'low', label: 'Low', color: TASK_PRIORITY_LOW_COLOR },
-    { key: 'medium', label: 'Medium', color: TASK_PRIORITY_MEDIUM_COLOR },
-    { key: 'high', label: 'High', color: TASK_PRIORITY_HIGH_COLOR },
+    { key: 'low', label: t('lowText'), color: TASK_PRIORITY_LOW_COLOR },
+    {
+      key: 'medium',
+      label: t('mediumText'),
+      color: TASK_PRIORITY_MEDIUM_COLOR,
+    },
+    { key: 'high', label: t('highText'), color: TASK_PRIORITY_HIGH_COLOR },
   ];
 
   // custom dropdown content
@@ -79,7 +87,7 @@ const PriorityFilterDropdown = () => {
         }}
       >
         <Space>
-          Priority
+          {t('priorityText')}
           {selectedCount > 0 && (
             <Badge size="small" count={selectedCount} color={colors.skyBlue} />
           )}

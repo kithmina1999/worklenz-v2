@@ -8,8 +8,12 @@ import {
   toggleColumnVisibility,
 } from '../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice';
 import { columnList } from '../taskListTable/columns/columnList';
+import { useTranslation } from 'react-i18next';
 
 const ShowFieldsFilterDropdown = () => {
+  // localization
+  const { t } = useTranslation('taskListFilters');
+
   const dispatch = useAppDispatch();
 
   // remove the task and selector column from the list because those are fixrd columns
@@ -47,9 +51,10 @@ const ShowFieldsFilterDropdown = () => {
                   ]
                 }
                 onClick={() => dispatch(toggleColumnVisibility(col.key))}
-              >
-                {col.columnName}
-              </Checkbox>
+              />
+              {t(
+                `${col.key === 'phases' ? 'phasesText' : col.columnHeader + 'Text'}`
+              )}
             </Space>
           </List.Item>
         ))}
@@ -59,7 +64,7 @@ const ShowFieldsFilterDropdown = () => {
 
   return (
     <Dropdown overlay={showFieldsDropdownContent} trigger={['click']}>
-      <Button icon={<MoreOutlined />}>Show fields</Button>
+      <Button icon={<MoreOutlined />}>{t('showFieldsText')}</Button>
     </Dropdown>
   );
 };

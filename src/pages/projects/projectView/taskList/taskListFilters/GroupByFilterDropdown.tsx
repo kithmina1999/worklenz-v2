@@ -6,11 +6,15 @@ import ConfigPhaseButton from '../../../../../features/projects/singleProject/ph
 import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
 import CreateStatusButton from '../../../../../features/projects/status/CreateStatusButton';
+import { useTranslation } from 'react-i18next';
 
 const GroupByFilterDropdown = () => {
   type GroupTypes = 'status' | 'priority' | 'phase';
 
   const [activeGroup, setActiveGroup] = useState<GroupTypes>('status');
+
+  // localization
+  const { t } = useTranslation('taskListFilters');
 
   const handleChange = (value: string) => {
     setActiveGroup(value as GroupTypes);
@@ -26,14 +30,18 @@ const GroupByFilterDropdown = () => {
     ) || null;
 
   const groupDropdownMenuItems = [
-    { key: 'status', value: 'status', label: 'Status' },
-    { key: 'priority', value: 'priority', label: 'Priority' },
-    { key: 'phase', value: 'phase', label: phase ? phase?.phase : 'Phase' },
+    { key: 'status', value: 'status', label: t('statusText') },
+    { key: 'priority', value: 'priority', label: t('priorityText') },
+    {
+      key: 'phase',
+      value: 'phase',
+      label: phase ? phase?.phase : t('phaseText'),
+    },
   ];
 
   return (
     <Flex align="center" gap={4} style={{ marginInlineStart: 12 }}>
-      Group by:
+      {t('groupByText')}:
       <Select
         defaultValue={'status'}
         options={groupDropdownMenuItems}

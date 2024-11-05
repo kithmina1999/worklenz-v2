@@ -35,6 +35,7 @@ import {
   deselectAll,
   selectTaskIds,
 } from '../../../../../features/projects/bulkActions/bulkActionSlice';
+import { useTranslation } from 'react-i18next';
 
 const TaskListTable = ({
   taskList,
@@ -59,6 +60,9 @@ const TaskListTable = ({
   const [scrollingTables, setScrollingTables] = useState<{
     [key: string]: boolean;
   }>({});
+
+  // localization
+  const { t } = useTranslation('taskListTable');
 
   const dispatch = useAppDispatch();
 
@@ -363,7 +367,9 @@ const TaskListTable = ({
                   className={`${customHeaderColumnStyles(column.key)}`}
                   style={{ width: column.width, fontWeight: 500 }}
                 >
-                  {column.columnHeader}
+                  {column.key === 'phases'
+                    ? column.columnHeader
+                    : t(`${column.columnHeader}Column`)}
                 </th>
               ))}
             </tr>

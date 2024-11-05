@@ -6,12 +6,16 @@ import {
 import { Badge, Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
 import React, { useState } from 'react';
 import { colors } from '../../../../../styles/colors';
+import { useTranslation } from 'react-i18next';
 
 const SortFilterDropdown = () => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
   const [sortState, setSortState] = useState<
     Record<string, 'ascending' | 'descending'>
   >({});
+
+  // localization
+  const { t } = useTranslation('taskListFilters');
 
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {
@@ -33,14 +37,14 @@ const SortFilterDropdown = () => {
   };
 
   const sortFieldsList: SortFieldsType[] = [
-    { key: 'task', label: 'Task' },
-    { key: 'status', label: 'Status' },
-    { key: 'priority', label: 'Priority' },
-    { key: 'startDate', label: 'Start Date' },
-    { key: 'endDate', label: 'End Date' },
-    { key: 'completedDate', label: 'Completed Date' },
-    { key: 'createdDate', label: 'Created Date' },
-    { key: 'lastUpdated', label: 'Last Updated' },
+    { key: 'task', label: t('taskText') },
+    { key: 'status', label: t('statusText') },
+    { key: 'priority', label: t('priorityText') },
+    { key: 'startDate', label: t('startDateText') },
+    { key: 'endDate', label: t('endDateText') },
+    { key: 'completedDate', label: t('completedDateText') },
+    { key: 'createdDate', label: t('createdDateText') },
+    { key: 'lastUpdated', label: t('lastUpdatedText') },
   ];
 
   // custom dropdown content
@@ -99,7 +103,7 @@ const SortFilterDropdown = () => {
       >
         <Space>
           <SortAscendingOutlined />
-          Sort
+          {t('sortText')}
           {selectedCount > 0 && (
             <Badge size="small" count={selectedCount} color={colors.skyBlue} />
           )}

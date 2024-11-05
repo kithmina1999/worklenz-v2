@@ -15,12 +15,16 @@ import {
 import React, { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
 import { colors } from '../../../../../styles/colors';
+import { useTranslation } from 'react-i18next';
 
 const LabelsFilterDropdown = () => {
   const labelInputRef = useRef<InputRef>(null);
   const [selectedCount, setSelectedCount] = useState<number>(0);
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // localization
+  const { t } = useTranslation('taskListFilters');
 
   // get label list from label reducer
   const labelList = useAppSelector((state) => state.labelReducer.labelList);
@@ -108,7 +112,7 @@ const LabelsFilterDropdown = () => {
         }}
       >
         <Space>
-          Labels
+          {t('labelsText')}
           {selectedCount > 0 && (
             <Badge size="small" count={selectedCount} color={colors.skyBlue} />
           )}

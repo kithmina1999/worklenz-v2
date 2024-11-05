@@ -10,6 +10,7 @@ import {
 import './priorityDropdown.css';
 import { colors } from '../../../styles/colors';
 import { TaskPriorityType } from '../../../types/task.types';
+import { useTranslation } from 'react-i18next';
 
 type PriorityDropdownProps = {
   currentPriority: TaskPriorityType;
@@ -17,6 +18,9 @@ type PriorityDropdownProps = {
 
 const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
   const [priority, setPriority] = useState<TaskPriorityType>(currentPriority);
+
+  // localization
+  const { t } = useTranslation('taskListTable');
 
   // fuction for get a color regariding the priority
   const getPriorityColor = (priority: TaskPriorityType) => {
@@ -40,7 +44,7 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
       key: 'low',
       label: (
         <Flex gap={4}>
-          Low
+          {t('lowSelectorText')}
           <MinusOutlined style={{ color: getPriorityColor('low') }} />
         </Flex>
       ),
@@ -49,7 +53,7 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
       key: 'medium',
       label: (
         <Flex gap={4}>
-          Medium
+          {t('mediumSelectorText')}
           <PauseOutlined
             style={{
               color: getPriorityColor('medium'),
@@ -63,7 +67,7 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
       key: 'high',
       label: (
         <Flex gap={4}>
-          High
+          {t('highSelectorText')}
           <DoubleLeftOutlined
             style={{
               color: getPriorityColor('high'),
@@ -126,7 +130,7 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
             fontSize: 13,
           }}
         >
-          {priority}
+          {t(priority + 'SelectorText')}
         </Typography.Text>
 
         <DownOutlined />
