@@ -21,6 +21,7 @@ import './taskListTableWrapper.css';
 import TaskListTable from './TaskListTable';
 import { MenuProps } from 'antd/lib';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
 
 type TaskListTableWrapperProps = {
   taskList: TaskType[];
@@ -51,6 +52,9 @@ const TaskListTableWrapper = ({
   const [currentCategory, setCurrentCategory] = useState<string | null>(
     statusCategory
   );
+
+  // localization
+  const { t } = useTranslation('taskListTable');
 
   // function to handle toggle expand
   const handlToggleExpand = () => {
@@ -177,10 +181,17 @@ const TaskListTableWrapper = ({
                 style={{
                   fontSize: 14,
                   color: colors.darkGray,
-                  textTransform: 'capitalize',
                 }}
               >
-                {tableName} ({taskList.length})
+                {/* check the default values available in the table names  */}
+                {['todo', 'doing', 'done', 'low', 'medium', 'high'].includes(
+                  tableName.replace(/\s+/g, '').toLowerCase()
+                )
+                  ? t(
+                      `${tableName.replace(/\s+/g, '').toLowerCase()}SelectorText`
+                    )
+                  : tableName}{' '}
+                ({taskList.length})
               </Typography.Text>
             )}
           </Button>
