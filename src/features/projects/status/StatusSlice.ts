@@ -16,17 +16,17 @@ const initialState: StatusState = {
   status: [
     {
       id: '1',
-      name: 'todo',
+      name: 'To do',
       category: 'todo',
     },
     {
       id: '2',
-      name: 'doing',
+      name: 'Doing',
       category: 'doing',
     },
     {
       id: '3',
-      name: 'done',
+      name: 'Done',
       category: 'done',
     },
   ],

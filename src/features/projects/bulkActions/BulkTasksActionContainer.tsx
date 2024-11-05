@@ -10,7 +10,7 @@ import {
 } from '@ant-design/icons';
 import { Button, Flex, Tooltip, Typography } from 'antd';
 import React from 'react';
-import { colors } from '../../../../../../styles/colors';
+import { colors } from '../../../styles/colors';
 
 type BulkTasksActionProps = {
   selectedTaskIds: string[];

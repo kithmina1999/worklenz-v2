@@ -8,7 +8,7 @@ import { addTask, addTaskToTop } from '../../../features/tasks/taskSlice';
 import { setTaskCardDisabled } from '../../../features/board/createCardSlice';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 interface StatusProps {
-  status: TaskStatusType;
+  status: string;
   position: 'top' | 'bottom';
 }
 

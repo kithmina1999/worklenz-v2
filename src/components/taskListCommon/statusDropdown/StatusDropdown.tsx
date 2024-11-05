@@ -1,35 +1,27 @@
 import { Badge, Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
-import { TaskStatusType } from '../../../types/task.types';
 import './statusDropdown.css';
 import { colors } from '../../../styles/colors';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useSelectedProject } from '../../../hooks/useSelectedProject';
 
 type StatusDropdownProps = {
-  currentStatus: TaskStatusType;
+  currentStatus: string;
 };
 
 const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
-  const [status, setStatus] = useState<TaskStatusType>(currentStatus);
+  const [status, setStatus] = useState<string>(currentStatus);
   const [statusName, setStatusName] = useState<string>('');
 
-  const selectedProject = useSelectedProject();
-
-  const statusList = useAppSelector(
-    (state) => state.statusReducer.projectWiseStatusList
-  ).find((statusList) => statusList.projectId === selectedProject?.projectId);
+  const statusList = useAppSelector((state) => state.statusReducer.status);
 
   // this is trigger only on status list update
   useEffect(() => {
-    const selectedStatus = statusList?.statusList.find(
-      (el) => el.statusCategory === status
-    );
-    setStatusName(selectedStatus?.statusName || '');
-  }, [statusList?.statusList]);
+    const selectedStatus = statusList.find((el) => el.category === status);
+    setStatusName(selectedStatus?.name || '');
+  }, [statusList]);
 
-  const getStatusColor = (status: TaskStatusType) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'todo':
         return '#d8d7d8';
@@ -45,24 +37,24 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
   type MenuItem = Required<MenuProps>['items'][number];
 
   const statusMenuItems: MenuItem[] = statusList
-    ? statusList?.statusList.map((status) => ({
-        key: status.statusId,
+    ? statusList.map((status) => ({
+        key: status.id,
         label: (
-          <Flex gap={4}>
-            <Badge color={getStatusColor(status.statusCategory)} />
-            {status.statusName}
+          <Flex gap={8} align="center">
+            <Badge color={getStatusColor(status.category)} />
+            <Typography.Text style={{ textTransform: 'capitalize' }}>
+              {status.name}
+            </Typography.Text>
           </Flex>
         ),
       }))
     : [];
 
   const handleStatusOptionSelect: MenuProps['onClick'] = (e) => {
-    const selectedOption = statusList?.statusList.find(
-      (el) => el.statusId === e.key
-    );
+    const selectedOption = statusList.find((el) => el.id === e.key);
     if (selectedOption) {
-      setStatusName(selectedOption.statusName);
-      setStatus(selectedOption.statusCategory);
+      setStatusName(selectedOption.name);
+      setStatus(selectedOption.category);
     }
   };
 
@@ -101,7 +93,10 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
       >
         <Typography.Text
           ellipsis={{ expanded: false }}
-          style={{ color: colors.darkGray, fontSize: 13 }}
+          style={{
+            color: colors.darkGray,
+            fontSize: 13,
+          }}
         >
           {statusName}
         </Typography.Text>

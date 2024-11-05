@@ -7,6 +7,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import CommonStatusSection from '../../../../components/board/commonStatusSection/CommonStatusSection';
 import { useMediaQuery } from 'react-responsive';
+import { toggleDrawer } from '../../../../features/projects/status/StatusSlice';
 
 const ProjectViewBoard: React.FC = () => {
   const dataSource: TaskType[] = useAppSelector(
@@ -44,10 +45,10 @@ const ProjectViewBoard: React.FC = () => {
             paddingBottom: '10px',
           }}
         >
-          {projectStatusList?.map((status) => {
+          {setOfStatus?.map((status) => {
             // Filter tasks based on the current status
             const filteredTasks = dataSource.filter(
-              (task) => task.status === status.statusName
+              (task) => task.status === status.name
             );
             return (
               <CommonStatusSection
@@ -56,6 +57,7 @@ const ProjectViewBoard: React.FC = () => {
                 category={status.category}
                 id={status.id}
                 dataSource={filteredTasks}
+                statusId={''}
               />
             );
           })}

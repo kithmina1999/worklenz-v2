@@ -16,7 +16,7 @@ import ProjectViewHeader from './ProjectViewHeader';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CreateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/CreateTaskDrawer';
 import PhaseDrawer from '../../../features/projects/singleProject/phase/PhaseDrawer';
-import StatusDrawer from '../../../features/projects/singleProject/status/StatusDrawer';
+import StatusDrawer from '../../../features/projects/status/StatusDrawer';
 
 const ProjectView = () => {
   const location = useLocation();

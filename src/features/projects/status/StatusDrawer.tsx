@@ -19,6 +19,7 @@ import { TaskStatusType } from '../../../types/task.types';
 import { colors } from '../../../styles/colors';
 import { DownOutlined } from '@ant-design/icons';
 import './StatusDrawer.css';
+import { nanoid } from '@reduxjs/toolkit';
 
 const StatusDrawer: React.FC = () => {
   const isCreateStatusDrawerOpen = useAppSelector(
@@ -37,7 +38,7 @@ const StatusDrawer: React.FC = () => {
   const handleFormSubmit = (values: { name: string; category: string }) => {
     dispatch(
       addStatus({
-        id: new Date().toISOString(),
+        id: nanoid(),
         name: values.name,
         category: currentStatus.toLowerCase(),
       })

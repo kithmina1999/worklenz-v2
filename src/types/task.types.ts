@@ -20,7 +20,7 @@ export type TaskType = {
   progress?: number;
   members?: MemberType[];
   labels?: LabelType[];
-  status: TaskStatusType;
+  status: TaskStatusType | string;
   priority: TaskPriorityType;
   timeTracking?: number;
   estimation?: string;

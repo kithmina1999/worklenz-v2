@@ -5,7 +5,7 @@ import { colors } from '../../../../../styles/colors';
 import ConfigPhaseButton from '../../../../../features/projects/singleProject/phase/ConfigPhaseButton';
 import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import CreateStatusButton from '../../../../../features/projects/singleProject/status/CreateStatusButton';
+import CreateStatusButton from '../../../../../features/projects/status/CreateStatusButton';
 
 const GroupByFilterDropdown = () => {
   type GroupTypes = 'status' | 'priority' | 'phase';

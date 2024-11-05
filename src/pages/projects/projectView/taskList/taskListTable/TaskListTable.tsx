@@ -12,7 +12,6 @@ import {
   Typography,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import CustomAvatar from '../../../../../components/CustomAvatar';
 import LabelsSelector from '../../../../../components/taskListCommon/labelsSelector/LabelsSelector';
 import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
@@ -31,9 +30,19 @@ import { colors } from '../../../../../styles/colors';
 import TimeTracker from './taskListTableCells/TimeTracker';
 import TaskContextMenu from './contextMenu/TaskContextMenu';
 import TaskProgress from './taskListTableCells/TaskProgress';
-import BulkTasksActionContainer from './bulkActionContainer/BulkTasksActionContainer';
+import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
+import {
+  deselectAll,
+  selectTaskIds,
+} from '../../../../../features/projects/bulkActions/bulkActionSlice';
 
-const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
+const TaskListTable = ({
+  taskList,
+  tableId,
+}: {
+  taskList: TaskType[] | null;
+  tableId: string;
+}) => {
   // these states manage the necessary states
   const [hoverRow, setHoverRow] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -47,7 +56,11 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
     y: 0,
   });
   // state to check scroll
-  const [isScrolling, setIsScrolling] = useState(false);
+  const [scrollingTables, setScrollingTables] = useState<{
+    [key: string]: boolean;
+  }>({});
+
+  const dispatch = useAppDispatch();
 
   // get data theme data from redux
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
@@ -76,6 +89,7 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
   const toggleSelectAll = () => {
     if (isSelectAll) {
       setSelectedRows([]);
+      dispatch(deselectAll());
     } else {
       const allTaskIds =
         taskList?.flatMap((task) => [
@@ -84,6 +98,7 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
         ]) || [];
 
       setSelectedRows(allTaskIds);
+      dispatch(selectTaskIds(allTaskIds));
       console.log('selected tasks and subtasks (all):', allTaskIds);
     }
     setIsSelectAll(!isSelectAll);
@@ -122,32 +137,31 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
     setContextMenuVisible(true);
   };
 
-  // const handle bulk action container close
-  const handleBulkActionContainerClose = () => {
-    setSelectedRows([]);
-  };
-
   // trigger the table scrolling
   useEffect(() => {
-    const tableContainer = document.querySelector('.tasklist-container');
-
+    const tableContainer = document.querySelector(
+      `.tasklist-container-${tableId}`
+    );
     const handleScroll = () => {
       if (tableContainer) {
-        setIsScrolling(tableContainer.scrollLeft > 0);
+        setScrollingTables((prev) => ({
+          ...prev,
+          [tableId]: tableContainer.scrollLeft > 0,
+        }));
       }
     };
     tableContainer?.addEventListener('scroll', handleScroll);
     return () => tableContainer?.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [tableId]);
 
   // layout styles for table and the columns
   const customBorderColor = themeMode === 'dark' && ' border-[#303030]';
 
   const customHeaderColumnStyles = (key: string) =>
-    `border px-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content z-10 h-[42px] after:absolute after:inset-0 after:-z-10 after:w-full after:bg-transparent ${isScrolling ? 'after:shadow-[inset_-10px_0_8px_-8px_rgba(0,0,0,0.15)]' : ''}`} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-white'}`;
+    `border px-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content z-10 h-[42px] after:absolute after:inset-0 after:-z-10 after:w-full after:bg-transparent ${scrollingTables[tableId] ? 'after:shadow-[inset_-10px_0_8px_-8px_rgba(0,0,0,0.15)]' : ''}`} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-[#fafafa]'}`;
 
   const customBodyColumnStyles = (key: string) =>
-    `border px-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content z-10 h-[42px] after:absolute after:inset-0 after:-z-10 after:w-full after:bg-transparent ${isScrolling ? 'after:shadow-[inset_-10px_0_8px_-8px_rgba(0,0,0,0.15)]' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
+    `border px-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content z-10 h-[42px] after:absolute after:inset-0 after:-z-10 after:w-full after:bg-transparent ${scrollingTables[tableId] ? 'after:shadow-[inset_-10px_0_8px_-8px_rgba(0,0,0,0.15)]' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
 
   // function to render the column content based on column key
   const renderColumnContent = (
@@ -328,7 +342,9 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
 
   return (
     <div className={`border-x border-b ${customBorderColor}`}>
-      <div className={`tasklist-container min-h-0 max-w-full overflow-x-auto`}>
+      <div
+        className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}
+      >
         <table className={`rounded-2 w-full min-w-max border-collapse`}>
           <thead className="h-[42px]">
             <tr>
@@ -497,23 +513,6 @@ const TaskListTable = ({ taskList }: { taskList: TaskType[] | null }) => {
         selectedTask={selectedRows[0]}
         onClose={() => setContextMenuVisible(false)}
       />
-
-      {/* bulk action container ==> used tailwind to recreate the animation */}
-      {createPortal(
-        <div
-          className={`absolute bottom-0 left-1/2 -translate-x-1/2 ${selectedRows.length > 0 ? 'overflow-visible' : 'h-[1px] overflow-hidden'}`}
-        >
-          <div
-            className={`${selectedRows.length > 0 ? 'bottom-4' : 'bottom-0'} absolute left-1/2 z-[1000] -translate-x-1/2 transition-all duration-300`}
-          >
-            <BulkTasksActionContainer
-              selectedTaskIds={selectedRows}
-              closeContainer={handleBulkActionContainerClose}
-            />
-          </div>
-        </div>,
-        document.body
-      )}
 
       {/* update task drawer  */}
       <UpdateTaskDrawer taskId={selectedTaskId} />

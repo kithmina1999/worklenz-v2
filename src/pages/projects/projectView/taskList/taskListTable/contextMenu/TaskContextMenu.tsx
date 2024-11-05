@@ -2,15 +2,12 @@ import {
   DeleteOutlined,
   InboxOutlined,
   RetweetOutlined,
-  RightOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
 import { Badge, Dropdown, Flex, Typography } from 'antd';
 import { MenuProps } from 'antd/lib';
 import React from 'react';
 import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import { useSelectedProject } from '../../../../../../hooks/useSelectedProject';
-import { TaskStatusType } from '../../../../../../types/task.types';
 
 type TaskContextMenuProps = {
   visible: boolean;
@@ -25,19 +22,10 @@ const TaskContextMenu = ({
   selectedTask,
   onClose,
 }: TaskContextMenuProps) => {
-  // get selected project
-  const selectedProject = useSelectedProject();
-
   // find the available status for the currently active project
-  const statusList = useAppSelector(
-    (state) => state.statusReducer.projectWiseStatusList
-  ).find(
-    (statusList) => statusList.projectId === selectedProject?.projectId
-  )?.statusList;
+  const statusList = useAppSelector((state) => state.statusReducer.status);
 
-  console.log(statusList);
-
-  const getStatusColor = (status: TaskStatusType) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'todo':
         return '#d8d7d8';
@@ -61,11 +49,11 @@ const TaskContextMenu = ({
       icon: <RetweetOutlined />,
       label: 'Move to',
       children: statusList?.map((status) => ({
-        key: status.statusId,
+        key: status.id,
         label: (
-          <Flex gap={4}>
-            <Badge color={getStatusColor(status.statusCategory)} />
-            {status.statusName}
+          <Flex gap={8}>
+            <Badge color={getStatusColor(status.category)} />
+            {status.name}
           </Flex>
         ),
       })),

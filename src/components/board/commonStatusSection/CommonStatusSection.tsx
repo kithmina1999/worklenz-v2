@@ -6,8 +6,6 @@ import {
   LoadingOutlined,
   MoreOutlined,
   PlusOutlined,
-  RetweetOutlined,
-  RightOutlined,
 } from '@ant-design/icons';
 import {
   setTaskCardDisabled,
@@ -17,10 +15,12 @@ import { TaskType } from '../../../types/task.types';
 import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
 import TaskCard from '../taskCard/TaskCard';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+
 import './CommonStatusSection.css';
-import ChangeCategoryDropdown from '../changeCategoryDropdown/ChangeCategoryDropdown';
+
 import { deleteStatus } from '../../../features/projects/status/StatusSlice';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import ChangeCategoryDropdown from '../changeCategoryDropdown/ChangeCategoryDropdown';
 
 interface CommonStatusSectionProps {
   statusId: string;
@@ -265,7 +265,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
           {!isTopCardDisabled && (
             <TaskCreateCard
               ref={createTaskInputRef}
-              status={statusCategory}
+              status={category}
               position={'top'}
             />
           )}
@@ -277,7 +277,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
           {!isBottomCardDisabled && (
             <TaskCreateCard
               ref={createTaskInputRef}
-              status={statusCategory}
+              status={category}
               position={'bottom'}
             />
           )}

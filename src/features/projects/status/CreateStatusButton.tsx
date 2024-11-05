@@ -1,9 +1,9 @@
 import { SettingOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 import React from 'react';
-import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import { toggleDrawer } from './statusSlice';
-import { colors } from '../../../../styles/colors';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { toggleDrawer } from './StatusSlice';
+import { colors } from '../../../styles/colors';
 
 const CreateStatusButton = () => {
   const dispatch = useAppDispatch();
