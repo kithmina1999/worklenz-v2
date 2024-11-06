@@ -1,6 +1,6 @@
 import { Avatar, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { avatarNamesMap } from '../../../shared/constants';
+import { AvatarNamesMap } from '../../../shared/constants';
 import { Member } from '../../../types/schedule/schedule.types';
 
 const fetchData = async () => {
@@ -106,7 +106,7 @@ const Team: React.FC = () => {
                 <Avatar
                   style={{
                     backgroundColor:
-                      avatarNamesMap[member.memberName.charAt(0)],
+                      AvatarNamesMap[member.memberName.charAt(0)],
                   }}
                 >
                   {member.memberName.charAt(0)}
