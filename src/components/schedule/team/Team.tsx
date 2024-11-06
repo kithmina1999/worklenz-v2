@@ -1,198 +1,178 @@
-import { Avatar, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { avatarNamesMap } from '../../../shared/constants';
 import { Member } from '../../../types/schedule/schedule.types';
 
-const fetchData = async () => {
-  const response = await fetch('/TeamData.json');
-  const data = await response.json();
-  return data;
+interface GanttChartProps {
+  members: Member[];
+}
+
+const getDaysBetween = (start: Date, end: Date): number => {
+  const msPerDay = 1000 * 60 * 60 * 24;
+  return Math.round((end.getTime() - start.getTime()) / msPerDay);
 };
 
-const generateDates = () => {
-  const dates = [];
-  const today = new Date();
+const timelineStart = new Date();
+const timelineEnd = new Date(timelineStart);
+timelineEnd.setDate(timelineStart.getDate() + 15);
 
-  for (let i = 0; i < 15; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    dates.push(date);
-  }
+const totalDays = getDaysBetween(timelineStart, timelineEnd);
 
-  return dates;
+const GanttChart: React.FC<GanttChartProps> = ({ members }) => {
+  const [weekends, setWeekends] = useState<boolean[]>([]);
+
+  useEffect(() => {
+    const weekendsArray = Array.from({ length: totalDays }, (_, i) => {
+      const date = new Date(timelineStart);
+      date.setDate(timelineStart.getDate() + i);
+      return date.getDay() === 0 || date.getDay() === 6;
+    });
+    setWeekends(weekendsArray);
+  }, []);
+
+  return (
+    <div style={{ border: '1px solid rgba(0, 0, 0, 0.2)' }}>
+      {/* Header Row for Dates */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${totalDays}, 75px)`,
+          gap: '2px',
+          paddingLeft: '200px',
+          height: '60px',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.2)',
+        }}
+      >
+        {Array.from({ length: totalDays }, (_, i) => {
+          const date = new Date(timelineStart);
+          date.setDate(timelineStart.getDate() + i);
+          const formattedDate = date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+          });
+
+          return (
+            <div
+              key={i}
+              style={{
+                textAlign: 'center',
+                fontSize: '14px',
+                width: '83px',
+                padding: '16px 16px 0px 16px',
+                fontWeight: 'bold',
+                color: weekends[i] ? 'rgba(0, 0, 0, 0.27)' : '',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {formattedDate}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Render members */}
+      {members.map((member) => (
+        <div key={member.memberId}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span style={{ whiteSpace: 'nowrap', width: '200px' }}>{member.memberName}</span>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: `repeat(${totalDays}, 75px)`,
+                height: '72px',
+              }}
+            >
+              {/* Render each day */}
+              {Array.from({ length: totalDays }, (_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    backgroundColor: weekends[i] ? 'rgba(217, 217, 217, 0.4)' : '',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '10px 0',
+                    height: '92px',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '62px',
+                      backgroundColor: 'rgba(200, 200, 200, 0.35)',
+                      justifyContent: 'center',
+                      display: 'flex',
+                      alignItems: 'center',
+                      height: '100%',
+                    }}
+                  >
+                    0h
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Render Projects */}
+          {member.projects.map((project) => {
+            const projectStart = new Date(project.startDate);
+            const projectEnd = new Date(project.endDate);
+            const startOffset = getDaysBetween(timelineStart, projectStart);
+            const projectDuration = getDaysBetween(projectStart, projectEnd);
+
+            return (
+              <div key={project.projectId} style={{ display: 'flex' }}>
+                <span style={{ whiteSpace: 'nowrap', width: '200px' }}>{project.projectName}</span>
+                {/* Timeline grid for project bar */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: `repeat(${totalDays}, 75px)`,
+                    position: 'relative',
+                    width: `${86 * totalDays}px`,
+                  }}
+                >
+                  {/* Project Bar */}
+                  <div
+                    style={{
+                      gridColumnStart: startOffset + 1,
+                      gridColumnEnd: startOffset + projectDuration + 1,
+                      backgroundColor: 'rgba(240, 248, 255, 1)',
+                      height: '66px',
+                      borderRadius: '5px',
+                      marginTop: '20px',
+                      border: '1px solid rgba(149, 197, 248, 1)'
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
 };
 
 const Team: React.FC = () => {
-  const [colorPercentage, setColorPercentage] = useState(0);
   const [members, setMembers] = useState<Member[]>([]);
 
-  const dates = generateDates();
-
   useEffect(() => {
-    const loadData = async () => {
+    const fetchData = async () => {
       try {
-        const data = await fetchData();
+        const response = await fetch('/TeamData.json');
+        const data = await response.json();
         setMembers(data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-
-    loadData();
+    fetchData();
   }, []);
 
-  const getDateStyle = (date: Date) => {
-    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-    const topColor = isWeekend
-      ? 'rgba(79, 76, 76, 0.4)'
-      : 'rgba(6, 126, 252, 0.4)';
-
-    return { isWeekend, topColor };
-  };
-
-  const calculateAssignedHours = (member: Member, date: Date) => {
-    let totalHours = 0;
-
-    member.projects.forEach((project) => {
-      const projectStartDate = new Date(project.startDate);
-      const projectEndDate = new Date(project.endDate);
-
-      if (date >= projectStartDate && date <= projectEndDate) {
-        totalHours += project.perDayHours;
-      }
-    });
-
-    return totalHours;
-  };
-
-  return (
-    <table style={{ border: '1px solid rgba(0, 0, 0, 0.2)', width: '100%' }}>
-      <thead>
-        <tr style={{ border: '1px solid rgba(0, 0, 0, 0.2)' }}>
-          <th
-            style={{ width: '275px', border: '1px solid rgba(0, 0, 0, 0.2)' }}
-          ></th>
-          {dates.map((date, index) => {
-            const { isWeekend } = getDateStyle(date);
-            return (
-              <th key={index}>
-                <span
-                  style={{
-                    padding: '8px',
-                    display: 'flex',
-                    color: isWeekend ? 'rgba(0, 0, 0, 0.27)' : '',
-                  }}
-                >
-                  {`${date.toLocaleString('en-US', { weekday: 'short' })} ${date.toLocaleString('en-US', { month: 'short' })} ${date.getDate()}`}
-                </span>
-              </th>
-            );
-          })}
-        </tr>
-      </thead>
-      <tbody>
-        {members.map((member) => (
-          <>
-            <tr style={{ height: '88px' }} key={member.memberId}>
-              <td
-                style={{
-                  borderRight: '1px solid rgba(0, 0, 0, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  height: '88px',
-                }}
-              >
-                <Avatar
-                  style={{
-                    backgroundColor:
-                      avatarNamesMap[member.memberName.charAt(0)],
-                  }}
-                >
-                  {member.memberName.charAt(0)}
-                </Avatar>
-                <Typography.Text style={{ fontSize: '16px' }}>
-                  {member.memberName}
-                </Typography.Text>
-              </td>
-              {dates.map((date, index) => {
-                const assignedHours = calculateAssignedHours(member, date);
-                const { isWeekend, topColor } = getDateStyle(date);
-
-                return (
-                  <td
-                    key={index}
-                    style={{
-                      backgroundColor: isWeekend
-                        ? 'rgba(217, 217, 217, 0.4)'
-                        : '',
-                    }}
-                  >
-                    <span
-                      style={{
-                        background:
-                          assignedHours <= 8
-                            ? `linear-gradient(to top, ${topColor} ${(assignedHours / 8) * 100}%, rgba(200, 200, 200, 0.35) ${(assignedHours / 8) * 100}%)`
-                            : 'rgba(255, 0, 0, 0.4)',
-                        padding: '23px',
-                        borderRadius: '5px',
-                        display: 'inline-block',
-                        width: '100%',
-                        height: '100%',
-                        textAlign: 'center',
-                      }}
-                    >
-                      {assignedHours}h
-                    </span>
-                  </td>
-                );
-              })}
-            </tr>
-            {member.projects.map((project) => {
-              const projectStartDate = new Date(project.startDate);
-              const projectEndDate = new Date(project.endDate);
-
-              const startIndex = dates.findIndex(
-                (date) =>
-                  date.toDateString() === projectStartDate.toDateString()
-              );
-              const endIndex = dates.findIndex(
-                (date) => date.toDateString() === projectEndDate.toDateString()
-              );
-
-              return (
-                <tr key={project.projectId} style={{ marginBottom: '8px' }}>
-                  <td style={{ height: '66px', borderRight: '1px solid rgba(0, 0, 0, 0.2)', }}>{project.projectName}</td>
-
-                  {dates.slice(0, startIndex).map((date, index) => (
-                    <td key={index}>{/* Empty cell */}</td>
-                  ))}
-
-                  <td colSpan={endIndex - startIndex + 1}>
-                    <div
-                      style={{
-                        backgroundColor: 'rgba(240, 248, 255, 1)',
-                        border: '1px solid rgba(149, 197, 248, 1)',
-                        borderRadius: '5px',
-                        height: '66px',
-                        paddingLeft: '12px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <span style={{ fontWeight: 'bold' }}>Total {project.totalHours}h</span>
-                      <span style={{ fontSize: '12px' }}>Per Day {project.perDayHours}h</span>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </>
-        ))}
-      </tbody>
-    </table>
-  );
+  return <GanttChart members={members} />;
 };
 
 export default Team;
