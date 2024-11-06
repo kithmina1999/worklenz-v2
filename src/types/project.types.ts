@@ -38,3 +38,18 @@ export type ProjectType = {
   projectTeam: string;
   projectMemberCount: number;
 };
+
+export interface IProject {
+  id?: string;
+  name?: string;
+  color_code?: string;
+  notes?: string;
+  team_id?: string;
+  client_id?: string;
+  owner_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  status_id?: string;
+  man_days?: number
+  hours_per_day?: number
+}
