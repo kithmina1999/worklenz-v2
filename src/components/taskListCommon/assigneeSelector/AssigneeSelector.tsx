@@ -15,7 +15,7 @@ import {
 import React, { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleDrawer } from '../../../features/projects/singleProject/members/projectMembersSlice';
+import { toggleProjectMemberDrawer } from '../../../features/projects/singleProject/members/projectMembersSlice';
 import { toggleMember } from '../../../features/tasks/taskSlice';
 import CustomAvatar from '../../CustomAvatar';
 import { colors } from '../../../styles/colors';
@@ -47,7 +47,7 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
 
   // function to handle invite project member drawer
   const handleInviteProjectMemberDrawer = () => {
-    dispatch(toggleDrawer());
+    dispatch(toggleProjectMemberDrawer());
   };
 
   // function to focus members input

@@ -19,11 +19,9 @@ import {
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import EmptyListPlaceholder from '../../../../components/EmptyListPlaceholder';
-import {
-  projectViewMembersData,
-  ProjectViewMembersType,
-} from './projectViewMembersData';
 import CustomAvatar from '../../../../components/CustomAvatar';
+import { useAppSelector } from '../../../../hooks/useAppSelector';
+import { ProjectMemberType } from '../../../../types/projectMember.types';
 
 const ProjectViewMembers = () => {
   // get currently hover row
@@ -32,6 +30,11 @@ const ProjectViewMembers = () => {
 
   // localization
   const { t } = useTranslation('projectViewMembersTab');
+
+  // get member list from project members slice
+  const projectMembersList = useAppSelector(
+    (state) => state.projectMemberReducer.membersList
+  );
 
   // function for handle refresh
   const handleRefresh = () => {
@@ -45,7 +48,7 @@ const ProjectViewMembers = () => {
       key: 'memberName',
       title: t('nameColumn'),
       sorter: (a, b) => a.memberName.localeCompare(b.memberName),
-      render: (record: ProjectViewMembersType) => (
+      render: (record: ProjectMemberType) => (
         <Flex gap={8} align="center">
           <CustomAvatar avatarName={record.memberName} size={26} />
           <Typography.Text
@@ -63,14 +66,14 @@ const ProjectViewMembers = () => {
       title: t('jobTitleColumn'),
       sorter: (a, b) => a.jobTitle.localeCompare(b.jobTitle),
       width: 120,
-      render: (record: ProjectViewMembersType) => (
+      render: (record: ProjectMemberType) => (
         <Typography.Text
           style={{
             color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
             marginInlineStart: 12,
           }}
         >
-          {record.jobTitle}
+          {record.jobTitle || '-'}
         </Typography.Text>
       ),
     },
@@ -78,13 +81,13 @@ const ProjectViewMembers = () => {
       key: 'email',
       title: t('emailColumn'),
       sorter: (a, b) => a.email.localeCompare(b.email),
-      render: (record: ProjectViewMembersType) => (
+      render: (record: ProjectMemberType) => (
         <Typography.Text
           style={{
             color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
           }}
         >
-          {record.email}
+          {record.memberEmail}
         </Typography.Text>
       ),
     },
@@ -92,23 +95,25 @@ const ProjectViewMembers = () => {
       key: 'tasks',
       title: t('tasksColumn'),
       width: 90,
-      render: (record: ProjectViewMembersType) => (
+      render: (record: ProjectMemberType) => (
         <Typography.Text
           style={{
             color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
             marginInlineStart: 12,
           }}
         >
-          {`${record.doneTasks}/${record.totalTasks}`}
+          {`${record.completedTasks}/${record.totalAssignedTasks}`}
         </Typography.Text>
       ),
     },
     {
       key: 'taskProgress',
       title: t('taskProgressColumn'),
-      render: (record: ProjectViewMembersType) => (
+      render: (record: ProjectMemberType) => (
         <Progress
-          percent={Math.floor((record.doneTasks / record.totalTasks) * 100)}
+          percent={Math.floor(
+            (record.completedTasks / record.totalAssignedTasks) * 100
+          )}
         />
       ),
     },
@@ -116,21 +121,21 @@ const ProjectViewMembers = () => {
       key: 'access',
       title: t('accessColumn'),
       sorter: (a, b) => a.access.localeCompare(b.access),
-      render: (record: ProjectViewMembersType) => (
+      render: (record: ProjectMemberType) => (
         <Typography.Text
           style={{
             color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
             textTransform: 'capitalize',
           }}
         >
-          {record.access}
+          {record.memberRole}
         </Typography.Text>
       ),
     },
     {
       key: 'actionBtns',
       width: 80,
-      render: (record: ProjectViewMembersType) =>
+      render: (record: ProjectMemberType) =>
         hoverRow === record.memberId && (
           <Flex gap={8} style={{ padding: 0 }}>
             <Popconfirm
@@ -164,8 +169,8 @@ const ProjectViewMembers = () => {
       title={
         <Flex justify="space-between">
           <Typography.Text style={{ fontSize: 16, fontWeight: 500 }}>
-            {projectViewMembersData.length}{' '}
-            {projectViewMembersData.length !== 1
+            {projectMembersList?.length}{' '}
+            {projectMembersList?.length !== 1
               ? t('membersCountPlural')
               : t('memberCount')}
           </Typography.Text>
@@ -180,7 +185,7 @@ const ProjectViewMembers = () => {
         </Flex>
       }
     >
-      {projectViewMembersData.length === 0 ? (
+      {projectMembersList?.length === 0 ? (
         <EmptyListPlaceholder
           imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
           imageHeight={120}
@@ -191,7 +196,7 @@ const ProjectViewMembers = () => {
       ) : (
         <Table
           className="custom-two-colors-row-table"
-          dataSource={projectViewMembersData}
+          dataSource={projectMembersList ? projectMembersList : []}
           columns={columns}
           rowKey={(record) => record.memberId}
           pagination={{
