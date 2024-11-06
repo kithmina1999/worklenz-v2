@@ -212,7 +212,7 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
                   {/* <Avatar
                                         style={{
                                             backgroundColor:
-                                                avatarNamesMap[
+                                                AvatarNamesMap[
                                                     member?.charAt(0)
                                                 ],
                                             verticalAlign: 'middle',

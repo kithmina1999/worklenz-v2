@@ -137,7 +137,7 @@ const SubTaskCard: React.FC<subtaskProps> = ({ subtask }) => {
           {subtask.members?.map((member) => (
             <Avatar
               style={{
-                backgroundColor: avatarNamesMap[member.memberName.charAt(0)],
+                backgroundColor: AvatarNamesMap[member.memberName.charAt(0)],
                 fontSize: '12px',
               }}
               size="small"
