@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TaskType } from '../../types/task.types';
 import { MemberType } from '../../types/member.types';
+import { LabelType } from '../../types/label.type';
 
 type TaskState = {
   tasks: TaskType[];
@@ -43,7 +44,7 @@ const initialState: TaskState = {
       ],
       status: 'todo',
       priority: 'high',
-      timeTracking: '-',
+      timeTracking: 320,
       estimation: '-',
       startDate: new Date('2023-09-15'),
       dueDate: new Date('2023-10-10'),
@@ -77,7 +78,7 @@ const initialState: TaskState = {
           ],
           labels: [
             {
-              labelId: 'label2',
+              labelId: 'label3',
               labelName: 'Documentation',
               labelColor: '#a3c4dc',
             },
@@ -112,14 +113,14 @@ const initialState: TaskState = {
       members: [],
       labels: [
         {
-          labelId: 'label2',
+          labelId: 'label3',
           labelName: 'Documentation',
           labelColor: '#a3c4dc',
         },
       ],
       status: 'doing',
       priority: 'medium',
-      timeTracking: '-',
+      timeTracking: 0,
       estimation: '-',
       startDate: new Date('2023-10-01'),
       dueDate: new Date('2023-11-01'),
@@ -136,7 +137,7 @@ const initialState: TaskState = {
           members: [],
           labels: [
             {
-              labelId: 'label3',
+              labelId: 'label4',
               labelName: 'Template',
               labelColor: '#e2dcbf',
             },
@@ -147,25 +148,6 @@ const initialState: TaskState = {
           dueDate: new Date('2023-10-05'),
           createdDate: new Date('2023-10-01'),
           lastUpdated: new Date('2023-10-03'),
-        },
-        {
-          taskId: 'SP-16',
-          task: 'Implement task template settings UI',
-          description: 'Create the UI components for task templates.',
-          members: [],
-          labels: [
-            {
-              labelId: 'label4',
-              labelName: 'UI',
-              labelColor: '#dce3a3',
-            },
-          ],
-          status: 'todo',
-          priority: 'medium',
-          startDate: new Date('2023-10-06'),
-          dueDate: new Date('2023-10-15'),
-          createdDate: new Date('2023-10-05'),
-          lastUpdated: new Date('2023-10-07'),
         },
       ],
     },
@@ -178,7 +160,7 @@ const initialState: TaskState = {
       labels: [{ labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' }],
       status: 'todo',
       priority: 'low',
-      timeTracking: '-',
+      timeTracking: 100,
       estimation: '-',
       startDate: new Date('2023-10-05'),
       dueDate: new Date('2023-10-20'),
@@ -197,14 +179,24 @@ const initialState: TaskState = {
       members: [],
       labels: [
         {
-          labelId: 'label4',
+          labelId: 'label5',
           labelName: 'UI',
           labelColor: '#dce3a3',
+        },
+        {
+          labelId: 'label4',
+          labelName: 'Template',
+          labelColor: '#e2dcbf',
+        },
+        {
+          labelId: 'label3',
+          labelName: 'Documentation',
+          labelColor: '#a3c4dc',
         },
       ],
       status: 'done',
       priority: 'medium',
-      timeTracking: '-',
+      timeTracking: 0,
       estimation: '-',
       startDate: new Date('2023-09-01'),
       dueDate: new Date('2023-09-15'),
@@ -222,20 +214,26 @@ const taskSlice = createSlice({
   name: 'taskReducer',
   initialState,
   reducers: {
+    // create drawer toggle
     toggleCreateTaskDrawer: (state) => {
       state.isCreateTaskDrawerOpen
         ? (state.isCreateTaskDrawerOpen = false)
         : (state.isCreateTaskDrawerOpen = true);
     },
-
+    // update drawer toggle
     toggleUpdateTaskDrawer: (state) => {
       state.isUpdateTaskDrawerOpen
         ? (state.isUpdateTaskDrawerOpen = false)
         : (state.isUpdateTaskDrawerOpen = true);
     },
 
+    // task crud
     addTask: (state, action: PayloadAction<TaskType>) => {
       state.tasks.push(action.payload);
+    },
+
+    addTaskToTop: (state, action: PayloadAction<TaskType>) => {
+      state.tasks.unshift(action.payload);
     },
 
     deleteTask: (state, action: PayloadAction<string>) => {
@@ -244,6 +242,8 @@ const taskSlice = createSlice({
       );
     },
 
+    // update specific items
+    // add or remove members to the task
     toggleMember: (
       state,
       action: PayloadAction<{ taskId: string; member: MemberType }>
@@ -261,15 +261,35 @@ const taskSlice = createSlice({
           : [...(task.members || []), member];
       }
     },
+    // add or remove labels to the task
+    toggleLabel: (
+      state,
+      action: PayloadAction<{ taskId: string; label: LabelType }>
+    ) => {
+      const { taskId, label } = action.payload;
+      const task = state.tasks.find((task) => task.taskId === taskId);
+      if (task) {
+        const labelExists = task.labels?.some(
+          (existingLabel) => existingLabel.labelId === label.labelId
+        );
+        task.labels = labelExists
+          ? task.labels?.filter(
+              (existingLabel) => existingLabel.labelId !== label.labelId
+            )
+          : [...(task.labels || []), label];
+      }
+    },
   },
 });
 
 export const {
-  addTask,
   toggleCreateTaskDrawer,
   toggleUpdateTaskDrawer,
-  toggleMember,
+  addTask,
   deleteTask,
+  toggleMember,
+  toggleLabel,
+  addTaskToTop,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

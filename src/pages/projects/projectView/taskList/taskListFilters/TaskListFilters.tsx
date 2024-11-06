@@ -1,38 +1,44 @@
 import { Checkbox, Flex, Typography } from 'antd';
 import SearchDropdown from './SearchDropdown';
-import SortDropdown from './SortDropdown';
-import LabelsDropdown from './LabelsDropdown';
-import MembersDropdown from './MembersDropdown';
-import GroupByDropdown from './GroupByDropdown';
-import ShowFieldsDropdown from './ShowFieldsDropdown';
+import SortFilterDropdown from './SortFilterDropdown';
+import LabelsFilterDropdown from './LabelsFilterDropdown';
+import MembersFilterDropdown from './MembersFilterDropdown';
+import GroupByFilterDropdown from './GroupByFilterDropdown';
+import ShowFieldsFilterDropdown from './ShowFieldsFilterDropdown';
 import PriorityFilterDropdown from './PriorityFilterDropdown';
 
-const TaskListFilters = () => {
+interface TaskListFiltersProps {
+  position: 'board' | 'list';
+}
+
+const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
   return (
     <Flex gap={8} align="center" justify="space-between">
       <Flex gap={8} wrap={'wrap'}>
         {/* search dropdown  */}
         <SearchDropdown />
         {/* sort dropdown  */}
-        <SortDropdown />
+        <SortFilterDropdown />
         {/* prioriy dropdown  */}
         <PriorityFilterDropdown />
         {/* labels dropdown  */}
-        <LabelsDropdown />
+        <LabelsFilterDropdown />
         {/* members dropdown  */}
-        <MembersDropdown />
+        <MembersFilterDropdown />
         {/* group by dropdown */}
-        <GroupByDropdown />
+        {position === 'list' && <GroupByFilterDropdown />}
       </Flex>
 
-      <Flex gap={12} wrap={'wrap'}>
-        <Flex gap={4} align="center">
-          <Checkbox />
-          <Typography.Text>Show archvied</Typography.Text>
+      {position === 'list' && (
+        <Flex gap={12} wrap={'wrap'}>
+          <Flex gap={4} align="center">
+            <Checkbox />
+            <Typography.Text>Show archvied</Typography.Text>
+          </Flex>
+          {/* show fields dropdown  */}
+          <ShowFieldsFilterDropdown />
         </Flex>
-        {/* show fields dropdown  */}
-        <ShowFieldsDropdown />
-      </Flex>
+      )}
     </Flex>
   );
 };

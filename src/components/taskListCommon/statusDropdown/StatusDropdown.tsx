@@ -1,66 +1,63 @@
 import { Badge, Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
-import { TaskStatusType } from '../../../types/task.types';
-// custom css file
 import './statusDropdown.css';
 import { colors } from '../../../styles/colors';
+import { useAppSelector } from '../../../hooks/useAppSelector';
 
 type StatusDropdownProps = {
-  currentStatus: TaskStatusType;
-  size: 'small' | 'default'
+  currentStatus: string;
 };
 
-const StatusDropdown = ({ currentStatus, size }: StatusDropdownProps) => {
-  const [status, setStatus] = useState<TaskStatusType>(currentStatus);
+const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
+  const [status, setStatus] = useState<string>(currentStatus);
+  const [statusName, setStatusName] = useState<string>('');
 
-  // fuction for get a color regariding the status
-  const getStatuColor = (status: TaskStatusType) => {
-    if (status === 'todo') return colors.deepLightGray;
-    else if (status === 'doing') return colors.midBlue;
-    else return colors.lightGreen;
+  const statusList = useAppSelector((state) => state.statusReducer.status);
+
+  // this is trigger only on status list update
+  useEffect(() => {
+    const selectedStatus = statusList.find((el) => el.category === status);
+    setStatusName(selectedStatus?.name || '');
+  }, [statusList]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'todo':
+        return '#d8d7d8';
+      case 'doing':
+        return '#c0d5f6';
+      case 'done':
+        return '#c2e4d0';
+      default:
+        return '#d8d7d8';
+    }
   };
 
-  // menu type
   type MenuItem = Required<MenuProps>['items'][number];
-  // status menu item
-  const statusMenuItems: MenuItem[] = [
-    {
-      key: 'todo',
-      label: (
-        <Flex gap={4}>
-          <Badge color={getStatuColor('todo')} /> Todo
-        </Flex>
-      ),
-    },
-    {
-      key: 'doing',
-      label: (
-        <Flex gap={4}>
-          <Badge color={getStatuColor('doing')} /> Doing
-        </Flex>
-      ),
-    },
-    {
-      key: 'done',
-      label: (
-        <Flex gap={4}>
-          <Badge color={getStatuColor('done')} /> Done
-        </Flex>
-      ),
-    },
-  ];
 
-  // handle status select
-  const onClick: MenuProps['onClick'] = (e) => {
-    e.key === 'todo'
-      ? setStatus('todo')
-      : e.key === 'doing'
-        ? setStatus('doing')
-        : setStatus('done');
+  const statusMenuItems: MenuItem[] = statusList
+    ? statusList.map((status) => ({
+        key: status.id,
+        label: (
+          <Flex gap={8} align="center">
+            <Badge color={getStatusColor(status.category)} />
+            <Typography.Text style={{ textTransform: 'capitalize' }}>
+              {status.name}
+            </Typography.Text>
+          </Flex>
+        ),
+      }))
+    : [];
+
+  const handleStatusOptionSelect: MenuProps['onClick'] = (e) => {
+    const selectedOption = statusList.find((el) => el.id === e.key);
+    if (selectedOption) {
+      setStatusName(selectedOption.name);
+      setStatus(selectedOption.category);
+    }
   };
 
-  //dropdown items
   const statusDropdownItems: MenuProps['items'] = [
     {
       key: '1',
@@ -69,8 +66,7 @@ const StatusDropdown = ({ currentStatus, size }: StatusDropdownProps) => {
           <Menu
             className="status-menu"
             items={statusMenuItems}
-            defaultValue={'todo'}
-            onClick={onClick}
+            onClick={handleStatusOptionSelect}
           />
         </Card>
       ),
@@ -89,16 +85,22 @@ const StatusDropdown = ({ currentStatus, size }: StatusDropdownProps) => {
         style={{
           width: 'fit-content',
           borderRadius: 24,
-          padding: size === 'small' ? '2px 6px' : '2px 12px',
-          fontSize: size === 'small' ? '10px' : '13px',
-          backgroundColor: getStatuColor(status),
-          whiteSpace: 'nowrap'
+          paddingInline: 6,
+          backgroundColor: getStatusColor(status),
+          color: colors.darkGray,
+          cursor: 'pointer',
         }}
       >
-        <Typography.Text style={{ textTransform: 'capitalize', fontSize: size === 'small' ? '10px' : '13px'}}>
-          {status}
+        <Typography.Text
+          ellipsis={{ expanded: false }}
+          style={{
+            color: colors.darkGray,
+            fontSize: 13,
+          }}
+        >
+          {statusName}
         </Typography.Text>
-        <DownOutlined />
+        <DownOutlined style={{ fontSize: 12 }} />
       </Flex>
     </Dropdown>
   );

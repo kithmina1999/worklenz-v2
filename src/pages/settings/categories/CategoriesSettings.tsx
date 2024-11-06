@@ -1,28 +1,83 @@
-import { SearchOutlined } from '@ant-design/icons';
-import { Card, Flex, Input, Table, TableProps, Typography } from 'antd';
-import React from 'react';
+import {
+  DeleteOutlined,
+  ExclamationCircleFilled,
+  SearchOutlined,
+} from '@ant-design/icons';
+import {
+  Button,
+  Card,
+  Flex,
+  Input,
+  Popconfirm,
+  Table,
+  TableProps,
+  Typography,
+} from 'antd';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { colors } from '../../../styles/colors';
+import { CategoryType } from '../../../types/categories.types';
+import CustomColordCategoryTag from '../../../features/settings/categories/CustomColordCategoryTag';
+import { deleteCategory } from '../../../features/settings/categories/categoriesSlice';
 
 const CategoriesSettings = () => {
   // localization
   const { t } = useTranslation('categoriesSettings');
 
+  // get currently hover row
+  const [hoverRow, setHoverRow] = useState<string | null>(null);
+
+  // get category data from category slice
   const categoriesList = useAppSelector(
     (state) => state.categoriesReducer.categoriesList
   );
+  const dispatch = useAppDispatch();
+
+  // this is for get the current string that type on search bar
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // used useMemo hook for re render the list when searching
+  const filteredCategoriesData = useMemo(() => {
+    return categoriesList.filter((item) =>
+      item.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [categoriesList, searchQuery]);
 
   // table columns
   const columns: TableProps['columns'] = [
     {
       key: 'category',
       title: t('categoryColumn'),
-      dataIndex: 'categoryName',
+      render: (record: CategoryType) => (
+        <CustomColordCategoryTag category={record} />
+      ),
     },
     {
       key: 'associatedTask',
       title: t('associatedTaskColumn'),
-      dataIndex: 'associatedTask',
+      render: () => <Typography.Text>0</Typography.Text>,
+    },
+    {
+      key: 'actionBtns',
+      width: 60,
+      render: (record: CategoryType) =>
+        hoverRow === record.categoryId && (
+          <Popconfirm
+            title={t('deleteConfirmationTitle')}
+            icon={
+              <ExclamationCircleFilled
+                style={{ color: colors.vibrantOrange }}
+              />
+            }
+            okText={t('deleteConfirmationOk')}
+            cancelText={t('deleteConfirmationCancel')}
+            onConfirm={() => dispatch(deleteCategory(record.categoryId))}
+          >
+            <Button shape="default" icon={<DeleteOutlined />} size="small" />
+          </Popconfirm>
+        ),
     },
   ];
 
@@ -38,6 +93,8 @@ const CategoriesSettings = () => {
             style={{ width: '100%', maxWidth: 400 }}
           >
             <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.currentTarget.value)}
               placeholder={t('searchPlaceholder')}
               style={{ maxWidth: 232 }}
               suffix={<SearchOutlined />}
@@ -50,8 +107,24 @@ const CategoriesSettings = () => {
         locale={{
           emptyText: <Typography.Text>{t('emptyText')}</Typography.Text>,
         }}
-        dataSource={categoriesList}
+        className="custom-two-colors-row-table"
+        dataSource={filteredCategoriesData}
         columns={columns}
+        rowKey={(record) => record.categoryId}
+        pagination={{
+          showSizeChanger: true,
+          defaultPageSize: 20,
+        }}
+        onRow={(record) => {
+          return {
+            onMouseEnter: () => setHoverRow(record.categoryId),
+            onMouseLeave: () => setHoverRow(null),
+            style: {
+              cursor: 'pointer',
+              height: 36,
+            },
+          };
+        }}
       />
     </Card>
   );

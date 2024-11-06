@@ -6,6 +6,7 @@ import ProjectList from '../pages/projects/ProjectList';
 import ProjectView from '../pages/projects/projectView/ProjectView';
 import settingsRoutes from './settingsRoutes';
 import adminCenterRoutes from './adminCenterRoutes';
+import Schedule from '../pages/schedule/Schedule';
 
 const mainRoutes: RouteObject[] = [
   {
@@ -14,6 +15,7 @@ const mainRoutes: RouteObject[] = [
     children: [
       { path: 'home', element: <Homepage /> },
       { path: 'projects', element: <ProjectList /> },
+      { path: 'schedule', element: <Schedule /> },
       { path: `projects/:projectId`, element: <ProjectView /> },
       ...settingsRoutes,
       ...adminCenterRoutes,

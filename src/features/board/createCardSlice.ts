@@ -1,32 +1,35 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface createCardState {
-    isTodoCreatTaskCardDisable: boolean
-    isDoingCreatTaskCardDisable: boolean
-    isDoneCreatTaskCardDisable: boolean
+interface CreateCardState {
+  taskCardDisabledStatus: { [status: string]: { top: boolean; bottom: boolean } };
 }
 
-const initialState: createCardState = {
-    isTodoCreatTaskCardDisable: true,
-    isDoingCreatTaskCardDisable: true,
-    isDoneCreatTaskCardDisable: true,
-}
+const initialState: CreateCardState = {
+  taskCardDisabledStatus: {},
+};
 
 const createCardSlice = createSlice({
-    name: 'createCard',
-    initialState,
-    reducers: {
-        setTodoCreatTaskCardDisabled: (state, action) => {
-            state.isTodoCreatTaskCardDisable = action.payload
-        },
-        setDoingCreatTaskCardDisabled: (state, action) => {
-            state.isDoingCreatTaskCardDisable = action.payload
-        },
-        setDoneCreatTaskCardDisabled: (state, action) => {
-            state.isDoneCreatTaskCardDisable = action.payload
-        }
-    }
-})
+  name: 'createCard',
+  initialState,
+  reducers: {
+    initializeStatus(state, action: PayloadAction<string>) {
+      const status = action.payload;
+      if (!state.taskCardDisabledStatus[status]) {
+        state.taskCardDisabledStatus[status] = { top: true, bottom: true };
+      }
+    },
+    setTaskCardDisabled: (
+      state,
+      action: PayloadAction<{ status: string; position: 'top' | 'bottom'; disabled: boolean }>
+    ) => {
+      const { status, position, disabled } = action.payload;
+      if (!state.taskCardDisabledStatus[status]) {
+        state.taskCardDisabledStatus[status] = { top: true, bottom: true };
+      }
+      state.taskCardDisabledStatus[status][position] = disabled;
+    },
+  },
+});
 
-export const { setTodoCreatTaskCardDisabled, setDoingCreatTaskCardDisabled, setDoneCreatTaskCardDisabled } = createCardSlice.actions
-export default createCardSlice.reducer
+export const { setTaskCardDisabled, initializeStatus } = createCardSlice.actions;
+export default createCardSlice.reducer;

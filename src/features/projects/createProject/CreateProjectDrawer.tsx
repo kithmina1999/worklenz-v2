@@ -154,6 +154,7 @@ const CreateProjectDrawer = () => {
     const newCategory: CategoryType = {
       categoryId: nanoid(),
       categoryName: category,
+      categoryColor: '#ee87c5',
     };
 
     dispatch(addCategory(newCategory));
