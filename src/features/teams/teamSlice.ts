@@ -11,6 +11,7 @@ const initialState: ITeamState = {
   isUpdateTitleNameModalOpen: false,
   loading: false,
   error: null,
+  initialized: false,
 };
 
 // Create async thunk for fetching teams

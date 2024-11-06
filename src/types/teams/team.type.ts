@@ -27,7 +27,7 @@ export interface ITeamGetResponse extends ITeam {
 }
 
 export interface ITeamState {
-  teamsList: ITeam[];
+  teamsList: ITeamGetResponse[];
   isDrawerOpen: boolean;
   isSettingDrawerOpen: boolean;
   isUpdateTitleNameModalOpen: boolean;

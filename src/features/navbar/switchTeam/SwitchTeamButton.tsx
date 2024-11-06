@@ -1,5 +1,5 @@
 import { BankOutlined, CaretDownFilled, CheckCircleFilled } from '@ant-design/icons';
-import { Card, Dropdown, Flex, Tooltip, Typography } from 'antd';
+import { Card, Divider, Dropdown, Flex, Tooltip, Typography } from 'antd';
 import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
 // custom css
@@ -8,7 +8,6 @@ import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import CustomAvatar from '../../../components/CustomAvatar';
 import { useAuth } from '@/hooks/useAuth';
-import { RootState } from '@/app/store';
 import { useEffect } from 'react';
 import { initializeTeams } from '@/features/teams/teamSlice';
 
@@ -16,16 +15,13 @@ const SwitchTeamButton = () => {
   const { t } = useTranslation('navbar');
   const dispatch = useAppDispatch();
 
-  const { teamsList, loading, error, initialized } = useAppSelector(
-    (state: RootState) => state.teamReducer
-  );
   const teamsDetails = useAppSelector(state => state.teamReducer.teamsList);
   const session = useAuth().getCurrentSession();
 
   // get the active team
   const isActiveTeam = (teamId: string | undefined) => {
     if (!teamId) return false;
-    return (teamId = session?.team_id);
+    return (teamId == session?.team_id);
   };
 
   const selectTeam = (id: string | undefined) => {
@@ -49,19 +45,18 @@ const SwitchTeamButton = () => {
             width: 230,
           }}
         >
-          <Flex vertical gap={8}>
-            <Flex gap={12} align="center" justify="space-between" style={{ padding: 12 }}>
+          <Flex vertical>
+            <Flex gap={12} align="center" justify="space-between" style={{ paddingLeft: 12, paddingRight: 12, paddingTop: 4, paddingBottom: 4 }}>
               <Flex gap={8} align="center">
                 <CustomAvatar avatarName={team.name} />
                 <Flex vertical>
                   <Typography.Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: 300,
-                      color: colors.lightGray,
                     }}
                   >
-                    {/* Owned by {team.owner.split(' ')[0]} */}
+                    Owned by {team.owns_by}
                   </Typography.Text>
                   <Typography.Text>{team.name}</Typography.Text>
                 </Flex>
@@ -73,6 +68,7 @@ const SwitchTeamButton = () => {
                 }}
               />
             </Flex>
+            <Divider style={{ margin: 0 }} />
           </Flex>
         </Card>
       ),
@@ -81,7 +77,7 @@ const SwitchTeamButton = () => {
 
   return (
     <Tooltip title={t('switchTeamTooltip')} trigger={'hover'}>
-      <Dropdown overlayClassName="switch-team-dropdown" menu={{ items }} trigger={['click']}>
+      <Dropdown overlayClassName="switch-team-dropdown" menu={{ items }} trigger={['click']} placement="bottomRight" style={{ cursor: 'pointer' }}>
         <Flex
           gap={12}
           align="center"
@@ -96,7 +92,7 @@ const SwitchTeamButton = () => {
           }}
         >
           <BankOutlined />
-          <Typography.Text strong style={{ color: colors.skyBlue }}>
+          <Typography.Text strong style={{ color: colors.skyBlue, cursor: 'pointer' }}>
             {session?.team_name}
           </Typography.Text>
           <CaretDownFilled />
