@@ -1,0 +1,10 @@
+{
+  "labelColumn": "Label",
+  "deleteConfirmationTitle": "Are you sure?",
+  "deleteConfirmationOk": "Yes",
+  "deleteConfirmationCancel": "Cancel",
+  "associatedTaskColumn": "Associated Task",
+  "searchPlaceholder": "Search by label",
+  "emptyText": "Labels can be created while updating or creating tasks.",
+  "pinTooltip": "Click to pin this into the main menu"
+}
