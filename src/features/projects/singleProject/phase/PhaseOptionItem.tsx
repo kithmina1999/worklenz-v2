@@ -1,11 +1,11 @@
 import React from 'react';
 import { PhaseOption } from '../../../../types/phase.types';
 import { Button, ConfigProvider, Flex, Input, Select, Tag } from 'antd';
-import { projectColors } from '../../../../lib/project/projectConstants';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import { nanoid } from '@reduxjs/toolkit';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 import { deletePhaseOption } from './phaseSlice';
+import { PhaseColorCodes } from '../../../../shared/constants';
 
 const PhaseOptionItem = ({
   option,
@@ -18,7 +18,7 @@ const PhaseOptionItem = ({
 
   // phase options color options
   const phaseOptionColorList = [
-    ...projectColors.map((color, index) => ({
+    ...PhaseColorCodes.map((color, index) => ({
       key: index,
       value: color,
       label: (

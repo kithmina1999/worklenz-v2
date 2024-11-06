@@ -9,7 +9,6 @@ export type projectViewTaskListColumnsState = {
     progress: boolean;
     members: boolean;
     labels: boolean;
-    phases: boolean;
     status: boolean;
     priority: boolean;
     timeTracking: boolean;
@@ -20,6 +19,7 @@ export type projectViewTaskListColumnsState = {
     createdDate: boolean;
     lastUpdated: boolean;
     reporter: boolean;
+    phases: boolean;
   };
 };
 
@@ -32,7 +32,6 @@ const initialState: projectViewTaskListColumnsState = {
     progress: true,
     members: true,
     labels: true,
-    phases: true,
     status: true,
     priority: true,
     timeTracking: true,
@@ -43,6 +42,7 @@ const initialState: projectViewTaskListColumnsState = {
     createdDate: true,
     lastUpdated: true,
     reporter: true,
+    phases: true,
   },
 };
 

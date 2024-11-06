@@ -22,7 +22,7 @@ const initialState: PhaseState = {
         {
           optionId: 'option2',
           optionName: 'Hello',
-          optionColor: '#cb9878',
+          optionColor: '#70a6f3',
         },
       ],
     },

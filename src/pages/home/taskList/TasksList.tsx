@@ -82,7 +82,7 @@ const TasksList = () => {
       key: 'status',
       title: 'Status',
       width: '180px',
-      render: (values) => <StatusDropdown currentStatus={values.status} size='default'/>,
+      render: (values) => <StatusDropdown currentStatus={values.status} />,
     },
     {
       key: 'dueDate',

@@ -19,10 +19,17 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
   const [priority, setPriority] = useState<TaskPriorityType>(currentPriority);
 
   // fuction for get a color regariding the priority
-  const getStatuColor = (priority: TaskPriorityType) => {
-    if (priority === 'low') return colors.lightGreen;
-    else if (priority === 'medium') return colors.lightBeige;
-    else return colors.vibrantOrange;
+  const getPriorityColor = (priority: TaskPriorityType) => {
+    switch (priority) {
+      case 'low':
+        return '#c2e4d0';
+      case 'medium':
+        return '#f9e3b1';
+      case 'high':
+        return '#f6bfc0';
+      default:
+        return '#f9e3b1';
+    }
   };
 
   // menu type
@@ -34,7 +41,7 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
       label: (
         <Flex gap={4}>
           Low
-          <MinusOutlined style={{ color: getStatuColor('low') }} />
+          <MinusOutlined style={{ color: getPriorityColor('low') }} />
         </Flex>
       ),
     },
@@ -45,7 +52,7 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
           Medium
           <PauseOutlined
             style={{
-              color: getStatuColor('medium'),
+              color: getPriorityColor('medium'),
               rotate: '90deg',
             }}
           />
@@ -59,7 +66,7 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
           High
           <DoubleLeftOutlined
             style={{
-              color: getStatuColor('high'),
+              color: getPriorityColor('high'),
               rotate: '90deg',
             }}
           />
@@ -106,14 +113,22 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
         style={{
           width: 'fit-content',
           borderRadius: 24,
-          padding: '2px 12px',
-          fontSize: 13,
-          backgroundColor: getStatuColor(priority),
+          paddingInline: 6,
+          backgroundColor: getPriorityColor(priority),
+          color: colors.darkGray,
+          cursor: 'pointer',
         }}
       >
-        <Typography.Text style={{ textTransform: 'capitalize' }}>
+        <Typography.Text
+          style={{
+            textTransform: 'capitalize',
+            color: colors.darkGray,
+            fontSize: 13,
+          }}
+        >
           {priority}
         </Typography.Text>
+
         <DownOutlined />
       </Flex>
     </Dropdown>

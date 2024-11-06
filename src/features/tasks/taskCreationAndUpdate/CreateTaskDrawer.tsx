@@ -228,7 +228,7 @@ const CreateTaskDrawer = () => {
             placeholder="Type your Task"
             style={{ maxWidth: 500 }}
           />
-          <StatusDropdown currentStatus="todo" size='default'/>
+          <StatusDropdown currentStatus="todo" />
         </Flex>
       }
       footer={

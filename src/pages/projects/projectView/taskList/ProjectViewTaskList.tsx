@@ -3,7 +3,8 @@ import { Flex } from 'antd';
 import TaskListFilters from './taskListFilters/TaskListFilters';
 import { TaskType } from '../../../../types/task.types';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
-import TaskListTableWrapper from './taskListTable/TaskListTableWrapper';
+import StatusGroupTables from './groupTables/statusTables/StatusGroupTables';
+import PriorityGroupTables from './groupTables/priorityTables/PriorityGroupTables';
 
 const ProjectViewTaskList = () => {
   // sample data from task reducer
@@ -13,8 +14,10 @@ const ProjectViewTaskList = () => {
 
   return (
     <Flex vertical gap={16}>
-      <TaskListFilters />
-      <TaskListTableWrapper taskList={dataSource} />
+      <TaskListFilters position="list" />
+
+      <StatusGroupTables datasource={dataSource} />
+      <PriorityGroupTables datasource={dataSource} />
     </Flex>
   );
 };

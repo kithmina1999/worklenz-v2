@@ -13,11 +13,11 @@ import {
   Button,
 } from 'antd';
 import CustomAvatar from '../../../../components/CustomAvatar';
-import AssigneeSelector from '../../../../pages/projects/projectView/taskList/taskListTable/assigneeSelector/AssigneeSelector';
-import LabelDropdown from '../../../../components/taskListCommon/labelDropdown/LabelDropdown';
+import LabelDropdown from '../../../../components/taskListCommon/labelsSelector/LabelsSelector';
 import { SettingOutlined } from '@ant-design/icons';
 import { colors } from '../../../../styles/colors';
 import { TaskType } from '../../../../types/task.types';
+import AssigneeSelector from '../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
 
 const TaskDetailsForm = ({
   selectedTask,
@@ -69,7 +69,7 @@ const TaskDetailsForm = ({
         <Flex gap={4} align="center">
           <Avatar.Group>
             {selectedTask?.members?.map((member) => (
-              <CustomAvatar avatarName={member.memberName} />
+              <CustomAvatar avatarName={member.memberName} size={26} />
             ))}
           </Avatar.Group>
 
@@ -119,7 +119,7 @@ const TaskDetailsForm = ({
               {label.labelName}
             </Tag>
           ))}
-          <LabelDropdown />
+          <LabelDropdown taskId={selectedTask?.taskId || ''} />
         </Flex>
       </Form.Item>
 

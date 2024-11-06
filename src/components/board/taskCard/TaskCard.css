@@ -7,6 +7,10 @@
     box-shadow: #a8a8a8 0 0 0 1px, #6d6e6f14 0 1px 4px;
 }
 
+.task-card.dark-mode {
+    box-shadow: #2e2e2e 0 0 0 1px, #0000001a 0 1px 4px;
+}
+
 .custom-placeholder .ant-picker-input input::placeholder {
     font-size: 12px !important;
 }
