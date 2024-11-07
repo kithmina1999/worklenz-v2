@@ -1,11 +1,17 @@
 {
-    "name": "Name",
-    "client": "Client",
-    "category": "Category",
-    "status": "Status",
-    "tasksProgress": "Tasks Progress",
-    "lastUpdated": "Last Updated",
-    "members": "Members",
-    "setting": "Setting",
-    "archive": "Archive"
+  "name": "Name",
+  "client": "Client",
+  "category": "Category",
+  "status": "Status",
+  "tasksProgress": "Tasks Progress",
+  "updated_at": "Last Updated",
+  "members": "Members",
+  "setting": "Setting",
+  "archive": "Archive",
+  "projects": "Projects",
+  "refreshProjects": "Refresh projects",
+  "all": "All",
+  "favorites": "Favorites",
+  "archived": "Archived",
+  "placeholder": "Search by name"
 }

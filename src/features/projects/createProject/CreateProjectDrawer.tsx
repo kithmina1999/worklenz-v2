@@ -49,7 +49,7 @@ const CreateProjectDrawer = () => {
   const [categoryText, setCategoryText] = useState<string>('');
 
   const isDrawerOpen = useAppSelector(
-    (state) => state.projectReducer.isDrawerOpen
+    (state) => state.projectReducer.isProjectDrawerOpen
   );
   const dispatch = useAppDispatch();
 

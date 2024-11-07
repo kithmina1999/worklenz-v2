@@ -22,7 +22,7 @@ interface DataType {
 const AllProjectList: React.FC = () => {
   // get data from project reducer
   const projectList: ProjectType[] = useAppSelector(
-    (state) => state.projectReducer.projectsList
+    (state) => state.projectReducer.projectsViewModel
   );
 
   const projectData: DataType[] = [
@@ -46,40 +46,6 @@ const AllProjectList: React.FC = () => {
     })),
   ];
 
-  // const data: DataType[] = [
-  //     {
-  //         key: '1',
-  //         name: 'Worklenze UI rebuild',
-  //         client: '-',
-  //         category: 'Test',
-  //         status: 'Proposed',
-  //         totalTasks: 10,
-  //         completedTasks: 6,
-  //         lastUpdated: new Date('2024-10-08T08:30:00'),
-  //         startDate: null,
-  //         endDate: null,
-  //         members: [
-  //             'Chathuranga Pathum',
-  //             'Chamika Jayasri',
-  //             'Raveesha Dilanka',
-  //             'Sachintha Prasad',
-  //         ],
-  //     },
-  //     {
-  //         key: '2',
-  //         name: 'test',
-  //         client: '-',
-  //         category: '-',
-  //         status: 'Proposed',
-  //         totalTasks: 100,
-  //         completedTasks: 6,
-  //         lastUpdated: new Date('2024-05-08T08:30:00'),
-  //         startDate: new Date('2024-05-08T08:30:00'),
-  //         endDate: new Date('2024-12-08T08:30:00'),
-  //         members: ['Raveesha Dilanka', 'Sachintha Prasad'],
-  //     },
-  // ]
-
   return (
     <Table
       columns={TableColumns()}
@@ -92,12 +58,6 @@ const AllProjectList: React.FC = () => {
         pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
         size: 'small',
       }}
-      // onRow={(record) => {
-      //     return {
-      //         onClick: (e) =>
-      //             navigate(`/worklenz/projects/${record.key}`),
-      //     }
-      // }}
     />
   );
 };

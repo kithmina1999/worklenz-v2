@@ -1,7 +1,7 @@
 import { Avatar, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { AvatarNamesMap } from '../../../shared/constants';
-import { Member } from '../../../types/schedule/schedule.types';
+import { AvatarNamesMap } from '@/shared/constants';
+import { Member } from '@/types/schedule/schedule.types';
 
 const fetchData = async () => {
   const response = await fetch('/TeamData.json');

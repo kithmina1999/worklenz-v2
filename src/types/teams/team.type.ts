@@ -26,12 +26,22 @@ export interface ITeamGetResponse extends ITeam {
   created_at?: string;
 }
 
+// Type for all modal/drawer states
+export interface UIState {
+  drawer: boolean;
+  settingsDrawer: boolean;
+  updateTitleNameModal: boolean;
+}
+
 export interface ITeamState {
   teamsList: ITeamGetResponse[];
-  isDrawerOpen: boolean;
-  isSettingDrawerOpen: boolean;
-  isUpdateTitleNameModalOpen: boolean;
   loading: boolean;
   error: string | null;
   initialized: boolean;
+  ui: UIState;
+  activeTeamId: string | null;
+}
+
+export interface ITeamActivateResponse {
+  subdomain: string;
 }

@@ -6,18 +6,35 @@ import { API_BASE_URL } from '@/shared/constants';
 
 const initialState: ITeamState = {
   teamsList: [],
-  isDrawerOpen: false,
-  isSettingDrawerOpen: false,
-  isUpdateTitleNameModalOpen: false,
   loading: false,
   error: null,
   initialized: false,
+  activeTeamId: null,
+  ui: {
+    drawer: false,
+    settingsDrawer: false,
+    updateTitleNameModal: false,
+  },
 };
 
 // Create async thunk for fetching teams
 export const fetchTeams = createAsyncThunk(`${API_BASE_URL}/teams`, async (_, { rejectWithValue }) => {
   try {
     const teamsResponse = await teamsApiService.getTeams();
+    return teamsResponse.body;
+  } catch (error) {
+    logger.error('Fetch Teams', error);
+    if (error instanceof Error) {
+      return rejectWithValue(error.message);
+    }
+    return rejectWithValue('Failed to fetch teams');
+  }
+});
+
+// Create async thunk for fetching teams
+export const setActiveTeam = createAsyncThunk(`${API_BASE_URL}/teams/activate`, async ( teamId: string , { rejectWithValue }) => {
+  try {
+    const teamsResponse = await teamsApiService.setActiveTeam(teamId);
     return teamsResponse.body;
   } catch (error) {
     logger.error('Fetch Teams', error);
@@ -44,15 +61,15 @@ const teamSlice = createSlice({
   initialState,
   reducers: {
     toggleDrawer: state => {
-      state.isDrawerOpen ? (state.isDrawerOpen = false) : (state.isDrawerOpen = true);
+      state.ui.drawer ? (state.ui.drawer = false) : (state.ui.drawer = true);
     },
     addTeam: (state, action: PayloadAction<ITeam>) => {
       state.teamsList.push(action.payload);
     },
     toggleSettingDrawer: state => {
-      state.isSettingDrawerOpen
-        ? (state.isSettingDrawerOpen = false)
-        : (state.isSettingDrawerOpen = true);
+      state.ui.settingsDrawer
+        ? (state.ui.settingsDrawer = false)
+        : (state.ui.settingsDrawer = true);
     },
     updateTeam: (state, action: PayloadAction<ITeam>) => {
       const index = state.teamsList.findIndex(team => (team.id === action.payload.id));
@@ -68,9 +85,9 @@ const teamSlice = createSlice({
       }
     },
     toggleUpdateTeamNameModal: state => {
-      state.isUpdateTitleNameModalOpen
-        ? (state.isUpdateTitleNameModalOpen = false)
-        : (state.isUpdateTitleNameModalOpen = true);
+      state.ui.updateTitleNameModal
+        ? (state.ui.updateTitleNameModal = false)
+        : (state.ui.updateTitleNameModal = true);
     },
   },
   extraReducers: (builder) => {

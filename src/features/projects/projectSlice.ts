@@ -1,76 +1,89 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ProjectType } from '../../types/project.types';
+import { API_BASE_URL } from '@/shared/constants';
+import { projectsApiService } from '@/api/projects/projects.api.service';
+import logger from '@/utils/errorLogger';
+import { IProjectsViewModel } from '@/types/project/projectsViewModel.types';
 
 type ProjectState = {
-  projectsList: ProjectType[];
-  isDrawerOpen: boolean;
+  initialized: boolean;
+  projectsViewModel: IProjectsViewModel;
+  isProjectDrawerOpen: boolean;
+  loading: boolean;
 };
 
-const saveProjectListToLocalStorage = (projectsList: ProjectType[]) => {
-  try {
-    const serializedList = JSON.stringify(projectsList);
-    localStorage.setItem('projectList', serializedList);
-  } catch (error) {
-    console.error('Could not save project list', error);
-  }
-};
-
-const getProjectListFromLocalStorage = (): ProjectType[] => {
-  try {
-    const serializedList = localStorage.getItem('projectList');
-    if (serializedList === null) {
-      return [];
+// Create async thunk for fetching teams
+export const fetchProjects = createAsyncThunk(
+  'projects/fetchProjects',
+  async (
+    params: {
+      index: number;
+      size: number;
+      field: string;
+      order: string;
+      search: string;
+      filter: number;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const projectsResponse = await projectsApiService.getProjects(
+        params.index,
+        params.size,
+        params.field,
+        params.order,
+        params.search,
+        params.filter
+      );
+      return projectsResponse.body;
+    } catch (error) {
+      logger.error('Fetch Projects', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch projects');
     }
-    return JSON.parse(serializedList);
-  } catch (error) {
-    console.error('Could not load project list', error);
-    return [];
   }
-};
+);
 
 const initialState: ProjectState = {
-  projectsList: getProjectListFromLocalStorage(),
-  isDrawerOpen: false,
+  projectsViewModel: {total: 0, data: []},
+  isProjectDrawerOpen: false,
+  initialized: false,
+  loading: false,
 };
 
 const projectSlice = createSlice({
   name: 'projectReducer',
   initialState,
   reducers: {
-    toggleDrawer: (state) => {
-      state.isDrawerOpen
-        ? (state.isDrawerOpen = false)
-        : (state.isDrawerOpen = true);
+    toggleDrawer: state => {
+      state.isProjectDrawerOpen
+        ? (state.isProjectDrawerOpen = false)
+        : (state.isProjectDrawerOpen = true);
     },
-    // action for create project
     createProject: (state, action: PayloadAction<ProjectType>) => {
-      state.projectsList.push(action.payload);
-      saveProjectListToLocalStorage(state.projectsList);
     },
-    // action for set the is favourite state
     toggleFavouriteProjectSelection: (state, action: PayloadAction<string>) => {
-      const project = state.projectsList.find(
-        (project) => project.projectId === action.payload
-      );
-      if (project) {
-        project.isFavourite
-          ? (project.isFavourite = false)
-          : (project.isFavourite = true);
-      }
     },
-    deleteProject: (state, action: PayloadAction<string>) => {
-      state.projectsList = state.projectsList.filter(
-        (project) => project.projectId !== action.payload
-      );
-      saveProjectListToLocalStorage(state.projectsList);
-    },
+    deleteProject: (state, action: PayloadAction<string>) => {},
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProjects.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchProjects.fulfilled, (state, action) => {
+        state.loading = false;
+        state.projectsViewModel = action.payload;
+        state.initialized = true;
+      })
+      .addCase(fetchProjects.rejected, (state) => {
+        state.loading = false;
+      });
   },
 });
 
-export const {
-  toggleDrawer,
-  createProject,
-  toggleFavouriteProjectSelection,
-  deleteProject,
-} = projectSlice.actions;
+export const { toggleDrawer, createProject, toggleFavouriteProjectSelection, deleteProject } =
+  projectSlice.actions;
 export default projectSlice.reducer;

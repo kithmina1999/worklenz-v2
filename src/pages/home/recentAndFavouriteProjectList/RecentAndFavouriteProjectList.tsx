@@ -22,7 +22,7 @@ const RecentAndFavouriteProjectList = () => {
   );
   const [isLoading, setIsLoading] = useState(false);
   const projectsList = useAppSelector(
-    (state) => state.projectReducer.projectsList
+    (state) => state.projectReducer.projectsViewModel
   );
 
   // this project list check wheather it's recent projects or favourite projects

@@ -13,7 +13,7 @@ const AddTaskInlineForm = () => {
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
   const projectList = useAppSelector(
-    (state) => state.projectReducer.projectsList
+    (state) => state.projectReducer.projectsViewModel
   );
 
   // ref for task input field

@@ -1,115 +1,122 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Flex, Input, Segmented, Tooltip } from 'antd';
+import { Button, Card, Flex, Input, Segmented, Table, Tooltip } from 'antd';
 import { PageHeader } from '@ant-design/pro-components';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import './ProjectList.css';
-import AllProjectList from '../../components/ProjectList/allProjectList/AllProjectList';
-import CreateProjectButton from '../../features/projects/createProject/CreateProjectButton';
-import CreateProjectDrawer from '../../features/projects/createProject/CreateProjectDrawer';
-import FavouriteProjectList from '../../components/ProjectList/favouriteProjectList/FavouriteProjectList';
-import ArchiveProjectList from '../../components/ProjectList/archivedProjectList/ArchiveProjectList';
+import CreateProjectButton from '@features/projects/createProject/CreateProjectButton';
+import CreateProjectDrawer from '@features/projects/createProject/CreateProjectDrawer';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { DEFAULT_PAGE_SIZE, FILTER_INDEX_KEY, PAGE_SIZE_OPTIONS } from '@/shared/constants';
+import TableColumns from '@/components/ProjectList/TableColumns';
+import { IProjectsViewModel } from '@/types/project/projectsViewModel.types';
+import { IProjectFilter } from '@/types/project/project.types';
+import { fetchProjects } from '@/features/projects/projectSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
 const ProjectList: React.FC = () => {
-  // localization
-  const { t } = useTranslation('ProjectList');
+  const { t } = useTranslation('allProjectList');
+  const dispatch = useAppDispatch();
 
-  // get project list from project slice
-  const projectList = useAppSelector(
-    (state) => state.projectReducer.projectsList
-  );
-
-  const [projectSegment, setProjectSegment] = useState<
-    'All' | 'Favourites' | 'Archived'
-  >('All');
-  const [isLoading, setIsLoading] = useState(false);
+  const loading = useAppSelector(state => state.projectReducer.loading);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedTerm, setDebouncedTerm] = useState('');
+  const [projects, setProjects] = useState<IProjectsViewModel>({});
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: DEFAULT_PAGE_SIZE
+  });
+
+  const filters = Object.values(IProjectFilter);
+
+  const getFilterIndex = () => {
+    return +(localStorage.getItem(FILTER_INDEX_KEY) || 0);
+  };
+
+  const setFilterIndex = (index: number) => {
+    localStorage.setItem(FILTER_INDEX_KEY, index.toString());
+  };
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedTerm(searchTerm);
-    }, 500);
+    getProjects();
+  }, [dispatch, searchTerm, pagination]);
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchTerm]);
-
-  useEffect(() => {
-    if (debouncedTerm) {
-      performSearch(debouncedTerm);
+  const getProjects = async () => {
+    const params = {
+      index: pagination.current,
+      size: pagination.pageSize,
+      field: 'name',
+      order: 'asc',
+      filter: getFilterIndex(),
+      search: searchTerm,
     }
-  }, [debouncedTerm]);
-
-  const performSearch = (query: string) => {
-    console.log('Searching for:', query);
+    const result = await dispatch(fetchProjects(params)).unwrap();
+    setProjects(result);
   };
 
   const handleRefresh = () => {
-    setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 500);
+    getProjects();
   };
 
-  const handleSegmentChange = (value: 'All' | 'Favourites' | 'Archived') => {
-    if (value === 'All') {
-      setProjectSegment('All');
-      handleRefresh();
-    } else if (value === 'Favourites') {
-      setProjectSegment('Favourites');
-      handleRefresh();
-    } else {
-      setProjectSegment('Archived');
-      handleRefresh();
-    }
+  const handleSegmentChange = (value: IProjectFilter) => {
+    setFilterIndex(filters.indexOf(value));
+    getProjects();
   };
 
   return (
     <div style={{ marginBlock: 65, minHeight: '90vh' }}>
       <PageHeader
         className="site-page-header"
-        title={`${projectList.length} ${t('projects')}`}
+        title={`${projects.total} ${t('projects')}`}
         style={{ padding: '16px 0' }}
         extra={
           <Flex gap={8} align="center">
             <Tooltip title={t('refreshProjects')}>
               <Button
                 shape="circle"
-                icon={<SyncOutlined spin={isLoading} />}
+                icon={<SyncOutlined spin={loading} />}
                 onClick={() => handleRefresh()}
               />
             </Tooltip>
-            <Segmented<'All' | 'Favourites' | 'Archived'>
-              options={['All', 'Favourites', 'Archived']}
-              defaultValue="All"
-              onChange={(value: 'All' | 'Favourites' | 'Archived') =>
-                handleSegmentChange(value)
-              }
+            <Segmented<IProjectFilter>
+              options={filters}
+              defaultValue={filters[getFilterIndex()] ?? filters[0]}
+              onChange={(value: IProjectFilter) => handleSegmentChange(value)}
             />
             <Input
               placeholder={t('placeholder')}
               suffix={<SearchOutlined />}
               type="text"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
             />
             <CreateProjectButton />
           </Flex>
         }
       />
       <Card className="project-card">
-        {projectSegment === 'All' ? (
-          <AllProjectList />
-        ) : projectSegment === 'Favourites' ? (
-          <FavouriteProjectList />
-        ) : (
-          <ArchiveProjectList />
-        )}
+        <Table<IProjectViewModel>
+          columns={TableColumns()}
+          dataSource={projects.data}
+          loading={loading}
+          size='small'
+          pagination={{
+            showSizeChanger: true,
+            defaultPageSize: DEFAULT_PAGE_SIZE,
+            pageSizeOptions: PAGE_SIZE_OPTIONS,
+            size: 'small',
+            total: projects.total,
+            onChange: (page, pageSize) => {
+              setPagination({
+                current: page,
+                pageSize: pageSize
+              });
+            }
+          }}
+        />
       </Card>
 
-      {/* drawers  */}
       <CreateProjectDrawer />
     </div>
   );

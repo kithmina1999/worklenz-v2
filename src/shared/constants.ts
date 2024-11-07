@@ -134,3 +134,11 @@ export const TASK_DUE_COMPLETED_COLOR = '#75c997';
 export const TASK_DUE_UPCOMING_COLOR = '#70a6f3';
 export const TASK_DUE_OVERDUE_COLOR = '#f37070';
 export const TASK_DUE_NO_DUE_COLOR = '#a9a9a9';
+
+export const DEFAULT_PAGE_SIZE = 20;
+export const PAGE_SIZE_OPTIONS = ['5', '10', '15', '20', '50', '100'];
+export const ALPHA_CHANNEL = '69';
+
+export const FILTER_INDEX_KEY = "worklenz.projects.filter_index";
+export const DISPLAY_MODE_KEY = "worklenz.projects.display_as";
+export const WORKLENZ_REDIRECT_PROJ_KEY = "worklenz.redirect_proj";

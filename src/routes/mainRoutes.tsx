@@ -1,4 +1,3 @@
-import React from 'react';
 import { RouteObject } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import Homepage from '../pages/home/Homepage';

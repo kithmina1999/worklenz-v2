@@ -1,19 +1,24 @@
 import { BankOutlined, CaretDownFilled, CheckCircleFilled } from '@ant-design/icons';
 import { Card, Divider, Dropdown, Flex, Tooltip, Typography } from 'antd';
-import { colors } from '../../../styles/colors';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 // custom css
 import './switchTeam.css';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import CustomAvatar from '../../../components/CustomAvatar';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import CustomAvatar from '@/components/CustomAvatar';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
-import { initializeTeams } from '@/features/teams/teamSlice';
+import { initializeTeams, setActiveTeam } from '@/features/teams/teamSlice';
+import { verifyAuth } from '@/features/auth/authSlice';
+import { createAuthService } from '@/services/auth/auth.service';
+import { useNavigate } from 'react-router-dom';
 
 const SwitchTeamButton = () => {
   const { t } = useTranslation('navbar');
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const authService = createAuthService(navigate);
 
   const teamsDetails = useAppSelector(state => state.teamReducer.teamsList);
   const session = useAuth().getCurrentSession();
@@ -24,8 +29,10 @@ const SwitchTeamButton = () => {
     return (teamId == session?.team_id);
   };
 
-  const selectTeam = (id: string | undefined) => {
+  const selectTeam = async (id: string | undefined) => {
     if (!id) return;
+    await dispatch(setActiveTeam(id));
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -34,7 +41,7 @@ const SwitchTeamButton = () => {
   
   // switch teams dropdown items
   const items = [
-    ...teamsDetails.map(team => ({
+    ...teamsDetails.map((team, index) => ({
       key: team.id,
       label: (
         <Card
@@ -68,7 +75,7 @@ const SwitchTeamButton = () => {
                 }}
               />
             </Flex>
-            <Divider style={{ margin: 0 }} />
+            {index < teamsDetails.length - 1 && <Divider style={{ margin: 0 }} />}
           </Flex>
         </Card>
       ),
