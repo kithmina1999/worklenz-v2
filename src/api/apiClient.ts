@@ -56,8 +56,6 @@ apiClient.interceptors.response.use(
     return response;
   },
   async error => {
-    console.log(error.response);
-
     // Handle errors
     const { status, data } = error.response || {};
     const errorMessage = data?.message || 'An unexpected error occurred';

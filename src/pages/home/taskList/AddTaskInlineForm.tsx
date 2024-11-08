@@ -1,5 +1,5 @@
 import { Alert, Flex, Form, Input, InputRef, Select, Typography } from 'antd';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { nanoid } from '@reduxjs/toolkit';
 import { TaskType } from '../../../types/task.types';
@@ -12,9 +12,7 @@ const AddTaskInlineForm = () => {
   const [isProjectFieldShowing, setIsProjectFieldShowing] = useState(false);
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
-  const projectList = useAppSelector(
-    (state) => state.projectReducer.projectsViewModel
-  );
+  const projectList = useAppSelector(state => state.projectReducer.projectsViewModel);
 
   // ref for task input field
   const taskInputRef = useRef<InputRef | null>(null);
@@ -45,11 +43,11 @@ const AddTaskInlineForm = () => {
 
   // project options
   let projectOptions = [
-    ...projectList.map((project) => ({
-      key: project.projectId,
-      value: project.projectName,
-      label: project.projectName,
-    })),
+    ...(projectList.data?.map(project => ({
+      key: project.id,
+      value: project.name,
+      label: project.name,
+    })) || []),
   ];
 
   // function to handle task submit
@@ -105,12 +103,12 @@ const AddTaskInlineForm = () => {
             ref={taskInputRef}
             placeholder="+ Add Task"
             style={{ width: '100%' }}
-            onChange={(e) => {
+            onChange={e => {
               const inputValue = e.currentTarget.value;
               if (inputValue.length >= 1) setIsAlertShowing(true);
               else if (inputValue === '') setIsAlertShowing(false);
             }}
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === 'Tab') {
                 setIsAlertShowing(false);
                 setIsDueDateFieldShowing(true);
@@ -121,8 +119,8 @@ const AddTaskInlineForm = () => {
             <Alert
               message={
                 <Typography.Text style={{ fontSize: 11 }}>
-                  Press <strong>Tab</strong> to select a{' '}
-                  <strong>'Due date'</strong> and a <strong>'Project'</strong>.
+                  Press <strong>Tab</strong> to select a <strong>'Due date'</strong> and a{' '}
+                  <strong>'Project'</strong>.
                 </Typography.Text>
               }
               type="info"
@@ -142,7 +140,7 @@ const AddTaskInlineForm = () => {
             suffixIcon={null}
             options={dueDateOptions}
             defaultOpen
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === 'Tab' || 'Enter') {
                 setIsProjectFieldShowing(true);
               }
@@ -175,7 +173,7 @@ const AddTaskInlineForm = () => {
                 .toLowerCase()
                 .localeCompare((optionB?.label ?? '').toLowerCase())
             }
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === 'Enter') {
                 form.submit();
               }

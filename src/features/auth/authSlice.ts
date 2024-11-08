@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { authApiService } from '@/api/auth/auth.api.service';
 import { IAuthState, IUserLoginRequest } from '@/types/auth/login.types';
 import logger from '@/utils/errorLogger';
+import alertService from '@/services/alerts/alertService';
 
 const initialState: IAuthState = {
   user: null,
@@ -17,14 +18,11 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials: IUserLoginRequest, { rejectWithValue }) => {
     try {
-      const loginResponse = await authApiService.login(credentials);
-
-      // if (!loginResponse.authenticated) {
-      //   return rejectWithValue(loginResponse.message || 'Login failed');
-      // }
+      await authApiService.login(credentials);
       
       const authorizeResponse = await authApiService.verify();
       if (!authorizeResponse.authenticated) {
+        alertService.error('loginFailed', 'Please check your email and password and try again.');
         return rejectWithValue(authorizeResponse.auth_error || 'Authorization failed');
       }
 

@@ -142,3 +142,5 @@ export const ALPHA_CHANNEL = '69';
 export const FILTER_INDEX_KEY = "worklenz.projects.filter_index";
 export const DISPLAY_MODE_KEY = "worklenz.projects.display_as";
 export const WORKLENZ_REDIRECT_PROJ_KEY = "worklenz.redirect_proj";
+export const PROJECT_SORT_FIELD = "worklenz.projects.sort_field";
+export const PROJECT_SORT_ORDER = "worklenz.projects.sort_order";

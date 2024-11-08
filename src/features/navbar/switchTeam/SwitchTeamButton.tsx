@@ -4,23 +4,18 @@ import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 // custom css
 import './switchTeam.css';
-import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import CustomAvatar from '@/components/CustomAvatar';
 import { useAuth } from '@/hooks/useAuth';
-import { useEffect } from 'react';
-import { initializeTeams, setActiveTeam } from '@/features/teams/teamSlice';
-import { verifyAuth } from '@/features/auth/authSlice';
-import { createAuthService } from '@/services/auth/auth.service';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { fetchTeams, setActiveTeam } from '@/features/teams/teamSlice';
+import { ITeamGetResponse } from '@/types/teams/team.type';
 
 const SwitchTeamButton = () => {
   const { t } = useTranslation('navbar');
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const authService = createAuthService(navigate);
+  const [teamsDetails, setTeamsDetails] = useState<ITeamGetResponse[]>([]);
 
-  const teamsDetails = useAppSelector(state => state.teamReducer.teamsList);
   const session = useAuth().getCurrentSession();
 
   // get the active team
@@ -35,13 +30,18 @@ const SwitchTeamButton = () => {
     window.location.reload();
   };
 
+  const getTeams = async () => {
+    const teams = await dispatch(fetchTeams()).unwrap();
+    setTeamsDetails(teams);
+  };
+
   useEffect(() => {
-    dispatch(initializeTeams());
+    getTeams();
   }, [dispatch]);
   
   // switch teams dropdown items
   const items = [
-    ...teamsDetails.map((team, index) => ({
+    ...teamsDetails?.map((team, index) => ({
       key: team.id,
       label: (
         <Card

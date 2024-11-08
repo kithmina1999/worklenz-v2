@@ -62,17 +62,17 @@ const TasksList = () => {
       title: 'Project',
       width: '180px',
       render: (values) => {
-        const project = projectList.find(
-          (project) => project.projectName === values.project
+        const project = projectList.data?.find(
+          (project) => project.name === values.project
         );
         return (
           project && (
             <Typography.Paragraph style={{ margin: 0, paddingInlineEnd: 6 }}>
               <Badge
-                color={project.projectColor}
+                color={project.color_code}
                 style={{ marginInlineEnd: 4 }}
               />
-              {project.projectName}
+              {project.name}
             </Typography.Paragraph>
           )
         );

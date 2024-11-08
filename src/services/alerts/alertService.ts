@@ -37,7 +37,7 @@ class AlertService {
     notification[type]({
       message: safeTitle,
       description: safeMessage,
-      duration: duration || 4.5,
+      duration: duration || 5,
       placement: 'topRight',
       style: { borderRadius: '4px' },
       onClose: () => {

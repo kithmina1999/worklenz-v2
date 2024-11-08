@@ -12,6 +12,8 @@ import googleIcon from '@assets/images/google-icon.png';
 import { login, verifyAuth } from '@/features/auth/authSlice';
 import logger from '@/utils/errorLogger';
 import { setUser } from '@/features/user/userSlice';
+import { useAuth } from '@/hooks/useAuth';
+import alertService from '@/services/alerts/alertService';
 import { createAuthService } from '@/services/auth/auth.service';
 
 interface LoginFormValues {
@@ -26,7 +28,7 @@ const LoginPage: React.FC = () => {
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
   const dispatch = useAppDispatch();
   const authService = createAuthService(navigate);
-  
+
   // Get loading state from Redux store instead of local state
   const { isLoading } = useAppSelector(state => state.auth);
   useEffect(() => {
@@ -45,9 +47,9 @@ const LoginPage: React.FC = () => {
     async (values: LoginFormValues) => {
       try {
         const result = await dispatch(login(values)).unwrap();
-        console.log(result);
         if (result.authenticated) {
           message.success(t('loginSuccess'));
+          authService.setCurrentSession(result.user);
           navigate('/worklenz/home');
         }
       } catch (error) {

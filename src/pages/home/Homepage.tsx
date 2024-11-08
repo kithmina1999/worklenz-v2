@@ -1,4 +1,3 @@
-import React from 'react';
 import UserGreetingWithTime from './UserGreetingWithTime';
 import TasksList from './taskList/TasksList';
 import TodoList from './todoList/TodoList';
@@ -26,7 +25,7 @@ const Homepage = () => {
         )}
       </Col>
 
-      {isDesktop ? (
+      {/* {isDesktop ? (
         <Flex
           gap={24}
           align="flex-start"
@@ -55,7 +54,7 @@ const Homepage = () => {
           <TodoList />
           <RecentAndFavouriteProjecList />
         </Flex>
-      )}
+      )} */}
 
       {/* drawers */}
       {/* create project drawer  */}

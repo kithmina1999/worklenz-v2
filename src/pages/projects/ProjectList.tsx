@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Key, useEffect, useState } from 'react';
 import { Button, Card, Flex, Input, Segmented, Table, Tooltip } from 'antd';
 import { PageHeader } from '@ant-design/pro-components';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
@@ -7,7 +7,7 @@ import CreateProjectButton from '@features/projects/createProject/CreateProjectB
 import CreateProjectDrawer from '@features/projects/createProject/CreateProjectDrawer';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { DEFAULT_PAGE_SIZE, FILTER_INDEX_KEY, PAGE_SIZE_OPTIONS } from '@/shared/constants';
+import { DEFAULT_PAGE_SIZE, FILTER_INDEX_KEY, PAGE_SIZE_OPTIONS, PROJECT_SORT_FIELD, PROJECT_SORT_ORDER } from '@/shared/constants';
 import TableColumns from '@/components/ProjectList/TableColumns';
 import { IProjectsViewModel } from '@/types/project/projectsViewModel.types';
 import { IProjectFilter } from '@/types/project/project.types';
@@ -22,10 +22,14 @@ const ProjectList: React.FC = () => {
   const loading = useAppSelector(state => state.projectReducer.loading);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [projects, setProjects] = useState<IProjectsViewModel>({});
+  const [projects, setProjects] = useState<IProjectsViewModel>({total: 0, data: []});
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: DEFAULT_PAGE_SIZE
+  });
+  const [sorter, setSorter] = useState({
+    order: localStorage.getItem(PROJECT_SORT_ORDER) ?? 'ascend',
+    columnKey: localStorage.getItem(PROJECT_SORT_FIELD) ?? 'name'
   });
 
   const filters = Object.values(IProjectFilter);
@@ -38,16 +42,22 @@ const ProjectList: React.FC = () => {
     localStorage.setItem(FILTER_INDEX_KEY, index.toString());
   };
 
+  const setSortingValues = (sorter: { columnKey: string; order: string; }) => {
+    localStorage.setItem(PROJECT_SORT_FIELD, sorter.columnKey);
+    localStorage.setItem(PROJECT_SORT_ORDER, sorter.order);
+  }
+
   useEffect(() => {
+    setSortingValues(sorter);
     getProjects();
-  }, [dispatch, searchTerm, pagination]);
+  }, [dispatch, searchTerm, pagination, sorter]);
 
   const getProjects = async () => {
     const params = {
       index: pagination.current,
       size: pagination.pageSize,
-      field: 'name',
-      order: 'asc',
+      field: sorter.columnKey,
+      order: sorter.order,
       filter: getFilterIndex(),
       search: searchTerm,
     }
@@ -99,8 +109,15 @@ const ProjectList: React.FC = () => {
         <Table<IProjectViewModel>
           columns={TableColumns()}
           dataSource={projects.data}
+          rowKey="id"
           loading={loading}
           size='small'
+          onChange={(pagination, filters, sorter) => {
+            setSorter({
+              order: (Array.isArray(sorter) ? sorter[0].order : sorter.order) ?? 'ascend',
+              columnKey: (Array.isArray(sorter) ? sorter[0].columnKey : sorter.columnKey) as string?? 'name' as string
+            });
+          }}
           pagination={{
             showSizeChanger: true,
             defaultPageSize: DEFAULT_PAGE_SIZE,

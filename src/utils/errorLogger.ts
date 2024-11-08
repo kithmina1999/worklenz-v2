@@ -17,27 +17,27 @@ class ConsoleLogger {
     info: {
       title: 'color: #1890ff; font-weight: bold; font-size: 12px;',
       text: 'color: #1890ff; font-size: 12px;',
-      background: 'background: #e6f7ff; padding: 2px 5px; border-radius: 2px;'
+      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;'
     },
     success: {
       title: 'color: #52c41a; font-weight: bold; font-size: 12px;',
       text: 'color: #52c41a; font-size: 12px;',
-      background: 'background: #f6ffed; padding: 2px 5px; border-radius: 2px;'
+      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;'
     },
     warning: {
       title: 'color: #faad14; font-weight: bold; font-size: 12px;',
       text: 'color: #faad14; font-size: 12px;',
-      background: 'background: #fffbe6; padding: 2px 5px; border-radius: 2px;'
+      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;'
     },
     error: {
       title: 'color: #ff4d4f; font-weight: bold; font-size: 12px;',
       text: 'color: #ff4d4f; font-size: 12px;',
-      background: 'background: #fff2f0; padding: 2px 5px; border-radius: 2px;'
+      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;'
     },
     debug: {
       title: 'color: #722ed1; font-weight: bold; font-size: 12px;',
       text: 'color: #722ed1; font-size: 12px;',
-      background: 'background: #f9f0ff; padding: 2px 5px; border-radius: 2px;'
+      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;'
     }
   };
 

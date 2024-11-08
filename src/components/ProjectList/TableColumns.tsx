@@ -1,15 +1,13 @@
 import { ColumnsType } from 'antd/es/table';
 import { Avatar, Badge, Button, Progress, Rate, Tag, Tooltip } from 'antd';
-import {
-  CalendarOutlined,
-  InboxOutlined,
-  SettingOutlined,
-} from '@ant-design/icons';
+import { CalendarOutlined, InboxOutlined, SettingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import './TableColumns.css';
 import { useNavigate } from 'react-router-dom';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { calculateTimeAgo } from '@/utils/calculateTimeAgo';
+import { formatDate } from '@/utils/timeUtils';
 
 const avatarColors = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#87d068'];
 
@@ -19,24 +17,23 @@ const TableColumns = (): ColumnsType<IProjectViewModel> => {
   const navigate = useNavigate();
 
   const getTaskProgressTitle = (data: IProjectViewModel) => {
-    if (!data.all_tasks_count)
-      return 'No tasks available.';
-    if (data.all_tasks_count == data.completed_tasks_count)
-      return 'All tasks completed.';
+    if (!data.all_tasks_count) return 'No tasks available.';
+    if (data.all_tasks_count == data.completed_tasks_count) return 'All tasks completed.';
     return `${data.completed_tasks_count || 0}/${data.all_tasks_count || 0} tasks completed.`;
-  }
+  };
 
   const markAsFavorite = async (id: string) => {
-    await dispatch(markAsFavorite(id));
-  }
+    // await dispatch(markAsFavorite(id));
+  };
 
   return [
     {
       title: t('name'),
       dataIndex: 'name',
       key: 'name',
-      sorter: (a, b) => (a?.name?.length || 0) - (b?.name?.length || 0),
+      defaultSortOrder: 'ascend',
       showSorterTooltip: false,
+      sorter: true,
       render: (text, record) => {
         // Format the start and end dates
         const formattedStartDate = record.start_date
@@ -65,7 +62,10 @@ const TableColumns = (): ColumnsType<IProjectViewModel> => {
               tooltips={['Add to favourites']}
             />
             <Badge color="geekblue" style={{ marginRight: '0.5rem' }} />
-            <span onClick={() => navigate(`/worklenz/projects/${record.id}`)} style={{cursor: 'pointer'}}>
+            <span
+              onClick={() => navigate(`/worklenz/projects/${record.id}`)}
+              style={{ cursor: 'pointer' }}
+            >
               {text}
               {(record.start_date || record.end_date) && (
                 <Tooltip
@@ -82,30 +82,26 @@ const TableColumns = (): ColumnsType<IProjectViewModel> => {
     },
     {
       title: t('client'),
-      dataIndex: 'client',
-      key: 'client',
-      sorter: (a, b) => (a?.client_name?.length || 0) - (b?.client_name?.length || 0),
+      dataIndex: 'client_name',
+      key: 'client_name',
+      sorter: true,
       showSorterTooltip: false,
     },
     {
       title: t('category'),
       dataIndex: 'category',
-      key: 'category',
+      key: 'category_id',
       render: (category, record) =>
         record.category_name === '-' ? (
           <>{record.category_name}</>
         ) : (
           <Tooltip title={`Click to filter by "${record.category_name}"`}>
-            <Tag
-              color="#ff9c3c"
-              style={{ borderRadius: '50rem' }}
-              className="table-tag"
-            >
+            <Tag color="#ff9c3c" style={{ borderRadius: '50rem' }} className="table-tag">
               {record.category_name}
             </Tag>
           </Tooltip>
         ),
-      sorter: (a, b) => (a?.category_name?.length || 0) - (b?.category_name?.length || 0),
+      sorter: true,
       showSorterTooltip: false,
       filters: [
         {
@@ -121,9 +117,9 @@ const TableColumns = (): ColumnsType<IProjectViewModel> => {
     },
     {
       title: t('status'),
-      key: 'status',
+      key: 'status_id',
       dataIndex: 'status',
-      sorter: (a, b) => (a?.status?.length || 0) - (b?.status?.length || 0),
+      sorter: true,
       showSorterTooltip: false,
       filters: [
         {
@@ -178,35 +174,13 @@ const TableColumns = (): ColumnsType<IProjectViewModel> => {
       key: 'updated_at',
       dataIndex: 'updated_at',
       showSorterTooltip: false,
-      render: (date: Date) => {
-        const now = new Date();
-        const updatedDate = new Date(date);
-
-        const timeDifference = now.getTime() - updatedDate.getTime();
-        const minuteInMs = 60 * 1000;
-        const hourInMs = 60 * minuteInMs;
-        const dayInMs = 24 * hourInMs;
-
-        let displayText = '';
-
-        if (timeDifference < hourInMs) {
-          const minutesAgo = Math.floor(timeDifference / minuteInMs);
-          displayText = `${minutesAgo} minute${minutesAgo === 1 ? '' : 's'} ago`;
-        } else if (timeDifference < dayInMs) {
-          const hoursAgo = Math.floor(timeDifference / hourInMs);
-          displayText = `${hoursAgo} hour${hoursAgo === 1 ? '' : 's'} ago`;
-        } else if (timeDifference < 7 * dayInMs) {
-          const daysAgo = Math.floor(timeDifference / dayInMs);
-          displayText = `${daysAgo} day${daysAgo === 1 ? '' : 's'} ago`;
-        } else {
-          displayText = updatedDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          });
-        }
-
-        return <>{displayText}</>;
+      sorter: true,
+      render: (date: Date, record) => {
+        return (
+          <Tooltip title={formatDate(date)} placement="topLeft" mouseEnterDelay={0.5}>
+            {record.updated_at_string}
+          </Tooltip>
+        );
       },
     },
     {
