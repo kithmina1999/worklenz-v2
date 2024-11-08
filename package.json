@@ -16,6 +16,7 @@
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "antd": "^5.20.5",
+    "chart.js": "^4.4.6",
     "date-fns": "^4.1.0",
     "i18next": "^23.15.1",
     "i18next-browser-languagedetector": "^8.0.0",
@@ -23,6 +24,7 @@
     "primereact": "^10.8.4",
     "quill": "^2.0.2",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.0.1",
     "react-perfect-scrollbar": "^1.5.8",
@@ -59,6 +61,7 @@
     ]
   },
   "devDependencies": {
+    "@types/chart.js": "^2.9.41",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.13"
   }
