@@ -4,59 +4,65 @@
 
 /* this is for globaly hide tables scrollbar  */
 :where(.css-dev-only-do-not-override-17sis5b).ant-table-wrapper .ant-table {
-    scrollbar-color: unset !important;
+  scrollbar-color: unset !important;
 }
 
 .custom-two-colors-row-table table tr:nth-child(even) {
-    background: #4e4e4e10;
+  background: #4e4e4e10;
 }
 
 .custom-two-colors-row-table table tr {
-    border-radius: 4px !important;
+  border-radius: 4px !important;
 }
 
 .custom-two-colors-row-table table tr td,
 .custom-two-colors-row-table table th {
-    border-bottom: none !important;
-    padding: 6px 12px !important;
+  border-bottom: none !important;
+  padding: 6px 12px !important;
 }
 
 .custom-two-colors-row-table table th,
 .custom-project-view-task-list-table table th {
-    padding-bottom: 12px !important;
-    border: none !important;
-    font-weight: 400 !important;
+  padding-bottom: 12px !important;
+  border: none !important;
+  font-weight: 400 !important;
 }
 
 .custom-two-colors-row-table table th::before {
-    display: none;
+  display: none;
 }
 
 /* custom dropdown 
     used in navbar, project view filters
 */
 .custom-dropdown .ant-dropdown-menu {
-    padding: 0 !important;
-    margin-top: 2px !important;
+  padding: 0 !important;
+  margin-top: 2px !important;
 }
 
 .custom-dropdown .ant-dropdown-menu-item {
-    padding: 0 !important;
+  padding: 0 !important;
 }
 
 /* custom list 
     used in project view filters
 */
 .custom-list-item:hover {
-    background-color: #f8f7f9 !important;
-    color: #181818;
+  background-color: #f8f7f9 !important;
+  color: #181818;
 }
 
 /* dropdown render card manual shadow 
     used in project view filters
 */
 .custom-card {
-    box-shadow: 0 3px 6px -4px #0000001f,
+  box-shadow:
+    0 3px 6px -4px #0000001f,
     0 6px 16px #00000014,
     0 9px 28px 8px #0000000d !important;
+}
+
+/* insights card hover  */
+.custom-insights-card:hover {
+  border: 1px solid #d3d3d3;
 }

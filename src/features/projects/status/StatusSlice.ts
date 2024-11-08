@@ -16,7 +16,7 @@ const initialState: StatusState = {
   status: [
     {
       id: '1',
-      name: 'To do',
+      name: 'To Do',
       category: 'todo',
     },
     {

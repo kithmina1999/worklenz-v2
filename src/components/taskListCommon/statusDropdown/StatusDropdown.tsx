@@ -5,6 +5,8 @@ import './statusDropdown.css';
 import { colors } from '../../../styles/colors';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
+import { getStatusColor } from '../../../utils/getStatusColor';
+import { themeWiseColor } from '../../../utils/themeWiseColor';
 
 type StatusDropdownProps = {
   currentStatus: string;
@@ -17,6 +19,7 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
   // localization
   const { t } = useTranslation('taskListTable');
 
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
   const statusList = useAppSelector((state) => state.statusReducer.status);
 
   // this is trigger only on status list update
@@ -25,19 +28,6 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
     setStatusName(selectedStatus?.name || '');
   }, [statusList]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'todo':
-        return '#d8d7d8';
-      case 'doing':
-        return '#c0d5f6';
-      case 'done':
-        return '#c2e4d0';
-      default:
-        return '#d8d7d8';
-    }
-  };
-
   type MenuItem = Required<MenuProps>['items'][number];
 
   const statusMenuItems: MenuItem[] = statusList
@@ -45,7 +35,7 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
         key: status.id,
         label: (
           <Flex gap={8} align="center">
-            <Badge color={getStatusColor(status.category)} />
+            <Badge color={getStatusColor(status.category, themeMode)} />
             <Typography.Text>
               {status.name === 'To do' ||
               status.name === 'Doing' ||
@@ -100,7 +90,7 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
           width: 'fit-content',
           borderRadius: 24,
           paddingInline: 6,
-          backgroundColor: getStatusColor(status),
+          backgroundColor: getStatusColor(status, themeMode),
           color: colors.darkGray,
           cursor: 'pointer',
         }}
@@ -108,8 +98,8 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
         <Typography.Text
           ellipsis={{ expanded: false }}
           style={{
-            color: colors.darkGray,
             fontSize: 13,
+            color: colors.darkGray,
           }}
         >
           {statusName}

@@ -183,7 +183,7 @@ const TaskListTableWrapper = ({
                   color: colors.darkGray,
                 }}
               >
-                {/* check the default values available in the table names  */}
+                {/* check the default values available in the table names ==> this check for localization  */}
                 {['todo', 'doing', 'done', 'low', 'medium', 'high'].includes(
                   tableName.replace(/\s+/g, '').toLowerCase()
                 )
