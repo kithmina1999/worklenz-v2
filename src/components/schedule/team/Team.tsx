@@ -3,46 +3,62 @@ import { Member } from '../../../types/schedule/schedule.types';
 import { Avatar, Badge, Button, Col, Flex, Row, Tooltip } from 'antd';
 import { avatarNamesMap } from '../../../shared/constants';
 import { CaretDownOutlined, CaretRightFilled } from '@ant-design/icons';
-import { set } from 'date-fns';
+import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useMediaQuery } from 'react-responsive';
 
 interface GanttChartProps {
   members: Member[];
+  date: Date | null;
+}
+
+interface teamProps {
+  date: Date | null;
 }
 
 const getDaysBetween = (start: Date, end: Date): number => {
   const msPerDay = 1000 * 60 * 60 * 24;
-  return Math.round((end.getTime() - start.getTime()) / msPerDay);
+  return Math.round((end.getTime() - start.getTime()));
 };
 
-const timelineStart = new Date();
-const timelineEnd = new Date(timelineStart);
-timelineEnd.setDate(timelineStart.getDate() + 15);
-
-const totalDays = getDaysBetween(timelineStart, timelineEnd);
-
-const GanttChart: React.FC<GanttChartProps> = ({ members }) => {
+const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
   const [weekends, setWeekends] = useState<boolean[]>([]);
+  const [today, setToday] = useState(new Date());
   const [showProject, setShowProject] = useState<string | null>(null);
+  const workingDays = useAppSelector((state) => state.scheduleReducer.workingDays)
+  const workingHours = useAppSelector((state) => state.scheduleReducer.workingHours)
+
+  const timelineStart = date ? date : new Date();
+  const timelineEnd = new Date(timelineStart);
+  timelineEnd.setDate(timelineStart.getDate() + 15);
+
+  const totalDays = getDaysBetween(timelineStart, timelineEnd);
 
   useEffect(() => {
     const weekendsArray = Array.from({ length: totalDays }, (_, i) => {
       const date = new Date(timelineStart);
       date.setDate(timelineStart.getDate() + i);
-      return date.getDay() === 0 || date.getDay() === 6;
+
+      // Check if the day is Saturday or Sunday
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+      return !workingDays.includes(dayName)
+      
     });
+
     setWeekends(weekendsArray);
-  }, []);
+  }, [totalDays, timelineStart]);
 
   const handleShowProject = (memberId: string) => {
-    setShowProject((prevMemberId) => (prevMemberId === memberId ? null : memberId));
-  }
+    setShowProject((prevMemberId) =>
+      prevMemberId === memberId ? null : memberId
+    );
+  };
 
   return (
     <Flex
       vertical
       style={{
         border: '1px solid rgba(0, 0, 0, 0.2)',
-        padding: '10px 0 10px 0px',
+        padding: '0 0 10px 0px',
       }}
     >
       {/* Header Row for Dates */}
@@ -73,12 +89,19 @@ const GanttChart: React.FC<GanttChartProps> = ({ members }) => {
                     textAlign: 'center',
                     fontSize: '14px',
                     width: '83px',
-                    padding: '16px 16px 0px 16px',
+                    padding: '8px 16px 0px 16px',
                     fontWeight: 'bold',
-                    color: weekends[i] ? 'rgba(0, 0, 0, 0.27)' : '',
+                    color: today && date && today.toDateString() === date.toDateString() ? 'white': weekends[i] ? 'rgba(0, 0, 0, 0.27)' : '',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    backgroundColor:
+                      today &&
+                      date &&
+                      today.toDateString() === date.toDateString()
+                        ? 'rgba(24, 144, 255, 1)'
+                        : '',
+                    borderRadius: '5px',
                   }}
                 >
                   {formattedDate}
@@ -99,6 +122,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members }) => {
                 alignItems: 'center',
                 gap: '10px',
                 paddingLeft: '20px',
+                whiteSpace: 'nowrap'
               }}
             >
               <Avatar
@@ -109,8 +133,16 @@ const GanttChart: React.FC<GanttChartProps> = ({ members }) => {
                 {member.memberName.charAt(0)}
               </Avatar>
               {member.memberName}
-              <Button size='small' type='text' onClick={() => handleShowProject(member.memberId)}>
-              {showProject === member.memberId ? <CaretDownOutlined /> : <CaretRightFilled />}
+              <Button
+                size="small"
+                type="text"
+                onClick={() => handleShowProject(member.memberId)}
+              >
+                {showProject === member.memberId ? (
+                  <CaretDownOutlined />
+                ) : (
+                  <CaretRightFilled />
+                )}
               </Button>
             </Col>
             <Col
@@ -174,7 +206,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members }) => {
                       <div
                         style={{
                           width: '63px',
-                          background: `linear-gradient(to top, ${totalPerDayHours <= 0 ? 'rgba(200, 200, 200, 0.35)' : totalPerDayHours <= 8 ? 'rgba(6, 126, 252, 0.4)' : 'rgba(255, 0, 0, 0.4)'} ${(totalPerDayHours * 100) / 8}%, rgba(217, 217, 217, 0.25) ${(totalPerDayHours * 100) / 8}%)`,
+                          background: `linear-gradient(to top, ${totalPerDayHours <= 0 ? 'rgba(200, 200, 200, 0.35)' : totalPerDayHours <= workingHours ? 'rgba(6, 126, 252, 0.4)' : 'rgba(255, 0, 0, 0.4)'} ${(totalPerDayHours * 100) / workingHours}%, rgba(190, 190, 190, 0.25) ${(totalPerDayHours * 100) / workingHours}%)`,
                           justifyContent:
                             loggedHours > 0 ? 'flex-end' : 'center',
                           display: 'flex',
@@ -189,7 +221,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members }) => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            height: `${(totalPerDayHours * 100) / 8}%`,
+                            height: `${(totalPerDayHours * 100) / workingHours}%`,
                           }}
                         >
                           {totalPerDayHours}h
@@ -197,7 +229,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members }) => {
                         {loggedHours > 0 && (
                           <span
                             style={{
-                              height: `${(loggedHours * 100) / 8}%`,
+                              height: `${(loggedHours * 100) / workingHours}%`,
                               backgroundColor: 'rgba(98, 210, 130, 1)',
                               width: '100%',
                               display: 'flex',
@@ -219,114 +251,122 @@ const GanttChart: React.FC<GanttChartProps> = ({ members }) => {
           </Row>
 
           {/* Row for Each Project Timeline */}
-          {showProject === member.memberId && member.projects.map((project) => {
-            const projectStart = new Date(project.startDate);
-            const projectEnd = new Date(project.endDate);
-            const startOffset = getDaysBetween(timelineStart, projectStart);
-            const projectDuration =
-              getDaysBetween(projectStart, projectEnd) + 1;
+          {showProject === member.memberId &&
+            member.projects.map((project) => {
+              const projectStart = new Date(project.startDate);
+              const projectEnd = new Date(project.endDate);
+              let startOffset = getDaysBetween(timelineStart, projectStart);
+              let projectDuration =
+                getDaysBetween(projectStart, projectEnd) + 1;
 
-            return (
-              <Row key={project.projectId}>
-                <Col
-                  span={4}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    paddingLeft: '20px',
-                  }}
-                >
-                  <Badge color="red" />
-                  <Tooltip
-                    title={
-                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span>Start Date: {project.startDate}</span>
-                        <span>End Date: {project.endDate}</span>
-                      </div>
-                    }
+              if (startOffset < 0) {
+                projectDuration += startOffset;
+                startOffset = 0;
+              }
+
+              return (
+                <Row key={project.projectId}>
+                  <Col
+                    span={4}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      paddingLeft: '20px',
+                    }}
                   >
-                    {project.projectName}
-                  </Tooltip>
-                </Col>
-                <Col
-                  span={20}
-                  style={{
-                    display: 'flex',
-                    position: 'relative',
-                    paddingLeft: '3px',
-                  }}
-                >
-                  {Array.from({ length: totalDays }, (_, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        fontSize: '14px',
-                        backgroundColor: weekends[i]
-                          ? 'rgba(217, 217, 217, 0.4)'
-                          : '',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        padding: '0 7px',
-                        height: '76px',
-                        flexDirection: 'column',
-                        position: 'relative', // Set relative position here
-                      }}
+                    <Badge color="red" />
+                    <Tooltip
+                      title={
+                        <div
+                          style={{ display: 'flex', flexDirection: 'column' }}
+                        >
+                          <span>Start Date: {project.startDate}</span>
+                          <span>End Date: {project.endDate}</span>
+                        </div>
+                      }
                     >
+                      {project.projectName}
+                    </Tooltip>
+                  </Col>
+                  <Col
+                    span={20}
+                    style={{
+                      display: 'flex',
+                      position: 'relative',
+                      paddingLeft: '3px',
+                    }}
+                  >
+                    {Array.from({ length: totalDays }, (_, i) => (
                       <div
+                        key={i}
                         style={{
-                          width: '63px',
-                          height: '100%',
-                          zIndex: 1, // Optional, if you need to control layering
+                          fontSize: '14px',
+                          backgroundColor: weekends[i]
+                            ? 'rgba(217, 217, 217, 0.4)'
+                            : '',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: '0 7px',
+                          height: '76px',
+                          flexDirection: 'column',
+                          position: 'relative',
                         }}
-                      ></div>
-
-                      {/* Project Timeline Bar */}
-                      {i === startOffset && (
+                      >
                         <div
                           style={{
-                            gridColumnStart: startOffset + 1,
-                            gridColumnEnd: startOffset + projectDuration + 1,
-                            backgroundColor: 'rgba(240, 248, 255, 1)',
-                            height: '60px',
-                            width: `${77 * projectDuration}px`,
-                            borderRadius: '5px',
-                            border: '1px solid rgba(149, 197, 248, 1)',
-                            position: 'absolute', // Overlay on top of the cell content
-                            left: 0,
-                            right: 0,
-                            top: '14px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            padding: '0 10px',
-                            zIndex: 99,
+                            width: '63px',
+                            height: '100%',
+                            zIndex: 1,
                           }}
-                        >
-                          <span
-                            style={{ fontSize: '12px', fontWeight: 'bold' }}
+                        ></div>
+
+                        {/* Project Timeline Bar */}
+                        {i === startOffset && (
+                          <div
+                            style={{
+                              gridColumnStart: startOffset + 1,
+                              gridColumnEnd: startOffset + projectDuration + 1,
+                              backgroundColor: 'rgba(240, 248, 255, 1)',
+                              height: '60px',
+                              width: `${77 * projectDuration}px`,
+                              borderRadius: '5px',
+                              border: '1px solid rgba(149, 197, 248, 1)',
+                              position: 'absolute',
+                              left: 0,
+                              right: 0,
+                              top: '14px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              justifyContent: 'center',
+                              padding: '0 10px',
+                              zIndex: 99,
+                            }}
                           >
-                            Total {project.totalHours}h
-                          </span>
-                          <span style={{ fontSize: '10px' }}>
-                            Per Day {project.perDayHours}h
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </Col>
-              </Row>
-            );
-          })}
+                            <span
+                              style={{ fontSize: '12px', fontWeight: 'bold' }}
+                            >
+                              Total {project.totalHours}h
+                            </span>
+                            <span style={{ fontSize: '10px' }}>
+                              Per Day {project.perDayHours}h
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </Col>
+                </Row>
+              );
+            })}
         </React.Fragment>
       ))}
     </Flex>
   );
 };
 
-const Team: React.FC = () => {
+const Team: React.FC<teamProps> = ({ date }) => {
   const [members, setMembers] = useState<Member[]>([]);
 
   useEffect(() => {
@@ -342,7 +382,7 @@ const Team: React.FC = () => {
     fetchData();
   }, []);
 
-  return <GanttChart members={members} />;
+  return <GanttChart members={members} date={date} />;
 };
 
 export default Team;
