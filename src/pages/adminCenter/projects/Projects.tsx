@@ -33,7 +33,7 @@ const Projects: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const isTablet = useMediaQuery({ query: '(min-width: 1000px)' });
   const projectList = useAppSelector(
-    (state: RootState) => state.projectReducer.projectsViewModel
+    (state: RootState) => state.projectReducer.projects
   );
   const dispatch = useAppDispatch();
 

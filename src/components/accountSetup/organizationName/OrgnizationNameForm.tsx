@@ -2,7 +2,7 @@ import React, { startTransition, useEffect, useState } from 'react';
 import { Button, Form, Input, Typography } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
-import { setButtonDisabled } from '../../../features/action-setup/buttonSlice';
+import { setButtonDisabled } from '@features/actionSetup/buttonSlice';
 import './OrganizationNameForm.css';
 import { useTranslation } from 'react-i18next';
 

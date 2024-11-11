@@ -6,7 +6,7 @@ export const useSelectedProject = () => {
   const { projectId } = useParams();
 
   const projectList = useAppSelector(
-    (state) => state.projectReducer.projectsViewModel
+    (state) => state.projectReducer.projects
   );
 
   const selectedProject = projectList.find(

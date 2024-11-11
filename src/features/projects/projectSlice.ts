@@ -1,15 +1,27 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ProjectType } from '../../types/project.types';
-import { API_BASE_URL } from '@/shared/constants';
 import { projectsApiService } from '@/api/projects/projects.api.service';
 import logger from '@/utils/errorLogger';
-import { IProjectsViewModel } from '@/types/project/projectsViewModel.types';
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
-type ProjectState = {
-  initialized: boolean;
-  projectsViewModel: IProjectsViewModel;
-  isProjectDrawerOpen: boolean;
+interface ProjectState {
+  projects: {
+    data: IProjectViewModel[];
+    total: number;
+  };
   loading: boolean;
+  initialized: boolean;
+  isProjectDrawerOpen: boolean;
+}
+
+const initialState: ProjectState = {
+  projects: {
+    data: [],
+    total: 0
+  },
+  loading: false,
+  initialized: false,
+  isProjectDrawerOpen: false
 };
 
 // Create async thunk for fetching teams
@@ -23,6 +35,8 @@ export const fetchProjects = createAsyncThunk(
       order: string;
       search: string;
       filter: number;
+      statuses: string | null;
+      categories: string | null;
     },
     { rejectWithValue }
   ) => {
@@ -33,7 +47,9 @@ export const fetchProjects = createAsyncThunk(
         params.field,
         params.order,
         params.search,
-        params.filter
+        params.filter,
+        params.statuses,
+        params.categories
       );
       return projectsResponse.body;
     } catch (error) {
@@ -46,44 +62,50 @@ export const fetchProjects = createAsyncThunk(
   }
 );
 
-const initialState: ProjectState = {
-  projectsViewModel: {total: 0, data: []},
-  isProjectDrawerOpen: false,
-  initialized: false,
-  loading: false,
-};
+export const toggleFavoriteProject = createAsyncThunk(
+  'projects/toggleFavoriteProject',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await projectsApiService.toggleFavoriteProject(id);
+      return response.body;
+    } catch (error) {
+      logger.error('Toggle Favorite Project', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);
 
 const projectSlice = createSlice({
   name: 'projectReducer',
   initialState,
   reducers: {
     toggleDrawer: state => {
-      state.isProjectDrawerOpen
-        ? (state.isProjectDrawerOpen = false)
-        : (state.isProjectDrawerOpen = true);
+      state.isProjectDrawerOpen = !state.isProjectDrawerOpen;
     },
-    createProject: (state, action: PayloadAction<ProjectType>) => {
-    },
-    toggleFavouriteProjectSelection: (state, action: PayloadAction<string>) => {
-    },
+    createProject: (state, action: PayloadAction<ProjectType>) => {},
     deleteProject: (state, action: PayloadAction<string>) => {},
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchProjects.pending, (state) => {
+      .addCase(fetchProjects.pending, state => {
         state.loading = true;
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.loading = false;
-        state.projectsViewModel = action.payload;
+        state.projects = {
+          data: action.payload?.data || [],
+          total: action.payload?.total || 0
+        };
         state.initialized = true;
+        console.log(state.projects);
       })
-      .addCase(fetchProjects.rejected, (state) => {
+      .addCase(fetchProjects.rejected, state => {
         state.loading = false;
-      });
+      })
   },
 });
 
-export const { toggleDrawer, createProject, toggleFavouriteProjectSelection, deleteProject } =
-  projectSlice.actions;
+export const { toggleDrawer, createProject, deleteProject } = projectSlice.actions;
 export default projectSlice.reducer;

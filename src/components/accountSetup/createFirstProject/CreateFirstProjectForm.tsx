@@ -4,7 +4,7 @@ import './CreateFirstProjectForm.css';
 import TemplateDrawer from '../templateDrawer/TemplateDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
-import { setButtonDisabled } from '../../../features/action-setup/buttonSlice';
+import { setButtonDisabled } from '@features/actionSetup/buttonSlice';
 import { useTranslation } from 'react-i18next';
 
 const { Title } = Typography;

@@ -8,7 +8,7 @@ import notificationReducer from '@features/navbar/notification/notificationSlice
 import memberReducer from '@features/settings/member/memberSlice';
 import taskReducer from '@features/tasks/taskSlice';
 import userReducer from '@features/user/userSlice';
-import buttonReducer from '@features/action-setup/buttonSlice';
+import buttonReducer from '@/features/actionSetup/buttonSlice';
 import clientReducer from '@features/settings/client/clientSlice';
 import jobReducer from '@features/settings/job/jobSlice';
 import teamReducer from '@/features/teams/teamSlice';
@@ -23,6 +23,8 @@ import authReducer from '@features/auth/authSlice';
 import alertsReducer from '@/services/alerts/alertSlice';
 import statusReducer from '@features/projects/status/StatusSlice';
 import bulkActionReducer from '@features/projects/bulkActions/bulkActionSlice';
+import projectCategoriesReducer from '@/features/projects/projectCategories/projectCategoriesSlice';
+import projectStatusesReducer from '@/features/projects/projectStatuses/projectStatusesSlice';
 
 export const store = configureStore({
   // there is error  occured with day js package when use with redux it shows a non-serializable value was detected
@@ -55,6 +57,8 @@ export const store = configureStore({
     alertsReducer: alertsReducer,
     statusReducer: statusReducer,
     bulkActionReducer: bulkActionReducer,
+    projectCategoriesReducer: projectCategoriesReducer,
+    projectStatusesReducer: projectStatusesReducer,
   },
 });
 

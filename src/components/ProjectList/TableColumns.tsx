@@ -2,31 +2,183 @@ import { ColumnsType } from 'antd/es/table';
 import { Avatar, Badge, Button, Progress, Rate, Tag, Tooltip } from 'antd';
 import { CalendarOutlined, InboxOutlined, SettingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import './TableColumns.css';
-import { useNavigate } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useCallback } from 'react';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { calculateTimeAgo } from '@/utils/calculateTimeAgo';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { formatDate } from '@/utils/timeUtils';
+import { fetchProjectCategories } from '@/features/projects/projectCategories/projectCategoriesSlice';
+import { fetchProjectStatuses } from '@/features/projects/projectStatuses/projectStatusesSlice';
+import { toggleFavoriteProject } from '@/features/projects/projectSlice';
+import './TableColumns.css';
+import { ColumnFilterItem } from 'antd/es/table/interface';
 
-const avatarColors = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#87d068'];
+// Constants
+const AVATAR_COLORS = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#87d068'] as const;
+const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+};
 
-const TableColumns = (): ColumnsType<IProjectViewModel> => {
-  const { t } = useTranslation('allProjectList');
+// Types
+interface DateRange {
+  startDate: string | null;
+  endDate: string | null;
+}
+
+// Utility functions
+const formatDateRange = ({ startDate, endDate }: DateRange): string => {
+  const formattedStart = startDate
+    ? new Date(startDate).toLocaleDateString('en-US', DATE_FORMAT_OPTIONS)
+    : 'N/A';
+  const formattedEnd = endDate
+    ? new Date(endDate).toLocaleDateString('en-US', DATE_FORMAT_OPTIONS)
+    : 'N/A';
+  
+  return `Start date: ${formattedStart}\nEnd date: ${formattedEnd}`;
+};
+
+const getTaskProgressTitle = (data: IProjectViewModel): string => {
+  if (!data.all_tasks_count) return 'No tasks available.';
+  if (data.all_tasks_count === data.completed_tasks_count) return 'All tasks completed.';
+  return `${data.completed_tasks_count || 0}/${data.all_tasks_count || 0} tasks completed.`;
+};
+
+// Component-specific hooks
+const useProjectData = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const { categories } = useAppSelector(state => state.projectCategoriesReducer);
+  const { statuses } = useAppSelector(state => state.projectStatusesReducer);
 
-  const getTaskProgressTitle = (data: IProjectViewModel) => {
-    if (!data.all_tasks_count) return 'No tasks available.';
-    if (data.all_tasks_count == data.completed_tasks_count) return 'All tasks completed.';
-    return `${data.completed_tasks_count || 0}/${data.all_tasks_count || 0} tasks completed.`;
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!categories.length) await dispatch(fetchProjectCategories());
+      if (!statuses.length) await dispatch(fetchProjectStatuses());
+    };
+    fetchData();
+  }, [dispatch, categories.length, statuses.length]);
+
+  return { categories, statuses };
+};
+
+// Reusable column components
+const ProjectNameCell: React.FC<{ record: IProjectViewModel; navigate: NavigateFunction }> = ({ record, navigate }) => {
+  const dispatch = useAppDispatch();
+
+  const handleFavorite = useCallback(async () => {
+    if (record.id) await dispatch(toggleFavoriteProject(record.id));
+  }, [dispatch, record.id]);
+
+  const selectProject = (record: IProjectViewModel) => {
+    if (!record.id) return;
+    
+    let viewTab = 'tasks-list';
+    switch (record.team_member_default_view) {
+      case 'TASK_LIST':
+        viewTab = 'tasks-list';
+        break;
+      case 'BOARD':
+        viewTab = 'board';
+        break;
+      default:
+        viewTab = 'tasks-list';
+    }
+  
+    const searchParams = new URLSearchParams({
+      tab: viewTab,
+      pinned_tab: viewTab
+    });
+  
+    navigate({
+      pathname: `/worklenz/projects/${record.id}`,
+      search: searchParams.toString()
+    });
   };
+  
+  return (
+    <div className="flex items-center">
+      <Rate
+        value={record.favorite ? 1 : 0}
+        onChange={handleFavorite}
+        count={1}
+        className="mr-2"
+        tooltips={['Add to favourites']}
+      />
+      <Badge color="geekblue" className="mr-2" />
+      <span
+        onClick={() => selectProject(record)}
+        className="cursor-pointer"
+      >
+        {record.name}
+        {(record.start_date || record.end_date) && (
+          <Tooltip
+            title={formatDateRange({
+              startDate: record.start_date || null,
+              endDate: record.end_date || null,
+            })}
+            overlayStyle={{ width: '200px' }}
+          >
+            <CalendarOutlined className="ml-2" />
+          </Tooltip>
+        )}
+      </span>
+    </div>
+  );
+};
 
-  const markAsFavorite = async (id: string) => {
-    // await dispatch(markAsFavorite(id));
-  };
+const CategoryCell: React.FC<{ record: IProjectViewModel }> = ({ record }) => {
+  if (!record.category_name) return '-';
+  
+  return (
+    <Tooltip title={`Click to filter by "${record.category_name}"`}>
+      <Tag color="#ff9c3c" className="rounded-full table-tag">
+        {record.category_name}
+      </Tag>
+    </Tooltip>
+  );
+};
 
-  return [
+const MembersCell: React.FC<{ members: string[] }> = ({ members }) => (
+  <Avatar.Group>
+    {members?.map((member, index) => (
+      <Tooltip key={index} title={member}>
+        <Avatar
+          style={{
+            backgroundColor: AVATAR_COLORS[index % AVATAR_COLORS.length],
+            width: '28px',
+            height: '28px',
+            border: 'none',
+          }}
+        >
+          {member.charAt(0).toUpperCase()}
+        </Avatar>
+      </Tooltip>
+    ))}
+  </Avatar.Group>
+);
+
+const ActionButtons: React.FC<{ t: (key: string) => string }> = ({ t }) => (
+  <div>
+    <Tooltip title={t('setting')}>
+      <Button className="mr-2" size="small">
+        <SettingOutlined />
+      </Button>
+    </Tooltip>
+    <Tooltip title={t('archive')}>
+      <Button size="small">
+        <InboxOutlined />
+      </Button>
+    </Tooltip>
+  </div>
+);
+
+const TableColumns = (navigate: NavigateFunction): ColumnsType<IProjectViewModel> => {
+  const { t } = useTranslation('allProjectList');
+  const { categories, statuses } = useProjectData();
+
+  return useMemo(() => [
     {
       title: t('name'),
       dataIndex: 'name',
@@ -34,51 +186,7 @@ const TableColumns = (): ColumnsType<IProjectViewModel> => {
       defaultSortOrder: 'ascend',
       showSorterTooltip: false,
       sorter: true,
-      render: (text, record) => {
-        // Format the start and end dates
-        const formattedStartDate = record.start_date
-          ? new Date(record.start_date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            })
-          : 'N/A';
-
-        const formattedEndDate = record.end_date
-          ? new Date(record.end_date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            })
-          : 'N/A';
-
-        return (
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Rate
-              value={record.favorite ? 1 : 0}
-              onChange={() => record.id && markAsFavorite(record.id)}
-              count={1}
-              style={{ marginRight: '0.5rem' }}
-              tooltips={['Add to favourites']}
-            />
-            <Badge color="geekblue" style={{ marginRight: '0.5rem' }} />
-            <span
-              onClick={() => navigate(`/worklenz/projects/${record.id}`)}
-              style={{ cursor: 'pointer' }}
-            >
-              {text}
-              {(record.start_date || record.end_date) && (
-                <Tooltip
-                  title={`Start date: ${formattedStartDate}\nEnd date: ${formattedEndDate}`}
-                  overlayStyle={{ width: '200px' }}
-                >
-                  <CalendarOutlined style={{ marginLeft: '0.5rem' }} />
-                </Tooltip>
-              )}
-            </span>
-          </div>
-        );
-      },
+      render: (_, record) => <ProjectNameCell record={record} navigate={navigate} />,
     },
     {
       title: t('client'),
@@ -91,28 +199,13 @@ const TableColumns = (): ColumnsType<IProjectViewModel> => {
       title: t('category'),
       dataIndex: 'category',
       key: 'category_id',
-      render: (category, record) =>
-        record.category_name === '-' ? (
-          <>{record.category_name}</>
-        ) : (
-          <Tooltip title={`Click to filter by "${record.category_name}"`}>
-            <Tag color="#ff9c3c" style={{ borderRadius: '50rem' }} className="table-tag">
-              {record.category_name}
-            </Tag>
-          </Tooltip>
-        ),
+      render: (_, record) => <CategoryCell record={record} />,
       sorter: true,
       showSorterTooltip: false,
-      filters: [
-        {
-          text: 'Category 1',
-          value: 'Category 1',
-        },
-        {
-          text: 'Category 2',
-          value: 'Category 2',
-        },
-      ],
+      filters: categories.map(category => ({
+        text: category.name,
+        value: category.id,
+      })) as ColumnFilterItem[],
       onFilter: (value, record) => record.category_name?.startsWith(value as string) || false,
     },
     {
@@ -121,53 +214,21 @@ const TableColumns = (): ColumnsType<IProjectViewModel> => {
       dataIndex: 'status',
       sorter: true,
       showSorterTooltip: false,
-      filters: [
-        {
-          text: 'Cancelled',
-          value: 'Cancelled',
-        },
-        {
-          text: 'Blocked',
-          value: 'Blocked',
-        },
-        {
-          text: 'On Hold',
-          value: 'On Hold',
-        },
-        {
-          text: 'Proposed',
-          value: 'Proposed',
-        },
-        {
-          text: 'In Planning',
-          value: 'In Planning',
-        },
-        {
-          text: 'In Progress',
-          value: 'In Progress',
-        },
-        {
-          text: 'Completed',
-          value: 'Completed',
-        },
-        {
-          text: 'Continous',
-          value: 'Continous',
-        },
-      ],
+      filters: statuses.map(status => ({
+        text: status.name,
+        value: status.id,
+      })) as ColumnFilterItem[],
       onFilter: (value, record) => record.status?.startsWith(value as string) || false,
     },
     {
       title: t('tasksProgress'),
       key: 'tasksProgress',
       dataIndex: 'tasksProgress',
-      render: (text, record) => {
-        return (
-          <Tooltip title={getTaskProgressTitle(record)}>
-            <Progress percent={record.progress} className="project-progress" />
-          </Tooltip>
-        );
-      },
+      render: (_, record) => (
+        <Tooltip title={getTaskProgressTitle(record)}>
+          <Progress percent={record.progress} className="project-progress" />
+        </Tooltip>
+      ),
     },
     {
       title: t('updated_at'),
@@ -175,58 +236,25 @@ const TableColumns = (): ColumnsType<IProjectViewModel> => {
       dataIndex: 'updated_at',
       showSorterTooltip: false,
       sorter: true,
-      render: (date: Date, record) => {
-        return (
-          <Tooltip title={formatDate(date)} placement="topLeft" mouseEnterDelay={0.5}>
-            {record.updated_at_string}
-          </Tooltip>
-        );
-      },
+      render: (date: Date, record) => (
+        <Tooltip title={formatDate(date)} placement="topLeft" mouseEnterDelay={0.5}>
+          {record.updated_at_string}
+        </Tooltip>
+      ),
     },
     {
       title: t('members'),
       key: 'members',
       dataIndex: 'members',
-      render: (members: string[]) => (
-        <Avatar.Group>
-          {members?.map((member, index) => (
-            <Tooltip key={index} title={member}>
-              <Avatar
-                style={{
-                  backgroundColor: avatarColors[index % avatarColors.length],
-                  width: '28px',
-                  height: '28px',
-                  border: 'none',
-                }}
-              >
-                {member.charAt(0).toUpperCase()}
-              </Avatar>
-            </Tooltip>
-          ))}
-        </Avatar.Group>
-      ),
+      render: (members: string[]) => <MembersCell members={members} />,
     },
     {
       title: '',
       key: 'button',
       dataIndex: '',
-      render: () => (
-        <div>
-          <Tooltip title={t('setting')}>
-            <Button style={{ marginRight: '8px' }} size="small">
-              <SettingOutlined />
-            </Button>
-          </Tooltip>
-
-          <Tooltip title={t('archive')}>
-            <Button size="small">
-              <InboxOutlined />
-            </Button>
-          </Tooltip>
-        </div>
-      ),
+      render: () => <ActionButtons t={t} />,
     },
-  ];
+  ], [categories, statuses, t]);
 };
 
 export default TableColumns;

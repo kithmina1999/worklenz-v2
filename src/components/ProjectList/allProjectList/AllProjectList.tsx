@@ -22,7 +22,7 @@ interface DataType {
 const AllProjectList: React.FC = () => {
   // get data from project reducer
   const projectList: ProjectType[] = useAppSelector(
-    (state) => state.projectReducer.projectsViewModel
+    (state) => state.projectReducer.projects
   );
 
   const projectData: DataType[] = [

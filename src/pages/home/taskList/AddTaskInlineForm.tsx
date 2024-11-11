@@ -12,7 +12,7 @@ const AddTaskInlineForm = () => {
   const [isProjectFieldShowing, setIsProjectFieldShowing] = useState(false);
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
-  const projectList = useAppSelector(state => state.projectReducer.projectsViewModel);
+  const projectList = useAppSelector(state => state.projectReducer.projects);
 
   // ref for task input field
   const taskInputRef = useRef<InputRef | null>(null);

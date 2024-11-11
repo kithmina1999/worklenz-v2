@@ -23,7 +23,7 @@ import { TaskType } from '../../../types/task.types';
 const TasksList = () => {
   const tasksList = useAppSelector((state) => state.taskReducer.tasks);
   const projectList = useAppSelector(
-    (state) => state.projectReducer.projectsViewModel
+    (state) => state.projectReducer.projects
   );
   const [listView, setListView] = useState<'List' | 'Calendar'>('List');
   const [isLoading, setIsLoading] = useState(false);

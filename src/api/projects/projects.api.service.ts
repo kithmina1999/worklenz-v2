@@ -13,10 +13,18 @@ export const projectsApiService = {
     field: string | null,
     order: string | null,
     search: string | null,
-    filter: number | null = null
+    filter: number | null = null,
+    statuses: string | null = null,
+    categories: string | null = null
   ): Promise<IServerResponse<IProjectsViewModel>> => {
     const s = encodeURIComponent(search || '');
-    const url = `${rootUrl}${toQueryString({ index, size, field, order, search: s, filter })}`;
+    const url = `${rootUrl}${toQueryString({ index, size, field, order, search: s, filter, statuses, categories })}`;
+    const response = await apiClient.get<IServerResponse<IProjectsViewModel>>(`${url}`);
+    return response.data;
+  },
+
+  toggleFavoriteProject: async (id: string): Promise<IServerResponse<IProjectsViewModel>> => {
+    const url = `${rootUrl}/favorite/${id}`;
     const response = await apiClient.get<IServerResponse<IProjectsViewModel>>(`${url}`);
     return response.data;
   },

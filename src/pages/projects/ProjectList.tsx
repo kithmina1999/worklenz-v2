@@ -1,5 +1,5 @@
-import React, { Key, useEffect, useState } from 'react';
-import { Button, Card, Flex, Input, Segmented, Table, Tooltip } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Flex, Input, Segmented, Table, TablePaginationConfig, Tooltip } from 'antd';
 import { PageHeader } from '@ant-design/pro-components';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import './ProjectList.css';
@@ -7,30 +7,40 @@ import CreateProjectButton from '@features/projects/createProject/CreateProjectB
 import CreateProjectDrawer from '@features/projects/createProject/CreateProjectDrawer';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { DEFAULT_PAGE_SIZE, FILTER_INDEX_KEY, PAGE_SIZE_OPTIONS, PROJECT_SORT_FIELD, PROJECT_SORT_ORDER } from '@/shared/constants';
+import {
+  DEFAULT_PAGE_SIZE,
+  FILTER_INDEX_KEY,
+  PAGE_SIZE_OPTIONS,
+  PROJECT_SORT_FIELD,
+  PROJECT_SORT_ORDER,
+} from '@/shared/constants';
 import TableColumns from '@/components/ProjectList/TableColumns';
-import { IProjectsViewModel } from '@/types/project/projectsViewModel.types';
 import { IProjectFilter } from '@/types/project/project.types';
 import { fetchProjects } from '@/features/projects/projectSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
+import { FilterValue } from 'antd/es/table/interface';
+import { SorterResult } from 'antd/es/table/interface';
+import { useNavigate } from 'react-router-dom';
 
 const ProjectList: React.FC = () => {
   const { t } = useTranslation('allProjectList');
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const loading = useAppSelector(state => state.projectReducer.loading);
+  const { loading, projects } = useAppSelector(state => state.projectReducer);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [projects, setProjects] = useState<IProjectsViewModel>({total: 0, data: []});
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: DEFAULT_PAGE_SIZE
+    pageSize: DEFAULT_PAGE_SIZE,
   });
   const [sorter, setSorter] = useState({
     order: localStorage.getItem(PROJECT_SORT_ORDER) ?? 'ascend',
-    columnKey: localStorage.getItem(PROJECT_SORT_FIELD) ?? 'name'
+    columnKey: localStorage.getItem(PROJECT_SORT_FIELD) ?? 'name',
   });
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const filters = Object.values(IProjectFilter);
 
@@ -42,27 +52,59 @@ const ProjectList: React.FC = () => {
     localStorage.setItem(FILTER_INDEX_KEY, index.toString());
   };
 
-  const setSortingValues = (sorter: { columnKey: string; order: string; }) => {
+  const setSortingValues = (sorter: { columnKey: string; order: string }) => {
     localStorage.setItem(PROJECT_SORT_FIELD, sorter.columnKey);
     localStorage.setItem(PROJECT_SORT_ORDER, sorter.order);
-  }
+  };
 
   useEffect(() => {
     setSortingValues(sorter);
     getProjects();
-  }, [dispatch, searchTerm, pagination, sorter]);
+  }, [searchTerm, selectedStatus, selectedCategory]); // Remove pagination and sorter from deps
+  
+  // Handle pagination and sorting separately
+  const handleTableChange = (
+    pagination: TablePaginationConfig,
+    filters: Record<string, FilterValue | null>,
+    sorter: SorterResult<IProjectViewModel> | SorterResult<IProjectViewModel>[]
+  ) => {
+    if (filters?.status_id) {
+      setSelectedStatus(filters.status_id.join('+'));
+    }
+    if (filters?.category_id) {
+      setSelectedCategory(filters.category_id.join('+'));
+    }
+    
+    const newSorter = {
+      order: (Array.isArray(sorter) ? sorter[0].order : sorter.order) ?? 'ascend',
+      columnKey: ((Array.isArray(sorter) ? sorter[0].columnKey : sorter.columnKey) as string) ?? 'name',
+    };
+    
+    setPagination({
+      current: pagination.current || 1,
+      pageSize: pagination.pageSize || DEFAULT_PAGE_SIZE,
+    });
+    
+    setSorter(newSorter);
+    getProjects();
+  };
 
   const getProjects = async () => {
-    const params = {
-      index: pagination.current,
-      size: pagination.pageSize,
-      field: sorter.columnKey,
-      order: sorter.order,
-      filter: getFilterIndex(),
-      search: searchTerm,
+    try {
+      const params = {
+        index: pagination.current,
+        size: pagination.pageSize,
+        field: sorter.columnKey,
+        order: sorter.order,
+        filter: getFilterIndex(),
+        search: searchTerm,
+        statuses: selectedStatus,
+        categories: selectedCategory,
+      };
+      await dispatch(fetchProjects(params)).unwrap();
+    } catch (error) {
+      console.error('Error fetching projects:', error);
     }
-    const result = await dispatch(fetchProjects(params)).unwrap();
-    setProjects(result);
   };
 
   const handleRefresh = () => {
@@ -107,29 +149,20 @@ const ProjectList: React.FC = () => {
       />
       <Card className="project-card">
         <Table<IProjectViewModel>
-          columns={TableColumns()}
+          columns={TableColumns(navigate)}
           dataSource={projects.data}
           rowKey="id"
           loading={loading}
-          size='small'
-          onChange={(pagination, filters, sorter) => {
-            setSorter({
-              order: (Array.isArray(sorter) ? sorter[0].order : sorter.order) ?? 'ascend',
-              columnKey: (Array.isArray(sorter) ? sorter[0].columnKey : sorter.columnKey) as string?? 'name' as string
-            });
-          }}
+          size="small"
+          onChange={handleTableChange}
           pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
             showSizeChanger: true,
             defaultPageSize: DEFAULT_PAGE_SIZE,
             pageSizeOptions: PAGE_SIZE_OPTIONS,
             size: 'small',
             total: projects.total,
-            onChange: (page, pageSize) => {
-              setPagination({
-                current: page,
-                pageSize: pageSize
-              });
-            }
           }}
         />
       </Card>
