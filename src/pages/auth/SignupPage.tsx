@@ -12,7 +12,7 @@ import {
 } from 'antd';
 import googleIcon from '../../assets/images/google-icon.png';
 import { Link, useNavigate } from 'react-router-dom';
-import PageHeader from '../../components/PageHeader';
+import PageHeader from '../../components/AuthPageHeader';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 
