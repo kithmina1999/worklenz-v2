@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Member } from '../../../types/schedule/schedule.types';
-import { Avatar, Badge, Button, Col, Flex, Row, Tooltip } from 'antd';
+import { Avatar, Badge, Button, Col, Flex, Popover, Row, Tooltip } from 'antd';
 import { avatarNamesMap } from '../../../shared/constants';
 import { CaretDownOutlined, CaretRightFilled } from '@ant-design/icons';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useMediaQuery } from 'react-responsive';
+import './Team.css'
+import { useDispatch } from 'react-redux';
+import { toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
+import ProjectTimelineModal from '../../../features/schedule/ProjectTimelineModal';
+import ScheduleDrawer from '../../../features/schedule/ScheduleDrawer';
 
 interface GanttChartProps {
   members: Member[];
@@ -17,7 +21,7 @@ interface teamProps {
 
 const getDaysBetween = (start: Date, end: Date): number => {
   const msPerDay = 1000 * 60 * 60 * 24;
-  return Math.round((end.getTime() - start.getTime()));
+  return Math.round((end.getTime() - start.getTime()) / msPerDay);
 };
 
 const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
@@ -26,6 +30,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
   const [showProject, setShowProject] = useState<string | null>(null);
   const workingDays = useAppSelector((state) => state.scheduleReducer.workingDays)
   const workingHours = useAppSelector((state) => state.scheduleReducer.workingHours)
+  const dispatch = useDispatch()
 
   const timelineStart = date ? date : new Date();
   const timelineEnd = new Date(timelineStart);
@@ -59,11 +64,12 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
       style={{
         border: '1px solid rgba(0, 0, 0, 0.2)',
         padding: '0 0 10px 0px',
+        overflow: 'auto'
       }}
     >
       {/* Header Row for Dates */}
       <Row style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.2)' }}>
-        <Col span={4}></Col>
+        <Col span={4} style={{position: 'sticky'}}></Col>
         <Col span={20}>
           <div
             style={{
@@ -122,7 +128,8 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                 alignItems: 'center',
                 gap: '10px',
                 paddingLeft: '20px',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                position: 'sticky'
               }}
             >
               <Avatar
@@ -132,7 +139,8 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
               >
                 {member.memberName.charAt(0)}
               </Avatar>
-              {member.memberName}
+              <Button type='text' size='small' onClick={() => dispatch(toggleScheduleDrawer())}>{member.memberName}</Button>
+              <ScheduleDrawer />
               <Button
                 size="small"
                 type="text"
@@ -147,7 +155,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
             </Col>
             <Col
               span={20}
-              style={{ display: 'flex', width: '100%', paddingLeft: '3px' }}
+              style={{ display: 'flex', width: '100%', paddingLeft: '3px',}}
             >
               {Array.from({ length: totalDays }, (_, i) => {
                 const currentDay = new Date(timelineStart);
@@ -185,8 +193,8 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                       display: 'flex',
                       justifyContent: 'center',
                       alignItems: 'center',
-                      padding: '10px 7px 0 7px',
-                      height: '82px',
+                      padding: '10px 7px 10px 7px',
+                      height: '92px',
                       flexDirection: 'column',
                     }}
                   >
@@ -259,13 +267,17 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
               let projectDuration =
                 getDaysBetween(projectStart, projectEnd) + 1;
 
+                if (projectEnd > timelineEnd) {
+                  projectDuration =  getDaysBetween(projectStart, timelineEnd)
+                }
+
               if (startOffset < 0) {
                 projectDuration += startOffset;
                 startOffset = 0;
               }
 
               return (
-                <Row key={project.projectId}>
+                <Row key={project.projectId} >
                   <Col
                     span={4}
                     style={{
@@ -298,7 +310,9 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                     }}
                   >
                     {Array.from({ length: totalDays }, (_, i) => (
+                      <Popover content={<ProjectTimelineModal />} trigger="click" >
                       <div
+                      className={i >= startOffset && i < startOffset + projectDuration ? 'empty-cell-hide' : 'empty-cell'}
                         key={i}
                         style={{
                           fontSize: '14px',
@@ -308,11 +322,12 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                           display: 'flex',
                           justifyContent: 'center',
                           alignItems: 'center',
-                          padding: '0 7px',
-                          height: '76px',
+                          padding: '10px 7px',
+                          height: '65px',
                           flexDirection: 'column',
                           position: 'relative',
                         }}
+
                       >
                         <div
                           style={{
@@ -325,6 +340,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                         {/* Project Timeline Bar */}
                         {i === startOffset && (
                           <div
+                          className='project-timeline-bar'
                             style={{
                               gridColumnStart: startOffset + 1,
                               gridColumnEnd: startOffset + projectDuration + 1,
@@ -336,12 +352,13 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                               position: 'absolute',
                               left: 0,
                               right: 0,
-                              top: '14px',
+                              top: '0',
                               display: 'flex',
                               flexDirection: 'column',
                               justifyContent: 'center',
                               padding: '0 10px',
                               zIndex: 99,
+                              cursor: 'pointer',
                             }}
                           >
                             <span
@@ -355,6 +372,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                           </div>
                         )}
                       </div>
+                      </Popover>
                     ))}
                   </Col>
                 </Row>
