@@ -66,3 +66,20 @@
 .custom-insights-card:hover {
   border: 1px solid #d3d3d3;
 }
+
+/* reporting sidebar  */
+.custom-reporting-sider .ant-menu-item-selected {
+  border-inline-end: 3px solid #1890ff !important;
+  border-radius: 0;
+}
+
+.custom-reporting-sider .ant-menu-item,
+.custom-reporting-sider .ant-menu-submenu-title {
+  margin-inline: 0 !important;
+  padding-inline: 16px !important;
+  width: 100%;
+}
+
+.custom-reporting-sider .ant-menu:nth-child(2) .ant-menu-item {
+  padding-inline-start: 32px !important;
+}
