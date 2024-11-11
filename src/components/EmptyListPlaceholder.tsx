@@ -3,20 +3,20 @@ import React from 'react';
 import { colors } from '../styles/colors';
 
 type EmptyListPlaceholderProps = {
-  imageSrc: string;
+  imageSrc?: string;
   imageHeight?: number;
   text: string;
 };
 
 const EmptyListPlaceholder = ({
-  imageSrc,
-  imageHeight,
+  imageSrc = 'https://app.worklenz.com/assets/images/empty-box.webp',
+  imageHeight = 60,
   text,
 }: EmptyListPlaceholderProps) => {
   return (
     <Empty
       image={imageSrc}
-      imageStyle={{ height: imageHeight || 60 }}
+      imageStyle={{ height: imageHeight }}
       style={{
         display: 'flex',
         flexDirection: 'column',

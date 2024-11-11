@@ -6,7 +6,7 @@ import CustomAvatar from '../../../../../../components/CustomAvatar';
 import { mockTimeLogs } from './mockTimeLogs';
 
 type TimeTrackerProps = {
-  taskId: string;
+  taskId: string | null;
   initialTime?: number;
 };
 

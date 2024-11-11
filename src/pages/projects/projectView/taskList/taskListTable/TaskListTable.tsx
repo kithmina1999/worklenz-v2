@@ -25,7 +25,6 @@ import PhaseDropdown from '../../../../../components/taskListCommon/phaseDropdow
 import AssigneeSelector from '../../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
 import TaskCell from './taskListTableCells/TaskCell';
 import AddSubTaskListRow from './taskListTableRows/AddSubTaskListRow';
-import UpdateTaskDrawer from '../../../../../features/tasks/taskCreationAndUpdate/UpdateTaskDrawer';
 import { colors } from '../../../../../styles/colors';
 import TimeTracker from './taskListTableCells/TimeTracker';
 import TaskContextMenu from './contextMenu/TaskContextMenu';
@@ -519,9 +518,6 @@ const TaskListTable = ({
         selectedTask={selectedRows[0]}
         onClose={() => setContextMenuVisible(false)}
       />
-
-      {/* update task drawer  */}
-      <UpdateTaskDrawer taskId={selectedTaskId} />
     </div>
   );
 };
