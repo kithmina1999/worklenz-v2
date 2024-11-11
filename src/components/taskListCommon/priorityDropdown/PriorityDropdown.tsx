@@ -105,11 +105,13 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
       trigger={['click']}
     >
       <Flex
-        gap={4}
+        gap={6}
+        align="center"
         style={{
           width: 'fit-content',
           borderRadius: 24,
-          paddingInline: 6,
+          paddingInline: 8,
+          height: 22,
           backgroundColor: getPriorityColor(priority, themeMode),
           color: colors.darkGray,
           cursor: 'pointer',

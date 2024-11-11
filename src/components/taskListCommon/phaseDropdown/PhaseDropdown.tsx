@@ -69,12 +69,14 @@ const PhaseDropdown = ({ projectId }: { projectId: string }) => {
       trigger={['click']}
     >
       <Flex
-        gap={4}
+        gap={6}
+        align="center"
         justify="space-between"
         style={{
           width: 'fit-content',
           borderRadius: 24,
-          paddingInline: 6,
+          paddingInline: 8,
+          height: 22,
           fontSize: 13,
           backgroundColor: currentPhaseOption?.optionColor,
           color: colors.darkGray,
