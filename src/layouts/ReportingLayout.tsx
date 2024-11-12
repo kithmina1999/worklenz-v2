@@ -92,7 +92,12 @@ const ReportingLayout = () => {
                       ),
                     }}
                   />
-                  <Typography.Text strong>Ceydigital</Typography.Text>
+                  <Flex
+                    align="center"
+                    style={{ width: '100%', height: 16, overflow: 'hidden' }}
+                  >
+                    <Typography.Text strong>Ceydigital</Typography.Text>
+                  </Flex>
                 </Flex>
               )}
 
