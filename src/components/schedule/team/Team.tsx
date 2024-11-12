@@ -4,11 +4,12 @@ import { Avatar, Badge, Button, Col, Flex, Popover, Row, Tooltip } from 'antd';
 import { avatarNamesMap } from '../../../shared/constants';
 import { CaretDownOutlined, CaretRightFilled } from '@ant-design/icons';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import './Team.css'
+import './Team.css';
 import { useDispatch } from 'react-redux';
 import { toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
 import ProjectTimelineModal from '../../../features/schedule/ProjectTimelineModal';
 import ScheduleDrawer from '../../../features/schedule/ScheduleDrawer';
+import { Link } from 'react-router-dom';
 
 interface GanttChartProps {
   members: Member[];
@@ -28,13 +29,18 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
   const [weekends, setWeekends] = useState<boolean[]>([]);
   const [today, setToday] = useState(new Date());
   const [showProject, setShowProject] = useState<string | null>(null);
-  const workingDays = useAppSelector((state) => state.scheduleReducer.workingDays)
-  const workingHours = useAppSelector((state) => state.scheduleReducer.workingHours)
-  const dispatch = useDispatch()
+  const workingDays = useAppSelector(
+    (state) => state.scheduleReducer.workingDays
+  );
+  const workingHours = useAppSelector(
+    (state) => state.scheduleReducer.workingHours
+  );
+  const themeMode = useAppSelector((state) => state.themeReducer.mode)
+  const dispatch = useDispatch();
 
   const timelineStart = date ? date : new Date();
   const timelineEnd = new Date(timelineStart);
-  timelineEnd.setDate(timelineStart.getDate() + 15);
+  timelineEnd.setDate(timelineStart.getDate() + 30);
 
   const totalDays = getDaysBetween(timelineStart, timelineEnd);
 
@@ -45,8 +51,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
 
       // Check if the day is Saturday or Sunday
       const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-      return !workingDays.includes(dayName)
-      
+      return !workingDays.includes(dayName);
     });
 
     setWeekends(weekendsArray);
@@ -60,76 +65,35 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
 
   return (
     <Flex
-      vertical
       style={{
-        border: '1px solid rgba(0, 0, 0, 0.2)',
+        border: themeMode === 'dark' ? '1px solid #303030' : '1px solid rgba(0, 0, 0, 0.2)',
         padding: '0 0 10px 0px',
-        overflow: 'auto'
+        borderRadius: '4px',
+        backgroundColor: themeMode === 'dark' ? '#141414' : ''
       }}
     >
-      {/* Header Row for Dates */}
-      <Row style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.2)' }}>
-        <Col span={4} style={{position: 'sticky'}}></Col>
-        <Col span={20}>
+      {/* table */}
+      <div style={{ width: '230px', display: 'flex', flexDirection: 'column' }}>
+        
+        {/* right side of the table */}
+        <div
+          style={{
+            height: '60px',
+            borderBottom: themeMode === 'dark' ? '1px solid #303030' : '1px solid rgba(0, 0, 0, 0.2)',
+          }}
+        ></div>
+        {members.map((member) => (
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: `repeat(${totalDays}, 75px)`,
-              gap: '2px',
-              height: '60px',
-            }}
+            key={member.memberId}
+            style={{ display: 'flex', flexDirection: 'column' }}
           >
-            {Array.from({ length: totalDays }, (_, i) => {
-              const date = new Date(timelineStart);
-              date.setDate(timelineStart.getDate() + i);
-              const formattedDate = date.toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-              });
-
-              return (
-                <div
-                  key={i}
-                  style={{
-                    textAlign: 'center',
-                    fontSize: '14px',
-                    width: '83px',
-                    padding: '8px 16px 0px 16px',
-                    fontWeight: 'bold',
-                    color: today && date && today.toDateString() === date.toDateString() ? 'white': weekends[i] ? 'rgba(0, 0, 0, 0.27)' : '',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor:
-                      today &&
-                      date &&
-                      today.toDateString() === date.toDateString()
-                        ? 'rgba(24, 144, 255, 1)'
-                        : '',
-                    borderRadius: '5px',
-                  }}
-                >
-                  {formattedDate}
-                </div>
-              );
-            })}
-          </div>
-        </Col>
-      </Row>
-
-      {members.map((member) => (
-        <React.Fragment key={member.memberId}>
-          <Row>
-            <Col
-              span={4}
+            <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
                 paddingLeft: '20px',
-                whiteSpace: 'nowrap',
-                position: 'sticky'
+                height: '92px',
               }}
             >
               <Avatar
@@ -139,7 +103,13 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
               >
                 {member.memberName.charAt(0)}
               </Avatar>
-              <Button type='text' size='small' onClick={() => dispatch(toggleScheduleDrawer())}>{member.memberName}</Button>
+              <Button
+                type="text"
+                size="small"
+                onClick={() => dispatch(toggleScheduleDrawer())}
+              >
+                {member.memberName}
+              </Button>
               <ScheduleDrawer />
               <Button
                 size="small"
@@ -152,139 +122,35 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                   <CaretRightFilled />
                 )}
               </Button>
-            </Col>
-            <Col
-              span={20}
-              style={{ display: 'flex', width: '100%', paddingLeft: '3px',}}
-            >
-              {Array.from({ length: totalDays }, (_, i) => {
-                const currentDay = new Date(timelineStart);
-                currentDay.setDate(timelineStart.getDate() + i);
+            </div>
 
-                const formattedCurrentDay = currentDay
-                  .toISOString()
-                  .split('T')[0];
-                const loggedHours =
-                  member.timeLogged?.find(
-                    (log) => log.date === formattedCurrentDay
-                  )?.hours || 0;
+            {showProject === member.memberId &&
+              member.projects.map((project, index) => {
+                const projectStart = new Date(project.startDate);
+                const projectEnd = new Date(project.endDate);
+                let startOffset = getDaysBetween(timelineStart, projectStart);
+                let projectDuration =
+                  getDaysBetween(projectStart, projectEnd) + 1;
 
-                const totalPerDayHours =
-                  member.projects.reduce((total, project) => {
-                    const projectStart = new Date(project.startDate);
-                    const projectEnd = new Date(project.endDate);
-                    if (
-                      currentDay >= projectStart &&
-                      currentDay <= projectEnd
-                    ) {
-                      return total + project.perDayHours;
-                    }
-                    return total;
-                  }, 0) - loggedHours;
+                if (projectEnd > timelineEnd) {
+                  projectDuration = getDaysBetween(projectStart, timelineEnd);
+                }
+
+                if (startOffset < 0) {
+                  projectDuration += startOffset;
+                  startOffset = 0;
+                }
 
                 return (
                   <div
-                    key={i}
-                    style={{
-                      fontSize: '14px',
-                      backgroundColor: weekends[i]
-                        ? 'rgba(217, 217, 217, 0.4)'
-                        : '',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 7px 10px 7px',
-                      height: '92px',
-                      flexDirection: 'column',
-                    }}
-                  >
-                    <Tooltip
-                      title={
-                        <div
-                          style={{ display: 'flex', flexDirection: 'column' }}
-                        >
-                          <span>
-                            Totol Allocation - {totalPerDayHours + loggedHours}
-                          </span>
-                          <span>Time logged - {loggedHours}</span>
-                          <span>Remaining time - {totalPerDayHours}</span>
-                        </div>
-                      }
-                    >
-                      <div
-                        style={{
-                          width: '63px',
-                          background: `linear-gradient(to top, ${totalPerDayHours <= 0 ? 'rgba(200, 200, 200, 0.35)' : totalPerDayHours <= workingHours ? 'rgba(6, 126, 252, 0.4)' : 'rgba(255, 0, 0, 0.4)'} ${(totalPerDayHours * 100) / workingHours}%, rgba(190, 190, 190, 0.25) ${(totalPerDayHours * 100) / workingHours}%)`,
-                          justifyContent:
-                            loggedHours > 0 ? 'flex-end' : 'center',
-                          display: 'flex',
-                          alignItems: 'center',
-                          height: '100%',
-                          borderRadius: '5px',
-                          flexDirection: 'column',
-                        }}
-                      >
-                        <span
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            height: `${(totalPerDayHours * 100) / workingHours}%`,
-                          }}
-                        >
-                          {totalPerDayHours}h
-                        </span>
-                        {loggedHours > 0 && (
-                          <span
-                            style={{
-                              height: `${(loggedHours * 100) / workingHours}%`,
-                              backgroundColor: 'rgba(98, 210, 130, 1)',
-                              width: '100%',
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              borderBottomLeftRadius: '5px',
-                              borderBottomRightRadius: '5px',
-                            }}
-                          >
-                            {loggedHours}h
-                          </span>
-                        )}
-                      </div>
-                    </Tooltip>
-                  </div>
-                );
-              })}
-            </Col>
-          </Row>
-
-          {/* Row for Each Project Timeline */}
-          {showProject === member.memberId &&
-            member.projects.map((project) => {
-              const projectStart = new Date(project.startDate);
-              const projectEnd = new Date(project.endDate);
-              let startOffset = getDaysBetween(timelineStart, projectStart);
-              let projectDuration =
-                getDaysBetween(projectStart, projectEnd) + 1;
-
-                if (projectEnd > timelineEnd) {
-                  projectDuration =  getDaysBetween(projectStart, timelineEnd)
-                }
-
-              if (startOffset < 0) {
-                projectDuration += startOffset;
-                startOffset = 0;
-              }
-
-              return (
-                <Row key={project.projectId} >
-                  <Col
-                    span={4}
+                    key={index}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px',
                       paddingLeft: '20px',
+                      position: 'sticky',
+                      height: '65px',
                     }}
                   >
                     <Badge color="red" />
@@ -300,19 +166,110 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                     >
                       {project.projectName}
                     </Tooltip>
-                  </Col>
-                  <Col
-                    span={20}
-                    style={{
-                      display: 'flex',
-                      position: 'relative',
-                      paddingLeft: '3px',
-                    }}
-                  >
-                    {Array.from({ length: totalDays }, (_, i) => (
-                      <Popover content={<ProjectTimelineModal />} trigger="click" >
+                  </div>
+                );
+              })}
+          </div>
+        ))}
+      </div>
+
+      {/* left side of the table */}
+      <div style={{overflow: 'auto'}}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${totalDays}, 75px)`,
+            gap: '2px',
+            height: '60px',
+            borderBottom: themeMode === 'dark' ? '1px solid #303030' : '1px solid rgba(0, 0, 0, 0.2)',
+          }}
+        >
+          {Array.from({ length: totalDays }, (_, i) => {
+            const date = new Date(timelineStart);
+            date.setDate(timelineStart.getDate() + i);
+            const formattedDate = date.toLocaleDateString('en-US', {
+              weekday: 'short',
+              month: 'short',
+              day: 'numeric',
+            });
+
+            return (
+              <div
+                key={i}
+                style={{
+                  textAlign: 'center',
+                  fontSize: '14px',
+                  width: '83px',
+                  padding: '8px 16px 0px 16px',
+                  fontWeight: 'bold',
+                  color:
+                    today &&
+                    date &&
+                    today.toDateString() === date.toDateString()
+                      ? 'white'
+                      : weekends[i]
+                        ? themeMode === 'dark' ? 'rgba(200, 200, 200, 0.6)' : 'rgba(0, 0, 0, 0.27)'
+                        : '',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor:
+                    today &&
+                    date &&
+                    today.toDateString() === date.toDateString()
+                      ? 'rgba(24, 144, 255, 1)'
+                      : '',
+                  borderRadius: '5px',
+                }}
+              >
+                {formattedDate}
+              </div>
+            );
+          })}
+        </div>
+
+        <div>
+          {members.map((member) => (
+            <div
+              key={member.memberId}
+              style={{
+                display: 'flex',
+                width: '100%',
+                flexDirection: 'column',
+              }}
+            >
+              <Row>
+                <Col
+                  span={24}
+                  style={{ display: 'flex', width: '100%', paddingLeft: '3px' }}
+                >
+                  {Array.from({ length: totalDays }, (_, i) => {
+                    const currentDay = new Date(timelineStart);
+                    currentDay.setDate(timelineStart.getDate() + i);
+
+                    const formattedCurrentDay = currentDay
+                      .toISOString()
+                      .split('T')[0];
+                    const loggedHours =
+                      member.timeLogged?.find(
+                        (log) => log.date === formattedCurrentDay
+                      )?.hours || 0;
+
+                    const totalPerDayHours =
+                      member.projects.reduce((total, project) => {
+                        const projectStart = new Date(project.startDate);
+                        const projectEnd = new Date(project.endDate);
+                        if (
+                          currentDay >= projectStart &&
+                          currentDay <= projectEnd
+                        ) {
+                          return total + project.perDayHours;
+                        }
+                        return total;
+                      }, 0) - loggedHours;
+
+                    return (
                       <div
-                      className={i >= startOffset && i < startOffset + projectDuration ? 'empty-cell-hide' : 'empty-cell'}
                         key={i}
                         style={{
                           fontSize: '14px',
@@ -322,64 +279,200 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                           display: 'flex',
                           justifyContent: 'center',
                           alignItems: 'center',
-                          padding: '10px 7px',
-                          height: '65px',
+                          padding: '10px 7px 10px 7px',
+                          height: '92px',
                           flexDirection: 'column',
-                          position: 'relative',
                         }}
-
                       >
-                        <div
-                          style={{
-                            width: '63px',
-                            height: '100%',
-                            zIndex: 1,
-                          }}
-                        ></div>
-
-                        {/* Project Timeline Bar */}
-                        {i === startOffset && (
+                        <Tooltip
+                          title={
+                            <div
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                              }}
+                            >
+                              <span>
+                                Totol Allocation -{' '}
+                                {totalPerDayHours + loggedHours}
+                              </span>
+                              <span>Time logged - {loggedHours}</span>
+                              <span>Remaining time - {totalPerDayHours}</span>
+                            </div>
+                          }
+                        >
                           <div
-                          className='project-timeline-bar'
                             style={{
-                              gridColumnStart: startOffset + 1,
-                              gridColumnEnd: startOffset + projectDuration + 1,
-                              backgroundColor: 'rgba(240, 248, 255, 1)',
-                              height: '60px',
-                              width: `${77 * projectDuration}px`,
-                              borderRadius: '5px',
-                              border: '1px solid rgba(149, 197, 248, 1)',
-                              position: 'absolute',
-                              left: 0,
-                              right: 0,
-                              top: '0',
+                              width: '63px',
+                              background: `linear-gradient(to top, ${totalPerDayHours <= 0 ? 'rgba(200, 200, 200, 0.35)' : totalPerDayHours <= workingHours ? 'rgba(6, 126, 252, 0.4)' : 'rgba(255, 0, 0, 0.4)'} ${(totalPerDayHours * 100) / workingHours}%, rgba(190, 190, 190, 0.25) ${(totalPerDayHours * 100) / workingHours}%)`,
+                              justifyContent:
+                                loggedHours > 0 ? 'flex-end' : 'center',
                               display: 'flex',
+                              alignItems: 'center',
+                              height: '100%',
+                              borderRadius: '5px',
                               flexDirection: 'column',
-                              justifyContent: 'center',
-                              padding: '0 10px',
-                              zIndex: 99,
                               cursor: 'pointer',
                             }}
+                            onClick={() => dispatch(toggleScheduleDrawer())}
                           >
                             <span
-                              style={{ fontSize: '12px', fontWeight: 'bold' }}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: `${(totalPerDayHours * 100) / workingHours}%`,
+                              }}
                             >
-                              Total {project.totalHours}h
+                              {totalPerDayHours}h
                             </span>
-                            <span style={{ fontSize: '10px' }}>
-                              Per Day {project.perDayHours}h
-                            </span>
+                            {loggedHours > 0 && (
+                              <span
+                                style={{
+                                  height: `${(loggedHours * 100) / workingHours}%`,
+                                  backgroundColor: 'rgba(98, 210, 130, 1)',
+                                  width: '100%',
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  borderBottomLeftRadius: '5px',
+                                  borderBottomRightRadius: '5px',
+                                }}
+                              >
+                                {loggedHours}h
+                              </span>
+                            )}
                           </div>
-                        )}
+                        </Tooltip>
                       </div>
-                      </Popover>
-                    ))}
-                  </Col>
-                </Row>
-              );
-            })}
-        </React.Fragment>
-      ))}
+                    );
+                  })}
+                </Col>
+              </Row>
+              {/* Row for Each Project Timeline */}
+              {showProject === member.memberId &&
+                member.projects.map((project) => {
+                  const projectStart = new Date(project.startDate);
+                  const projectEnd = new Date(project.endDate);
+                  let startOffset = getDaysBetween(timelineStart, projectStart);
+                  let projectDuration =
+                    getDaysBetween(projectStart, projectEnd) + 1;
+
+                  if (projectEnd > timelineEnd) {
+                    projectDuration = getDaysBetween(projectStart, timelineEnd);
+                  }
+
+                  if (startOffset < 0) {
+                    projectDuration += startOffset;
+                    startOffset = 0;
+                  }
+
+                  return (
+                    <Row key={project.projectId}>
+                      <Col
+                        span={24}
+                        style={{
+                          display: 'flex',
+                          position: 'relative',
+                          paddingLeft: '3px',
+                        }}
+                      >
+                        {Array.from({ length: totalDays }, (_, i) => (
+                          <Popover
+                            content={<ProjectTimelineModal />}
+                            trigger="click"
+                          >
+                            <div
+                              className={
+                                i >= startOffset &&
+                                i < startOffset + projectDuration
+                                  ? 'empty-cell-hide'
+                                  : 'empty-cell'
+                              }
+                              key={i}
+                              style={{
+                                fontSize: '14px',
+                                backgroundColor: weekends[i]
+                                  ? 'rgba(217, 217, 217, 0.4)'
+                                  : '',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                padding: '10px 7px',
+                                height: '65px',
+                                flexDirection: 'column',
+                                position: 'relative',
+                              }}
+                            >
+                              <div
+                                style={{
+                                  width: '63px',
+                                  height: '100%',
+                                  zIndex: 1,
+                                }}
+                              ></div>
+
+                              {/* Project Timeline Bar */}
+                              {i === startOffset && (
+                                <div
+                                  className="project-timeline-bar"
+                                  style={{
+                                    gridColumnStart: startOffset + 1,
+                                    gridColumnEnd:
+                                      startOffset + projectDuration + 1,
+                                    backgroundColor: themeMode === 'dark' ? 'rgba(0, 142, 204, 0.5)' : 'rgba(240, 248, 255, 1)',
+                                    height: '60px',
+                                    width: `${77 * projectDuration}px`,
+                                    borderRadius: '5px',
+                                    border: themeMode === 'dark' ? '1px solid rgba(24, 144, 255, 1)' : '1px solid rgba(149, 197, 248, 1)',
+                                    position: 'absolute',
+                                    left: 0,
+                                    right: 0,
+                                    top: '0',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    padding: '0 10px',
+                                    zIndex: 99,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      fontSize: '12px',
+                                      fontWeight: 'bold',
+                                    }}
+                                  >
+                                    Total {project.totalHours}h
+                                  </span>
+                                  <span style={{ fontSize: '10px' }}>
+                                    Per Day {project.perDayHours}h
+                                  </span>
+                                  <span
+                                    style={{
+                                      fontSize: '10px',
+                                      textDecoration: 'underline',
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      dispatch(toggleScheduleDrawer());
+                                    }}
+                                  >
+                                    20 tasks
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </Popover>
+                        ))}
+                      </Col>
+                    </Row>
+                  );
+                })}
+            </div>
+          ))}
+        </div>
+      </div>
     </Flex>
   );
 };
