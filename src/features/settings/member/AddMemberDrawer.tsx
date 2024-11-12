@@ -81,7 +81,7 @@ const AddMemberDrawer = () => {
         >
           <Flex vertical gap={4}>
             <Input type="email" placeholder={t('memberEmailPlaceholder')} />
-            <Typography.Text style={{ fontSize: 12, color: colors.lightGray }}>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               {t('addMemberEmailHint')}
             </Typography.Text>
           </Flex>

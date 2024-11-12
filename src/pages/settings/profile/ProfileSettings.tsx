@@ -139,10 +139,10 @@ const ProfileSettings = () => {
       </Form>
 
       <Flex vertical>
-        <Typography.Text style={{ fontSize: 12, color: colors.lightGray }}>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           {t('profileJoinedText')}
         </Typography.Text>
-        <Typography.Text style={{ fontSize: 12, color: colors.lightGray }}>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           {t('profileLastUpdatedText')}
         </Typography.Text>
       </Flex>

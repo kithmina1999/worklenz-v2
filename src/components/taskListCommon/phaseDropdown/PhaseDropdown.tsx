@@ -95,7 +95,7 @@ const PhaseDropdown = ({ projectId }: { projectId: string }) => {
             {currentPhaseOption?.optionName}
           </Typography.Text>
         ) : (
-          <Typography.Text style={{ color: colors.lightGray, fontSize: 13 }}>
+          <Typography.Text type="secondary" style={{ fontSize: 13 }}>
             {t('selectText')}
           </Typography.Text>
         )}

@@ -1,6 +1,5 @@
 import { Empty, Typography } from 'antd';
 import React from 'react';
-import { colors } from '../styles/colors';
 
 type EmptyListPlaceholderProps = {
   imageSrc?: string;
@@ -23,11 +22,7 @@ const EmptyListPlaceholder = ({
         alignItems: 'center',
         marginBlockStart: 24,
       }}
-      description={
-        <Typography.Text style={{ color: colors.lightGray }}>
-          {text}
-        </Typography.Text>
-      }
+      description={<Typography.Text type="secondary">{text}</Typography.Text>}
     />
   );
 };

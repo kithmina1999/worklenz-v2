@@ -105,10 +105,10 @@ const InfoTabFooter = () => {
       </Form>
 
       <Flex align="center" justify="space-between" style={{ width: '100%' }}>
-        <Typography.Text style={{ fontSize: 12, color: colors.lightGray }}>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           Created in a few seconds by Dev prasad
         </Typography.Text>
-        <Typography.Text style={{ fontSize: 12, color: colors.lightGray }}>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           Updated in a few seconds
         </Typography.Text>
       </Flex>

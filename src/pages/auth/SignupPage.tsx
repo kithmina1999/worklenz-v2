@@ -129,7 +129,7 @@ const SignupPage = () => {
               size="large"
               style={{ borderRadius: 4 }}
             />
-            <Typography.Text style={{ fontSize: 12, color: '#8c8c8c' }}>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               {t('passwordValidationAltText')}
             </Typography.Text>
           </div>

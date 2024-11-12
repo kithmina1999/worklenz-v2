@@ -111,7 +111,7 @@ const ProjectViewHeader = () => {
           )}
 
           {selectedProject?.projectNotes && (
-            <Typography.Text style={{ color: colors.lightGray }}>
+            <Typography.Text type="secondary">
               {selectedProject.projectNotes}
             </Typography.Text>
           )}

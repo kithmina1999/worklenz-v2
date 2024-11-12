@@ -22,19 +22,19 @@ type TimeLog = {
 
 const TaskDrawerTimeLog = () => {
   const [timeLoggedList, setTimeLoggedList] = useState<TimeLog[]>([
-    // {
-    //   logId: '1',
-    //   username: 'Sachintha Prasad',
-    //   duration: '1h 0m',
-    //   date: 'Sep 22, 2023, 10:47:02 AM',
-    // },
-    // {
-    //   logId: ' 4',
-    //   username: 'Raveesha Dilanka',
-    //   duration: '1m 4s',
-    //   date: 'Sep 12, 2023, 8:32:49 AM - Sep 12, 2023, 8:33:53 AM',
-    //   via: 'Timer',
-    // },
+    {
+      logId: '1',
+      username: 'Sachintha Prasad',
+      duration: '1h 0m',
+      date: 'Sep 22, 2023, 10:47:02 AM',
+    },
+    {
+      logId: ' 4',
+      username: 'Raveesha Dilanka',
+      duration: '1m 4s',
+      date: 'Sep 12, 2023, 8:32:49 AM - Sep 12, 2023, 8:33:53 AM',
+      via: 'Timer',
+    },
   ]);
   const [isAddTimelogFormShow, setIsTimeLogFormShow] = useState<boolean>(false);
   const [hoverRow, setHoverRow] = useState<string | null>(null);
@@ -50,7 +50,7 @@ const TaskDrawerTimeLog = () => {
     >
       <Flex vertical>
         <Flex align="center" justify="space-between" style={{ width: '100%' }}>
-          <Typography.Text style={{ color: colors.lightGray }}>
+          <Typography.Text type="secondary">
             Total Logged: 0m 0s
           </Typography.Text>
           <Flex gap={8} align="center">
