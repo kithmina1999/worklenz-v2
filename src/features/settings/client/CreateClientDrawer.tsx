@@ -3,7 +3,7 @@ import React from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { addClient, toggleCreateClientDrawer } from './clientSlice';
-import { ClientType } from '../../../types/client.types';
+import { IClient } from '../../../types/client.types';
 import { nanoid } from '@reduxjs/toolkit';
 import { useTranslation } from 'react-i18next';
 
@@ -22,10 +22,8 @@ const CreateClientDrawer = () => {
   // this function for handle form submit
   const handleFormSubmit = async (values: any) => {
     try {
-      const newClient: ClientType = {
-        clientId: nanoid(),
-        clientName: values.name,
-        project: null,
+      const newClient: IClient = {
+        name: values.name
       };
 
       dispatch(addClient(newClient));

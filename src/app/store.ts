@@ -23,11 +23,11 @@ import authReducer from '@features/auth/authSlice';
 import alertsReducer from '@/services/alerts/alertSlice';
 import statusReducer from '@features/projects/status/StatusSlice';
 import bulkActionReducer from '@features/projects/bulkActions/bulkActionSlice';
-import projectCategoriesReducer from '@/features/projects/projectCategories/projectCategoriesSlice';
-import projectStatusesReducer from '@/features/projects/projectStatuses/projectStatusesSlice';
+import projectCategoriesReducer from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
+import projectStatusesReducer from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
+import projectHealthReducer from '@/features/projects/lookups/projectHealth/projectHealthSlice';
 
 export const store = configureStore({
-  // there is error  occured with day js package when use with redux it shows a non-serializable value was detected
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
@@ -59,6 +59,7 @@ export const store = configureStore({
     bulkActionReducer: bulkActionReducer,
     projectCategoriesReducer: projectCategoriesReducer,
     projectStatusesReducer: projectStatusesReducer,
+    projectHealthReducer: projectHealthReducer,
   },
 });
 

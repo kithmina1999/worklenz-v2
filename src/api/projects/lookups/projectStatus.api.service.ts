@@ -1,5 +1,5 @@
 import { IServerResponse } from '@/types/common.types';
-import apiClient from '../apiClient';
+import apiClient from '../../apiClient';
 import { API_BASE_URL } from '@/shared/constants';
 import { IProjectStatus } from '@/types/project/projectStatus.types';
 

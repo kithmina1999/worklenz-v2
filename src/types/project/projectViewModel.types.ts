@@ -17,7 +17,7 @@ export interface IProjectViewModel extends IProject {
   category_name?: string;
   category_color?: string;
   category_id?: string;
-
+  health_id?: string;
   task_count?: number;
   members_count?: number;
   progress?: number;
@@ -39,5 +39,5 @@ export interface IProjectViewModel extends IProject {
   project_manager_id?: string | null;
 
   team_member_default_view? : string;
-
+  working_days?: number;
 }

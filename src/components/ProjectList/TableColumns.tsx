@@ -8,14 +8,15 @@ import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { formatDate } from '@/utils/timeUtils';
-import { fetchProjectCategories } from '@/features/projects/projectCategories/projectCategoriesSlice';
-import { fetchProjectStatuses } from '@/features/projects/projectStatuses/projectStatusesSlice';
+import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
+import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 import { toggleFavoriteProject } from '@/features/projects/projectSlice';
 import './TableColumns.css';
 import { ColumnFilterItem } from 'antd/es/table/interface';
+import Avatars from '../avatars/Avatars';
+import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 
 // Constants
-const AVATAR_COLORS = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#87d068'] as const;
 const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   year: 'numeric',
   month: 'short',
@@ -140,25 +141,6 @@ const CategoryCell: React.FC<{ record: IProjectViewModel }> = ({ record }) => {
   );
 };
 
-const MembersCell: React.FC<{ members: string[] }> = ({ members }) => (
-  <Avatar.Group>
-    {members?.map((member, index) => (
-      <Tooltip key={index} title={member}>
-        <Avatar
-          style={{
-            backgroundColor: AVATAR_COLORS[index % AVATAR_COLORS.length],
-            width: '28px',
-            height: '28px',
-            border: 'none',
-          }}
-        >
-          {member.charAt(0).toUpperCase()}
-        </Avatar>
-      </Tooltip>
-    ))}
-  </Avatar.Group>
-);
-
 const ActionButtons: React.FC<{ t: (key: string) => string }> = ({ t }) => (
   <div>
     <Tooltip title={t('setting')}>
@@ -245,8 +227,8 @@ const TableColumns = (navigate: NavigateFunction): ColumnsType<IProjectViewModel
     {
       title: t('members'),
       key: 'members',
-      dataIndex: 'members',
-      render: (members: string[]) => <MembersCell members={members} />,
+      dataIndex: 'names',
+      render: (members: InlineMember[]) => <Avatars members={members} />,
     },
     {
       title: '',

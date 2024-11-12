@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { toggleUpdateClientDrawer, updateClient } from './clientSlice';
-import { ClientType } from '../../../types/client.types';
+import { IClient } from '../../../types/client.types';
 import { useTranslation } from 'react-i18next';
 
 type UpdateClientDrawerProps = {
@@ -16,12 +16,12 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
 
   // get data from client reducer
   const clientsList = useAppSelector(
-    (state) => state.clientReducer.clientsList
+    (state) => state.clientReducer.clients
   );
 
   // get data of currentlt selectedClient
   const selectedClient = clientsList.find(
-    (client) => client.clientId === selectedClientId
+    (client) => client.id === selectedClientId
   );
 
   const isDrawerOpen = useAppSelector(
@@ -35,7 +35,7 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
   useEffect(() => {
     if (selectedClient) {
       form.setFieldsValue({
-        name: selectedClient.clientName,
+        name: selectedClient.name,
       });
     }
   }, [selectedClient, form]);
@@ -44,9 +44,9 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
   const handleFormSubmit = async (values: any) => {
     try {
       if (selectedClient) {
-        const updatedClient: ClientType = {
+        const updatedClient: IClient = {
           ...selectedClient,
-          clientName: values.name,
+          name: values.name,
         };
 
         dispatch(updateClient(updatedClient));

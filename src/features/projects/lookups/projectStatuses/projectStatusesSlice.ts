@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import logger from '@/utils/errorLogger';
-import { projectStatusesApiService } from '@/api/projects/projectStatus.api.service';
+import { projectStatusesApiService } from '@/api/projects/lookups/projectStatus.api.service';
 import { IProjectStatus } from '@/types/project/projectStatus.types';
 
 type ProjectStatusState = {

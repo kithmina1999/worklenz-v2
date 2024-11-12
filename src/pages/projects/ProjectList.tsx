@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Flex, Input, Segmented, Table, TablePaginationConfig, Tooltip } from 'antd';
 import { PageHeader } from '@ant-design/pro-components';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
-import './ProjectList.css';
-import CreateProjectButton from '@features/projects/createProject/CreateProjectButton';
-import CreateProjectDrawer from '@features/projects/createProject/CreateProjectDrawer';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import './ProjectList.css';
+import ProjectDrawer from '@components/projects/projectDrawer/ProjectDrawer';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import {
   DEFAULT_PAGE_SIZE,
@@ -19,9 +19,9 @@ import { IProjectFilter } from '@/types/project/project.types';
 import { fetchProjects } from '@/features/projects/projectSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
+import CreateProjectButton from '@/components/projects/projectDrawer/CreateProjectButton';
 import { FilterValue } from 'antd/es/table/interface';
 import { SorterResult } from 'antd/es/table/interface';
-import { useNavigate } from 'react-router-dom';
 
 const ProjectList: React.FC = () => {
   const { t } = useTranslation('allProjectList');
@@ -167,7 +167,7 @@ const ProjectList: React.FC = () => {
         />
       </Card>
 
-      <CreateProjectDrawer />
+      <ProjectDrawer />
     </div>
   );
 };

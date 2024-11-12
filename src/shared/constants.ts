@@ -1,3 +1,5 @@
+import { CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined, StopOutlined } from "@ant-design/icons";
+
 export const AvatarNamesMap: { [x: string]: string } = {
   "A": '#154c9b',
   "B": '#3b7ad4',
@@ -144,3 +146,11 @@ export const DISPLAY_MODE_KEY = "worklenz.projects.display_as";
 export const WORKLENZ_REDIRECT_PROJ_KEY = "worklenz.redirect_proj";
 export const PROJECT_SORT_FIELD = "worklenz.projects.sort_field";
 export const PROJECT_SORT_ORDER = "worklenz.projects.sort_order";
+
+export const PROJECT_STATUS_ICON_MAP = {
+  'check-circle': CheckCircleOutlined,
+  'clock-circle': ClockCircleOutlined,
+  'clock-circle-two-tone': ClockCircleOutlined,
+  'close-circle': CloseCircleOutlined, 
+  'stop': StopOutlined,
+}

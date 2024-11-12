@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ProjectType } from '../../types/project.types';
 import { projectsApiService } from '@/api/projects/projects.api.service';
 import logger from '@/utils/errorLogger';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
@@ -84,7 +83,7 @@ const projectSlice = createSlice({
     toggleDrawer: state => {
       state.isProjectDrawerOpen = !state.isProjectDrawerOpen;
     },
-    createProject: (state, action: PayloadAction<ProjectType>) => {},
+    createProject: (state, action: PayloadAction<IProjectViewModel>) => {},
     deleteProject: (state, action: PayloadAction<string>) => {},
   },
   extraReducers: builder => {
@@ -99,7 +98,6 @@ const projectSlice = createSlice({
           total: action.payload?.total || 0
         };
         state.initialized = true;
-        console.log(state.projects);
       })
       .addCase(fetchProjects.rejected, state => {
         state.loading = false;

@@ -1,7 +1,7 @@
 import { IServerResponse } from '@/types/common.types';
-import apiClient from '../apiClient';
 import { API_BASE_URL } from '@/shared/constants';
 import { IProjectCategory, IProjectCategoryViewModel } from '@/types/project/projectCategory.types';
+import apiClient from '@api/apiClient';
 
 const rootUrl = `${API_BASE_URL}/project-categories`;
 

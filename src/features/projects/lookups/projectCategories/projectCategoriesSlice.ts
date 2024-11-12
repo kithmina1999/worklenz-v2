@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import logger from '@/utils/errorLogger';
-import { projectCategoriesApiService } from '@/api/projects/projectCategories.api.service';
+import { projectCategoriesApiService } from '@/api/projects/lookups/projectCategories.api.service';
 import { IProjectCategoryViewModel } from '@/types/project/projectCategory.types';
 
 type ProjectCategoryState = {
@@ -88,6 +88,12 @@ const projectCategoriesSlice = createSlice({
       // If needed, implement local search filtering here
       // This is useful if you want to filter already loaded categories client-side
     },
+    addCategory: (state, action: PayloadAction<IProjectCategoryViewModel>) => {
+      state.categories.push(action.payload);
+    },
+    deleteCategory: (state, action: PayloadAction<string>) => {
+      state.categories = state.categories.filter(cat => cat.id !== action.payload);
+    },
   },
   extraReducers: (builder) => {
     // Fetch categories
@@ -148,5 +154,5 @@ const projectCategoriesSlice = createSlice({
   },
 });
 
-export const { searchCategories } = projectCategoriesSlice.actions;
+export const { searchCategories, addCategory, deleteCategory } = projectCategoriesSlice.actions;
 export default projectCategoriesSlice.reducer;

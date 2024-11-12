@@ -1,5 +1,5 @@
 import { CategoryType } from './categories.types';
-import { ClientType } from './client.types';
+import { IClient } from './client.types';
 import { MemberType } from './member.types';
 
 export type ProjectStatus =
@@ -26,7 +26,7 @@ export type ProjectType = {
   projectHealthStatus: ProjectHealthStatus;
   projectCategory?: CategoryType | null;
   projectNotes?: string | null;
-  projectClient?: ClientType[] | null;
+  projectClient?: IClient[] | null;
   projectManager?: MemberType;
   projectStartDate?: Date | null;
   projectEndDate?: Date | null;

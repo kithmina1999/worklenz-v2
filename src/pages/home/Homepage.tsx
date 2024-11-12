@@ -4,8 +4,8 @@ import TodoList from './todoList/TodoList';
 import RecentAndFavouriteProjecList from './recentAndFavouriteProjectList/RecentAndFavouriteProjectList';
 import { Col, Flex } from 'antd';
 import { useMediaQuery } from 'react-responsive';
-import CreateProjectDrawer from '../../features/projects/createProject/CreateProjectDrawer';
-import CreateProjectButton from '../../features/projects/createProject/CreateProjectButton';
+import ProjectDrawer from '../../components/projects/projectDrawer/ProjectDrawer';
+import CreateProjectButton from '../../components/projects/projectDrawer/CreateProjectButton';
 
 const Homepage = () => {
   // media queries from react-responsive package
@@ -58,7 +58,7 @@ const Homepage = () => {
 
       {/* drawers */}
       {/* create project drawer  */}
-      <CreateProjectDrawer />
+      <ProjectDrawer />
     </div>
   );
 };

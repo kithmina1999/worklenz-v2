@@ -1,9 +1,3 @@
-export type ClientType = {
-  clientId: string;
-  clientName: string;
-  project: string | null;
-};
-
 export interface IClient {
   id?: string;
   name?: string;
@@ -12,3 +6,11 @@ export interface IClient {
   updated_at?: string;
 }
 
+export interface IClientViewModel extends IClient {
+  projects_count?: number;
+}
+
+export interface IClientsViewModel {
+  total?: number;
+  data?: IClientViewModel[];
+}

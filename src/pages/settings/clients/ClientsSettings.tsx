@@ -25,7 +25,7 @@ import {
 } from '../../../features/settings/client/clientSlice';
 import CreateClientDrawer from '../../../features/settings/client/CreateClientDrawer';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import { ClientType } from '../../../types/client.types';
+import { IClient } from '../../../types/client.types';
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton';
 import UpdateClientDrawer from '../../../features/settings/client/UpdateClientDrawer';
@@ -42,7 +42,7 @@ const ClientsSettings = () => {
 
   // get data from client reducer
   const clientsList = useAppSelector(
-    (state) => state.clientReducer.clientsList
+    (state) => state.clientReducer.clients
   );
   const dispatch = useAppDispatch();
 
@@ -68,7 +68,7 @@ const ClientsSettings = () => {
           dispatch(toggleUpdateClientDrawer());
         },
       }),
-      render: (record: ClientType) => (
+      render: (record: IClient) => (
         <Typography.Text
           style={{
             color: hoverRow === record.clientId ? colors.skyBlue : 'inherit',
@@ -87,7 +87,7 @@ const ClientsSettings = () => {
           dispatch(toggleUpdateClientDrawer());
         },
       }),
-      render: (record: ClientType) =>
+      render: (record: IClient) =>
         record.project ? (
           <Typography.Text>{record.project}</Typography.Text>
         ) : (
@@ -99,7 +99,7 @@ const ClientsSettings = () => {
     {
       key: 'actionBtns',
       width: 80,
-      render: (record: ClientType) =>
+      render: (record: IClient) =>
         hoverRow === record.clientId && (
           <Flex gap={8} style={{ padding: 0 }}>
             <Button
