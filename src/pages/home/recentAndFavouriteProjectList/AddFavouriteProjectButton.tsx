@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { colors } from '../../../styles/colors';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { ProjectType } from '../../../types/project.types';
-import { toggleFavouriteProjectSelection } from '../../../features/projects/projectSlice';
+import { toggleFavouriteProjectSelection } from '../../../features/projects/projectsSlice';
 
 type AddFavouriteProjectButtonProps = {
   record: ProjectType;

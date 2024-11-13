@@ -9,8 +9,8 @@ export const useSelectedProject = () => {
     (state) => state.projectReducer.projects
   );
 
-  const selectedProject = projectList.find(
-    (project) => project.projectId === projectId
+  const selectedProject = projectList.data.find(
+    (project) => project.id === projectId
   );
 
   try {

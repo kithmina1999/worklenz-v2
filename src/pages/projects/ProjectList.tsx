@@ -16,7 +16,7 @@ import {
 } from '@/shared/constants';
 import TableColumns from '@/components/ProjectList/TableColumns';
 import { IProjectFilter } from '@/types/project/project.types';
-import { fetchProjects } from '@/features/projects/projectSlice';
+import { fetchProjects } from '@/features/projects/projectsSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import CreateProjectButton from '@/components/projects/projectDrawer/CreateProjectButton';
@@ -60,7 +60,7 @@ const ProjectList: React.FC = () => {
   useEffect(() => {
     setSortingValues(sorter);
     getProjects();
-  }, [searchTerm, selectedStatus, selectedCategory]); // Remove pagination and sorter from deps
+  }, [searchTerm, selectedStatus, selectedCategory, pagination, sorter]); 
   
   // Handle pagination and sorting separately
   const handleTableChange = (
@@ -86,7 +86,6 @@ const ProjectList: React.FC = () => {
     });
     
     setSorter(newSorter);
-    getProjects();
   };
 
   const getProjects = async () => {

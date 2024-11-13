@@ -1,55 +1,36 @@
 import { PushpinFilled, PushpinOutlined } from '@ant-design/icons';
 
 import { Button, ConfigProvider, Flex, Tabs, TabsProps } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { colors } from '../../../styles/colors';
+import { colors } from '@/styles/colors';
 import { tabItems } from '../../../lib/project/projectViewConstants';
-import {
-  getFromLocalStorage,
-  saveToLocalStorage,
-} from '../../../utils/localStorageFunctions';
-import { useSelectedProject } from '../../../hooks/useSelectedProject';
-import ProjectMemberDrawer from '../../../features/projects/singleProject/members/ProjectMemberDrawer';
-import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { getFromLocalStorage, saveToLocalStorage } from '@utils/localStorageFunctions';
+import ProjectMemberDrawer from '@features/projects/singleProject/members/ProjectMemberDrawer';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import ProjectViewHeader from './ProjectViewHeader';
-import { useLocation, useNavigate } from 'react-router-dom';
-import CreateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/CreateTaskDrawer';
-import PhaseDrawer from '../../../features/projects/singleProject/phase/PhaseDrawer';
-import StatusDrawer from '../../../features/projects/status/StatusDrawer';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import CreateTaskDrawer from '@features/tasks/taskCreationAndUpdate/CreateTaskDrawer';
+import PhaseDrawer from '@features/projects/singleProject/phase/PhaseDrawer';
+import StatusDrawer from '@features/projects/status/StatusDrawer';
 
 const ProjectView = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams(); // Removed unused setSearchParams
+  const { projectId } = useParams();
 
-  // useSelectedProject custom hook returns currently selected project
-  const selectedProject = useSelectedProject();
+  useDocumentTitle('Project View');
 
-  // document title with useDocument title custom hook
-  useDocumentTitle(`${selectedProject?.projectName}`);
+  const [activeTab, setActiveTab] = useState<string>(searchParams.get('tab') || tabItems[0].key);
 
-  // state to track the active and pinned tab
-  const [activeTab, setActiveTab] = useState<string>(
-    getFromLocalStorage('pinnedTab') || 'taskList'
-  );
-
-  const [pinnedTab, setPinnedTab] = useState<string>(
-    getFromLocalStorage('pinnedTab') || ''
-  );
+  const [pinnedTab, setPinnedTab] = useState<string>(searchParams.get('pinned_tab') || '');
 
   // set query params
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const tabFromUrl = queryParams.get('tab');
-    const pinnedTabFromUrl = queryParams.get('pinned_tab');
-
-    if (tabFromUrl && tabFromUrl !== activeTab) {
-      setActiveTab(tabFromUrl);
-    }
-
-    if (pinnedTabFromUrl && pinnedTabFromUrl !== activeTab) {
-      setPinnedTab(pinnedTabFromUrl);
-    }
+    if (activeTab) setActiveTab(activeTab);
+    if (pinnedTab) setPinnedTab(pinnedTab);
+    // if (projectId)
   }, [activeTab, pinnedTab, location.search]);
 
   // function for pin a tab and update url
@@ -70,7 +51,7 @@ const ProjectView = () => {
   type TabItem = Required<TabsProps>['items'][number];
 
   const tabMenuItems: TabItem[] = [
-    ...tabItems.map((item) => ({
+    ...tabItems.map(item => ({
       key: item.key,
       label: (
         <Flex align="center" style={{ color: colors.skyBlue }}>
@@ -112,11 +93,7 @@ const ProjectView = () => {
       <ProjectViewHeader />
 
       {/* tabs  */}
-      <Tabs
-        activeKey={activeTab}
-        onChange={handleTabChange}
-        items={tabMenuItems}
-      />
+      <Tabs activeKey={activeTab} onChange={handleTabChange} items={tabMenuItems} />
       {/* drawers  */}
       {/* add project members drawer */}
       <ProjectMemberDrawer />

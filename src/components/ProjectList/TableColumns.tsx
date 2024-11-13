@@ -10,7 +10,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { formatDate } from '@/utils/timeUtils';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
-import { toggleFavoriteProject } from '@/features/projects/projectSlice';
+import { toggleFavoriteProject } from '@/features/projects/projectsSlice';
 import './TableColumns.css';
 import { ColumnFilterItem } from 'antd/es/table/interface';
 import Avatars from '../avatars/Avatars';

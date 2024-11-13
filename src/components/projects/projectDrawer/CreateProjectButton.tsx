@@ -1,7 +1,7 @@
 import { Button, Drawer, Dropdown } from 'antd';
 import { startTransition, useEffect, useState } from 'react';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleDrawer } from '../../../features/projects/projectSlice';
+import { toggleDrawer } from '../../../features/projects/projectsSlice';
 import { DownOutlined, EditOutlined, ImportOutlined } from '@ant-design/icons';
 import TemplateDrawer from '../../accountSetup/templateDrawer/TemplateDrawer';
 import { useTranslation } from 'react-i18next';

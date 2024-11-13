@@ -23,7 +23,7 @@ import { ProjectType } from '../../../types/project.types';
 import { useMediaQuery } from 'react-responsive';
 import './Projects.css';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { deleteProject } from '../../../features/projects/projectSlice';
+import { deleteProject } from '../../../features/projects/projectsSlice';
 
 const Projects: React.FC = () => {
   const themeMode = useAppSelector(

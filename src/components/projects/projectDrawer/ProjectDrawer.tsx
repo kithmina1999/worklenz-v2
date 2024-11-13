@@ -21,7 +21,7 @@ import {
 
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { createProject, toggleDrawer } from '../../../features/projects/projectSlice';
+import { createProject, toggleDrawer } from '../../../features/projects/projectsSlice';
 import { addCategory } from '../../../features/settings/categories/categoriesSlice';
 
 import { projectColors } from '../../../lib/project/projectConstants';

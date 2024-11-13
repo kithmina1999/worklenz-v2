@@ -1,9 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
+
 import themeReducer from '@features/theme/themeSlice';
 import localesReducer from '@features/i18n/localesSlice';
 import todoReducer from '@features/todo/todoSlice';
 import dateReducer from '@features/date/dateSlice';
-import projectReducer from '@features/projects/projectSlice';
+import projectReducer from '@features/projects/projectsSlice';
 import notificationReducer from '@features/navbar/notification/notificationSlice';
 import memberReducer from '@features/settings/member/memberSlice';
 import taskReducer from '@features/tasks/taskSlice';
@@ -26,6 +27,7 @@ import bulkActionReducer from '@features/projects/bulkActions/bulkActionSlice';
 import projectCategoriesReducer from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import projectStatusesReducer from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 import projectHealthReducer from '@/features/projects/lookups/projectHealth/projectHealthSlice';
+
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -60,6 +62,7 @@ export const store = configureStore({
     projectCategoriesReducer: projectCategoriesReducer,
     projectStatusesReducer: projectStatusesReducer,
     projectHealthReducer: projectHealthReducer,
+    projectReducer: projectReducer,
   },
 });
 
