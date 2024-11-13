@@ -13,12 +13,18 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 import CreateTaskDrawer from '@features/tasks/taskCreationAndUpdate/CreateTaskDrawer';
 import PhaseDrawer from '@features/projects/singleProject/phase/PhaseDrawer';
 import StatusDrawer from '@features/projects/status/StatusDrawer';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setProjectId } from '@/features/project/project.slice';
 
 const ProjectView = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  
+  
   const [searchParams] = useSearchParams(); // Removed unused setSearchParams
   const { projectId } = useParams();
+  if (projectId) dispatch(setProjectId(projectId));
 
   useDocumentTitle('Project View');
 
