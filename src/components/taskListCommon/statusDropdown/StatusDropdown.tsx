@@ -4,6 +4,9 @@ import { DownOutlined } from '@ant-design/icons';
 import './statusDropdown.css';
 import { colors } from '../../../styles/colors';
 import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
+import { getStatusColor } from '../../../utils/getStatusColor';
+import { themeWiseColor } from '../../../utils/themeWiseColor';
 
 type StatusDropdownProps = {
   currentStatus: string;
@@ -13,6 +16,10 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
   const [status, setStatus] = useState<string>(currentStatus);
   const [statusName, setStatusName] = useState<string>('');
 
+  // localization
+  const { t } = useTranslation('taskListTable');
+
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
   const statusList = useAppSelector((state) => state.statusReducer.status);
 
   // this is trigger only on status list update
@@ -21,19 +28,6 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
     setStatusName(selectedStatus?.name || '');
   }, [statusList]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'todo':
-        return '#d8d7d8';
-      case 'doing':
-        return '#c0d5f6';
-      case 'done':
-        return '#c2e4d0';
-      default:
-        return '#d8d7d8';
-    }
-  };
-
   type MenuItem = Required<MenuProps>['items'][number];
 
   const statusMenuItems: MenuItem[] = statusList
@@ -41,9 +35,13 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
         key: status.id,
         label: (
           <Flex gap={8} align="center">
-            <Badge color={getStatusColor(status.category)} />
-            <Typography.Text style={{ textTransform: 'capitalize' }}>
-              {status.name}
+            <Badge color={getStatusColor(status.category, themeMode)} />
+            <Typography.Text>
+              {status.name === 'To do' ||
+              status.name === 'Doing' ||
+              status.name === 'Done'
+                ? t(status.category + 'SelectorText')
+                : status.name}
             </Typography.Text>
           </Flex>
         ),
@@ -53,7 +51,13 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
   const handleStatusOptionSelect: MenuProps['onClick'] = (e) => {
     const selectedOption = statusList.find((el) => el.id === e.key);
     if (selectedOption) {
-      setStatusName(selectedOption.name);
+      setStatusName(
+        selectedOption.name === 'To do' ||
+          selectedOption.name === 'Doing' ||
+          selectedOption.name === 'Done'
+          ? t(selectedOption.category + 'SelectorText')
+          : selectedOption.name
+      );
       setStatus(selectedOption.category);
     }
   };
@@ -81,12 +85,14 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
       trigger={['click']}
     >
       <Flex
-        gap={4}
+        gap={6}
+        align="center"
         style={{
           width: 'fit-content',
           borderRadius: 24,
-          paddingInline: 6,
-          backgroundColor: getStatusColor(status),
+          paddingInline: 8,
+          height: 22,
+          backgroundColor: getStatusColor(status, themeMode),
           color: colors.darkGray,
           cursor: 'pointer',
         }}
@@ -94,8 +100,8 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
         <Typography.Text
           ellipsis={{ expanded: false }}
           style={{
-            color: colors.darkGray,
             fontSize: 13,
+            color: colors.darkGray,
           }}
         >
           {statusName}

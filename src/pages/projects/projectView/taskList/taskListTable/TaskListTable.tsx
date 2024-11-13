@@ -25,7 +25,6 @@ import PhaseDropdown from '../../../../../components/taskListCommon/phaseDropdow
 import AssigneeSelector from '../../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
 import TaskCell from './taskListTableCells/TaskCell';
 import AddSubTaskListRow from './taskListTableRows/AddSubTaskListRow';
-import UpdateTaskDrawer from '../../../../../features/tasks/taskCreationAndUpdate/UpdateTaskDrawer';
 import { colors } from '../../../../../styles/colors';
 import TimeTracker from './taskListTableCells/TimeTracker';
 import TaskContextMenu from './contextMenu/TaskContextMenu';
@@ -35,6 +34,7 @@ import {
   deselectAll,
   selectTaskIds,
 } from '../../../../../features/projects/bulkActions/bulkActionSlice';
+import { useTranslation } from 'react-i18next';
 
 const TaskListTable = ({
   taskList,
@@ -59,6 +59,9 @@ const TaskListTable = ({
   const [scrollingTables, setScrollingTables] = useState<{
     [key: string]: boolean;
   }>({});
+
+  // localization
+  const { t } = useTranslation('taskListTable');
 
   const dispatch = useAppDispatch();
 
@@ -158,10 +161,10 @@ const TaskListTable = ({
   const customBorderColor = themeMode === 'dark' && ' border-[#303030]';
 
   const customHeaderColumnStyles = (key: string) =>
-    `border px-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content z-10 h-[42px] after:absolute after:inset-0 after:-z-10 after:w-full after:bg-transparent ${scrollingTables[tableId] ? 'after:shadow-[inset_-10px_0_8px_-8px_rgba(0,0,0,0.15)]' : ''}`} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-[#fafafa]'}`;
+    `border px-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:h-[42px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-[#fafafa]'}`;
 
   const customBodyColumnStyles = (key: string) =>
-    `border px-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content z-10 h-[42px] after:absolute after:inset-0 after:-z-10 after:w-full after:bg-transparent ${scrollingTables[tableId] ? 'after:shadow-[inset_-10px_0_8px_-8px_rgba(0,0,0,0.15)]' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
+    `border px-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:min-h-[40px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
 
   // function to render the column content based on column key
   const renderColumnContent = (
@@ -363,7 +366,9 @@ const TaskListTable = ({
                   className={`${customHeaderColumnStyles(column.key)}`}
                   style={{ width: column.width, fontWeight: 500 }}
                 >
-                  {column.columnHeader}
+                  {column.key === 'phases'
+                    ? column.columnHeader
+                    : t(`${column.columnHeader}Column`)}
                 </th>
               ))}
             </tr>
@@ -513,9 +518,6 @@ const TaskListTable = ({
         selectedTask={selectedRows[0]}
         onClose={() => setContextMenuVisible(false)}
       />
-
-      {/* update task drawer  */}
-      <UpdateTaskDrawer taskId={selectedTaskId} />
     </div>
   );
 };

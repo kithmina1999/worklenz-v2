@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { UserOutlined } from '@ant-design/icons';
 import { Button, Card, Flex, Form, Input, message, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import PageHeader from '../../components/PageHeader';
+import PageHeader from '../../components/AuthPageHeader';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 

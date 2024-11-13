@@ -12,7 +12,7 @@ import {
 } from 'antd';
 import googleIcon from '../../assets/images/google-icon.png';
 import { Link, useNavigate } from 'react-router-dom';
-import PageHeader from '../../components/PageHeader';
+import PageHeader from '../../components/AuthPageHeader';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 
@@ -129,7 +129,7 @@ const SignupPage = () => {
               size="large"
               style={{ borderRadius: 4 }}
             />
-            <Typography.Text style={{ fontSize: 12, color: '#8c8c8c' }}>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               {t('passwordValidationAltText')}
             </Typography.Text>
           </div>

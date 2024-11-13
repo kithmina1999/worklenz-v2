@@ -18,11 +18,14 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
 import { colors } from '../../../../../styles/colors';
 import CustomAvatar from '../../../../../components/CustomAvatar';
+import { useTranslation } from 'react-i18next';
 
 const MembersFilterDropdown = () => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
-
   const membersInputRef = useRef<InputRef>(null);
+
+  // localization
+  const { t } = useTranslation('taskListFilters');
 
   // get members list from members reducer
   const membersList = [
@@ -53,7 +56,7 @@ const MembersFilterDropdown = () => {
           ref={membersInputRef}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.currentTarget.value)}
-          placeholder="Search by name"
+          placeholder={t('searchInputPlaceholder')}
         />
 
         <List style={{ padding: 0 }}>
@@ -125,7 +128,7 @@ const MembersFilterDropdown = () => {
         }}
       >
         <Space>
-          Members
+          {t('membersText')}
           {selectedCount > 0 && (
             <Badge size="small" count={selectedCount} color={colors.skyBlue} />
           )}

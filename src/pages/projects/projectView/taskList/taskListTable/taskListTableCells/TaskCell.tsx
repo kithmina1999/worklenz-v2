@@ -11,6 +11,7 @@ import { TaskType } from '../../../../../../types/task.types';
 import { colors } from '../../../../../../styles/colors';
 import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
 import { toggleUpdateTaskDrawer } from '../../../../../../features/tasks/taskSlice';
+import { useTranslation } from 'react-i18next';
 
 type TaskCellProps = {
   task: TaskType;
@@ -29,6 +30,9 @@ const TaskCell = ({
   setSelectedTaskId,
   toggleTaskExpansion,
 }: TaskCellProps) => {
+  // localization
+  const { t } = useTranslation('taskListTable');
+
   const dispatch = useAppDispatch();
 
   // render the toggle arrow icon for tasks with subtasks
@@ -134,7 +138,7 @@ const TaskCell = ({
             height: 'fit-content',
           }}
         >
-          Open
+          {t('openButton')}
         </Button>
       )}
     </Flex>

@@ -185,7 +185,7 @@ const TeamMembersSettings = () => {
           </Typography.Text>
           {/* this one shown only for the pendinge members  */}
           {!record.isInivitationAccept && (
-            <Typography.Text style={{ fontSize: 12, color: colors.lightGray }}>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               {t('pendingInvitationText')}
             </Typography.Text>
           )}

@@ -22,6 +22,7 @@ import labelReducer from '../features/settings/label/labelSlice';
 import statusReducer from '../features/projects/status/StatusSlice';
 import bulkActionReducer from '../features/projects/bulkActions/bulkActionSlice';
 import scheduleReducer from '../features/schedule/scheduleSlice';
+import updatesReducer from '../features/projects/singleProject/updates/updatesSlice';
 
 export const store = configureStore({
   // there is error  occured with day js package when use with redux it shows a non-serializable value was detected
@@ -53,6 +54,7 @@ export const store = configureStore({
     statusReducer: statusReducer,
     bulkActionReducer: bulkActionReducer,
     scheduleReducer: scheduleReducer,
+    updatesReducer: updatesReducer,
   },
 });
 

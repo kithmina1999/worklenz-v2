@@ -4,12 +4,16 @@ import React from 'react';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { toggleDrawer } from './StatusSlice';
 import { colors } from '../../../styles/colors';
+import { useTranslation } from 'react-i18next';
 
 const CreateStatusButton = () => {
+  // localization
+  const { t } = useTranslation('taskListFilters');
+
   const dispatch = useAppDispatch();
 
   return (
-    <Tooltip title={`Status settings`}>
+    <Tooltip title={t('createStatusButtonTooltip')}>
       <Button
         className="borderless-icon-btn"
         onClick={() => dispatch(toggleDrawer())}

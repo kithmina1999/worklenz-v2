@@ -14,9 +14,10 @@ import ProjectMemberDrawer from '../../../features/projects/singleProject/member
 import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 import ProjectViewHeader from './ProjectViewHeader';
 import { useLocation, useNavigate } from 'react-router-dom';
-import CreateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/CreateTaskDrawer';
+import CreateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/createTaskDrawer/CreateTaskDrawer';
 import PhaseDrawer from '../../../features/projects/singleProject/phase/PhaseDrawer';
 import StatusDrawer from '../../../features/projects/status/StatusDrawer';
+import UpdateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 
 const ProjectView = () => {
   const location = useLocation();
@@ -126,6 +127,8 @@ const ProjectView = () => {
       <PhaseDrawer />
       {/* status drawer  */}
       <StatusDrawer />
+      {/* update task drawer  */}
+      <UpdateTaskDrawer taskId={'SP-1'} />
     </div>
   );
 };

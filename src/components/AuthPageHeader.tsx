@@ -2,11 +2,12 @@ import { Flex, Typography } from 'antd';
 import React from 'react';
 import logo from '../assets/images/logo.png';
 
-type PageHeaderProp = {
+type AuthPageHeaderProp = {
   description: string;
 };
 
-const PageHeader = ({ description }: PageHeaderProp) => {
+// this page header used in only in auth pages
+const AuthPageHeader = ({ description }: AuthPageHeaderProp) => {
   return (
     <Flex vertical align="center" gap={8} style={{ marginBottom: 24 }}>
       <img
@@ -23,4 +24,4 @@ const PageHeader = ({ description }: PageHeaderProp) => {
   );
 };
 
-export default PageHeader;
+export default AuthPageHeader;

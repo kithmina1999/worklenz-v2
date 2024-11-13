@@ -4,8 +4,12 @@ import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { Flex } from 'antd';
 import ConfigPhaseButton from './ConfigPhaseButton';
 import { colors } from '../../../../styles/colors';
+import { useTranslation } from 'react-i18next';
 
 const PhaseHeader = () => {
+  // localization
+  const { t } = useTranslation('taskListFilters');
+
   // get selected project for useSelectedProject hook
   const selectedProject = useSelectedProject();
 
@@ -19,7 +23,7 @@ const PhaseHeader = () => {
 
   return (
     <Flex align="center" justify="space-between">
-      {phase?.phase}
+      {phase?.phase || t('phasesText')}
       <ConfigPhaseButton color={colors.darkGray} />
     </Flex>
   );
