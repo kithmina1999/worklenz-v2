@@ -8,7 +8,7 @@
 }
 
 .custom-two-colors-row-table table tr:nth-child(even) {
-  background: #4e4e4e10;
+  background: #4e4e4e10 !important;
 }
 
 .custom-two-colors-row-table table tr {
@@ -31,6 +31,12 @@
 .custom-two-colors-row-table table th::before {
   display: none;
 }
+
+.ant-table-fixed-left .ant-table-cell td {
+  background-color: #4e4e4e10 !important;
+}
+
+/* custom table used in  */
 
 /* custom dropdown 
     used in navbar, project view filters

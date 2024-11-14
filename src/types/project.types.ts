@@ -10,7 +10,7 @@ export type ProjectStatus =
   | 'inPlanning'
   | 'inProgress'
   | 'completed'
-  | 'continuos';
+  | 'continuous';
 
 export type ProjectHealthStatus =
   | 'notSet'

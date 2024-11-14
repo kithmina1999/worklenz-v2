@@ -94,8 +94,8 @@ export const statusData: StatusDataType[] = [
     }),
   },
   {
-    value: 'continuos',
-    label: 'Continuos',
+    value: 'continuous',
+    label: 'Continuous',
     icon: React.createElement(ClockCircleTwoTone, {
       twoToneColor: colors.limeGreen,
       style: { fontSize: 16 },
@@ -111,12 +111,12 @@ type HealthStatusDataType = {
 };
 // health status data for project
 export const healthStatusData: HealthStatusDataType[] = [
-  { value: 'notSet', label: 'Not Set', color: colors.paleBlue },
+  { value: 'notSet', label: 'Not Set', color: '#d1d0d3' },
   {
     value: 'needsAttention',
     label: 'Needs Attention',
-    color: colors.lightBeige,
+    color: '#eed9a9',
   },
-  { value: 'atRisk', label: 'At Risk', color: colors.vibrantOrange },
-  { value: 'good', label: 'Good', color: colors.limeGreen },
+  { value: 'atRisk', label: 'At Risk', color: '#efb8bb' },
+  { value: 'good', label: 'Good', color: '#bbddcb' },
 ];
