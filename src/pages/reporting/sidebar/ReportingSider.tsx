@@ -56,7 +56,7 @@ const ReportingSider = () => {
         },
       }}
     >
-      <Flex gap={24} vertical style={{ marginBlock: 84 }}>
+      <Flex gap={24} vertical>
         <Menu
           className="custom-reporting-sider"
           items={generateMenuItems()}
