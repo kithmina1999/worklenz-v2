@@ -14,14 +14,13 @@ import CreateTaskDrawer from '@features/tasks/taskCreationAndUpdate/CreateTaskDr
 import PhaseDrawer from '@features/projects/singleProject/phase/PhaseDrawer';
 import StatusDrawer from '@features/projects/status/StatusDrawer';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setProjectId } from '@/features/project/project.slice';
+import { getProject, setProject, setProjectId } from '@/features/project/project.slice';
 
 const ProjectView = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  
-  
+
   const [searchParams] = useSearchParams(); // Removed unused setSearchParams
   const { projectId } = useParams();
   if (projectId) dispatch(setProjectId(projectId));
@@ -29,15 +28,15 @@ const ProjectView = () => {
   useDocumentTitle('Project View');
 
   const [activeTab, setActiveTab] = useState<string>(searchParams.get('tab') || tabItems[0].key);
-
   const [pinnedTab, setPinnedTab] = useState<string>(searchParams.get('pinned_tab') || '');
 
   // set query params
   useEffect(() => {
     if (activeTab) setActiveTab(activeTab);
     if (pinnedTab) setPinnedTab(pinnedTab);
-    // if (projectId)
-  }, [activeTab, pinnedTab, location.search]);
+    if (projectId)
+      dispatch(getProject(projectId)).then(res => res.payload && dispatch(setProject(res.payload)));
+  }, [activeTab, pinnedTab, location.search, projectId]);
 
   // function for pin a tab and update url
   const pinToDefaultTab = (itemKey: string) => {
@@ -61,8 +60,8 @@ const ProjectView = () => {
       key: item.key,
       label: (
         <Flex align="center" style={{ color: colors.skyBlue }}>
-          {item.name}{' '}
-          {item.isPinShow && (
+          {item.label}{' '}
+          {item.isPinned && (
             <ConfigProvider wave={{ disabled: true }}>
               <Button
                 className="borderless-icon-btn"
@@ -99,7 +98,14 @@ const ProjectView = () => {
       <ProjectViewHeader />
 
       {/* tabs  */}
-      <Tabs activeKey={activeTab} onChange={handleTabChange} items={tabMenuItems} />
+      <Tabs
+        activeKey={activeTab}
+        onChange={handleTabChange}
+        items={tabMenuItems}
+        animated={false}
+        defaultActiveKey={tabItems[0].key}
+        destroyInactiveTabPane={true}
+      />
       {/* drawers  */}
       {/* add project members drawer */}
       <ProjectMemberDrawer />

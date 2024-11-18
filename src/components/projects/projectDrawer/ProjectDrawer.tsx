@@ -34,6 +34,7 @@ import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
 import { PlusCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { fetchClients } from '@/features/settings/client/clientSlice';
+import { getStatusIcon } from '@/utils/projectUtils';
 
 const ProjectDrawer = () => {
   const dispatch = useAppDispatch();
@@ -54,7 +55,7 @@ const ProjectDrawer = () => {
   const [isAddCategoryInputShow, setIsAddCategoryInputShow] = useState<boolean>(false);
   const [categoryText, setCategoryText] = useState<string>('');
 
-  const isDrawerOpen = useAppSelector(state => state.projectReducer.isProjectDrawerOpen);
+  const isDrawerOpen = useAppSelector(state => state.projectsReducer.isProjectDrawerOpen);
 
   const [form] = Form.useForm();
 
@@ -81,15 +82,6 @@ const ProjectDrawer = () => {
     dispatch(toggleDrawer());
   };
 
-  const statusIcon = (status: IProjectStatus) => {
-    return React.createElement(
-      PROJECT_STATUS_ICON_MAP[status.icon as keyof typeof PROJECT_STATUS_ICON_MAP],
-      {
-        style: { fontSize: 16, color: status.color_code },
-      }
-    );
-  };
-
   // status selection options
   const statusOptions = [
     ...statuses.map((status, index) => ({
@@ -97,7 +89,7 @@ const ProjectDrawer = () => {
       value: status.id,
       label: (
         <Typography.Text style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          {statusIcon(status)}
+          {status.icon && status.color_code && getStatusIcon(status.icon, status.color_code)}
           {status.name}
         </Typography.Text>
       ),

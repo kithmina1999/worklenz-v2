@@ -10,54 +10,63 @@ import ProjectViewUpdates from '../../pages/projects/projectView/updates/Project
 
 // type of a tab items
 type TabItems = {
+  index: number;
   key: string;
-  name: string;
-  isPinShow?: boolean;
+  label: string;
+  isPinned?: boolean;
   element: ReactNode;
 };
 
 // settings all element items use for tabs
 export const tabItems: TabItems[] = [
   {
-    key: 'taskList',
-    name: 'Task List',
-    isPinShow: true,
+    index: 0,
+    key: 'tasks-list',
+    label: 'Task List',
+    isPinned: true,
     element: React.createElement(ProjectViewTaskList),
   },
   {
+    index: 1,
     key: 'board',
-    name: 'Board',
-    isPinShow: true,
+    label: 'Board',
+    isPinned: true,
     element: React.createElement(ProjectViewBoard),
   },
   {
+    index: 2,
     key: 'workload',
-    name: 'Workload',
+    label: 'Workload',
     element: React.createElement(ProjectViewWorkload),
   },
   {
+    index: 3,
     key: 'roadmap',
-    name: 'Roadmap',
+    label: 'Roadmap',
     element: React.createElement(ProjectViewRoadmap),
   },
   {
-    key: 'insights',
-    name: 'Insights',
+    index: 4,
+    key: 'project-insights-member-overview',
+    label: 'Insights',
     element: React.createElement(ProjectViewInsights),
   },
   {
-    key: 'files',
-    name: 'Files',
+    index: 5,
+    key: 'all-attachments',
+    label: 'Files',
     element: React.createElement(ProjectViewFiles),
   },
   {
+    index: 6,
     key: 'members',
-    name: 'Members',
+    label: 'Members',
     element: React.createElement(ProjectViewMembers),
   },
   {
+    index: 7,
     key: 'updates',
-    name: 'Updates',
+    label: 'Updates',
     element: React.createElement(ProjectViewUpdates),
   },
 ];

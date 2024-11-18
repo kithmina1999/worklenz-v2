@@ -61,7 +61,7 @@ const CreateTaskDrawer = () => {
         >
           <Form.Item name="taskId" label="Task Key" style={{ margin: 0 }}>
             <Tag style={{ fontSize: 12 }}>
-              {selectedProject?.projectName.toUpperCase()}
+              {selectedProject?.name?.toUpperCase()}
             </Tag>
           </Form.Item>
           <Form.Item name="phase" label="Phase" style={{ margin: 0 }}>

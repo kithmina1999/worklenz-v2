@@ -4,15 +4,15 @@ import themeReducer from '@features/theme/themeSlice';
 import localesReducer from '@features/i18n/localesSlice';
 import todoReducer from '@features/todo/todoSlice';
 import dateReducer from '@features/date/dateSlice';
-import projectReducer from '@features/projects/projectsSlice';
+import projectsReducer from '@features/projects/projectsSlice';
 import notificationReducer from '@features/navbar/notification/notificationSlice';
 import memberReducer from '@features/settings/member/memberSlice';
 import taskReducer from '@features/tasks/taskSlice';
 import userReducer from '@features/user/userSlice';
-import buttonReducer from '@/features/actionSetup/buttonSlice';
+import buttonReducer from '@features/actionSetup/buttonSlice';
 import clientReducer from '@features/settings/client/clientSlice';
 import jobReducer from '@features/settings/job/jobSlice';
-import teamReducer from '@/features/teams/teamSlice';
+import teamReducer from '@features/teams/teamSlice';
 import billingReducer from '@features/adminCenter/billing/billingSlice';
 import projectMemberReducer from '@features/projects/singleProject/members/projectMembersSlice';
 import categoriesReducer from '@features/settings/categories/categoriesSlice';
@@ -24,9 +24,10 @@ import authReducer from '@features/auth/authSlice';
 import alertsReducer from '@/services/alerts/alertSlice';
 import statusReducer from '@features/projects/status/StatusSlice';
 import bulkActionReducer from '@features/projects/bulkActions/bulkActionSlice';
-import projectCategoriesReducer from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
-import projectStatusesReducer from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
-import projectHealthReducer from '@/features/projects/lookups/projectHealth/projectHealthSlice';
+import projectCategoriesReducer from '@features/projects/lookups/projectCategories/projectCategoriesSlice';
+import projectStatusesReducer from '@features/projects/lookups/projectStatuses/projectStatusesSlice';
+import projectHealthReducer from '@features/projects/lookups/projectHealth/projectHealthSlice';
+import projectReducer from '@features/project/project.slice';
 
 
 export const store = configureStore({
@@ -40,7 +41,7 @@ export const store = configureStore({
     auth: authReducer,
     todoReducer: todoReducer,
     dateReducer: dateReducer,
-    projectReducer: projectReducer,
+    projectsReducer: projectsReducer,
     notificationReducer: notificationReducer,
     memberReducer: memberReducer,
     taskReducer: taskReducer,

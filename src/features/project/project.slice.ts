@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskListColumn, ITaskListGroup } from '@/types/tasks/taskList.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
@@ -6,9 +6,12 @@ import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { ITaskPrioritiesGetResponse } from '@/types/apiModels/taskPrioritiesGetResponse.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
 import { ITaskPhase } from '@/types/tasks/taskPhase.types';
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
+import { projectsApiService } from '@/api/projects/projects.api.service';
 
 interface TaskListState {
   projectId: string | null;
+  project: IProjectViewModel | null;
   columns: ITaskListColumn[];
   members: ITeamMemberViewModel[];
   labels: ITaskLabel[];
@@ -30,6 +33,7 @@ export const GROUP_BY_OPTIONS = [
 
 const initialState: TaskListState = {
   projectId: null,
+  project: null,
   columns: [],
   members: [],
   labels: [],
@@ -41,12 +45,24 @@ const initialState: TaskListState = {
   selectedTasks: []
 };
 
+export const getProject = createAsyncThunk('project/getProject', async (projectId: string, { rejectWithValue }) => {
+  try {
+    const response = await projectsApiService.getProject(projectId);
+    return response.body;
+  } catch (error) {
+    return rejectWithValue(error);
+  }
+});
+
 const taskListSlice = createSlice({
   name: 'taskList',
   initialState,
   reducers: {
     setProjectId: (state, action: PayloadAction<string>) => {
       state.projectId = action.payload;
+    },
+    setProject: (state, action: PayloadAction<IProjectViewModel>) => {
+      state.project = action.payload;
     },
     setColumns: (state, action: PayloadAction<ITaskListColumn[]>) => {
       state.columns = action.payload;
@@ -124,6 +140,7 @@ const taskListSlice = createSlice({
 
 export const {
   setProjectId,
+  setProject,
   setColumns,
   setMembers,
   setLabels,

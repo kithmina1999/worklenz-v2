@@ -2,6 +2,8 @@ import {
   ArrowLeftOutlined,
   BellOutlined,
   CalendarOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
   DownOutlined,
   EditOutlined,
   SaveOutlined,
@@ -10,40 +12,33 @@ import {
 } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
 import { Button, Dropdown, Flex, Tag, Tooltip, Typography } from 'antd';
-import React, { useState } from 'react';
-import ProjectMemberInviteButton from '../../../features/projects/singleProject/members/ProjectMemberInviteButton';
+import { useEffect, useState } from 'react';
+import ProjectMemberInviteButton from '@features/projects/singleProject/members/ProjectMemberInviteButton';
 import { useNavigate } from 'react-router-dom';
-import { useSelectedProject } from '../../../hooks/useSelectedProject';
-import { colors } from '../../../styles/colors';
-import dayjs from 'dayjs';
-import { statusData } from '../../../lib/project/projectConstants';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleCreateTaskDrawer } from '../../../features/tasks/taskSlice';
+import { colors } from '@/styles/colors';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { toggleCreateTaskDrawer } from '@features/tasks/taskSlice';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { PROJECT_STATUS_ICON_MAP } from '@/shared/constants';
+import { IProjectStatus } from '@/types/project/projectStatus.types';
+import React from 'react';
+import { getStatusIcon } from '@/utils/projectUtils';
 
 const ProjectViewHeader = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-
   const dispatch = useAppDispatch();
 
-  // useSelectedProject custom hook returns currently selected project
-  const selectedProject = useSelectedProject();
-
-  // get start and end dates
-  const startDate = dayjs(selectedProject?.projectStartDate).format(
-    'MMM DD, YYYY'
-  );
-  const endDate = dayjs(selectedProject?.projectEndDate).format('MMM DD, YYYY');
-
-  // get selected project status data
-  const selectedProjectStatus = statusData.find(
-    (status) => status.value === selectedProject?.projectStatus
-  );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const selectedProject = useAppSelector(state => state.projectReducer.project);
 
   // function for handle refresh
   const handleRefresh = () => {
     setIsLoading(true);
     setTimeout(() => setIsLoading(false), 500);
+  };
+
+  const navigateBack = () => {
+    navigate('/worklenz/projects');
   };
 
   // create task button items
@@ -63,17 +58,17 @@ const ProjectViewHeader = () => {
         <Flex gap={8} align="center">
           <ArrowLeftOutlined
             style={{ fontSize: 16 }}
-            onClick={() => navigate(-1)}
+            onClick={() => navigateBack()}
           />
           <Typography.Title
             level={4}
             style={{ marginBlockEnd: 0, marginInlineStart: 12 }}
           >
-            {selectedProject?.projectName}
+            {selectedProject?.name}
           </Typography.Title>
 
           {/* attributes thats appear only if available  */}
-          {selectedProject?.projectCategory && (
+          {selectedProject?.category_id && (
             <Tag
               color={colors.vibrantOrange}
               style={{
@@ -82,23 +77,23 @@ const ProjectViewHeader = () => {
                 margin: 0,
               }}
             >
-              {selectedProject?.projectCategory.toString()}
+              {selectedProject?.category_name?.toString()}
             </Tag>
           )}
 
-          {selectedProject?.projectStatus && (
-            <Tooltip title={selectedProjectStatus?.label}>
-              {selectedProjectStatus?.icon}
+          {selectedProject?.status && (
+            <Tooltip title={selectedProject?.status}>
+              {selectedProject.status_icon && selectedProject.status_color && getStatusIcon(selectedProject.status_icon, selectedProject.status_color)}
             </Tooltip>
           )}
 
-          {(startDate || endDate) && (
+          {(selectedProject?.start_date || selectedProject?.end_date) && (
             <Tooltip
               title={
                 <Typography.Text style={{ color: colors.white }}>
-                  {startDate && `Start date: ${startDate}`}
+                  {selectedProject?.start_date && `Start date: ${selectedProject?.start_date}`}
                   <br />
-                  {endDate && `End date: ${endDate}`}
+                  {selectedProject?.end_date && `End date: ${selectedProject?.end_date}`}
                 </Typography.Text>
               }
             >
@@ -110,9 +105,9 @@ const ProjectViewHeader = () => {
             </Tooltip>
           )}
 
-          {selectedProject?.projectNotes && (
+          {selectedProject?.notes && (
             <Typography.Text style={{ color: colors.lightGray }}>
-              {selectedProject.projectNotes}
+              {selectedProject.notes}
             </Typography.Text>
           )}
         </Flex>

@@ -28,7 +28,7 @@ const ProjectList: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { loading, projects } = useAppSelector(state => state.projectReducer);
+  const { loading, projects } = useAppSelector(state => state.projectsReducer);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [pagination, setPagination] = useState({
