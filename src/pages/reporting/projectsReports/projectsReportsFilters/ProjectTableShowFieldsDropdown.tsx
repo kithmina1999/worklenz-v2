@@ -63,10 +63,11 @@ const ProjectTableShowFieldsDropdown = () => {
     >
       <Button
         icon={<MoreOutlined />}
-        style={{
-          color: isDropdownOpen ? colors.skyBlue : 'inherit',
-          borderColor: isDropdownOpen ? colors.skyBlue : 'inherit',
-        }}
+        className={`transition-colors duration-300 ${
+          isDropdownOpen
+            ? 'border-[#1890ff] text-[#1890ff]'
+            : 'hover:text-[#1890ff hover:border-[#1890ff]'
+        }`}
       >
         {t('showFieldsText')}
       </Button>
