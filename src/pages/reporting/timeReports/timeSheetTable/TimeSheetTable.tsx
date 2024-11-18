@@ -33,22 +33,22 @@ const TimeSheetTable: React.FC = () => {
     }, []);
 
     return (
-        <div style={{ width: '100%' }}>
+        <div style={{overflow: 'auto', width: 'max-content', maxWidth: 'calc(100vw - 225px)'}}>
             {/* Header Row for Member Names */}
-            <div style={{ display: 'flex', height: '77.6px' }}>
-                <div style={{ width: '200px', borderRight: '1px solid #f5f5f5', borderBottom: '1px solid #f5f5f5' }}></div>
+            <div style={{ display: 'flex', height: '77.6px',}}>
+                <div style={{ minWidth: '200px', borderRight: '1px solid #f5f5f5', borderBottom: '1px solid #f5f5f5', position: 'sticky', left: 0, backgroundColor: 'white'}}></div>
                 {members.map((member) => (
-                    <div key={member.memberId} style={{ width: '100px', padding: '16px 6px', borderRight: '1px solid #f5f5f5', borderTop: '1px solid #f5f5f5', borderBottom: '1px solid #f5f5f5', fontWeight: '500' }}>
+                    <div key={member.memberId} style={{ minWidth: '100px', padding: '16px 6px', borderRight: '1px solid #f5f5f5', borderTop: '1px solid #f5f5f5', borderBottom: '1px solid #f5f5f5', fontWeight: '500'}}>
                         {member.memberName}
                     </div>
                 ))}
-                <div style={{ width: '120px', borderBottom: '1px solid #f5f5f5', position: 'sticky', backgroundColor: '#f8f7f9', fontWeight: '500', padding: '16px 12px', alignItems: 'center', justifyContent: 'center', display: 'flex' }}>Total</div>
+                <div style={{ minWidth: '120px', borderBottom: '1px solid #f5f5f5', position: 'sticky', backgroundColor: '#f8f7f9', fontWeight: '500', padding: '16px 12px', alignItems: 'center', justifyContent: 'center', display: 'flex', right: 0 }}>Total</div>
             </div>
 
             {/* Rows for Each Project */}
             {projects.map((project) => (
                 <div key={project.projectId} style={{ display: 'flex', height: '77.6px' }}>
-                    <div style={{ width: '200px', padding: '16px 8px 16px 12px', position: "sticky", borderRight: '1px solid #f5f5f5', borderBottom: '1px solid #f5f5f5', borderLeft: '1px solid #f5f5f5' }}>
+                    <div style={{ minWidth: '200px', padding: '16px 8px 16px 12px', position: "sticky", borderRight: '1px solid #f5f5f5', borderBottom: '1px solid #f5f5f5', borderLeft: '1px solid #f5f5f5', left: 0, zIndex: 999, backgroundColor: 'white'}}>
                         <span><ClockCircleOutlined style={{ color: 'rgb(203, 200, 161)' }} /> {project.projectName}</span>
                         <Progress percent={30} size='small' />
                     </div>
@@ -59,23 +59,23 @@ const TimeSheetTable: React.FC = () => {
                         const memberLoggedTime = project.members.find((projMember) => projMember.memberId === member.memberId)?.memberLoggedTime;
 
                         return (
-                            <div key={member.memberId} style={{ width: '100px', padding: '16px 6px', borderRight: '1px solid #f5f5f5', borderBottom: '1px solid #f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div key={member.memberId} style={{ minWidth: '100px', padding: '16px 6px', borderRight: '1px solid #f5f5f5', borderBottom: '1px solid #f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 {memberLoggedTime || '-'}
                             </div>
                         );
                     })}
-                    <div style={{ width: '120px', borderBottom: '1px solid #f5f5f5', position: 'sticky', backgroundColor: '#f8f7f9', fontWeight: '500', padding: '16px 12px', alignItems: 'center', justifyContent: 'center', display: 'flex' }}></div>
+                    <div style={{ minWidth: '120px', borderBottom: '1px solid #f5f5f5', position: 'sticky', backgroundColor: '#f8f7f9', fontWeight: '500', padding: '16px 12px', alignItems: 'center', justifyContent: 'center', display: 'flex', right: 0 }}></div>
                 </div>
             ))}
 
             {/* Footer row */}
             <div style={{ display: 'flex', height: '54.8px',}}>
-                <div style={{width: '200px',padding: '16px 8px 16px 12px', backgroundColor: '#f8f7f9'}}>Total</div>
+                <div style={{minWidth: '200px',padding: '16px 8px 16px 12px', backgroundColor: '#f8f7f9', left: 0, position: 'sticky'}}>Total</div>
                 {members.map((member) => (
-                    <div key={member.memberId} style={{ width: '100px', padding: '16px 6px', borderRight: '1px solid #f5f5f5', borderTop: '1px solid #f5f5f5', borderBottom: '1px solid #f5f5f5', fontWeight: '500', backgroundColor: '#f8f7f9' }}>
+                    <div key={member.memberId} style={{ minWidth: '100px', padding: '16px 6px', borderRight: '1px solid #f5f5f5', borderTop: '1px solid #f5f5f5', borderBottom: '1px solid #f5f5f5', fontWeight: '500', backgroundColor: '#f8f7f9' }}>
                     </div>
                 ))}
-                <div style={{width: '120px', padding: '16px 6px', borderRight: '1px solid #f5f5f5', borderTop: '1px solid #f5f5f5', borderLeft: '1px solid #f5f5f5', fontWeight: '500', backgroundColor: '#f8f7f9' }}></div>
+                <div style={{minWidth: '120px', padding: '16px 6px', borderRight: '1px solid #f5f5f5', borderTop: '1px solid #f5f5f5', borderLeft: '1px solid #f5f5f5', fontWeight: '500', backgroundColor: '#f8f7f9', position:'sticky', right: 0 }}></div>
             </div>
         </div>
     );

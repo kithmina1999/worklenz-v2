@@ -1,0 +1,20 @@
+[
+    {
+      "id": "69a1d0d6-0998-46f7-86e9-353bfea3159b",
+      "name": "gfgdf",
+      "logged_time": 174.000000,
+      "estimated": "0",
+      "estimated_value": 0,
+      "color_code": "#3b7ad4",
+      "value": 0.05
+    },
+    {
+      "id": "5177b1c6-c531-4308-a0e6-bb83b30fcd5d",
+      "name": "ghf",
+      "logged_time": 24.000000,
+      "estimated": "0",
+      "estimated_value": 0,
+      "color_code": "#ee87c5",
+      "value": 0.01
+    }
+  ]
