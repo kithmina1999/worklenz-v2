@@ -1,13 +1,17 @@
-import { Flex, Input } from 'antd';
-import React from 'react';
+import { Flex } from 'antd';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ProjectStatusFilterDropdown from './ProjectStatusFilterDropdown';
 import ProjectHealthFilterDropdown from './ProjectHealthFilterDropdown';
 import ProjectCategoriesFilterDropdown from './ProjectCategoriesFilterDropdown';
 import ProjectManagersFilterDropdown from './ProjectManagersFiterDropdown';
 import ProjectTableShowFieldsDropdown from './ProjectTableShowFieldsDropdown';
+import CustomSearchbar from '../../../../components/CustomSearchbar';
 
 const ProjectsReportsFilters = () => {
+  const [searchQuery, setSearhQuery] = useState<string>('');
+
+  // localization
   const { t } = useTranslation('reportingProjectsFilters');
 
   return (
@@ -28,7 +32,11 @@ const ProjectsReportsFilters = () => {
         <ProjectTableShowFieldsDropdown />
 
         {/* searchbar  */}
-        <Input.Search placeholder={t('searchByNamePlaceholder')} />
+        <CustomSearchbar
+          placeholderText={t('searchByNamePlaceholder')}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearhQuery}
+        />
       </Flex>
     </Flex>
   );

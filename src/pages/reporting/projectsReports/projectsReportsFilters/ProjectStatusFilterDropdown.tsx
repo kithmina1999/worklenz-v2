@@ -2,7 +2,6 @@ import { CaretDownFilled } from '@ant-design/icons';
 import { Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { colors } from '../../../../styles/colors';
 
 const ProjectStatusFilterDropdown = () => {
   // state to track dropdown open status

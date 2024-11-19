@@ -12,7 +12,6 @@ import {
 } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { colors } from '../../../../styles/colors';
 
 const ProjectManagersFilterDropdown = () => {
   // state to track dropdown open status

@@ -5,7 +5,6 @@ import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 import { toggleColumnHidden } from '../../../../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
 import { useTranslation } from 'react-i18next';
-import { colors } from '../../../../styles/colors';
 
 const ProjectTableShowFieldsDropdown = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
