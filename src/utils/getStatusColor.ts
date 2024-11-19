@@ -1,9 +1,9 @@
 import { TaskStatusType } from '../types/task.types';
 
-type ThemeMode = 'default' | 'dark';
+type ThemeMode = 'light' | 'dark';
 
 const statusColors = {
-  default: {
+  light: {
     todo: '#d8d7d8',
     doing: '#c0d5f6',
     done: '#c2e4d0',

@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { statusApiService } from '@/api/status/status.api.service';
-import { ICategorizedStatus, IKanbanTaskStatus } from '@/types/tasks/taskStatus.types';
+import { ICategorizedStatus, ITaskStatus } from '@/types/tasks/taskStatus.types';
 import logger from '@utils/errorLogger';
+import { statusApiService } from '@/api/taskAttributes/status/status.api.service';
 
 interface IStatusState {
-  statusList: IKanbanTaskStatus[];
+  status: ITaskStatus[];
   categorizedStatusList: ICategorizedStatus[];
   loading: boolean;
   error: string | null;
@@ -12,7 +12,7 @@ interface IStatusState {
 }
 
 const initialState: IStatusState = {
-  statusList: [],
+  status: [],
   categorizedStatusList: [],
   loading: false,
   error: null,
@@ -51,17 +51,17 @@ const statusSlice = createSlice({
   name: 'statusReducer',
   initialState,
   reducers: {
-    addStatus: (state, action: PayloadAction<IKanbanTaskStatus>) => {
-      state.statusList.push(action.payload);
+    addStatus: (state, action: PayloadAction<ITaskStatus>) => {
+      state.status.push(action.payload);
     },
-    updateStatus: (state, action: PayloadAction<IKanbanTaskStatus>) => {
-      const index = state.statusList.findIndex(status => status.id === action.payload.id);
+    updateStatus: (state, action: PayloadAction<ITaskStatus>) => {
+      const index = state.status.findIndex(status => status.id === action.payload.id);
       if (index !== -1) {
-        state.statusList[index] = action.payload;
+        state.status[index] = action.payload;
       }
     },
     deleteStatus: (state, action: PayloadAction<string>) => {
-      state.statusList = state.statusList.filter(status => status.id !== action.payload);
+      state.status = state.status.filter(status => status.id !== action.payload);
     },
     setCategorizedStatuses: (state, action: PayloadAction<ICategorizedStatus[]>) => {
       state.categorizedStatusList = action.payload;
@@ -73,9 +73,9 @@ const statusSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchStatuses.fulfilled, (state, action: PayloadAction<IKanbanTaskStatus[]>) => {
+      .addCase(fetchStatuses.fulfilled, (state, action: PayloadAction<ITaskStatus[]>) => {
         state.loading = false;
-        state.statusList = action.payload;
+        state.status = action.payload;
         state.initialized = true;
         state.error = null;
       })

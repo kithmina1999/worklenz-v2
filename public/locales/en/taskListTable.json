@@ -35,5 +35,6 @@
   "openButton": "Open",
   "okButton": "Ok",
   "searchInputPlaceholder": "Search by name",
-  "assigneeSelectorInviteButton": "Invite a new member by email"
+  "assigneeSelectorInviteButton": "Invite a new member by email",
+  "noLabelsFound": "No labels found"
 }

@@ -31,5 +31,6 @@
   "highText": "High",
 
   "createStatusButtonTooltip": "Status settings",
-  "configPhaseButtonTooltip": "Phase settings"
+  "configPhaseButtonTooltip": "Phase settings",
+  "noLabelsFound": "No labels found"
 }

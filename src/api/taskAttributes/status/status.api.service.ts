@@ -1,11 +1,11 @@
 import { IServerResponse } from '@/types/common.types';
-import apiClient from '../apiClient';
+import apiClient from '@/api/apiClient';
 import { API_BASE_URL } from '@/shared/constants';
 
-const rootUrl = `${API_BASE_URL}/task-priorities`;
+const rootUrl = `${API_BASE_URL}/statuses`;
 
-export const priorityApiService = {
-  getPriorities: async (): Promise<IServerResponse<any[]>> => {
+export const statusApiService = {
+  getStatuses: async (): Promise<IServerResponse<any[]>> => {
     const response = await apiClient.get<IServerResponse<any[]>>(
       `${rootUrl}`
     );

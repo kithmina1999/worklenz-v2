@@ -1,18 +1,9 @@
-import {
-  Button,
-  ConfigProvider,
-  Flex,
-  Form,
-  Mentions,
-  Space,
-  Typography,
-} from 'antd';
-import React, { useState } from 'react';
+import { Button, ConfigProvider, Flex, Form, Mentions, Space, Typography } from 'antd';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import CustomAvatar from '../../../../components/CustomAvatar';
 import { colors } from '../../../../styles/colors';
-import { relative } from 'path';
 
 const ProjectViewUpdates = () => {
   const [characterLength, setCharacterLength] = useState<number>(0);
@@ -24,9 +15,7 @@ const ProjectViewUpdates = () => {
   const [form] = Form.useForm();
 
   // get member list from project members slice
-  const projectMembersList = useAppSelector(
-    (state) => state.projectMemberReducer.membersList
-  );
+  const projectMembersList = useAppSelector(state => state.projectMemberReducer.membersList);
 
   // function to handle cancel
   const handleCancel = () => {
@@ -37,7 +26,7 @@ const ProjectViewUpdates = () => {
 
   // mentions options
   const mentionsOptions = projectMembersList
-    ? projectMembersList.map((member) => ({
+    ? projectMembersList.map(member => ({
         value: member.memberName,
         label: member.memberName,
       }))
@@ -50,20 +39,14 @@ const ProjectViewUpdates = () => {
           <CustomAvatar avatarName="Sachintha Prasd" />
           <Flex vertical>
             <Space>
-              <Typography.Text
-                style={{ fontSize: 13, color: colors.lightGray }}
-              >
+              <Typography.Text style={{ fontSize: 13, color: colors.lightGray }}>
                 Sachintha Prasad
               </Typography.Text>
-              <Typography.Text
-                style={{ fontSize: 13, color: colors.deepLightGray }}
-              >
+              <Typography.Text style={{ fontSize: 13, color: colors.deepLightGray }}>
                 7 hours ago
               </Typography.Text>
             </Space>
-            <Typography.Paragraph>
-              Hello this is a test message
-            </Typography.Paragraph>
+            <Typography.Paragraph>Hello this is a test message</Typography.Paragraph>
             <ConfigProvider
               wave={{ disabled: true }}
               theme={{
@@ -99,7 +82,7 @@ const ProjectViewUpdates = () => {
             autoSize
             maxLength={2000}
             onClick={() => setIsCommentBoxExpand(true)}
-            onChange={(e) => setCharacterLength(e.length)}
+            onChange={e => setCharacterLength(e.length)}
             style={{
               minHeight: isCommentBoxExpand ? 180 : 60,
               paddingBlockEnd: 24,

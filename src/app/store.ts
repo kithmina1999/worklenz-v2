@@ -32,6 +32,8 @@ import scheduleReducer from '../features/schedule/scheduleSlice';
 import updatesReducer from '../features/projects/singleProject/updates/updatesSlice';
 import projectReportsTableColumnsReducer from '../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
 import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
+import priorityReducer from '@features/taskAttributes/taskPrioritySlice';
+import taskLabelsReducer from '@features/taskAttributes/taskLabelSlice';
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -71,6 +73,8 @@ export const store = configureStore({
     updatesReducer: updatesReducer,
     projectReportsTableColumnsReducer: projectReportsTableColumnsReducer,
     projectReportsReducer: projectReportsReducer,
+    priorityReducer: priorityReducer,
+    taskLabelsReducer: taskLabelsReducer,
   },
 });
 

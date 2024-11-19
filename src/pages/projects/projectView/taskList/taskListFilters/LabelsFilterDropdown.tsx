@@ -12,33 +12,25 @@ import {
   List,
   Space,
 } from 'antd';
-import React, { useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { colors } from '../../../../../styles/colors';
+import { useEffect, useRef, useState } from 'react';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
+import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 
-const LabelsFilterDropdown = () => {
+const LabelsFilterDropdown = (props: { labels: ITaskLabel[] }) => {
+  const { t } = useTranslation('taskListFilters');
   const labelInputRef = useRef<InputRef>(null);
   const [selectedCount, setSelectedCount] = useState<number>(0);
-  // this is for get the current string that type on search bar
+  const [filteredLabelList, setFilteredLabelList] = useState<ITaskLabel[]>(props.labels);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // localization
-  const { t } = useTranslation('taskListFilters');
-
-  // get label list from label reducer
-  const labelList = useAppSelector((state) => state.labelReducer.labelList);
-
-  // used useMemo hook for re render the list when searching
-  const filteredLabelData = useMemo(() => {
-    return labelList.filter((label) =>
-      label.labelName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [labelList, searchQuery]);
+  useEffect(() => {
+    setFilteredLabelList(props.labels);
+  }, [props.labels]);
 
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {
-    setSelectedCount((prev) => (checked ? prev + 1 : prev - 1));
+    setSelectedCount(prev => (checked ? prev + 1 : prev - 1));
   };
 
   // function to focus labels input
@@ -50,23 +42,40 @@ const LabelsFilterDropdown = () => {
     }
   };
 
+  const handleSearchQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchText = e.currentTarget.value;
+    setSearchQuery(searchText);
+    if (searchText.length === 0) {
+      setFilteredLabelList(props.labels);
+      return;
+    }
+    setFilteredLabelList(
+      props.labels.filter(label => label.name?.toLowerCase().includes(searchText.toLowerCase()))
+    );
+  };
+
   // custom dropdown content
   const labelsDropdownContent = (
-    <Card className="custom-card" styles={{ body: { padding: 8, width: 260 } }}>
+    <Card
+      className="custom-card"
+      styles={{
+        body: { padding: 8, width: 260, maxHeight: 250, overflow: 'hidden', overflowY: 'auto' },
+      }}
+    >
       <Flex vertical gap={8}>
         <Input
           ref={labelInputRef}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          onChange={e => handleSearchQuery(e)}
           placeholder={t('searchInputPlaceholder')}
         />
 
         <List style={{ padding: 0 }}>
-          {filteredLabelData.length ? (
-            filteredLabelData.map((label) => (
+          {filteredLabelList.length ? (
+            filteredLabelList.map(label => (
               <List.Item
                 className="custom-list-item"
-                key={label.labelId}
+                key={label.id}
                 style={{
                   display: 'flex',
                   justifyContent: 'flex-start',
@@ -76,18 +85,18 @@ const LabelsFilterDropdown = () => {
                 }}
               >
                 <Checkbox
-                  id={label.labelId}
-                  onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
+                  id={label.id}
+                  onChange={e => handleSelectedFiltersCount(e.target.checked)}
                 />
 
                 <Flex gap={8}>
-                  <Badge color={label.labelColor} />
-                  {label.labelName}
+                  <Badge color={label.color_code} />
+                  {label.name}
                 </Flex>
               </List.Item>
             ))
           ) : (
-            <Empty />
+            <Empty description={t('noLabelsFound')} />
           )}
         </List>
       </Flex>
@@ -105,17 +114,14 @@ const LabelsFilterDropdown = () => {
         icon={<CaretDownFilled />}
         iconPosition="end"
         style={{
-          backgroundColor:
-            selectedCount > 0 ? colors.paleBlue : colors.transparent,
+          backgroundColor: selectedCount > 0 ? colors.paleBlue : colors.transparent,
 
           color: selectedCount > 0 ? colors.darkGray : 'inherit',
         }}
       >
         <Space>
           {t('labelsText')}
-          {selectedCount > 0 && (
-            <Badge size="small" count={selectedCount} color={colors.skyBlue} />
-          )}
+          {selectedCount > 0 && <Badge size="small" count={selectedCount} color={colors.skyBlue} />}
         </Space>
       </Button>
     </Dropdown>

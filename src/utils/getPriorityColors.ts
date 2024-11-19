@@ -1,9 +1,9 @@
 import { TaskPriorityType } from '../types/task.types';
 
-type ThemeMode = 'default' | 'dark';
+type ThemeMode = 'light' | 'dark';
 
 const priorityColors = {
-  default: {
+  light: {
     low: '#c2e4d0',
     medium: '#f9e3b1',
     high: '#f6bfc0',

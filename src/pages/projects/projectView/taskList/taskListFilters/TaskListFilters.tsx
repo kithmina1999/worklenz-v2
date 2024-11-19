@@ -7,14 +7,28 @@ import GroupByFilterDropdown from './GroupByFilterDropdown';
 import ShowFieldsFilterDropdown from './ShowFieldsFilterDropdown';
 import PriorityFilterDropdown from './PriorityFilterDropdown';
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
+import { fetchPriorities } from '@/features/taskAttributes/taskPrioritySlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 
 interface TaskListFiltersProps {
   position: 'board' | 'list';
 }
 
 const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
-  // localization
+  const dispatch = useAppDispatch();
   const { t } = useTranslation('taskListFilters');
+
+  const priorities = useAppSelector(state => state.priorityReducer.priorities);
+  const labels = useAppSelector(state => state.taskLabelsReducer.labels);
+  const members = useAppSelector(state => state.memberReducer.membersList);
+
+  useEffect(() => {
+    if (!priorities.length) dispatch(fetchPriorities());
+    if (!labels.length) dispatch(fetchLabels());
+  }, [dispatch, priorities, labels]);
 
   return (
     <Flex gap={8} align="center" justify="space-between">
@@ -24,11 +38,11 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
         {/* sort dropdown  */}
         <SortFilterDropdown />
         {/* prioriy dropdown  */}
-        <PriorityFilterDropdown />
+        <PriorityFilterDropdown priorities={priorities} />
         {/* labels dropdown  */}
-        <LabelsFilterDropdown />
+        <LabelsFilterDropdown labels={labels} />
         {/* members dropdown  */}
-        <MembersFilterDropdown />
+        <MembersFilterDropdown members={members} />
         {/* group by dropdown */}
         {position === 'list' && <GroupByFilterDropdown />}
       </Flex>

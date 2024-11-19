@@ -14,20 +14,19 @@ import {
   Space,
   Typography,
 } from 'antd';
-import React, { useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { colors } from '../../../../../styles/colors';
-import CustomAvatar from '../../../../../components/CustomAvatar';
+import { useMemo, useRef, useState } from 'react';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
+import CustomAvatar from '@components/CustomAvatar';
 import { useTranslation } from 'react-i18next';
+import { ITaskListMemberFilter } from '@/types/tasks/taskList.types';
 
-const MembersFilterDropdown = () => {
+const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
   const membersInputRef = useRef<InputRef>(null);
 
-  // localization
   const { t } = useTranslation('taskListFilters');
 
-  // get members list from members reducer
   const membersList = [
     ...useAppSelector((state) => state.memberReducer.membersList),
     useAppSelector((state) => state.memberReducer.owner),
