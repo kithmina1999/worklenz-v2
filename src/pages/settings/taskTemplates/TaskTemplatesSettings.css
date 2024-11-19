@@ -1,0 +1,7 @@
+.no-border-row td {
+    border: none !important; 
+  }
+
+  .alternate-row-color td {
+    background-color: #f8f7f9;
+  }
