@@ -6,6 +6,7 @@ const ProjectClientCell = ({ client }: { client: string }) => {
     <Typography.Text
       style={{ cursor: 'pointer' }}
       ellipsis={{ expanded: false }}
+      className="group-hover:text-[#1890ff]"
     >
       {client ? client : '-'}
     </Typography.Text>
