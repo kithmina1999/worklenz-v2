@@ -93,7 +93,7 @@ const ProjectReportsMembersTable = ({
       scroll={{ x: 'max-content' }}
       onRow={(record) => {
         return {
-          style: { height: 38 },
+          style: { height: 38, cursor: 'pointer' },
           className: 'group even:bg-[#4e4e4e10]',
         };
       }}

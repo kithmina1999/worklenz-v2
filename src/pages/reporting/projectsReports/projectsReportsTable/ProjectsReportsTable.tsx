@@ -204,7 +204,7 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
         scroll={{ x: 'max-content' }}
         onRow={(record) => {
           return {
-            style: { height: 56 },
+            style: { height: 56, cursor: 'pointer' },
             className: 'group even:bg-[#4e4e4e10]',
           };
         }}

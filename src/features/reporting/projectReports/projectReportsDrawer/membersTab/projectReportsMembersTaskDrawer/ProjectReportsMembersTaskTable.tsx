@@ -36,11 +36,12 @@ const ProjectReportsMembersTasksTable = ({
       render: (record) => (
         <Flex>
           {Number(record.sub_tasks_count) > 0 && <DoubleRightOutlined />}
-          <Typography.Text>{record.name}</Typography.Text>
+          <Typography.Text className="group-hover:text-[#1890ff]">
+            {record.name}
+          </Typography.Text>
         </Flex>
       ),
       width: 260,
-      className: 'group-hover:text-[#1890ff]',
       fixed: 'left' as const,
     },
     {
@@ -81,9 +82,8 @@ const ProjectReportsMembersTasksTable = ({
     {
       key: 'dueDate',
       title: <CustomTableTitle title="Due Date" />,
-      className: 'text-center group-hover:text-[#1890ff]',
       render: (record) => (
-        <Typography.Text>
+        <Typography.Text className="text-center group-hover:text-[#1890ff]">
           {record.end_date
             ? `${dayjs(record.end_date).format('MMM DD, YYYY')}`
             : '-'}
@@ -94,9 +94,8 @@ const ProjectReportsMembersTasksTable = ({
     {
       key: 'completedOn',
       title: <CustomTableTitle title="Completed On" />,
-      className: 'text-center group-hover:text-[#1890ff]',
       render: (record) => (
-        <Typography.Text>
+        <Typography.Text className="text-center group-hover:text-[#1890ff]">
           {record.completed_at
             ? `${dayjs(record.completed_at).format('MMM DD, YYYY')}`
             : '-'}
@@ -135,7 +134,7 @@ const ProjectReportsMembersTasksTable = ({
       scroll={{ x: 'max-content' }}
       onRow={(record) => {
         return {
-          style: { height: 38 },
+          style: { height: 38, cursor: 'pointer' },
           className: 'group even:bg-[#4e4e4e10]',
         };
       }}
