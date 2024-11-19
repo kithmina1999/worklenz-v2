@@ -19,7 +19,6 @@ const ProjectReportsPriorityGraph = () => {
         label: 'Tasks',
         data: [6, 12, 2],
         backgroundColor: ['#75c997', '#fbc84c', '#f37070'],
-        hoverBackgroundColor: ['#46d980', '#ffc227', '#ff4141'],
       },
     ],
   };

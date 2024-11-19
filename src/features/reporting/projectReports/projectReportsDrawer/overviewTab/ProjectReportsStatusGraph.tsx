@@ -19,7 +19,6 @@ const ProjectReportsStatusGraph = () => {
         label: 'Tasks',
         data: [6, 6, 8],
         backgroundColor: ['#a9a9a9', '#70a6f3', '#75c997'],
-        hoverBackgroundColor: ['#989898', '#4190ff', '#46d980'],
       },
     ],
   };

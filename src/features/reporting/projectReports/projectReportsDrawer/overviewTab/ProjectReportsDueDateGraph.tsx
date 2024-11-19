@@ -12,14 +12,13 @@ const ProjectReportsDueDateGraph = () => {
   };
 
   //   mock data
-  const mockPriorityData = {
+  const mockDueDateData = {
     labels: ['Completed', 'Upcoming', 'Overdue', 'No Due Date'],
     datasets: [
       {
         label: 'Tasks',
         data: [6, 8, 2, 4],
         backgroundColor: ['#75c997', '#70a6f3', '#f37070', '#a9a9a9'],
-        hoverBackgroundColor: ['#46d980', '#4190ff', '#ff4141', '#989898'],
       },
     ],
   };
@@ -35,7 +34,7 @@ const ProjectReportsDueDateGraph = () => {
       <Flex gap={24} wrap="wrap" align="center" justify="center">
         <Doughnut
           options={options}
-          data={mockPriorityData}
+          data={mockDueDateData}
           className="max-h-[200px] w-full max-w-[200px]"
         />
 

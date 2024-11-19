@@ -12,7 +12,16 @@ const ProjectManagerCell = ({ manager }: ProjectMangerCellProps) => {
       {manager ? (
         <Flex gap={8} align="center">
           {manager?.avatar_url ? (
-            <img src={manager.avatar_url} alt={manager.name} />
+            <img
+              src={manager.avatar_url}
+              alt={manager.name}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                objectFit: 'cover',
+              }}
+            />
           ) : (
             <CustomAvatar avatarName={manager.name} />
           )}
