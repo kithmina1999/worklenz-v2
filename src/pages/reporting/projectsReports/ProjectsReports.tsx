@@ -8,33 +8,27 @@ import {
   Space,
   Typography,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import CustomPageHeader from '../pageHeader/CustomPageHeader';
 import { DownOutlined } from '@ant-design/icons';
 import ProjectReportsTable from './projectsReportsTable/ProjectsReportsTable';
 import ProjectsReportsFilters from './projectsReportsFilters/ProjectsReportsFilters';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { fetchProjectData } from '../../../features/reporting/projectReports/projectReportsSlice';
+import { useAppSelector } from '../../../hooks/useAppSelector';
 
 const ProjectsReports = () => {
-  const [projectList, setProjectList] = useState([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
 
-  // load data from projects.json
+  // get project list and loading state from project repors reducer
+  const { projectList, isLoading } = useAppSelector(
+    (state) => state.projectReportsReducer
+  );
+
+  // load data from project reports reducer
   useEffect(() => {
-    const fetchProjectData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch('/reportingMockData/projects.json');
-        if (!response.ok) throw new Error(`Response error: ${response.status}`);
-        const result = await response.json();
-        setProjectList(result);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Project data fetching error', error);
-      }
-    };
-
-    fetchProjectData();
-  }, []);
+    dispatch(fetchProjectData());
+  }, [dispatch]);
 
   return (
     <Flex vertical>

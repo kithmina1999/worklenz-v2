@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { ConfigProvider, Table, TableColumnsType } from 'antd';
+import { Button, ConfigProvider, Flex, Table, TableColumnsType } from 'antd';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import './projectReportTable.css';
 import ProjectCell from './tableCells/projectCell/ProjectCell';
@@ -15,39 +15,72 @@ import ProjectHealthCell from './tableCells/projectHealthCell/ProjectHealthCell'
 import ProjectCategoryCell from './tableCells/projectCategoryCell/ProjectCategoryCell';
 import ProjectDaysLeftAndOverdueCell from './tableCells/projectDaysLeftAndOverdueCell/ProjectDaysLeftAndOverdueCell';
 import ProjectUpdateCell from './tableCells/projectUpdateCell/ProjectUpdateCell';
+import ProjectReportsDrawer from '../../../../features/reporting/projectReports/projectReportsDrawer/ProjectReportsDrawer';
+import { useAppDispatch } from '../../../../hooks/useAppDispatch';
+import { toggleProjectReportsDrawer } from '../../../../features/reporting/projectReports/projectReportsSlice';
+import { ExpandAltOutlined } from '@ant-design/icons';
+import { colors } from '../../../../styles/colors';
+import CustomTableTitle from '../../../../components/CustomTableTitle';
 
 type ProjectReportsTableProps = {
   projectList: any[];
 };
 
 const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
-  const [hoverRow, setHoverRow] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const dispatch = useAppDispatch();
 
   const columnsVisibility = useAppSelector(
     (state) => state.projectReportsTableColumnsReducer
   );
 
-  console.log('Project list:', projectList);
+  // function to handle drawer toggle
+  const handleDrawerOpen = (id: string) => {
+    setSelectedId(id);
+    dispatch(toggleProjectReportsDrawer());
+  };
 
   const columns: TableColumnsType = [
     {
       key: 'project',
-      title: 'Project',
+      title: <CustomTableTitle title="Project" />,
       width: 300,
+      onCell: (record) => {
+        return {
+          onClick: () => handleDrawerOpen(record.id),
+        };
+      },
       render: (record) => (
-        <ProjectCell
-          projectId={record.id}
-          project={record.name}
-          projectColor={record.color_code}
-          hoverRow={hoverRow || ''}
-        />
+        <Flex gap={16} align="center" justify="space-between">
+          <ProjectCell
+            projectId={record.id}
+            project={record.name}
+            projectColor={record.color_code}
+          />
+
+          {/* used tailwind class to display this button only if hover the row  */}
+          <Button
+            className="hidden group-hover:flex"
+            type="text"
+            style={{
+              backgroundColor: colors.transparent,
+              padding: 0,
+              height: 22,
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            Open <ExpandAltOutlined />
+          </Button>
+        </Flex>
       ),
       sorter: (a, b) => a.name.localeCompare(b.name),
       fixed: 'left' as const,
     },
     {
       key: 'estimatedVsActual',
-      title: 'Estimated vs Actual',
+      title: <CustomTableTitle title="Estimated vs Actual" />,
       render: (record) => (
         <EstimatedVsActualCell
           actualTime={record.actual_time}
@@ -60,13 +93,13 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
     },
     {
       key: 'tasksProgress',
-      title: 'Tasks Progress',
+      title: <CustomTableTitle title="Tasks Progress" />,
       render: (record) => <TasksProgressCell tasksStat={record.tasks_stat} />,
       width: 200,
     },
     {
       key: 'lastActivity',
-      title: 'Last Activity',
+      title: <CustomTableTitle title="Last Activity" />,
       render: (record) => (
         <LastActivityCell
           activity={record.last_activity?.last_activity_string}
@@ -76,14 +109,14 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
     },
     {
       key: 'status',
-      title: 'Status',
+      title: <CustomTableTitle title="Status" />,
       render: (record) => <ProjectStatusCell status={record.status_name} />,
       sorter: (a, b) => a.status_name.localeCompare(b.status_name),
       width: 200,
     },
     {
       key: 'dates',
-      title: 'Start/End Dates',
+      title: <CustomTableTitle title="Start/End Dates" />,
       render: (record) => (
         <ProjectDatesCell
           startDate={record.start_date}
@@ -94,7 +127,7 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
     },
     {
       key: 'daysLeft',
-      title: 'Days Left/Overdue',
+      title: <CustomTableTitle title="Days Left/Overdue" />,
       render: (record) => (
         <ProjectDaysLeftAndOverdueCell daysLeft={record.days_left} />
       ),
@@ -102,13 +135,13 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
     },
     {
       key: 'projectHealth',
-      title: 'Project Health',
+      title: <CustomTableTitle title="Project Health" />,
       render: (record) => <ProjectHealthCell />,
       width: 200,
     },
     {
       key: 'category',
-      title: 'Category',
+      title: <CustomTableTitle title="Category" />,
       render: (record) => (
         <ProjectCategoryCell
           categoryId={record.category_id}
@@ -120,27 +153,27 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
     },
     {
       key: 'projectUpdate',
-      title: 'Project Update',
+      title: <CustomTableTitle title="Project Update" />,
       render: (record) => <ProjectUpdateCell updates={record.update} />,
       width: 200,
     },
     {
       key: 'client',
-      title: 'Client',
+      title: <CustomTableTitle title="Client" />,
       render: (record) => <ProjectClientCell client={record.client} />,
       sorter: (a, b) => a.client.localeCompare(b.client),
       width: 200,
     },
     {
       key: 'team',
-      title: 'Team',
+      title: <CustomTableTitle title="Team" />,
       render: (record) => <ProjectTeamCell team={record.team_name} />,
       sorter: (a, b) => a.team_name.localeCompare(b.team_name),
       width: 200,
     },
     {
       key: 'projectManager',
-      title: 'Project Manager',
+      title: <CustomTableTitle title="Project Manager" />,
       render: (record) => (
         <ProjectManagerCell manager={record.project_manager} />
       ),
@@ -152,10 +185,6 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
   const visibleColumns = columns.filter(
     (col) => columnsVisibility[col.key as string]
   );
-
-  // apply row styles for the table
-  const rowClassName = (record: any, index: number) =>
-    index % 2 === 0 ? 'even-row' : 'odd-row';
 
   return (
     <ConfigProvider
@@ -173,15 +202,15 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
         dataSource={projectList}
         pagination={{ showSizeChanger: true, defaultPageSize: 10 }}
         scroll={{ x: 'max-content' }}
-        rowClassName={rowClassName}
         onRow={(record) => {
           return {
-            onMouseEnter: () => setHoverRow(record.id),
-            onMouseLeave: () => setHoverRow(null),
             style: { height: 56 },
+            className: 'group even:bg-[#4e4e4e10]',
           };
         }}
       />
+
+      <ProjectReportsDrawer projectId={selectedId} />
     </ConfigProvider>
   );
 };
