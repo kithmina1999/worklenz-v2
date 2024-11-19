@@ -8,8 +8,8 @@
                 "projectId": "1",
                 "perDayHours": 5,
                 "totalHours": 20,
-                "startDate": "2024-11-05",
-                "endDate": "2024-11-12",
+                "startDate": "2024-11-10",
+                "endDate": "2024-11-15",
                 "tasks": [
                     {
                         "taskName": "Task 1",
@@ -28,8 +28,8 @@
                 "projectId": "2",
                 "perDayHours": 6,
                 "totalHours": 32,
-                "startDate": "2024-11-07",
-                "endDate": "2024-11-15",
+                "startDate": "2024-11-01",
+                "endDate": "2024-11-08",
                 "tasks": [
                     {
                         "taskName": "Task 1",
@@ -42,6 +42,12 @@
                         "taskStatus": "Done"
                     }
                 ]
+            }
+        ],
+        "timeLogged": [
+            {
+                "date": "2024-11-12",
+                "hours": 2
             }
         ]
     },

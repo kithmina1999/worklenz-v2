@@ -2,15 +2,23 @@ import { Drawer, Flex, Form, Select, Typography } from 'antd';
 import React from 'react';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import { toggleDrawer } from './projectMembersSlice';
+import {
+  addProjectMember,
+  toggleProjectMemberDrawer,
+} from './projectMembersSlice';
 import { colors } from '../../../../styles/colors';
 import CustomAvatar from '../../../../components/CustomAvatar';
+import { ProjectMemberType } from '../../../../types/projectMember.types';
+import { nanoid } from '@reduxjs/toolkit';
+// import { MemberType } from '../../../../types/member.types';
+// import { nanoid } from '@reduxjs/toolkit';
 
 const ProjectMemberDrawer = () => {
-  // get member list from members slice where which is updated with navbar invite button
-  const membersList = useAppSelector(
-    (state) => state.memberReducer.membersList
-  );
+  // get member list from global members slice where which is updated with navbar invite button
+  const allMembersList = [
+    ...useAppSelector((state) => state.memberReducer.membersList),
+    useAppSelector((state) => state.memberReducer.owner),
+  ];
 
   // get drawer state from project member reducer
   const isDrawerOpen = useAppSelector(
@@ -31,19 +39,21 @@ const ProjectMemberDrawer = () => {
 
   // this function for handle form submit
   const handleFormSubmit = async (values: any) => {
-    // try {
-    //     const newClient: ClientType = {
-    //         clientId: nanoid(),
-    //         clientName: values.name,
-    //         project: null,
-    //     }
-    //     dispatch(addClient(newClient))
-    //     dispatch(toggleProjectMemberDrawer())
-    //     form.resetFields()
-    //     message.success(t('createClientSuccessMessage'))
-    // } catch (error) {
-    //     message.error(t('createClientErrorMessage'))
-    // }
+    try {
+      const newMember: ProjectMemberType = {
+        memberId: nanoid(),
+        memberName: values.name,
+        memberEmail: values.email,
+        memberRole: 'member',
+        completedTasks: 0,
+        totalAssignedTasks: 0,
+      };
+      dispatch(addProjectMember(newMember));
+      dispatch(toggleProjectMemberDrawer());
+      form.resetFields();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -54,7 +64,7 @@ const ProjectMemberDrawer = () => {
         </Typography.Text>
       }
       open={isDrawerOpen}
-      onClose={() => dispatch(toggleDrawer())}
+      onClose={() => dispatch(toggleProjectMemberDrawer())}
     >
       <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
         <Form.Item
@@ -65,7 +75,7 @@ const ProjectMemberDrawer = () => {
             showSearch
             onSearch={onSearch}
             onChange={onChange}
-            options={membersList.map((member) => ({
+            options={allMembersList.map((member) => ({
               key: member.memberId,
               value: member.memberName,
               label: (

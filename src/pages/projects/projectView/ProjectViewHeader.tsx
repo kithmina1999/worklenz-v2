@@ -2,8 +2,6 @@ import {
   ArrowLeftOutlined,
   BellOutlined,
   CalendarOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
   DownOutlined,
   EditOutlined,
   SaveOutlined,
@@ -12,16 +10,13 @@ import {
 } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
 import { Button, Dropdown, Flex, Tag, Tooltip, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ProjectMemberInviteButton from '@features/projects/singleProject/members/ProjectMemberInviteButton';
 import { useNavigate } from 'react-router-dom';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleCreateTaskDrawer } from '@features/tasks/taskSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { PROJECT_STATUS_ICON_MAP } from '@/shared/constants';
-import { IProjectStatus } from '@/types/project/projectStatus.types';
-import React from 'react';
 import { getStatusIcon } from '@/utils/projectUtils';
 
 const ProjectViewHeader = () => {

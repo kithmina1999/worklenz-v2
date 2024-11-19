@@ -7,13 +7,11 @@ import { useMediaQuery } from 'react-responsive';
 
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import PageHeader from '@components/PageHeader';
+import PageHeader from '@components/AuthPageHeader';
 import googleIcon from '@assets/images/google-icon.png';
 import { login, verifyAuth } from '@/features/auth/authSlice';
 import logger from '@/utils/errorLogger';
 import { setUser } from '@/features/user/userSlice';
-import { useAuth } from '@/hooks/useAuth';
-import alertService from '@/services/alerts/alertService';
 import { createAuthService } from '@/services/auth/auth.service';
 
 interface LoginFormValues {

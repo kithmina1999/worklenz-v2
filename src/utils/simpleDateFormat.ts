@@ -1,5 +1,11 @@
-export const simpleDateFormat = (date: Date | null): string => {
+export const simpleDateFormat = (date: Date | string | null): string => {
   if (!date) return '';
+
+  // convert ISO string date to Date object if necessary
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  // check if the date is valid
+  if (isNaN(dateObj.getTime())) return '';
 
   const options: Intl.DateTimeFormatOptions = {
     month: 'short',
@@ -7,12 +13,12 @@ export const simpleDateFormat = (date: Date | null): string => {
   };
 
   const currentYear = new Date().getFullYear();
-  const inputYear = date.getFullYear();
+  const inputYear = dateObj.getFullYear();
 
-  // Add year to the format if it's not the current year
+  // add year to the format if it's not the current year
   if (inputYear !== currentYear) {
     options.year = 'numeric';
   }
 
-  return new Intl.DateTimeFormat('en-US', options).format(date);
+  return new Intl.DateTimeFormat('en-US', options).format(dateObj);
 };

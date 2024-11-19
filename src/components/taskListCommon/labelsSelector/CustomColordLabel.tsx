@@ -13,6 +13,7 @@ const CustomColordLabel = ({ label }: { label: LabelType | null }) => {
         alignItems: 'center',
         justifyItems: 'center',
         height: 18,
+        width: 'fit-content',
       }}
     >
       <Typography.Text style={{ fontSize: 11, color: colors.darkGray }}>

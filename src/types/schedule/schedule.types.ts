@@ -13,9 +13,15 @@ export interface Task {
     endDate: string;
     tasks: Task[];
   }
+
+  export interface timeLogged {
+    date: string;
+    hours: number;
+  }
   
   export interface Member {
     memberName: string;
     memberId: string;
     projects: Project[];
+    timeLogged: timeLogged[]
   }

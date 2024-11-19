@@ -91,7 +91,7 @@ const ClientsSettings = () => {
         record.project ? (
           <Typography.Text>{record.project}</Typography.Text>
         ) : (
-          <Typography.Text style={{ color: colors.lightGray }}>
+          <Typography.Text type="secondary">
             {t('noProjectsAvailable')}
           </Typography.Text>
         ),

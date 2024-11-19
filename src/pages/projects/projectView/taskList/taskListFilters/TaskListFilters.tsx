@@ -6,12 +6,16 @@ import MembersFilterDropdown from './MembersFilterDropdown';
 import GroupByFilterDropdown from './GroupByFilterDropdown';
 import ShowFieldsFilterDropdown from './ShowFieldsFilterDropdown';
 import PriorityFilterDropdown from './PriorityFilterDropdown';
+import { useTranslation } from 'react-i18next';
 
 interface TaskListFiltersProps {
   position: 'board' | 'list';
 }
 
 const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
+  // localization
+  const { t } = useTranslation('taskListFilters');
+
   return (
     <Flex gap={8} align="center" justify="space-between">
       <Flex gap={8} wrap={'wrap'}>
@@ -33,7 +37,7 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
         <Flex gap={12} wrap={'wrap'}>
           <Flex gap={4} align="center">
             <Checkbox />
-            <Typography.Text>Show archvied</Typography.Text>
+            <Typography.Text>{t('showArchivedText')}</Typography.Text>
           </Flex>
           {/* show fields dropdown  */}
           <ShowFieldsFilterDropdown />

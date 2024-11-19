@@ -3,7 +3,6 @@ import PhaseHeader from '../../../../../../features/projects/singleProject/phase
 
 export type CustomTableColumnsType = {
   key: string;
-  columnName: string;
   columnHeader: ReactNode | null;
   width: number;
 };
@@ -11,86 +10,81 @@ export type CustomTableColumnsType = {
 const phaseHeader = React.createElement(PhaseHeader);
 
 export const columnList: CustomTableColumnsType[] = [
-  { key: 'taskId', columnName: 'Key', columnHeader: 'Key', width: 20 },
-  { key: 'task', columnName: 'Task', columnHeader: 'Task', width: 400 },
+  { key: 'taskId', columnHeader: 'key', width: 20 },
+  { key: 'task', columnHeader: 'task', width: 400 },
   {
     key: 'description',
-    columnName: 'Description',
-    columnHeader: 'Description',
+    columnHeader: 'description',
     width: 200,
   },
   {
     key: 'progress',
-    columnName: 'Progress',
-    columnHeader: 'Progress',
+    columnHeader: 'progress',
     width: 60,
   },
   {
     key: 'members',
-    columnName: 'Members',
-    columnHeader: 'Members',
+    columnHeader: 'members',
     width: 150,
   },
-  { key: 'labels', columnName: 'Labels', columnHeader: 'Labels', width: 150 },
+  {
+    key: 'labels',
+    columnHeader: 'labels',
+    width: 150,
+  },
   {
     key: 'phases',
-    columnName: 'Phases',
     columnHeader: phaseHeader,
     width: 150,
   },
-  { key: 'status', columnName: 'Status', columnHeader: 'Status', width: 120 },
+  {
+    key: 'status',
+    columnHeader: 'status',
+    width: 120,
+  },
   {
     key: 'priority',
-    columnName: 'Priority',
-    columnHeader: 'Priority',
+    columnHeader: 'priority',
     width: 120,
   },
   {
     key: 'timeTracking',
-    columnName: 'Time Tracking',
-    columnHeader: 'TimeTracking',
+    columnHeader: 'timeTracking',
     width: 150,
   },
   {
     key: 'estimation',
-    columnName: 'Estimation',
-    columnHeader: 'Estimation',
+    columnHeader: 'estimation',
     width: 150,
   },
   {
     key: 'startDate',
-    columnName: 'Start Date',
-    columnHeader: 'StartDate',
+    columnHeader: 'startDate',
     width: 150,
   },
   {
     key: 'dueDate',
-    columnName: 'Due Date',
-    columnHeader: 'DueDate',
+    columnHeader: 'dueDate',
     width: 150,
   },
   {
     key: 'completedDate',
-    columnName: 'Completed Date',
-    columnHeader: 'CompletedDate',
+    columnHeader: 'completedDate',
     width: 150,
   },
   {
     key: 'createdDate',
-    columnName: 'Created Date',
-    columnHeader: 'CreatedDate',
+    columnHeader: 'createdDate',
     width: 150,
   },
   {
     key: 'lastUpdated',
-    columnName: 'Last Updated',
-    columnHeader: 'LastUpdated',
+    columnHeader: 'lastUpdated',
     width: 150,
   },
   {
     key: 'reporter',
-    columnName: 'Reporter',
-    columnHeader: 'Reporter',
+    columnHeader: 'reporter',
     width: 150,
   },
 ];

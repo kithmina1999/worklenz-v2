@@ -6,10 +6,14 @@ import './phaseDropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { PhaseOption } from '../../../types/phase.types';
 import { colors } from '../../../styles/colors';
+import { useTranslation } from 'react-i18next';
 
 const PhaseDropdown = ({ projectId }: { projectId: string }) => {
   const [currentPhaseOption, setCurrentPhaseOption] =
     useState<PhaseOption | null>(null);
+
+  // localization
+  const { t } = useTranslation('taskListTable');
 
   // get phase data from redux
   const phaseList = useAppSelector((state) => state.phaseReducer.phaseList);
@@ -50,7 +54,6 @@ const PhaseDropdown = ({ projectId }: { projectId: string }) => {
           <Menu
             className="phase-menu"
             items={phaseMenuItems}
-            defaultValue={'todo'}
             onClick={handlePhaseOptionSelect}
           />
         </Card>
@@ -66,12 +69,14 @@ const PhaseDropdown = ({ projectId }: { projectId: string }) => {
       trigger={['click']}
     >
       <Flex
-        gap={4}
+        gap={6}
+        align="center"
         justify="space-between"
         style={{
           width: 'fit-content',
           borderRadius: 24,
-          paddingInline: 6,
+          paddingInline: 8,
+          height: 22,
           fontSize: 13,
           backgroundColor: currentPhaseOption?.optionColor,
           color: colors.darkGray,
@@ -90,8 +95,8 @@ const PhaseDropdown = ({ projectId }: { projectId: string }) => {
             {currentPhaseOption?.optionName}
           </Typography.Text>
         ) : (
-          <Typography.Text style={{ color: colors.lightGray, fontSize: 13 }}>
-            Select
+          <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+            {t('selectText')}
           </Typography.Text>
         )}
 

@@ -10,6 +10,9 @@ import {
 import './priorityDropdown.css';
 import { colors } from '../../../styles/colors';
 import { TaskPriorityType } from '../../../types/task.types';
+import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../hooks/useAppSelector';
+import { getPriorityColor } from '../../../utils/getPriorityColors';
 
 type PriorityDropdownProps = {
   currentPriority: TaskPriorityType;
@@ -18,19 +21,10 @@ type PriorityDropdownProps = {
 const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
   const [priority, setPriority] = useState<TaskPriorityType>(currentPriority);
 
-  // fuction for get a color regariding the priority
-  const getPriorityColor = (priority: TaskPriorityType) => {
-    switch (priority) {
-      case 'low':
-        return '#c2e4d0';
-      case 'medium':
-        return '#f9e3b1';
-      case 'high':
-        return '#f6bfc0';
-      default:
-        return '#f9e3b1';
-    }
-  };
+  // localization
+  const { t } = useTranslation('taskListTable');
+
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   // menu type
   type MenuItem = Required<MenuProps>['items'][number];
@@ -40,8 +34,10 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
       key: 'low',
       label: (
         <Flex gap={4}>
-          Low
-          <MinusOutlined style={{ color: getPriorityColor('low') }} />
+          {t('lowSelectorText')}
+          <MinusOutlined
+            style={{ color: getPriorityColor('low', themeMode) }}
+          />
         </Flex>
       ),
     },
@@ -49,10 +45,10 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
       key: 'medium',
       label: (
         <Flex gap={4}>
-          Medium
+          {t('mediumSelectorText')}
           <PauseOutlined
             style={{
-              color: getPriorityColor('medium'),
+              color: getPriorityColor('medium', themeMode),
               rotate: '90deg',
             }}
           />
@@ -63,10 +59,10 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
       key: 'high',
       label: (
         <Flex gap={4}>
-          High
+          {t('highSelectorText')}
           <DoubleLeftOutlined
             style={{
-              color: getPriorityColor('high'),
+              color: getPriorityColor('high', themeMode),
               rotate: '90deg',
             }}
           />
@@ -109,12 +105,14 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
       trigger={['click']}
     >
       <Flex
-        gap={4}
+        gap={6}
+        align="center"
         style={{
           width: 'fit-content',
           borderRadius: 24,
-          paddingInline: 6,
-          backgroundColor: getPriorityColor(priority),
+          paddingInline: 8,
+          height: 22,
+          backgroundColor: getPriorityColor(priority, themeMode),
           color: colors.darkGray,
           cursor: 'pointer',
         }}
@@ -126,7 +124,7 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
             fontSize: 13,
           }}
         >
-          {priority}
+          {t(priority + 'SelectorText')}
         </Typography.Text>
 
         <DownOutlined />

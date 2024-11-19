@@ -1,0 +1,27 @@
+import { Badge, Flex, Space, Typography } from 'antd';
+import React from 'react';
+
+type ProjectCellProps = {
+  projectId: string;
+  project: string;
+  projectColor: string;
+};
+
+const ProjectCell = ({ project, projectColor }: ProjectCellProps) => {
+  return (
+    <Flex gap={16} align="center" justify="space-between">
+      <Space>
+        <Badge color={projectColor} />
+        <Typography.Text
+          style={{ width: 160 }}
+          ellipsis={{ expanded: false }}
+          className="group-hover:text-[#1890ff]"
+        >
+          {project}
+        </Typography.Text>
+      </Space>
+    </Flex>
+  );
+};
+
+export default ProjectCell;

@@ -28,7 +28,10 @@ import projectCategoriesReducer from '@features/projects/lookups/projectCategori
 import projectStatusesReducer from '@features/projects/lookups/projectStatuses/projectStatusesSlice';
 import projectHealthReducer from '@features/projects/lookups/projectHealth/projectHealthSlice';
 import projectReducer from '@features/project/project.slice';
-
+import scheduleReducer from '../features/schedule/scheduleSlice';
+import updatesReducer from '../features/projects/singleProject/updates/updatesSlice';
+import projectReportsTableColumnsReducer from '../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
+import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -64,6 +67,10 @@ export const store = configureStore({
     projectStatusesReducer: projectStatusesReducer,
     projectHealthReducer: projectHealthReducer,
     projectReducer: projectReducer,
+    scheduleReducer: scheduleReducer,
+    updatesReducer: updatesReducer,
+    projectReportsTableColumnsReducer: projectReportsTableColumnsReducer,
+    projectReportsReducer: projectReportsReducer,
   },
 });
 
