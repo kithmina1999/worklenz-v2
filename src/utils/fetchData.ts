@@ -1,5 +1,5 @@
 // function to fetch data
-export const fetchTasksData = async (
+export const fetchData = async (
   url: string,
   setState: React.Dispatch<React.SetStateAction<any[]>>
 ) => {
