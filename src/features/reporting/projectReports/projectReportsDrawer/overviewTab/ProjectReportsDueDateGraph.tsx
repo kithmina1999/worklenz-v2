@@ -2,26 +2,40 @@ import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement, Tooltip } from 'chart.js';
 import { Badge, Card, Flex, Typography } from 'antd';
-import { ChartOptions } from 'chart.js';
 
 Chart.register(ArcElement, Tooltip);
 
 const ProjectReportsDueDateGraph = () => {
-  const options: ChartOptions<'doughnut'> = {
-    responsive: true,
+  type DueDateGraphItemType = {
+    name: string;
+    color: string;
+    count: number;
   };
 
-  //   mock data
-  const mockDueDateData = {
-    labels: ['Completed', 'Upcoming', 'Overdue', 'No Due Date'],
+  // mock data
+  const dueDateGraphItems: DueDateGraphItemType[] = [
+    { name: 'Completed', color: '#75c997', count: 6 },
+    { name: 'Upcoming', color: '#70a6f3', count: 8 },
+    { name: 'Overdue', color: '#f37070', count: 2 },
+    { name: 'No Due Date', color: '#a9a9a9', count: 4 },
+  ];
+
+  // chart data
+  const chartData = {
+    labels: dueDateGraphItems.map((item) => item.name),
     datasets: [
       {
         label: 'Tasks',
-        data: [6, 8, 2, 4],
-        backgroundColor: ['#75c997', '#70a6f3', '#f37070', '#a9a9a9'],
+        data: dueDateGraphItems.map((item) => item.count),
+        backgroundColor: dueDateGraphItems.map((item) => item.color),
       },
     ],
   };
+
+  const totalTasks = dueDateGraphItems.reduce(
+    (sum, item) => sum + item.count,
+    0
+  );
 
   return (
     <Card
@@ -31,41 +45,31 @@ const ProjectReportsDueDateGraph = () => {
         </Typography.Text>
       }
     >
-      <Flex gap={24} wrap="wrap" align="center" justify="center">
+      <div className="flex flex-wrap items-center justify-center gap-6 xl:flex-nowrap">
         <Doughnut
-          options={options}
-          data={mockDueDateData}
+          data={chartData}
+          options={{ responsive: true }}
           className="max-h-[200px] w-full max-w-[200px]"
         />
 
-        <Flex
-          gap={12}
-          style={{ marginBlockStart: 12 }}
-          wrap={'wrap'}
-          className="flex-row xl:flex-col"
-        >
-          <Flex gap={8} align="center">
-            <Badge color={'#000'} />
-            <Typography.Text>All (20) </Typography.Text>
+        <div className="flex flex-row flex-wrap gap-3 xl:flex-col">
+          {/* total tasks */}
+          <Flex gap={4} align="center">
+            <Badge color="#000" />
+            <Typography.Text ellipsis>All ({totalTasks})</Typography.Text>
           </Flex>
-          <Flex gap={8} align="center">
-            <Badge color={'#75c997'} />
-            <Typography.Text>Completed (6) </Typography.Text>
-          </Flex>
-          <Flex gap={8} align="center">
-            <Badge color={'#fbc84c'} />
-            <Typography.Text>Upcoming (8) </Typography.Text>
-          </Flex>
-          <Flex gap={8} align="center">
-            <Badge color={'#f37070'} />
-            <Typography.Text>Overdue (2) </Typography.Text>
-          </Flex>
-          <Flex gap={8} align="center">
-            <Badge color={'#f37070'} />
-            <Typography.Text>No Due Date (4) </Typography.Text>
-          </Flex>
-        </Flex>
-      </Flex>
+
+          {/* due Date-specific tasks */}
+          {dueDateGraphItems.map((item) => (
+            <Flex key={item.name} gap={4} align="center">
+              <Badge color={item.color} />
+              <Typography.Text ellipsis>
+                {item.name} ({item.count})
+              </Typography.Text>
+            </Flex>
+          ))}
+        </div>
+      </div>
     </Card>
   );
 };
