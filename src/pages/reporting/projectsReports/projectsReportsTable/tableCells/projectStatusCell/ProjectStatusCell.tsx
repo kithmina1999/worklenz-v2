@@ -12,6 +12,7 @@ const ProjectStatusCell = ({ status }: { status: string }) => {
       label: (
         <Typography.Text
           style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+          className="group-hover:text-[#1890ff]"
         >
           {status.icon}
           {status.label}
