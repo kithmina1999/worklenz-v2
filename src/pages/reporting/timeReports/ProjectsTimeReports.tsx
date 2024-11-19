@@ -1,4 +1,12 @@
-import { Button, Card, Checkbox, Dropdown, Flex, Space, Typography } from 'antd';
+import {
+  Button,
+  Card,
+  Checkbox,
+  Dropdown,
+  Flex,
+  Space,
+  Typography,
+} from 'antd';
 import React from 'react';
 import CustomPageHeader from '../pageHeader/CustomPageHeader';
 import { DownOutlined } from '@ant-design/icons';
@@ -26,7 +34,14 @@ const ProjectsTimeReports = () => {
         }
       />
 
-      <Card style={{borderRadius: '4px'}} title={<div style={{padding: '16px 0'}}><TimeReportPageHeader /></div>}>
+      <Card
+        style={{ borderRadius: '4px' }}
+        title={
+          <div style={{ padding: '16px 0' }}>
+            <TimeReportPageHeader />
+          </div>
+        }
+      >
         <ProjectTimeSheetChart />
       </Card>
     </Flex>

@@ -29,7 +29,7 @@ const OverviewTimeReports: React.FC = () => {
       <div>
         <TimeReportPageHeader />
       </div>
-      <div style={{marginTop: '1rem'}}>
+      <div style={{ marginTop: '1rem' }}>
         {/* Time Report Table */}
         <TimeSheetTable />
       </div>

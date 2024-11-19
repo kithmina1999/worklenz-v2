@@ -1,4 +1,13 @@
-import { Button, Card, Checkbox, Dropdown, Flex, Space, Typography } from 'antd';
+import {
+  Button,
+  Card,
+  Checkbox,
+  Dropdown,
+  Flex,
+  Segmented,
+  Space,
+  Typography,
+} from 'antd';
 import React from 'react';
 import CustomPageHeader from '../pageHeader/CustomPageHeader';
 import { DownOutlined } from '@ant-design/icons';
@@ -26,7 +35,24 @@ const EstimatedVsActualTimeReports = () => {
         }
       />
 
-      <Card style={{borderRadius: '4px'}} title={<div style={{padding: '16px 0'}}><TimeReportPageHeader /></div>}>
+      <Card
+        style={{ borderRadius: '4px' }}
+        title={
+          <div
+            style={{
+              padding: '16px 0',
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <TimeReportPageHeader />
+            <Segmented
+              style={{ fontWeight: 500 }}
+              options={['Working Days', 'Man Days']}
+            />
+          </div>
+        }
+      >
         <EstimatedVsActualTimeSheet />
       </Card>
     </Flex>
