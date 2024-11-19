@@ -21,6 +21,7 @@ import phaseReducer from '../features/projects/singleProject/phase/phaseSlice';
 import labelReducer from '../features/settings/label/labelSlice';
 import statusReducer from '../features/projects/status/StatusSlice';
 import bulkActionReducer from '../features/projects/bulkActions/bulkActionSlice';
+import scheduleReducer from '../features/schedule/scheduleSlice';
 import updatesReducer from '../features/projects/singleProject/updates/updatesSlice';
 import projectReportsTableColumnsReducer from '../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
 import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
@@ -54,6 +55,7 @@ export const store = configureStore({
     labelReducer: labelReducer,
     statusReducer: statusReducer,
     bulkActionReducer: bulkActionReducer,
+    scheduleReducer: scheduleReducer,
     updatesReducer: updatesReducer,
     projectReportsTableColumnsReducer: projectReportsTableColumnsReducer,
     projectReportsReducer: projectReportsReducer,
