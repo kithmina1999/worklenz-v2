@@ -2,10 +2,14 @@ import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement, Tooltip } from 'chart.js';
 import { Badge, Card, Flex, Typography } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 Chart.register(ArcElement, Tooltip);
 
 const ProjectReportsStatusGraph = () => {
+  // localization
+  const { t } = useTranslation('reportingProjectsDrawer');
+
   type StatusGraphItemType = {
     name: string;
     color: string;
@@ -14,17 +18,17 @@ const ProjectReportsStatusGraph = () => {
 
   // mock data
   const statusGraphItems: StatusGraphItemType[] = [
-    { name: 'To Do', color: '#a9a9a9', count: 6 },
-    { name: 'Doing', color: '#70a6f3', count: 6 },
-    { name: 'Done', color: '#75c997', count: 8 },
+    { name: 'todo', color: '#a9a9a9', count: 6 },
+    { name: 'doing', color: '#70a6f3', count: 6 },
+    { name: 'done', color: '#75c997', count: 8 },
   ];
 
   // chart data
   const chartData = {
-    labels: statusGraphItems.map((item) => item.name),
+    labels: statusGraphItems.map((item) => t(`${item.name}Text`)),
     datasets: [
       {
-        label: 'Tasks',
+        label: t('tasksText'),
         data: statusGraphItems.map((item) => item.count),
         backgroundColor: statusGraphItems.map((item) => item.color),
       },
@@ -40,7 +44,7 @@ const ProjectReportsStatusGraph = () => {
     <Card
       title={
         <Typography.Text style={{ fontSize: 16, fontWeight: 500 }}>
-          Tasks By Status
+          {t('tasksByStatusText')}
         </Typography.Text>
       }
     >
@@ -55,7 +59,9 @@ const ProjectReportsStatusGraph = () => {
           {/* total tasks */}
           <Flex gap={4} align="center">
             <Badge color="#000" />
-            <Typography.Text ellipsis>All ({totalTasks})</Typography.Text>
+            <Typography.Text ellipsis>
+              {t('allText')} ({totalTasks})
+            </Typography.Text>
           </Flex>
 
           {/* status-specific tasks */}
@@ -63,7 +69,7 @@ const ProjectReportsStatusGraph = () => {
             <Flex key={item.name} gap={4} align="center">
               <Badge color={item.color} />
               <Typography.Text ellipsis>
-                {item.name} ({item.count})
+                {t(`${item.name}Text`)}({item.count})
               </Typography.Text>
             </Flex>
           ))}

@@ -2,10 +2,14 @@ import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement, Tooltip } from 'chart.js';
 import { Badge, Card, Flex, Typography } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 Chart.register(ArcElement, Tooltip);
 
 const ProjectReportsDueDateGraph = () => {
+  // localization
+  const { t } = useTranslation('reportingProjectsDrawer');
+
   type DueDateGraphItemType = {
     name: string;
     color: string;
@@ -14,18 +18,18 @@ const ProjectReportsDueDateGraph = () => {
 
   // mock data
   const dueDateGraphItems: DueDateGraphItemType[] = [
-    { name: 'Completed', color: '#75c997', count: 6 },
-    { name: 'Upcoming', color: '#70a6f3', count: 8 },
-    { name: 'Overdue', color: '#f37070', count: 2 },
-    { name: 'No Due Date', color: '#a9a9a9', count: 4 },
+    { name: 'completed', color: '#75c997', count: 6 },
+    { name: 'upcoming', color: '#70a6f3', count: 8 },
+    { name: 'overdue', color: '#f37070', count: 2 },
+    { name: 'noDueDate', color: '#a9a9a9', count: 4 },
   ];
 
   // chart data
   const chartData = {
-    labels: dueDateGraphItems.map((item) => item.name),
+    labels: dueDateGraphItems.map((item) => t(`${item.name}Text`)),
     datasets: [
       {
-        label: 'Tasks',
+        label: t('tasksText'),
         data: dueDateGraphItems.map((item) => item.count),
         backgroundColor: dueDateGraphItems.map((item) => item.color),
       },
@@ -41,7 +45,7 @@ const ProjectReportsDueDateGraph = () => {
     <Card
       title={
         <Typography.Text style={{ fontSize: 16, fontWeight: 500 }}>
-          Tasks By Due Date
+          {t('tasksByDueDateText')}
         </Typography.Text>
       }
     >
@@ -56,7 +60,9 @@ const ProjectReportsDueDateGraph = () => {
           {/* total tasks */}
           <Flex gap={4} align="center">
             <Badge color="#000" />
-            <Typography.Text ellipsis>All ({totalTasks})</Typography.Text>
+            <Typography.Text ellipsis>
+              {t('allText')} ({totalTasks})
+            </Typography.Text>
           </Flex>
 
           {/* due Date-specific tasks */}
@@ -64,7 +70,7 @@ const ProjectReportsDueDateGraph = () => {
             <Flex key={item.name} gap={4} align="center">
               <Badge color={item.color} />
               <Typography.Text ellipsis>
-                {item.name} ({item.count})
+                {t(`${item.name}Text`)} ({item.count})
               </Typography.Text>
             </Flex>
           ))}

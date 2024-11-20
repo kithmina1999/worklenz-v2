@@ -20,6 +20,7 @@ import { nanoid } from '@reduxjs/toolkit';
 import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
 import { addCategory } from '../../../../../../features/settings/categories/categoriesSlice';
 import { themeWiseColor } from '../../../../../../utils/themeWiseColor';
+import { useTranslation } from 'react-i18next';
 
 const ProjectCategoryCell = ({
   categoryId,
@@ -34,6 +35,9 @@ const ProjectCategoryCell = ({
 
   const categoryInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // localization
+  const { t } = useTranslation('reportingProjects');
 
   //   get theme from theme slice
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
@@ -98,7 +102,7 @@ const ProjectCategoryCell = ({
               ref={categoryInputRef}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.currentTarget.value)}
-              placeholder="Search by name"
+              placeholder={t('searchByNameInputPlaceholder')}
               onKeyDown={(e) => {
                 const isCategory = filteredCategoriesData.findIndex(
                   (category) =>
@@ -169,7 +173,7 @@ const ProjectCategoryCell = ({
       >
         {projectCategory.categoryId
           ? projectCategory.categoryName
-          : 'Set Category'}
+          : t('setCategoryText')}
 
         <DownOutlined />
       </Flex>
