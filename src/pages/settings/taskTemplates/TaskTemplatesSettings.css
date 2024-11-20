@@ -5,3 +5,15 @@
   .alternate-row-color td {
     background-color: #f8f7f9;
   }
+
+  .no-border-row .button-visibilty {
+    visibility: hidden
+  }
+
+  .no-border-row:hover .button-visibilty {
+    visibility: visible
+  }
+
+  .dark-alternate-row-color {
+    background-color: #4e4e4e10;
+  }
