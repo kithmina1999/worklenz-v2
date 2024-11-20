@@ -50,8 +50,8 @@ const TimeSheetTable: React.FC = () => {
         <div
           style={{
             minWidth: '200px',
-            borderRight: '1px solid #f5f5f5',
-            borderBottom: '1px solid #f5f5f5',
+            borderRight: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
+            borderBottom: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
             position: 'sticky',
             left: 0,
             backgroundColor: themeMode === 'dark' ? 'rgb(24 24 24)' : 'white',
@@ -63,9 +63,9 @@ const TimeSheetTable: React.FC = () => {
             style={{
               minWidth: '100px',
               padding: '16px 6px',
-              borderRight: '1px solid #f5f5f5',
-              borderTop: '1px solid #f5f5f5',
-              borderBottom: '1px solid #f5f5f5',
+              borderRight: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
+              borderTop: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
+              borderBottom: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
               fontWeight: '500',
             }}
           >
@@ -75,7 +75,7 @@ const TimeSheetTable: React.FC = () => {
         <div
           style={{
             minWidth: '120px',
-            borderBottom: '1px solid #f5f5f5',
+            border: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
             position: 'sticky',
             backgroundColor: themeMode === 'dark' ? '#2c2f38' : '#f8f7f9',
             fontWeight: '500',
@@ -84,9 +84,6 @@ const TimeSheetTable: React.FC = () => {
             justifyContent: 'center',
             display: 'flex',
             right: 0,
-            borderLeft: '1px solid #f5f5f5',
-            borderRight: '1px solid #f5f5f5',
-            borderTop: '1px solid #f5f5f5',
           }}
         >
           Total
@@ -104,9 +101,9 @@ const TimeSheetTable: React.FC = () => {
               minWidth: '200px',
               padding: '16px 8px 16px 12px',
               position: 'sticky',
-              borderRight: '1px solid #f5f5f5',
-              borderBottom: '1px solid #f5f5f5',
-              borderLeft: '1px solid #f5f5f5',
+              borderRight: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
+              borderBottom: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
+              borderLeft: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
               left: 0,
               zIndex: 999,
               backgroundColor: themeMode === 'dark' ? 'rgb(24 24 24)' : 'white',
@@ -132,8 +129,8 @@ const TimeSheetTable: React.FC = () => {
                 style={{
                   minWidth: '100px',
                   padding: '16px 6px',
-                  borderRight: '1px solid #f5f5f5',
-                  borderBottom: '1px solid #f5f5f5',
+                  borderRight: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
+                  borderBottom: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -146,7 +143,7 @@ const TimeSheetTable: React.FC = () => {
           <div
             style={{
               minWidth: '120px',
-              borderBottom: '1px solid #f5f5f5',
+              borderBottom: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
               position: 'sticky',
               backgroundColor: themeMode === 'dark' ? '#2c2f38' : '#f8f7f9',
               fontWeight: '500',
@@ -155,8 +152,8 @@ const TimeSheetTable: React.FC = () => {
               justifyContent: 'center',
               display: 'flex',
               right: 0,
-              borderLeft: '1px solid #f5f5f5',
-              borderRight: '1px solid #f5f5f5',
+              borderLeft: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
+              borderRight: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
             }}
           ></div>
         </div>
@@ -171,8 +168,8 @@ const TimeSheetTable: React.FC = () => {
             backgroundColor: themeMode === 'dark' ? '#2c2f38' : '#f8f7f9',
             left: 0,
             position: 'sticky',
-            borderLeft: '1px solid #f5f5f5',
-            borderRight: '1px solid #f5f5f5',
+            borderLeft: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
+            borderRight: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
           }}
         >
           Total
@@ -183,9 +180,9 @@ const TimeSheetTable: React.FC = () => {
             style={{
               minWidth: '100px',
               padding: '16px 6px',
-              borderRight: '1px solid #f5f5f5',
-              borderTop: '1px solid #f5f5f5',
-              borderBottom: '1px solid #f5f5f5',
+              borderRight: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
+              borderTop: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
+              borderBottom: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
               fontWeight: '500',
               backgroundColor: themeMode === 'dark' ? '#2c2f38' : '#f8f7f9',
             }}
@@ -195,10 +192,7 @@ const TimeSheetTable: React.FC = () => {
           style={{
             minWidth: '120px',
             padding: '16px 6px',
-            borderRight: '1px solid #f5f5f5',
-            borderTop: '1px solid #f5f5f5',
-            borderLeft: '1px solid #f5f5f5',
-            borderBottom: '1px solid #f5f5f5',
+            border: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
             fontWeight: '500',
             backgroundColor: themeMode === 'dark' ? '#2c2f38' : '#f8f7f9',
             position: 'sticky',

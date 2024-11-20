@@ -31,9 +31,10 @@ ChartJS.register(
 
 const ProjectTimeSheetChart: React.FC = () => {
   const labels = jsonData.map((item) => item.name);
-  const dataValues = jsonData.map((item) =>
-    (item.logged_time / 3600).toFixed(2)
-  ); // Convert seconds to hours
+  const dataValues = jsonData.map((item) => {
+    const loggedTimeInHours = parseFloat(item.logged_time) / 3600; 
+    return loggedTimeInHours.toFixed(2); 
+  });
   const colors = jsonData.map((item) => item.color_code);
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
@@ -115,16 +116,17 @@ const ProjectTimeSheetChart: React.FC = () => {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative',}}>
       <div
         style={{
           maxWidth: 'calc(100vw - 220px)',
           minWidth: 'calc(100vw - 260px)',
           height: 'calc(100vh - 300px)',
-          overflow: 'auto',
+          overflow: 'auto'
+          
         }}
       >
-        <Bar data={data} options={options} width={1597} height={505} />
+        <Bar data={data} options={options} style={{overflow: 'auto', }}/>
         <ProjectTimeLogDrawer />
       </div>
     </div>

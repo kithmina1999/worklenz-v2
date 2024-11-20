@@ -7,11 +7,14 @@
   }
 
   .no-border-row .button-visibilty {
-    visibility: hidden
+    visibility: hidden;
+    transition: visibility 0s, opacity ease-in-out;
+    opacity: 0;
   }
-
+  
   .no-border-row:hover .button-visibilty {
-    visibility: visible
+    visibility: visible;
+    opacity: 1;
   }
 
   .dark-alternate-row-color {
