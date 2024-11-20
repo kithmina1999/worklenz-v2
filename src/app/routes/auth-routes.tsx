@@ -1,7 +1,7 @@
-import AuthLayout from '../layouts/AuthLayout';
-import LoginPage from '../pages/auth/LoginPage';
-import SignupPage from '../pages/auth/SignupPage';
-import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
+import AuthLayout from '@/layouts/AuthLayout';
+import LoginPage from '@/pages/auth/LoginPage';
+import SignupPage from '@/pages/auth/SignupPage';
+import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage';
 
 const authRoutes = [
   {

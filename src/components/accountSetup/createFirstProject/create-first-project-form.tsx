@@ -1,6 +1,6 @@
 import React, { startTransition, useEffect, useState } from 'react';
 import { Button, Drawer, Form, Input, Typography } from 'antd';
-import './CreateFirstProjectForm.css';
+import './create-first-project-form.css';
 import TemplateDrawer from '../templateDrawer/TemplateDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';

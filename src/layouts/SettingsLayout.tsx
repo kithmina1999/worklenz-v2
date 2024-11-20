@@ -1,5 +1,4 @@
 import { Flex, Typography } from 'antd';
-import React from 'react';
 import SettingSidebar from '../pages/settings/sidebar/SettingSidebar';
 import { Outlet } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';

@@ -1,9 +1,9 @@
 import { RouteObject } from 'react-router-dom';
-import ReportingLayout from '../layouts/ReportingLayout';
+import ReportingLayout from '@/layouts/ReportingLayout';
 import {
   ReportingMenuItems,
   reportingsItems,
-} from '../lib/reporting/reportingConstantants';
+} from '@/lib/reporting/reportingConstantants';
 
 //  function to flatten nested menu items
 const flattenItems = (items: ReportingMenuItems[]): ReportingMenuItems[] => {
