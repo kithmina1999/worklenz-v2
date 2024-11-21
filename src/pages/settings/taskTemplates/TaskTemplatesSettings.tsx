@@ -46,7 +46,7 @@ const TaskTemplatesSettings = () => {
           className="button-visibilty"
         >
           <Tooltip title="Edit">
-            <Button size="small">
+            <Button size="small" onClick={() => handleOnClick(record.id)}>
               <EditOutlined />
             </Button>
           </Tooltip>
@@ -83,9 +83,6 @@ const TaskTemplatesSettings = () => {
         columns={columns}
         dataSource={jsonData}
         rowKey="id"
-        onRow={(record) => ({
-          onClick: () => handleOnClick(record.id),
-        })}
         rowClassName={(_, index) =>
           `no-border-row ${index % 2 === 0 ? '' : themeMode === 'dark' ? 'dark-alternate-row-color' : 'alternate-row-color'}`
         }
