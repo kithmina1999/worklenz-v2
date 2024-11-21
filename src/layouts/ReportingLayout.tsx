@@ -19,11 +19,17 @@ import {
 import { themeWiseColor } from '../utils/themeWiseColor';
 import ReportingSider from '../pages/reporting/sidebar/ReportingSider';
 import { Outlet } from 'react-router-dom';
+import ReportingCollapsedButton from '../pages/reporting/sidebar/ReportingCollapsedButton';
 
 const ReportingLayout = () => {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
+
+  // function to handle collapse
+  const handleCollapsedToggler = () => {
+    setIsCollapsed((prev) => !prev);
+  };
 
   return (
     <ConfigProvider
@@ -57,96 +63,32 @@ const ReportingLayout = () => {
 
         <Layout.Sider
           collapsed={isCollapsed}
-          collapsedWidth={16}
+          collapsedWidth={24}
           width={160}
           style={{
             position: 'relative',
-            borderInlineEnd: `1px solid ${themeWiseColor('#f0f0f0', '#303030', themeMode)}`,
           }}
         >
-          {/* sidebar collapsed button */}
-          <Tooltip
-            title={!isCollapsed && 'Current organization'}
-            placement="right"
-            trigger={'hover'}
+          <div
+            style={{
+              position: 'fixed',
+              zIndex: 120,
+              height: '100vh',
+              borderInlineEnd: `1px solid ${themeWiseColor('#f0f0f0', '#303030', themeMode)}`,
+            }}
           >
-            <Flex
-              align="center"
-              justify="space-between"
-              style={{
-                position: 'absolute',
-                top: 72,
-                width: '100%',
-                right: isCollapsed ? -4 : -16,
-                height: 40,
-              }}
-            >
-              {!isCollapsed && (
-                <Flex gap={8} align="center" style={{ marginInlineStart: 16 }}>
-                  <GlobalOutlined
-                    style={{
-                      color: themeWiseColor(
-                        colors.darkGray,
-                        colors.white,
-                        themeMode
-                      ),
-                    }}
-                  />
-                  <Flex
-                    align="center"
-                    style={{ width: '100%', height: 16, overflow: 'hidden' }}
-                  >
-                    <Typography.Text strong>Ceydigital</Typography.Text>
-                  </Flex>
-                </Flex>
-              )}
+            {/* sidebar collapsed button */}
+            <ReportingCollapsedButton
+              isCollapsed={isCollapsed}
+              handleCollapseToggler={handleCollapsedToggler}
+            />
 
-              <Button
-                className="borderless-icon-btn"
-                style={{
-                  background: themeWiseColor(
-                    colors.white,
-                    colors.darkGray,
-                    themeMode
-                  ),
-                  boxShadow: 'none',
-                  padding: 0,
-                  zIndex: 1000,
-                }}
-                onClick={() => setIsCollapsed((prev) => !prev)}
-                icon={
-                  isCollapsed ? (
-                    <RightCircleOutlined
-                      style={{
-                        fontSize: 22,
-                        color: themeWiseColor(
-                          '#c5c5c5',
-                          colors.lightGray,
-                          themeMode
-                        ),
-                      }}
-                    />
-                  ) : (
-                    <LeftCircleOutlined
-                      style={{
-                        fontSize: 22,
-                        color: themeWiseColor(
-                          '#c5c5c5',
-                          colors.lightGray,
-                          themeMode
-                        ),
-                      }}
-                    />
-                  )
-                }
-              />
-            </Flex>
-          </Tooltip>
-          {!isCollapsed && (
-            <div style={{ marginBlock: 120 }}>
-              <ReportingSider />
-            </div>
-          )}
+            {!isCollapsed && (
+              <div style={{ width: 160 }}>
+                <ReportingSider />
+              </div>
+            )}
+          </div>
         </Layout.Sider>
 
         <Layout.Content style={{ marginBlock: 96 }}>

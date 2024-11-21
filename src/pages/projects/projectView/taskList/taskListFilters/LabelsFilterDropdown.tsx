@@ -58,7 +58,7 @@ const LabelsFilterDropdown = () => {
           ref={labelInputRef}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.currentTarget.value)}
-          placeholder="Search by name"
+          placeholder={t('searchInputPlaceholder')}
         />
 
         <List style={{ padding: 0 }}>

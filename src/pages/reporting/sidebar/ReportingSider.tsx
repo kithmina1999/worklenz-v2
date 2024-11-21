@@ -3,9 +3,13 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { colors } from '../../../styles/colors';
 import { reportingsItems } from '../../../lib/reporting/reportingConstantants';
+import { useTranslation } from 'react-i18next';
 
 const ReportingSider = () => {
   const location = useLocation();
+
+  // localization
+  const { t } = useTranslation('reportingSidebar');
 
   // function to get the active menu key based on the current location
   const getCurrentActiveKey = () => {
@@ -22,12 +26,12 @@ const ReportingSider = () => {
       if (item.children) {
         return {
           key: item.key,
-          label: item.name,
+          label: t(`${item.name}Text`),
           children: item.children.map((child) => ({
             key: child.key,
             label: (
               <Link to={`/worklenz/reporting/${child.endpoint}`}>
-                {child.name}
+                {t(`${child.name}Text`)}
               </Link>
             ),
           })),
@@ -36,7 +40,9 @@ const ReportingSider = () => {
         return {
           key: item.key,
           label: (
-            <Link to={`/worklenz/reporting/${item.endpoint}`}>{item.name}</Link>
+            <Link to={`/worklenz/reporting/${item.endpoint}`}>
+              {t(`${item.name}Text`)}
+            </Link>
           ),
         };
       }
@@ -56,7 +62,7 @@ const ReportingSider = () => {
         },
       }}
     >
-      <Flex gap={24} vertical style={{ marginBlock: 84 }}>
+      <Flex gap={24} vertical>
         <Menu
           className="custom-reporting-sider"
           items={generateMenuItems()}
