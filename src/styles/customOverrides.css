@@ -3,7 +3,8 @@
 */
 
 /* this is for globaly hide tables scrollbar  */
-:where(.css-dev-only-do-not-override-17sis5b).ant-table-wrapper .ant-table {
+:where(.css-dev-only-do-not-override-17sis5b).ant-table-wrapper .ant-table,
+:where(.css-dev-only-do-not-override-bj289r).ant-table-wrapper .ant-table {
   scrollbar-color: unset !important;
 }
 

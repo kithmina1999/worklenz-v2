@@ -26,8 +26,6 @@ const MembersReportsTable = ({ membersList }: MembersReportsTableProps) => {
     dispatch(toggleMembersReportsDrawer());
   };
 
-  console.log(membersList);
-
   const columns: TableColumnsType = [
     {
       key: 'member',

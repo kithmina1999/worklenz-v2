@@ -1,4 +1,4 @@
-import { Flex, Typography } from 'antd';
+import { Avatar, Flex, Typography } from 'antd';
 import React from 'react';
 import CustomAvatar from '../../../../../../components/CustomAvatar';
 
@@ -12,16 +12,7 @@ const ProjectManagerCell = ({ manager }: ProjectMangerCellProps) => {
       {manager ? (
         <Flex gap={8} align="center">
           {manager?.avatar_url ? (
-            <img
-              src={manager.avatar_url}
-              alt={manager.name}
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: '50%',
-                objectFit: 'cover',
-              }}
-            />
+            <Avatar src={manager.avatar_url} />
           ) : (
             <CustomAvatar avatarName={manager.name} />
           )}

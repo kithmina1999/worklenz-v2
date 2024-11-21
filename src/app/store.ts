@@ -23,6 +23,7 @@ import statusReducer from '../features/projects/status/StatusSlice';
 import bulkActionReducer from '../features/projects/bulkActions/bulkActionSlice';
 import updatesReducer from '../features/projects/singleProject/updates/updatesSlice';
 import projectReportsTableColumnsReducer from '../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
+import overviewReportsReducer from '../features/reporting/overviewReports/overviewReportsSlice';
 import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
 import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
 
@@ -57,6 +58,7 @@ export const store = configureStore({
     bulkActionReducer: bulkActionReducer,
     updatesReducer: updatesReducer,
     projectReportsTableColumnsReducer: projectReportsTableColumnsReducer,
+    overviewReportsReducer: overviewReportsReducer,
     projectReportsReducer: projectReportsReducer,
     membersReportsReducer: membersReportsReducer,
   },
