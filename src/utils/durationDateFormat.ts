@@ -1,4 +1,4 @@
-export const durationDateFormat = (date: Date | null): string => {
+export const durationDateFormat = (date: Date | null | string): string => {
   if (!date) return '-';
 
   const givenDate = new Date(date);

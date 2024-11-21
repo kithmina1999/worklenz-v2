@@ -1,12 +1,11 @@
-import React from 'react';
-import { TaskType } from '../../../../../../types/task.types';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
+import { TaskType } from '@/types/task.types';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { Flex } from 'antd';
-import TaskListTableWrapper from '../../taskListTable/TaskListTableWrapper';
+import TaskListTableWrapper from '@/pages/projects/projectView/taskList/taskListTable/TaskListTableWrapper';
 import { createPortal } from 'react-dom';
-import BulkTasksActionContainer from '../../../../../../features/projects/bulkActions/BulkTasksActionContainer';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
-import { deselectAll } from '../../../../../../features/projects/bulkActions/bulkActionSlice';
+import BulkTasksActionContainer from '@/features/projects/bulkActions/BulkTasksActionContainer';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 
 const StatusGroupTables = ({ datasource }: { datasource: TaskType[] }) => {
   const statusList = useAppSelector((state) => state.statusReducer.status);

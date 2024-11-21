@@ -8,15 +8,23 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import CustomAvatar from '@/components/CustomAvatar';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
-import { fetchTeams, setActiveTeam } from '@/features/teams/teamSlice';
+import { fetchTeams, initializeTeams, setActiveTeam } from '@/features/teams/teamSlice';
 import { ITeamGetResponse } from '@/types/teams/team.type';
+import { verifyAuthentication } from '@/features/auth/authSlice';
+import { setUser } from '@/features/user/userSlice';
+import { createAuthService } from '@/services/auth/auth.service';
+import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const SwitchTeamButton = () => {
-  const { t } = useTranslation('navbar');
   const dispatch = useAppDispatch();
-  const [teamsDetails, setTeamsDetails] = useState<ITeamGetResponse[]>([]);
-
+  const navigate = useNavigate();
+  const authService = createAuthService(navigate);
   const session = useAuth().getCurrentSession();
+
+  const { t } = useTranslation('navbar');
+
+  const teamsList = useAppSelector(state => state.teamReducer.teamsList);
 
   // get the active team
   const isActiveTeam = (teamId: string | undefined) => {
@@ -27,21 +35,24 @@ const SwitchTeamButton = () => {
   const selectTeam = async (id: string | undefined) => {
     if (!id) return;
     await dispatch(setActiveTeam(id));
+    const verifyAuthStatus = async () => {
+      const result = await dispatch(verifyAuthentication()).unwrap();
+      if(result.authenticated) {
+        dispatch(setUser(result.user));
+        authService.setCurrentSession(result.user);
+      }
+    };
+    await verifyAuthStatus();
     window.location.reload();
   };
 
-  const getTeams = async () => {
-    const teams = await dispatch(fetchTeams()).unwrap();
-    setTeamsDetails(teams);
-  };
-
   useEffect(() => {
-    getTeams();
+    dispatch(fetchTeams());
   }, [dispatch]);
   
   // switch teams dropdown items
   const items = [
-    ...teamsDetails?.map((team, index) => ({
+    ...teamsList?.map((team, index) => ({
       key: team.id,
       label: (
         <Card
@@ -75,7 +86,7 @@ const SwitchTeamButton = () => {
                 }}
               />
             </Flex>
-            {index < teamsDetails.length - 1 && <Divider style={{ margin: 0 }} />}
+            {index < teamsList.length - 1 && <Divider style={{ margin: 0 }} />}
           </Flex>
         </Card>
       ),

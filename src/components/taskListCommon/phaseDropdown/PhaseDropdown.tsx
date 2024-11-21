@@ -1,6 +1,5 @@
-import { Badge, Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd';
+import { Badge, Flex, Select, Typography } from 'antd';
 import React, { useState } from 'react';
-import { DownOutlined } from '@ant-design/icons';
 // custom css file
 import './phaseDropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
@@ -9,7 +8,7 @@ import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
 
 const PhaseDropdown = ({ projectId }: { projectId: string }) => {
-  const [currentPhaseOption, setCurrentPhaseOption] =
+  const [currentPhaseOption, setCurrentPhaseOption] = 
     useState<PhaseOption | null>(null);
 
   // localization
@@ -21,88 +20,49 @@ const PhaseDropdown = ({ projectId }: { projectId: string }) => {
   //get phases details from phases slice
   const phase = phaseList.find((el) => el.projectId === projectId);
 
-  // menu type
-  type MenuItem = Required<MenuProps>['items'][number];
-  // phase menu item
-  const phaseMenuItems: MenuItem[] = phase
-    ? phase.phaseOptions.map((option) => ({
-        key: option.optionId,
-        label: (
-          <Flex gap={4}>
-            <Badge color={option.optionColor} /> {option.optionName}
-          </Flex>
-        ),
-      }))
-    : [];
-
-  // Handle phase select
-  const handlePhaseOptionSelect: MenuProps['onClick'] = (e) => {
+  const handlePhaseOptionSelect = (value: string) => {
     const selectedOption = phase?.phaseOptions.find(
-      (option) => option.optionId === e.key
+      (option) => option.optionId === value
     );
     if (selectedOption) {
       setCurrentPhaseOption(selectedOption);
     }
   };
 
-  //dropdown items
-  const phaseDropdownItems: MenuProps['items'] = [
-    {
-      key: '1',
-      label: (
-        <Card className="phase-dropdown-card" bordered={false}>
-          <Menu
-            className="phase-menu"
-            items={phaseMenuItems}
-            onClick={handlePhaseOptionSelect}
-          />
-        </Card>
-      ),
-    },
-  ];
-
   return (
-    <Dropdown
-      overlayClassName="phase-dropdown"
-      menu={{ items: phaseDropdownItems }}
-      placement="bottomRight"
-      trigger={['click']}
+    <Select
+      value={currentPhaseOption?.optionId}
+      placeholder={
+        <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+          {t('selectText')}
+        </Typography.Text>
+      }
+      onChange={handlePhaseOptionSelect}
+      style={{
+        width: 'fit-content',
+        minWidth: 120
+      }}
+      dropdownStyle={{
+        padding: 0
+      }}
+      variant={'borderless'}
     >
-      <Flex
-        gap={6}
-        align="center"
-        justify="space-between"
-        style={{
-          width: 'fit-content',
-          borderRadius: 24,
-          paddingInline: 8,
-          height: 22,
-          fontSize: 13,
-          backgroundColor: currentPhaseOption?.optionColor,
-          color: colors.darkGray,
-          cursor: 'pointer',
-        }}
-      >
-        {currentPhaseOption ? (
-          <Typography.Text
-            ellipsis={{ expanded: false }}
-            style={{
-              textTransform: 'capitalize',
-              color: colors.darkGray,
-              fontSize: 13,
-            }}
-          >
-            {currentPhaseOption?.optionName}
-          </Typography.Text>
-        ) : (
-          <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-            {t('selectText')}
-          </Typography.Text>
-        )}
-
-        <DownOutlined style={{ fontSize: 12 }} />
-      </Flex>
-    </Dropdown>
+      {phase?.phaseOptions.map((option) => (
+        <Select.Option key={option.optionId} value={option.optionId}>
+          <Flex gap={4} align="center">
+            <Badge color={option.optionColor} />
+            <Typography.Text
+              style={{
+                fontSize: 13,
+                color: colors.darkGray
+              }}
+            >
+              {option.optionName}
+            </Typography.Text>
+          </Flex>
+        </Select.Option>
+      ))}
+    </Select>
   );
 };
 

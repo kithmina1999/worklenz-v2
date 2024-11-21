@@ -23,7 +23,7 @@ import { addLabel } from '../../../features/settings/label/labelSlice';
 import { toggleLabel } from '../../../features/tasks/taskSlice';
 import { useTranslation } from 'react-i18next';
 
-const LabelsSelector = ({ taskId }: { taskId: string }) => {
+const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
   const labelInputRef = useRef<InputRef>(null);
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');

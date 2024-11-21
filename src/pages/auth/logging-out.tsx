@@ -1,0 +1,49 @@
+import { useEffect } from 'react';
+import { Card, Flex, Spin, Typography } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../hooks/useAuth';
+import { useMediaQuery } from 'react-responsive';
+import { authApiService } from '@/api/auth/auth.api.service';
+
+const LoggingOutPage = () => {
+  const navigate = useNavigate();
+  const auth = useAuth();
+  const { t } = useTranslation('authCommon');
+  const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
+
+  useEffect(() => {
+    const logout = async () => {
+      await auth.signOut();
+      await authApiService.logout();
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1500);
+    };
+    void logout();
+  }, [auth, navigate]);
+
+  return (
+    <Card
+      style={{
+        width: '100%',
+        boxShadow: 'none',
+      }}
+      styles={{
+        body: {
+          paddingInline: isMobile ? 24 : 48,
+        },
+      }}
+      bordered={false}
+    >
+      <Flex vertical align="center" justify="center" gap={24} style={{ minHeight: '60vh' }}>
+        <Spin size="large" />
+        <Typography.Title level={3}>
+          {t('loggingOut')}
+        </Typography.Title>
+      </Flex>
+    </Card>
+  );
+};
+
+export default LoggingOutPage;

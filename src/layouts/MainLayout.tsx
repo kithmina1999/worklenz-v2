@@ -1,5 +1,4 @@
 import { Col, ConfigProvider, Layout } from 'antd';
-import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../features/navbar/Navbar';
 import { useAppSelector } from '../hooks/useAppSelector';

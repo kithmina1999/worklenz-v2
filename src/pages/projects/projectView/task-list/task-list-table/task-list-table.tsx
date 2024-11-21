@@ -1,47 +1,41 @@
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { columnList } from './columns/columnList';
-import AddTaskListRow from './taskListTableRows/AddTaskListRow';
-import {
-  Avatar,
-  Checkbox,
-  DatePicker,
-  Flex,
-  Tag,
-  Tooltip,
-  Typography,
-} from 'antd';
 import React, { useEffect, useState } from 'react';
-import CustomAvatar from '../../../../../components/CustomAvatar';
-import LabelsSelector from '../../../../../components/taskListCommon/labelsSelector/LabelsSelector';
-import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
-import StatusDropdown from '../../../../../components/taskListCommon/statusDropdown/StatusDropdown';
-import PriorityDropdown from '../../../../../components/taskListCommon/priorityDropdown/PriorityDropdown';
-import { simpleDateFormat } from '../../../../../utils/simpleDateFormat';
-import { durationDateFormat } from '../../../../../utils/durationDateFormat';
-import CustomColordLabel from '../../../../../components/taskListCommon/labelsSelector/CustomColordLabel';
-import CustomNumberLabel from '../../../../../components/taskListCommon/labelsSelector/CustomNumberLabel';
-import PhaseDropdown from '../../../../../components/taskListCommon/phaseDropdown/PhaseDropdown';
-import AssigneeSelector from '../../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
-import TaskCell from './taskListTableCells/TaskCell';
-import AddSubTaskListRow from './taskListTableRows/AddSubTaskListRow';
-import { colors } from '../../../../../styles/colors';
-import TimeTracker from './taskListTableCells/TimeTracker';
-import TaskContextMenu from './contextMenu/TaskContextMenu';
-import TaskProgress from './taskListTableCells/TaskProgress';
-import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
-import {
-  deselectAll,
-  selectTaskIds,
-} from '../../../../../features/projects/bulkActions/bulkActionSlice';
+import { Avatar, Checkbox, DatePicker, Flex, Tag, Tooltip, Typography } from 'antd';
+
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { columnList } from '@/pages/projects/projectView/taskList/taskListTable/columns/columnList';
+import AddTaskListRow from '@/pages/projects/projectView/taskList/taskListTable/taskListTableRows/AddTaskListRow';
+
+import CustomAvatar from '@/components/CustomAvatar';
+import LabelsSelector from '@/components/taskListCommon/labelsSelector/LabelsSelector';
+import { useSelectedProject } from '@/hooks/useSelectedProject';
+import StatusDropdown from '@/components/taskListCommon/statusDropdown/StatusDropdown';
+import PriorityDropdown from '@/components/taskListCommon/priorityDropdown/PriorityDropdown';
+import { simpleDateFormat } from '@/utils/simpleDateFormat';
+import { durationDateFormat } from '@/utils/durationDateFormat';
+import CustomColordLabel from '@/components/taskListCommon/labelsSelector/CustomColordLabel';
+import CustomNumberLabel from '@/components/taskListCommon/labelsSelector/CustomNumberLabel';
+import PhaseDropdown from '@/components/taskListCommon/phaseDropdown/PhaseDropdown';
+import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
+import TaskCell from '@/pages/projects/projectView/taskList/taskListTable/taskListTableCells/TaskCell';
+import AddSubTaskListRow from '@/pages/projects/projectView/taskList/taskListTable/taskListTableRows/AddSubTaskListRow';
+import { colors } from '@/styles/colors';
+import TimeTracker from '@/pages/projects/projectView/taskList/taskListTable/taskListTableCells/TimeTracker';
+import TaskContextMenu from '@/pages/projects/projectView/taskList/taskListTable/contextMenu/TaskContextMenu';
+import TaskProgress from '@/pages/projects/projectView/taskList/taskListTable/taskListTableCells/TaskProgress';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { ITaskListGroup } from '@/types/tasks/taskList.types';
+import { HolderOutlined } from '@ant-design/icons';
+import Avatars from '@/components/avatars/Avatars';
 
 const TaskListTable = ({
   taskList,
   tableId,
 }: {
-  taskList: IProjectTask[] | null;
-  tableId: string;
+  taskList: ITaskListGroup;
+  tableId: string | undefined;
 }) => {
   // these states manage the necessary states
   const [hoverRow, setHoverRow] = useState<string | null>(null);
@@ -66,25 +60,23 @@ const TaskListTable = ({
   const dispatch = useAppDispatch();
 
   // get data theme data from redux
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // get the selected project details
   const selectedProject = useSelectedProject();
 
   // get columns list details
   const columnsVisibility = useAppSelector(
-    (state) => state.projectViewTaskListColumnsReducer.columnsVisibility
+    state => state.projectViewTaskListColumnsReducer.columnsVisibility
   );
   const visibleColumns = columnList.filter(
-    (column) => columnsVisibility[column.key as keyof typeof columnsVisibility]
+    column => columnsVisibility[column.key as keyof typeof columnsVisibility]
   );
 
   // toggle subtasks visibility
   const toggleTaskExpansion = (taskId: string) => {
-    setExpandedTasks((prev) =>
-      prev.includes(taskId)
-        ? prev.filter((id) => id !== taskId)
-        : [...prev, taskId]
+    setExpandedTasks(prev =>
+      prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId]
     );
   };
 
@@ -94,24 +86,23 @@ const TaskListTable = ({
       setSelectedRows([]);
       dispatch(deselectAll());
     } else {
-      const allTaskIds =
-        taskList?.flatMap((task) => [
-          task.id,
-          ...(task.sub_tasks?.map((subtask) => subtask.id) || []),
-        ]) || [];
-
-      // setSelectedRows(allTaskIds);
-      // dispatch(selectTaskIds(allTaskIds));
-      // console.log('selected tasks and subtasks (all):', allTaskIds);
+      //   const allTaskIds =
+      //     taskList?.flatMap((task) => [
+      //       task.taskId,
+      //       ...(task.subTasks?.map((subtask) => subtask.taskId) || []),
+      //     ]) || [];
+      //   setSelectedRows(allTaskIds);
+      //   dispatch(selectTaskIds(allTaskIds));
+      //   console.log('selected tasks and subtasks (all):', allTaskIds);
     }
     setIsSelectAll(!isSelectAll);
   };
 
   // toggle selected row
   const toggleRowSelection = (task: IProjectTask) => {
-    setSelectedRows((prevSelectedRows) =>
-      prevSelectedRows.includes(task.id || '' )
-        ? prevSelectedRows.filter((id) => id !== task.id || '')
+    setSelectedRows(prevSelectedRows =>
+      prevSelectedRows.includes(task.id || '')
+        ? prevSelectedRows.filter(id => id !== task.id)
         : [...prevSelectedRows, task.id || '']
     );
   };
@@ -142,12 +133,10 @@ const TaskListTable = ({
 
   // trigger the table scrolling
   useEffect(() => {
-    const tableContainer = document.querySelector(
-      `.tasklist-container-${tableId}`
-    );
+    const tableContainer = document.querySelector(`.tasklist-container-${tableId}`);
     const handleScroll = () => {
       if (tableContainer) {
-        setScrollingTables((prev) => ({
+        setScrollingTables(prev => ({
           ...prev,
           [tableId]: tableContainer.scrollLeft > 0,
         }));
@@ -164,7 +153,7 @@ const TaskListTable = ({
     `border px-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:h-[42px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-[#fafafa]'}`;
 
   const customBodyColumnStyles = (key: string) =>
-    `border px-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:min-h-[40px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
+    `border ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:min-h-[40px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
 
   // function to render the column content based on column key
   const renderColumnContent = (
@@ -176,12 +165,12 @@ const TaskListTable = ({
       // task ID column
       case 'taskId':
         return (
-          <Tooltip title={task.id} className="flex justify-center">
-            <Tag>{task.id}</Tag>
+          <Tooltip title={task.task_key || ''} className="flex justify-center">
+            <Tag>{task.task_key || ''}</Tag>
           </Tooltip>
         );
 
-      // task column
+      // task name column
       case 'task':
         return (
           // custom task cell component
@@ -197,22 +186,12 @@ const TaskListTable = ({
 
       // description column
       case 'description':
-        return (
-          <Typography.Paragraph
-            ellipsis={{ expandable: false }}
-            style={{ width: 260, marginBlockEnd: 0 }}
-          >
-            {task.description}
-          </Typography.Paragraph>
-        );
+        return <Typography.Text style={{ width: 200 }}></Typography.Text>;
 
       // progress column
       case 'progress': {
         return task?.progress || task?.progress === 0 ? (
-          <TaskProgress
-            progress={task?.progress}
-            numberOfSubTasks={task?.sub_tasks?.length || 0}
-          />
+          <TaskProgress progress={task?.progress} numberOfSubTasks={task?.sub_tasks?.length || 0}/>
         ) : (
           <div></div>
         );
@@ -222,15 +201,12 @@ const TaskListTable = ({
       case 'members':
         return (
           <Flex gap={4} align="center">
-            <Avatar.Group>
-              {task.assignees?.map((member) => (
-                <CustomAvatar
-                  key={member.id}
-                  avatarName={member.name}
-                  size={26}
-                />
+            <Avatars members={task.names || []}/>
+            {/* <Avatar.Group>
+              {task.assignees?.map(member => (
+                <CustomAvatar key={member.id} avatarName={member.name} size={26} />
               ))}
-            </Avatar.Group>
+            </Avatar.Group> */}
             <AssigneeSelector taskId={selectedTaskId || '0'} />
           </Flex>
         );
@@ -240,15 +216,11 @@ const TaskListTable = ({
         return (
           <Flex>
             {task?.labels && task?.labels?.length <= 2 ? (
-              task?.labels?.map((label) => <CustomColordLabel label={label} />)
+              task?.labels?.map(label => <CustomColordLabel label={label} />)
             ) : (
               <Flex>
-                <CustomColordLabel
-                  label={task?.labels ? task.labels[0] : null}
-                />
-                <CustomColordLabel
-                  label={task?.labels ? task.labels[1] : null}
-                />
+                <CustomColordLabel label={task?.labels ? task.labels[0] : null} />
+                <CustomColordLabel label={task?.labels ? task.labels[1] : null} />
                 {/* this component show other label names  */}
                 <CustomNumberLabel
                   // this label list get the labels without 1, 2 elements
@@ -266,20 +238,15 @@ const TaskListTable = ({
 
       // status column
       case 'status':
-        return <StatusDropdown currentStatus={task.status || ''} size={"default"} />;
+        return <StatusDropdown currentStatus={task.status || ''} />;
 
       // priority column
       case 'priority':
         return <PriorityDropdown currentPriority={task.priority || ''} />;
 
-      // // time tracking column
-      // case 'timeTracking':
-      //   return (
-      //     <TimeTracker
-      //       taskId={task.id}
-      //       initialTime={task.timer_start_time || 0}
-      //     />
-      //   );
+      // time tracking column
+      case 'timeTracking':
+        return <TimeTracker taskId={task.id} initialTime={task.timer_start_time || 0} />;
 
       // estimation column
       case 'estimation':
@@ -311,31 +278,19 @@ const TaskListTable = ({
 
       // completed date column
       case 'completedDate':
-        return (
-          <Typography.Text>
-            {durationDateFormat(task.completed_at || null)}
-          </Typography.Text>
-        );
+        return <Typography.Text>{durationDateFormat(task.completed_at || null)}</Typography.Text>;
 
       // created date column
       case 'createdDate':
-        return (
-          <Typography.Text>
-            {durationDateFormat(task.created_at || null)}
-          </Typography.Text>
-        );
+        return <Typography.Text>{durationDateFormat(task.created_at || null)}</Typography.Text>;
 
       // last updated column
       case 'lastUpdated':
-        return (
-          <Typography.Text>
-            {durationDateFormat(task.updated_at || null)}
-          </Typography.Text>
-        );
+        return <Typography.Text>{durationDateFormat(task.updated_at || null)}</Typography.Text>;
 
       // recorder column
       case 'reporter':
-        return <Typography.Text>Sachintha Prasad</Typography.Text>;
+        return <Typography.Text>{task.reporter}</Typography.Text>;
 
       // default case for unsupported columns
       default:
@@ -345,9 +300,7 @@ const TaskListTable = ({
 
   return (
     <div className={`border-x border-b ${customBorderColor}`}>
-      <div
-        className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}
-      >
+      <div className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}>
         <table className={`rounded-2 w-full min-w-max border-collapse`}>
           <thead className="h-[42px]">
             <tr>
@@ -360,7 +313,7 @@ const TaskListTable = ({
                 <Checkbox checked={isSelectAll} onChange={toggleSelectAll} />
               </th>
               {/* other header cells  */}
-              {visibleColumns.map((column) => (
+              {visibleColumns.map(column => (
                 <th
                   key={column.key}
                   className={`${customHeaderColumnStyles(column.key)}`}
@@ -374,14 +327,12 @@ const TaskListTable = ({
             </tr>
           </thead>
           <tbody>
-            {taskList?.map((task) => (
+            {taskList?.tasks?.map(task => (
               <React.Fragment key={task.id}>
                 <tr
                   key={task.id}
-                  onContextMenu={(e) => handleContextMenu(e, task)}
-                  onMouseEnter={() => setHoverRow(task.id || '')}
-                  onMouseLeave={() => setHoverRow(null)}
-                  className={`${taskList.length === 0 ? 'h-0' : 'h-[42px]'}`}
+                  onContextMenu={e => handleContextMenu(e, task)}
+                  className={`${taskList.tasks.length === 0 ? 'h-0' : 'h-[42px]'}`}
                 >
                   {/* this cell render the select the related task checkbox  */}
                   <td
@@ -408,7 +359,7 @@ const TaskListTable = ({
                     />
                   </td>
                   {/* other cells  */}
-                  {visibleColumns.map((column) => (
+                  {visibleColumns.map(column => (
                     <td
                       key={column.key}
                       className={customBodyColumnStyles(column.key)}
@@ -434,13 +385,11 @@ const TaskListTable = ({
 
                 {/* this is for sub tasks  */}
                 {expandedTasks.includes(task.id || '') &&
-                  task?.sub_tasks?.map((subtask) => (
+                  task?.sub_tasks?.map(subtask => (
                     <tr
                       key={subtask.id}
-                      onContextMenu={(e) => handleContextMenu(e, subtask)}
-                      onMouseEnter={() => setHoverRow(subtask.id || '')}
-                      onMouseLeave={() => setHoverRow(null)}
-                      className={`${taskList.length === 0 ? 'h-0' : 'h-[42px]'}`}
+                      onContextMenu={e => handleContextMenu(e, subtask)}
+                      className={`${taskList.tasks.length === 0 ? 'h-0' : 'h-[42px]'}`}
                     >
                       {/* this cell render the select the related task checkbox  */}
                       <td
@@ -468,7 +417,7 @@ const TaskListTable = ({
                       </td>
 
                       {/* other sub tasks cells  */}
-                      {visibleColumns.map((column) => (
+                      {visibleColumns.map(column => (
                         <td
                           key={column.key}
                           className={customBodyColumnStyles(column.key)}
@@ -478,7 +427,7 @@ const TaskListTable = ({
                               ? themeMode === 'dark'
                                 ? '#000'
                                 : '#dceeff'
-                              : hoverRow === subtask.id
+                              : hoverRow === subtask.id || ''
                                 ? themeMode === 'dark'
                                   ? '#000'
                                   : '#f8f7f9'

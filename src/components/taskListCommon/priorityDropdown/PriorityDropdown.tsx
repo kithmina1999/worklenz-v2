@@ -1,135 +1,44 @@
-import { Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd';
+import { Badge, Flex, Select, Typography } from 'antd';
 import React, { useState } from 'react';
-import {
-  DoubleLeftOutlined,
-  DownOutlined,
-  MinusOutlined,
-  PauseOutlined,
-} from '@ant-design/icons';
-// custom css file
-import './priorityDropdown.css';
-import { colors } from '../../../styles/colors';
-import { TaskPriorityType } from '../../../types/task.types';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { getPriorityColor } from '../../../utils/getPriorityColors';
+import './priorityDropdown.css';
 
-type PriorityDropdownProps = {
-  currentPriority: TaskPriorityType;
-};
-
-const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
-  const [priority, setPriority] = useState<TaskPriorityType>(currentPriority);
+const PriorityDropdown = ({ currentPriority: selectedPriority }: { currentPriority: string }) => {
+  const [priority, setPriority] = useState<string>(selectedPriority);
+  const priorityList = useAppSelector((state) => state.priorityReducer.priorities);
 
   // localization
   const { t } = useTranslation('taskListTable');
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
-  // menu type
-  type MenuItem = Required<MenuProps>['items'][number];
-  // priority menu item
-  const priorityMenuItems: MenuItem[] = [
-    {
-      key: 'low',
-      label: (
-        <Flex gap={4}>
-          {t('lowSelectorText')}
-          <MinusOutlined
-            style={{ color: getPriorityColor('low', themeMode) }}
-          />
-        </Flex>
-      ),
-    },
-    {
-      key: 'medium',
-      label: (
-        <Flex gap={4}>
-          {t('mediumSelectorText')}
-          <PauseOutlined
-            style={{
-              color: getPriorityColor('medium', themeMode),
-              rotate: '90deg',
-            }}
-          />
-        </Flex>
-      ),
-    },
-    {
-      key: 'high',
-      label: (
-        <Flex gap={4}>
-          {t('highSelectorText')}
-          <DoubleLeftOutlined
-            style={{
-              color: getPriorityColor('high', themeMode),
-              rotate: '90deg',
-            }}
-          />
-        </Flex>
-      ),
-    },
-  ];
-
-  // handle priority select
-  const onClick: MenuProps['onClick'] = (e) => {
-    e.key === 'low'
-      ? setPriority('low')
-      : e.key === 'medium'
-        ? setPriority('medium')
-        : setPriority('high');
+  const handlePriorityChange = (value: string) => {
+    const selectedOption = priorityList.find((el) => el.value === value);
+    if (selectedOption) {
+      setPriority(selectedOption.value);
+    }
   };
 
-  //dropdown items
-  const priorityDropdownItems: MenuProps['items'] = [
-    {
-      key: '1',
-      label: (
-        <Card className="priority-dropdown-card" bordered={false}>
-          <Menu
-            className="priority-menu"
-            items={priorityMenuItems}
-            defaultValue={currentPriority}
-            onClick={onClick}
-          />
-        </Card>
-      ),
-    },
-  ];
-
   return (
-    <Dropdown
-      overlayClassName="priority-dropdown"
-      menu={{ items: priorityDropdownItems }}
-      placement="bottomRight"
-      trigger={['click']}
-    >
-      <Flex
-        gap={6}
-        align="center"
-        style={{
-          width: 'fit-content',
-          borderRadius: 24,
-          paddingInline: 8,
-          height: 22,
-          backgroundColor: getPriorityColor(priority, themeMode),
-          color: colors.darkGray,
-          cursor: 'pointer',
-        }}
-      >
-        <Typography.Text
-          style={{
-            textTransform: 'capitalize',
-            color: colors.darkGray,
-            fontSize: 13,
-          }}
-        >
-          {t(priority + 'SelectorText')}
-        </Typography.Text>
-
-        <DownOutlined />
-      </Flex>
-    </Dropdown>
+    <Select
+      value={priority}
+      onChange={handlePriorityChange}
+      style={{ width: 120 }}
+      dropdownStyle={{ borderRadius: 8 }}
+      options={priorityList.map((priority) => ({
+        value: priority.value,
+        label: (
+          <Flex gap={8} align="center">
+            <Badge color={getPriorityColor(priority.value, themeMode)} />
+            <Typography.Text>
+              {t(priority.name + 'SelectorText')}
+            </Typography.Text>
+          </Flex>
+        ),
+      }))}
+    />
   );
 };
 

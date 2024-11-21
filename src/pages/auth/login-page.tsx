@@ -9,7 +9,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import PageHeader from '@components/AuthPageHeader';
 import googleIcon from '@assets/images/google-icon.png';
-import { login, verifyAuth } from '@/features/auth/authSlice';
+import { login, verifyAuthentication } from '@/features/auth/authSlice';
 import logger from '@/utils/errorLogger';
 import { setUser } from '@/features/user/userSlice';
 import { createAuthService } from '@/services/auth/auth.service';
@@ -31,7 +31,7 @@ const LoginPage: React.FC = () => {
   const { isLoading } = useAppSelector(state => state.auth);
   useEffect(() => {
     const verifyAuthStatus = async () => {
-      const result = await dispatch(verifyAuth()).unwrap();
+      const result = await dispatch(verifyAuthentication()).unwrap();
       if(result.authenticated) {
         dispatch(setUser(result.user));
         authService.setCurrentSession(result.user);
@@ -48,7 +48,7 @@ const LoginPage: React.FC = () => {
         if (result.authenticated) {
           message.success(t('loginSuccess'));
           authService.setCurrentSession(result.user);
-          navigate('/worklenz/home');
+          navigate('/auth/authenticating');
         }
       } catch (error) {
         logger.error('LoginPage', error);

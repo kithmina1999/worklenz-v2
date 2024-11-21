@@ -2,10 +2,11 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { ICategorizedStatus, ITaskStatus } from '@/types/tasks/taskStatus.types';
 import logger from '@utils/errorLogger';
 import { statusApiService } from '@/api/taskAttributes/status/status.api.service';
+import { ITaskStatusCategory } from '@/types/status.types';
 
 interface IStatusState {
   status: ITaskStatus[];
-  categorizedStatusList: ICategorizedStatus[];
+  statusCategories: ITaskStatusCategory[];
   loading: boolean;
   error: string | null;
   initialized: boolean;
@@ -13,7 +14,7 @@ interface IStatusState {
 
 const initialState: IStatusState = {
   status: [],
-  categorizedStatusList: [],
+  statusCategories: [],
   loading: false,
   error: null,
   initialized: false
@@ -36,6 +37,22 @@ export const fetchStatuses = createAsyncThunk(
   }
 );
 
+export const fetchStatusesCategories = createAsyncThunk(
+  'status/fetchStatusesCategories',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await statusApiService.getStatusCategories();
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Statuses Categories', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch statuses categories');
+    }
+  }
+);
+
 // Initialization thunk
 export const initializeStatuses = createAsyncThunk(
   'status/initialize',
@@ -47,7 +64,7 @@ export const initializeStatuses = createAsyncThunk(
   }
 );
 
-const statusSlice = createSlice({
+const taskStatusSlice = createSlice({
   name: 'statusReducer',
   initialState,
   reducers: {
@@ -63,8 +80,8 @@ const statusSlice = createSlice({
     deleteStatus: (state, action: PayloadAction<string>) => {
       state.status = state.status.filter(status => status.id !== action.payload);
     },
-    setCategorizedStatuses: (state, action: PayloadAction<ICategorizedStatus[]>) => {
-      state.categorizedStatusList = action.payload;
+    setCategorizedStatuses: (state, action: PayloadAction<ITaskStatusCategory[]>) => {
+      state.statusCategories = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -82,9 +99,22 @@ const statusSlice = createSlice({
       .addCase(fetchStatuses.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(fetchStatusesCategories.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchStatusesCategories.fulfilled, (state, action: PayloadAction<ITaskStatusCategory[]>) => {
+        state.loading = false;
+        state.statusCategories = action.payload;
+        state.error = null;
+      })
+      .addCase(fetchStatusesCategories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   }
 });
 
-export const { addStatus, updateStatus, deleteStatus, setCategorizedStatuses } = statusSlice.actions;
-export default statusSlice.reducer;
+export const { addStatus, updateStatus, deleteStatus, setCategorizedStatuses } = taskStatusSlice.actions;
+export default taskStatusSlice.reducer;

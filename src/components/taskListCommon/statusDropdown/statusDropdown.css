@@ -15,5 +15,5 @@
 .status-menu .ant-menu-item {
     display: flex;
     align-items: center;
-    height: 32px;
+    height: 41px !important;
 }

@@ -34,6 +34,7 @@ import projectReportsTableColumnsReducer from '../features/reporting/projectRepo
 import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
 import priorityReducer from '@features/taskAttributes/taskPrioritySlice';
 import taskLabelsReducer from '@features/taskAttributes/taskLabelSlice';
+import taskStatusReducer from '@features/taskAttributes/taskStatusSlice';
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -75,6 +76,7 @@ export const store = configureStore({
     projectReportsReducer: projectReportsReducer,
     priorityReducer: priorityReducer,
     taskLabelsReducer: taskLabelsReducer,
+    taskStatusReducer: taskStatusReducer,
   },
 });
 

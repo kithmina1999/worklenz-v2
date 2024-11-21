@@ -50,7 +50,7 @@ export const logout = createAsyncThunk(
   }
 );
 
-export const verifyAuth = createAsyncThunk(
+export const verifyAuthentication = createAsyncThunk(
   'secure/verify',
   async () => {
     const user = await authApiService.verify();
@@ -69,7 +69,6 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Login cases...
       .addCase(login.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -85,7 +84,6 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.error = action.payload as string;
       })
-      // Logout cases...
       .addCase(logout.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -102,16 +100,15 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      // Check Auth
-      .addCase(verifyAuth.pending, (state) => {
+      .addCase(verifyAuthentication.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(verifyAuth.fulfilled, (state, action) => {
+      .addCase(verifyAuthentication.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = !!action.payload;
         state.user = action.payload.user;
       })
-      .addCase(verifyAuth.rejected, (state) => {
+      .addCase(verifyAuthentication.rejected, (state) => {
         state.isLoading = false;
         state.isAuthenticated = false;
         state.user = null;

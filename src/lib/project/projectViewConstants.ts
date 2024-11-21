@@ -1,5 +1,4 @@
 import React, { ReactNode } from 'react';
-import ProjectViewTaskList from '../../pages/projects/projectView/taskList/ProjectViewTaskList';
 import ProjectViewBoard from '../../pages/projects/projectView/board/ProjectViewBoard';
 import ProjectViewWorkload from '../../pages/projects/projectView/workload/ProjectViewWorkload';
 import ProjectViewRoadmap from '../../pages/projects/projectView/roadmap/ProjectViewRoadmap';
@@ -7,6 +6,7 @@ import ProjectViewInsights from '../../pages/projects/projectView/insights/Proje
 import ProjectViewFiles from '../../pages/projects/projectView/files/ProjectViewFiles';
 import ProjectViewMembers from '../../pages/projects/projectView/members/ProjectViewMembers';
 import ProjectViewUpdates from '../../pages/projects/projectView/updates/ProjectViewUpdates';
+import TaskList from '@/pages/projects/projectView/task-list/task-list';
 
 // type of a tab items
 type TabItems = {
@@ -24,7 +24,7 @@ export const tabItems: TabItems[] = [
     key: 'tasks-list',
     label: 'Task List',
     isPinned: true,
-    element: React.createElement(ProjectViewTaskList),
+    element: React.createElement(TaskList),
   },
   {
     index: 1,

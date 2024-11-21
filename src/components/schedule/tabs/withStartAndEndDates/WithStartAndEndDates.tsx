@@ -1,8 +1,7 @@
-import StatusGroupTables from "../../../../pages/projects/projectView/taskList/groupTables/statusTables/StatusGroupTables";
-import PriorityGroupTables from "../../../../pages/projects/projectView/taskList/groupTables/priorityTables/PriorityGroupTables";
-import { TaskType } from "../../../../types/task.types";
-import { useAppSelector } from "../../../../hooks/useAppSelector";
-import GroupByFilterDropdown from "../../../../pages/projects/projectView/taskList/taskListFilters/GroupByFilterDropdown";
+import StatusGroupTables from "@/pages/projects/projectView/taskList/statusTables/StatusGroupTables";
+import { TaskType } from "@/types/task.types";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import GroupByFilterDropdown from "@/pages/projects/projectView/taskList/taskListFilters/GroupByFilterDropdown";
 
 const WithStartAndEndDates = () => {
     const dataSource: TaskType[] = useAppSelector(
@@ -40,7 +39,6 @@ const WithStartAndEndDates = () => {
         </div>
         <div>
             <StatusGroupTables datasource={dataSource} />
-            <PriorityGroupTables datasource={dataSource} />
         </div>
     </div>
   )

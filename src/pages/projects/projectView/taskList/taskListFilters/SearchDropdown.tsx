@@ -1,6 +1,6 @@
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, Card, Dropdown, Flex, Input, InputRef, Space } from 'antd';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const SearchDropdown = () => {
@@ -9,11 +9,15 @@ const SearchDropdown = () => {
 
   const searchInputRef = useRef<InputRef>(null);
 
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+  };
+
   // custom dropdown content
   const searchDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 8, width: 360 } }}>
       <Flex vertical gap={8}>
-        <Input ref={searchInputRef} placeholder={t('searchInputPlaceholder')} />
+        <Input ref={searchInputRef} placeholder={t('searchInputPlaceholder')} onChange={handleSearchInputChange}/>
         <Space>
           <Button type="primary">{t('searchButton')}</Button>
           <Button>{t('resetButton')}</Button>

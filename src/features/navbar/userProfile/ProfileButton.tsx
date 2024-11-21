@@ -9,14 +9,14 @@ import { useAuth } from '../../../hooks/useAuth';
 import { RootState } from '../../../app/store';
 import './ProfileButton.css';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AvatarNamesMap } from '@/shared/constants';
 
 const ProfileButton = () => {
   // get user data from redux - user reducer
   const userDetails = useAppSelector(state => state.userReducer);
   const role = useAuth().role;
-
+  const navigate = useNavigate();
   // localization
   const { t } = useTranslation('navbar');
 
@@ -76,7 +76,7 @@ const ProfileButton = () => {
             Settings
           </Link>
           <Link
-            to="/auth/login"
+            to="/auth/logging-out"
             style={{
               color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
             }}

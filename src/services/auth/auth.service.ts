@@ -1,4 +1,5 @@
 import { ILocalSession } from '@/types/auth/local-session.types';
+import logger from '@/utils/errorLogger';
 import { NavigateFunction } from 'react-router-dom';
 
 // Session helper functions
@@ -59,7 +60,7 @@ class AuthService {
         deleteSession();
       }
     } catch (e) {
-      // ignored
+      logger.error('Error signing out', e);
     }
   }
 

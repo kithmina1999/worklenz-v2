@@ -1,13 +1,12 @@
-import React from 'react';
-import { LabelType } from '../../../types/label.type';
 import { Tag, Typography } from 'antd';
 import { colors } from '../../../styles/colors';
+import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 
-const CustomColordLabel = ({ label }: { label: LabelType | null }) => {
+const CustomColordLabel = ({ label }: { label: ITaskLabel | null }) => {
   return (
     <Tag
-      key={label?.labelId}
-      color={label?.labelColor}
+      key={label?.id}
+      color={label?.color_code}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -17,7 +16,7 @@ const CustomColordLabel = ({ label }: { label: LabelType | null }) => {
       }}
     >
       <Typography.Text style={{ fontSize: 11, color: colors.darkGray }}>
-        {label?.labelName}
+        {label?.name}
       </Typography.Text>
     </Tag>
   );

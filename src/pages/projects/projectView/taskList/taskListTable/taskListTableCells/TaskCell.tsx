@@ -7,14 +7,14 @@ import {
   RightOutlined,
   ExpandAltOutlined,
 } from '@ant-design/icons';
-import { TaskType } from '../../../../../../types/task.types';
-import { colors } from '../../../../../../styles/colors';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
-import { toggleUpdateTaskDrawer } from '../../../../../../features/tasks/taskSlice';
+import { colors } from '@/styles/colors';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { toggleUpdateTaskDrawer } from '@features/tasks/taskSlice';
 import { useTranslation } from 'react-i18next';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 type TaskCellProps = {
-  task: TaskType;
+  task: IProjectTask;
   isSubTask?: boolean;
   expandedTasks: string[];
   hoverRow: string | null;
@@ -100,13 +100,13 @@ const TaskCell = ({
   return (
     <Flex align="center" justify="space-between">
       <Flex gap={8} align="center">
-        {!!task?.subTasks?.length ? (
+        {(!!task?.sub_tasks?.length && task.id) ? (
           renderToggleButtonForHasSubTasks(
-            task.taskId,
-            !!task?.subTasks?.length
+            task.id,
+            !!task?.sub_tasks?.length
           )
-        ) : hoverRow === task.taskId ? (
-          renderToggleButtonForNonSubtasks(task.taskId, isSubTask)
+        ) : hoverRow === task.id ? (
+          renderToggleButtonForNonSubtasks(task.id, isSubTask)
         ) : (
           <div className="h-4 w-4"></div>
         )}
@@ -114,22 +114,22 @@ const TaskCell = ({
         {isSubTask && <DoubleRightOutlined style={{ fontSize: 12 }} />}
 
         <Typography.Text ellipsis={{ expanded: false }}>
-          {task.task}
+          {task.name}
         </Typography.Text>
 
         {renderSubtasksCountLabel(
-          task.taskId,
+          task.id || '',
           isSubTask,
-          task?.subTasks?.length || 0
+          task?.sub_tasks?.length || 0
         )}
       </Flex>
 
-      {hoverRow === task.taskId && (
+      {hoverRow === task.id && (
         <Button
           type="text"
           icon={<ExpandAltOutlined />}
           onClick={() => {
-            setSelectedTaskId(task.taskId);
+            setSelectedTaskId(task.id || '');
             dispatch(toggleUpdateTaskDrawer());
           }}
           style={{

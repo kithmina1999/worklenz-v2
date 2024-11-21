@@ -1,58 +1,37 @@
-import {
-  Badge,
-  Button,
-  Collapse,
-  ConfigProvider,
-  Dropdown,
-  Flex,
-  Input,
-  Typography,
-} from 'antd';
+import { Badge, Button, Collapse, ConfigProvider, Dropdown, Flex, Input, Typography } from 'antd';
 import { useState } from 'react';
-import { TaskType } from '../../../../../types/task.types';
-import {
-  EditOutlined,
-  EllipsisOutlined,
-  RetweetOutlined,
-  RightOutlined,
-} from '@ant-design/icons';
-import { colors } from '../../../../../styles/colors';
-import './taskListTableWrapper.css';
-import TaskListTable from './TaskListTable';
+import { TaskType } from '@/types/task.types';
+import { EditOutlined, EllipsisOutlined, RetweetOutlined, RightOutlined } from '@ant-design/icons';
+import { colors } from '@/styles/colors';
+import './task-list-table-wrapper.css';
+import TaskListTable from '../task-list-table/task-list-table';
 import { MenuProps } from 'antd/lib';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
-import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { ITaskListGroup } from '@/types/tasks/taskList.types';
 
 type TaskListTableWrapperProps = {
-  taskList: IProjectTask[];
-  tableId: string;
-  type: string;
-  name: string;
-  color: string;
-  statusCategory?: string | null;
-  priorityCategory?: string | null;
+  taskList: ITaskListGroup;
+  groupId: string | undefined;
+  name: string | undefined;
+  color: string | undefined;
   onRename?: (name: string) => void;
   onStatusCategoryChange?: (category: string) => void;
 };
 
 const TaskListTableWrapper = ({
   taskList,
-  tableId,
+  groupId,
   name,
-  type,
   color,
-  statusCategory = null,
-  priorityCategory = null,
   onRename,
   onStatusCategoryChange,
 }: TaskListTableWrapperProps) => {
-  const [tableName, setTableName] = useState<string>(name);
+  const [tableName, setTableName] = useState<string>(name || '');
   const [isRenaming, setIsRenaming] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
-  const [currentCategory, setCurrentCategory] = useState<string | null>(
-    statusCategory
-  );
+
+  const type = 'status';
 
   // localization
   const { t } = useTranslation('taskListTable');
@@ -60,25 +39,6 @@ const TaskListTableWrapper = ({
   // function to handle toggle expand
   const handlToggleExpand = () => {
     setIsExpanded(!isExpanded);
-  };
-
-  // this is for get the color for every typed tables
-  const getBgColorClassName = (type: string) => {
-    switch (type) {
-      case 'status':
-        if (currentCategory === 'todo') return 'after:bg-[#d8d7d8]';
-        else if (currentCategory === 'doing') return 'after:bg-[#c0d5f6]';
-        else if (currentCategory === 'done') return 'after:bg-[#c2e4d0]';
-        else return 'after:bg-[#d8d7d8]';
-
-      case 'priority':
-        if (priorityCategory === 'low') return 'after:bg-[#c2e4d0]';
-        else if (priorityCategory === 'medium') return 'after:bg-[#f9e3b1]';
-        else if (priorityCategory === 'high') return 'after:bg-[#f6bfc0]';
-        else return 'after:bg-[#f9e3b1]';
-      default:
-        return '';
-    }
   };
 
   // these codes only for status type tables
@@ -92,14 +52,13 @@ const TaskListTableWrapper = ({
 
   // function to handle category change
   const handleCategoryChange = (category: string) => {
-    setCurrentCategory(category);
     if (onStatusCategoryChange) {
       onStatusCategoryChange(category);
     }
   };
 
   // find the available status for the currently active project
-  const statusList = useAppSelector((state) => state.statusReducer.status);
+  const statusList = useAppSelector(state => state.statusReducer.status);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -126,7 +85,7 @@ const TaskListTableWrapper = ({
       key: '2',
       icon: <RetweetOutlined />,
       label: 'Change category',
-      children: statusList?.map((status) => ({
+      children: statusList?.map(status => ({
         key: status.id,
         label: (
           <Flex gap={8} onClick={() => handleCategoryChange(status.category)}>
@@ -172,7 +131,7 @@ const TaskListTableWrapper = ({
               <Input
                 size="small"
                 value={tableName}
-                onChange={(e) => setTableName(e.target.value)}
+                onChange={e => setTableName(e.target.value)}
                 onBlur={handleRename}
                 onPressEnter={handleRename}
                 autoFocus
@@ -184,24 +143,18 @@ const TaskListTableWrapper = ({
                   color: colors.darkGray,
                 }}
               >
-                {/* check the default values available in the table names ==> this check for localization  */}
                 {['todo', 'doing', 'done', 'low', 'medium', 'high'].includes(
                   tableName.replace(/\s+/g, '').toLowerCase()
                 )
-                  ? t(
-                      `${tableName.replace(/\s+/g, '').toLowerCase()}SelectorText`
-                    )
+                  ? t(`${tableName.replace(/\s+/g, '').toLowerCase()}SelectorText`)
                   : tableName}{' '}
-                ({taskList.length})
+                ({taskList.tasks.length})
               </Typography.Text>
             )}
           </Button>
           {type === 'status' && !isRenaming && (
             <Dropdown menu={{ items }}>
-              <Button
-                icon={<EllipsisOutlined />}
-                className="borderless-icon-btn"
-              />
+              <Button icon={<EllipsisOutlined />} className="borderless-icon-btn" />
             </Dropdown>
           )}
         </Flex>
@@ -216,8 +169,8 @@ const TaskListTableWrapper = ({
           items={[
             {
               key: '1',
-              className: `custom-collapse-content-box relative after:content after:absolute after:h-full after:w-1 ${getBgColorClassName(type)} after:z-10 after:top-0 after:left-0`,
-              children: <TaskListTable taskList={taskList} tableId={tableId} />,
+              className: `custom-collapse-content-box relative after:content after:absolute after:h-full after:w-1 ${color} after:z-10 after:top-0 after:left-0`,
+              children: <TaskListTable taskList={taskList} tableId={groupId} key={groupId}/>,
             },
           ]}
         />
