@@ -105,13 +105,12 @@ const EstimatedVsActualTimeSheet = () => {
     <div style={{ position: 'relative' }}>
       <div
         style={{
-          maxWidth: 'calc(100vw - 220px)',
           minWidth: 'calc(100vw - 260px)',
           height: 'calc(100vh - 300px)',
-          overflow: 'auto',
+          width: `${120 * data.labels.length}px`,
         }}
       >
-        <Bar data={data} options={options} width={1597} height={505} />
+        <Bar data={data} options={options}/>
       </div>
     </div>
   );

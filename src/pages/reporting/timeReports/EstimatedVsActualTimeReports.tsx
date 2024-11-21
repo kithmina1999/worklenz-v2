@@ -52,6 +52,13 @@ const EstimatedVsActualTimeReports = () => {
             />
           </div>
         }
+        styles={{
+          body: {
+            maxWidth: 'calc(100vw - 220px)',
+            overflowX: 'auto',
+            padding: '16px'
+          },
+        }}
       >
         <EstimatedVsActualTimeSheet />
       </Card>

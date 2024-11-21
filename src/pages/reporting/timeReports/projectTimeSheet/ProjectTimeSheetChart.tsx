@@ -116,17 +116,16 @@ const ProjectTimeSheetChart: React.FC = () => {
   };
 
   return (
-    <div style={{ position: 'relative',}}>
+    <div >
       <div
         style={{
           maxWidth: 'calc(100vw - 220px)',
           minWidth: 'calc(100vw - 260px)',
-          height: 'calc(100vh - 300px)',
-          overflow: 'auto'
-          
+          minHeight: 'calc(100vh - 300px)',
+          height: `${60 * data.labels.length}px`,         
         }}
       >
-        <Bar data={data} options={options} style={{overflow: 'auto', }}/>
+        <Bar data={data} options={options}/>
         <ProjectTimeLogDrawer />
       </div>
     </div>

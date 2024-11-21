@@ -41,6 +41,13 @@ const MembersTimeReports = () => {
             <TimeReportPageHeader />
           </div>
         }
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 300px)',
+            overflowY: 'auto',
+            padding: '16px'
+          },
+        }}
       >
         <MembersTimeSheet />
       </Card>

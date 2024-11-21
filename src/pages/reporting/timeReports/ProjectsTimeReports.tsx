@@ -34,16 +34,23 @@ const ProjectsTimeReports = () => {
         }
       />
 
-      <Card
-        style={{ borderRadius: '4px' }}
-        title={
-          <div style={{ padding: '16px 0' }}>
-            <TimeReportPageHeader />
-          </div>
-        }
-      >
-        <ProjectTimeSheetChart />
-      </Card>
+<Card
+  style={{ borderRadius: '4px' }}
+  title={
+    <div style={{ padding: '16px 0',}}>
+      <TimeReportPageHeader />
+    </div>
+  }
+  styles={{
+    body: {
+      maxHeight: 'calc(100vh - 300px)',
+      overflowY: 'auto',
+      padding: '16px'
+    },
+  }}
+>
+  <ProjectTimeSheetChart />
+</Card>
     </Flex>
   );
 };
