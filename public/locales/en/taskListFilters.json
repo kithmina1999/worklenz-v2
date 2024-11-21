@@ -5,6 +5,7 @@
 
   "sortText": "Sort",
   "statusText": "Status",
+  "phaseText": "Phase",
   "priorityText": "Priority",
   "labelsText": "Labels",
   "membersText": "Members",
