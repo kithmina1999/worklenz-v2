@@ -51,6 +51,20 @@ export const settingsItems: SettingMenuItems[] = [
     element: React.createElement(NotificationsSettings),
   },
   {
+    key: 'change-password',
+    name: 'changePassword',
+    endpoint: 'password',
+    icon: React.createElement(LockOutlined),
+    element: React.createElement(ChangePassword),
+  },
+  {
+    key: 'language-and-region',
+    name: 'languageAndRegion',
+    endpoint: 'language-and-region',
+    icon: React.createElement(GlobalOutlined),
+    element: React.createElement(LanguageAndRegionSettings),
+  },
+  {
     key: 'clients',
     name: 'clients',
     endpoint: 'clients',
@@ -105,19 +119,5 @@ export const settingsItems: SettingMenuItems[] = [
     endpoint: 'teams',
     icon: React.createElement(BankOutlined),
     element: React.createElement(TeamsSettings),
-  },
-  {
-    key: 'change-password',
-    name: 'changePassword',
-    endpoint: 'password',
-    icon: React.createElement(LockOutlined),
-    element: React.createElement(ChangePassword),
-  },
-  {
-    key: 'language-and-region',
-    name: 'languageAndRegion',
-    endpoint: 'language-and-region',
-    icon: React.createElement(GlobalOutlined),
-    element: React.createElement(LanguageAndRegionSettings),
   },
 ];

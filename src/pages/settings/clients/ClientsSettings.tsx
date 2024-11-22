@@ -15,151 +15,139 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useMemo, useState } from 'react';
-import { colors } from '../../../styles/colors';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useEffect, useMemo, useState } from 'react';
+import { colors } from '@/styles/colors';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   deleteClient,
-  toggleCreateClientDrawer,
-  toggleUpdateClientDrawer,
-} from '../../../features/settings/client/clientSlice';
-import CreateClientDrawer from '../../../features/settings/client/CreateClientDrawer';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { IClient } from '../../../types/client.types';
-
-import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton';
-import UpdateClientDrawer from '../../../features/settings/client/UpdateClientDrawer';
+  fetchClients,
+  toggleClientDrawer,
+} from '@features/settings/client/clientSlice';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { IClientViewModel } from '@/types/client.types';
+import PinRouteToNavbarButton from '@components/PinRouteToNavbarButton';
 import { useTranslation } from 'react-i18next';
+import { DEFAULT_PAGE_SIZE } from '@/shared/constants';
+import ClientDrawer from './ClientDrawer';
 
 const ClientsSettings = () => {
-  // localization
   const { t } = useTranslation('clientSettings');
-
-  // get currently hover row
-  const [hoverRow, setHoverRow] = useState<string | null>(null);
-  // get currently selected client id
-  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
-
-  // get data from client reducer
-  const clientsList = useAppSelector(
-    (state) => state.clientReducer.clients
-  );
+  const { clients } = useAppSelector(state => state.clientReducer);
   const dispatch = useAppDispatch();
 
-  // this is for get the current string that type on search bar
+  const [hoverRow, setHoverRow] = useState<string | null>(null);
+  const [selectedClient, setSelectedClient] = useState<IClientViewModel | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: DEFAULT_PAGE_SIZE,
+    field: 'name',
+    order: 'desc',
+  });
 
-  // used useMemo hook for re render the list when searching
-  const filteredClientsData = useMemo(() => {
-    return clientsList.filter((item) =>
-      item.clientName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [clientsList, searchQuery]);
+  const getClients = useMemo(() => {
+    return () => {
+      const params = {
+        index: pagination.current,
+        size: pagination.pageSize,
+        field: pagination.field,
+        order: pagination.order,
+        search: searchQuery,
+      };
+      dispatch(fetchClients(params));
+    };
+  }, [pagination, searchQuery, dispatch]);
 
-  // table columns
-  const columns: TableProps['columns'] = [
-    {
-      key: 'clientName',
-      title: t('nameColumn'),
-      sorter: (a, b) => a.clientName.localeCompare(b.clientName),
-      onCell: (record) => ({
-        onClick: () => {
-          setSelectedClientId(record.clientId);
-          dispatch(toggleUpdateClientDrawer());
-        },
-      }),
-      render: (record: IClient) => (
-        <Typography.Text
-          style={{
-            color: hoverRow === record.clientId ? colors.skyBlue : 'inherit',
-          }}
-        >
-          {record.clientName}
-        </Typography.Text>
-      ),
-    },
-    {
-      key: 'project',
-      title: t('projectColumn'),
-      onCell: (record) => ({
-        onClick: () => {
-          setSelectedClientId(record.clientId);
-          dispatch(toggleUpdateClientDrawer());
-        },
-      }),
-      render: (record: IClient) =>
-        record.project ? (
-          <Typography.Text>{record.project}</Typography.Text>
-        ) : (
-          <Typography.Text type="secondary">
-            {t('noProjectsAvailable')}
-          </Typography.Text>
-        ),
-    },
-    {
-      key: 'actionBtns',
-      width: 80,
-      render: (record: IClient) =>
-        hoverRow === record.clientId && (
-          <Flex gap={8} style={{ padding: 0 }}>
-            <Button
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => {
-                setSelectedClientId(record.clientId);
-                dispatch(toggleUpdateClientDrawer());
-              }}
-            />
+  useEffect(() => {
+    getClients();
+  }, [searchQuery]);
 
-            <Popconfirm
-              title={t('deleteConfirmationTitle')}
-              icon={
-                <ExclamationCircleFilled
-                  style={{ color: colors.vibrantOrange }}
-                />
-              }
-              okText={t('deleteConfirmationOk')}
-              cancelText={t('deleteConfirmationCancel')}
-              onConfirm={() => dispatch(deleteClient(record.clientId))}
-            >
-              <Button shape="default" icon={<DeleteOutlined />} size="small" />
-            </Popconfirm>
-          </Flex>
-        ),
-    },
-  ];
+  const handleClientSelect = (record: IClientViewModel) => {
+    setSelectedClient(record);
+    dispatch(toggleClientDrawer());
+  };
+
+  const deleteClientHandler = (id: string | undefined) => {
+    if (!id) return;
+    dispatch(deleteClient(id));
+    getClients();
+  };
+
+  const columns: TableProps['columns'] = useMemo(
+    () => [
+      {
+        key: 'name',
+        sorter: true,
+        title: t('nameColumn'),
+        onCell: record => ({
+          onClick: () => handleClientSelect(record),
+        }),
+        render: (record: IClientViewModel) => <Typography.Text>{record.name}</Typography.Text>,
+      },
+      {
+        key: 'project',
+        title: t('projectColumn'),
+        onCell: record => ({
+          onClick: () => handleClientSelect(record),
+        }),
+        render: (record: IClientViewModel) =>
+          record.projects_count ? (
+            <Typography.Text>{record.projects_count}</Typography.Text>
+          ) : (
+            <Typography.Text type="secondary">{t('noProjectsAvailable')}</Typography.Text>
+          ),
+      },
+      {
+        key: 'actionBtns',
+        width: 80,
+        render: (record: IClientViewModel) =>
+          hoverRow === record.id && (
+            <Flex gap={8} style={{ padding: 0 }}>
+              <Button
+                size="small"
+                icon={<EditOutlined />}
+                onClick={() => handleClientSelect(record)}
+              />
+              <Popconfirm
+                title={t('deleteConfirmationTitle')}
+                icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
+                okText={t('deleteConfirmationOk')}
+                cancelText={t('deleteConfirmationCancel')}
+                onConfirm={() => deleteClientHandler(record.id)}
+              >
+                <Button shape="default" icon={<DeleteOutlined />} size="small" />
+              </Popconfirm>
+            </Flex>
+          ),
+      },
+    ],
+    [hoverRow, t, dispatch]
+  );
 
   return (
     <Card
       style={{ width: '100%' }}
       title={
         <Flex justify="flex-end">
-          <Flex
-            gap={8}
-            align="center"
-            justify="flex-end"
-            style={{ width: '100%', maxWidth: 400 }}
-          >
+          <Flex gap={8} align="center" justify="flex-end" style={{ width: '100%', maxWidth: 400 }}>
             <Input
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.currentTarget.value)}
+              onChange={e => setSearchQuery(e.currentTarget.value)}
               placeholder={t('searchPlaceholder')}
               style={{ maxWidth: 232 }}
               suffix={<SearchOutlined />}
             />
             <Button
               type="primary"
-              onClick={() => dispatch(toggleCreateClientDrawer())}
+              onClick={() => {
+                dispatch(toggleClientDrawer());
+                setSelectedClient(null);
+              }}
             >
               {t('createClient')}
             </Button>
-
             <Tooltip title={t('pinTooltip')} trigger={'hover'}>
-              {/* this button pin this route to navbar  */}
-              <PinRouteToNavbarButton
-                name="clients"
-                path="/worklenz/settings/clients"
-              />
+              <PinRouteToNavbarButton name="clients" path="/worklenz/settings/clients" />
             </Tooltip>
           </Flex>
         </Flex>
@@ -167,28 +155,25 @@ const ClientsSettings = () => {
     >
       <Table
         className="custom-two-colors-row-table"
-        dataSource={filteredClientsData}
+        dataSource={clients.data}
         columns={columns}
-        rowKey={(record) => record.clientId}
+        rowKey={record => record.id}
+        onRow={record => ({
+          onMouseEnter: () => setHoverRow(record.id),
+          onMouseLeave: () => setHoverRow(null),
+        })}
         pagination={{
           showSizeChanger: true,
-          defaultPageSize: 20,
-        }}
-        onRow={(record) => {
-          return {
-            onMouseEnter: () => setHoverRow(record.clientId),
-            onMouseLeave: () => setHoverRow(null),
-            style: {
-              cursor: 'pointer',
-              height: 36,
-            },
-          };
+          defaultPageSize: DEFAULT_PAGE_SIZE,
         }}
       />
-
-      {/*  client drawers  */}
-      <CreateClientDrawer />
-      <UpdateClientDrawer selectedClientId={selectedClientId} />
+      <ClientDrawer
+        client={selectedClient}
+        drawerClosed={() => {
+          setSelectedClient(null);
+          getClients();
+        }}
+      />
     </Card>
   );
 };

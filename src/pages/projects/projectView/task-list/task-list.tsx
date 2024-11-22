@@ -7,6 +7,8 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchTaskGroups } from '@/features/tasks/taskSlice';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import TaskListTableWrapper from './task-list-table-wrapper/task-list-table-wrapper';
+import OptimizedTaskListTable from './table-v2';
+import { columnList } from '@/pages/projects/projectView/taskList/taskListTable/columns/columnList';
 
 const TaskList = () => {
   const dispatch = useAppDispatch();
@@ -14,6 +16,21 @@ const TaskList = () => {
   const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
   const projectId = useAppSelector(state => state.projectReducer.projectId);
 
+  const columnsVisibility = useAppSelector(
+    state => state.projectViewTaskListColumnsReducer.columnsVisibility
+  );
+
+  const visibleColumns = columnList.filter(
+    column => columnsVisibility[column.key as keyof typeof columnsVisibility]
+  );
+
+  const onTaskSelect = (taskId: string) => {
+    console.log('taskId:', taskId);
+  };
+  
+  const onTaskExpand = (taskId: string) => {
+    console.log('taskId:', taskId);
+  };
   useEffect(() => {
     if (projectId) {
       const config: ITaskListConfigV2 = {
@@ -38,7 +55,14 @@ const TaskList = () => {
       <TaskListFilters position="list" />
       <Skeleton active loading={loadingGroups}>
         {taskGroups.map(group => (
-          <TaskListTableWrapper taskList={group} groupId={group.id} name={group.name} color={group.color_code} key={group.id}></TaskListTableWrapper>
+          // <TaskListTableWrapper taskList={group} groupId={group.id} name={group.name} color={group.color_code} key={group.id}></TaskListTableWrapper>
+          <OptimizedTaskListTable
+            taskList={group}
+            tableId={group.id}
+            visibleColumns={visibleColumns}
+            onTaskSelect={onTaskSelect}
+            onTaskExpand={onTaskExpand}
+          />
         ))}
       </Skeleton>
     </Flex>

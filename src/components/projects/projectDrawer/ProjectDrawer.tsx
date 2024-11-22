@@ -28,9 +28,7 @@ import { projectColors } from '../../../lib/project/projectConstants';
 import { colors } from '../../../styles/colors';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
-import React from 'react';
-import { PROJECT_STATUS_ICON_MAP } from '@/shared/constants';
-import { IProjectStatus } from '@/types/project/projectStatus.types';
+
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
 import { PlusCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { fetchClients } from '@/features/settings/client/clientSlice';

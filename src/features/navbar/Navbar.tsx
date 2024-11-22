@@ -31,8 +31,7 @@ const Navbar = () => {
 
   //this useEffect re render the navRoutes list with localstorage change
   useEffect(() => {
-    const storedNavRoutesList: NavRoutesType[] =
-      getFromLocalStorage('navRoutes') || navRoutes;
+    const storedNavRoutesList: NavRoutesType[] = getFromLocalStorage('navRoutes') || navRoutes;
     setNavRoutesList(storedNavRoutesList);
   }, [navRoutesList]);
 

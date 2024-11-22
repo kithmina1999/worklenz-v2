@@ -8,7 +8,6 @@ import { settingsItems } from '../../../lib/settings/settingsConstants';
 
 const SettingSidebar = () => {
   const location = useLocation();
-  // localization
   const { t } = useTranslation('settingsSidebar');
 
   type MenuItem = Required<MenuProps>['items'][number];

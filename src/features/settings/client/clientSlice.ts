@@ -5,9 +5,8 @@ import { clientsApiService } from '@/api/clients/clients.api.service';
 
 type ClientState = {
   clients: IClientsViewModel;
-  isUpdateClientDrawerOpen: boolean;
-  isCreateClientDrawerOpen: boolean;
   loading: boolean;
+  isClientDrawerOpen: boolean;
 };
 
 const initialState: ClientState = {
@@ -15,9 +14,8 @@ const initialState: ClientState = {
     total: 0,
     data: [],
   },
-  isUpdateClientDrawerOpen: false,
-  isCreateClientDrawerOpen: false,
   loading: false,
+  isClientDrawerOpen: false,
 };
 
 interface FetchClientsParams {
@@ -33,7 +31,13 @@ export const fetchClients = createAsyncThunk(
   'clients/fetchAll',
   async (params: FetchClientsParams, { rejectWithValue }) => {
     try {
-      const response = await clientsApiService.getClients(params.index, params.size, params.field, params.order, params.search);
+      const response = await clientsApiService.getClients(
+        params.index,
+        params.size,
+        params.field,
+        params.order,
+        params.search
+      );
       return response.body;
     } catch (error) {
       logger.error('Fetch Clients', error);
@@ -45,52 +49,78 @@ export const fetchClients = createAsyncThunk(
   }
 );
 
+export const updateClient = createAsyncThunk(
+  'clients/update',
+  async ({ id, body }: { id: string; body: IClient }, { rejectWithValue }) => {
+    try {
+      const response = await clientsApiService.updateClient(id, body);
+      return response.body;
+    } catch (error) {
+      logger.error('Update Client', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to update client');
+    }
+  }
+);
+
+export const createClient = createAsyncThunk(
+  'clients/create',
+  async (body: IClient, { rejectWithValue }) => {
+    try {
+      const response = await clientsApiService.createClient(body);
+      return response.body;
+    } catch (error) {
+      logger.error('Create Client', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to create client');
+    }
+  }
+);
+
+export const deleteClient = createAsyncThunk(
+  'clients/delete',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      await clientsApiService.deleteClient(id);
+    } catch (error) {
+      logger.error('Delete Client', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to delete client');
+    }
+  }
+);
+
 const clientSlice = createSlice({
   name: 'clientReducer',
   initialState,
   reducers: {
-    toggleCreateClientDrawer: state => {
-      state.isCreateClientDrawerOpen
-        ? (state.isCreateClientDrawerOpen = false)
-        : (state.isCreateClientDrawerOpen = true);
+    toggleClientDrawer: state => {
+      state.isClientDrawerOpen
+        ? (state.isClientDrawerOpen = false)
+        : (state.isClientDrawerOpen = true);
     },
-    toggleUpdateClientDrawer: state => {
-      state.isUpdateClientDrawerOpen
-        ? (state.isUpdateClientDrawerOpen = false)
-        : (state.isUpdateClientDrawerOpen = true);
-    },
-    // action for create client
-    addClient: (state, action: PayloadAction<IClient>) => {
-      state.clients.data?.push(action.payload);
-    },
-    // action for update client
-    updateClient: (state, action: PayloadAction<IClient>) => {
-
-    },
-    // action for delete client
-    deleteClient: (state, action: PayloadAction<string>) => {
-    },
+    deleteClient: (state, action: PayloadAction<string>) => {},
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchClients.pending, (state) => {
+      .addCase(fetchClients.pending, state => {
         state.loading = true;
       })
       .addCase(fetchClients.fulfilled, (state, action) => {
         state.loading = false;
         state.clients = action.payload;
       })
-      .addCase(fetchClients.rejected, (state) => {
+      .addCase(fetchClients.rejected, state => {
         state.loading = false;
       });
   },
 });
 
-export const {
-  toggleCreateClientDrawer,
-  toggleUpdateClientDrawer,
-  addClient,
-  updateClient,
-  deleteClient,
-} = clientSlice.actions;
+export const { toggleClientDrawer } = clientSlice.actions;
 export default clientSlice.reducer;

@@ -1,54 +1,54 @@
 import { Button, Drawer, Form, Input, message, Typography } from 'antd';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleUpdateClientDrawer, updateClient } from './clientSlice';
-import { IClient } from '../../../types/client.types';
+import { toggleUpdateJobTitleDrawer, updateJobTitle } from '@/features/settings/job/jobSlice';
+import { JobType } from '@/types/job.types';
 import { useTranslation } from 'react-i18next';
 
-type UpdateClientDrawerProps = {
-  selectedClientId: string | null;
+type UpdateJobTitleDrawerProps = {
+  selectedJobTitleId: string | null;
 };
 
-const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
+const UpdateJobTitleDrawer = ({ selectedJobTitleId }: UpdateJobTitleDrawerProps) => {
   // localization
-  const { t } = useTranslation('clientSettings');
+  const { t } = useTranslation('jobTitlesSettings');
 
   // get data from client reducer
-  const clientsList = useAppSelector(state => state.clientReducer.clients);
+  const jobTitlesList = useAppSelector(state => state.jobReducer.jobsList);
 
   // get data of currentlt selectedClient
-  const selectedClient = clientsList.data?.find(client => client.id === selectedClientId);
+  const selectedJobTitle = jobTitlesList.find(job => job.jobId === selectedJobTitleId);
 
-  const isDrawerOpen = useAppSelector(state => state.clientReducer.isUpdateClientDrawerOpen);
+  const isDrawerOpen = useAppSelector(state => state.jobReducer.isUpdateJobTitleDrawerOpen);
   const dispatch = useAppDispatch();
 
   const [form] = Form.useForm();
 
   // Load the selected client details to the form when drawer opens
   useEffect(() => {
-    if (selectedClient) {
+    if (selectedJobTitle) {
       form.setFieldsValue({
-        name: selectedClient.name,
+        name: selectedJobTitle.jobTitle,
       });
     }
-  }, [selectedClient, form]);
+  }, [selectedJobTitle, form]);
 
   // this function for handle form submit
   const handleFormSubmit = async (values: any) => {
     try {
-      if (selectedClient) {
-        const updatedClient: IClient = {
-          ...selectedClient,
-          name: values.name,
+      if (selectedJobTitle) {
+        const updatedJobTitle: JobType = {
+          ...selectedJobTitle,
+          jobTitle: values.name,
         };
 
-        dispatch(updateClient(updatedClient));
-        dispatch(toggleUpdateClientDrawer());
-        message.success(t('updateClientSuccessMessage'));
+        dispatch(updateJobTitle(updatedJobTitle));
+        dispatch(toggleUpdateJobTitleDrawer());
+        message.success(t('updateJobTitleSuccessMessage'));
       }
     } catch (error) {
-      message.error(t('updateClientErrorMessage'));
+      message.error(t('updateJobTitleErrorMessage'));
     }
   };
 
@@ -56,11 +56,11 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
     <Drawer
       title={
         <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-          {t('updateClientDrawerTitle')}
+          {t('updateJobTitleDrawerTitle')}
         </Typography.Text>
       }
       open={isDrawerOpen}
-      onClose={() => dispatch(toggleUpdateClientDrawer())}
+      onClose={() => dispatch(toggleUpdateJobTitleDrawer())}
     >
       <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
         <Form.Item
@@ -86,4 +86,4 @@ const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
   );
 };
 
-export default UpdateClientDrawer;
+export default UpdateJobTitleDrawer;

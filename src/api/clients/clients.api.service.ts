@@ -11,7 +11,7 @@ export const clientsApiService = {
   async getClients(index: number, size: number, field: string | null, order: string | null, search?: string | null): Promise<IServerResponse<IClientsViewModel>> {
     const s = encodeURIComponent(search || '');
     const queryString = toQueryString({ index, size, field, order, search: s });
-    const response = await apiClient.get<IServerResponse<IClientsViewModel[]>>(`${rootUrl}${queryString}`);
+    const response = await apiClient.get<IServerResponse<IClientsViewModel>>(`${rootUrl}${queryString}`);
     return response.data;
   },
 
