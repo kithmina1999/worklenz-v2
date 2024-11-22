@@ -18,6 +18,7 @@ import {
 } from '../../../../features/timeReport/projects/timeLogSlice';
 import ProjectTimeLogDrawer from '../../../../features/timeReport/projects/ProjectTimeLogDrawer';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
 
 ChartJS.register(
   CategoryScale,
@@ -39,6 +40,7 @@ const ProjectTimeSheetChart: React.FC = () => {
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
   const dispatch = useAppDispatch();
+  const {t} = useTranslation('timeReport')
 
   const handleBarClick = (event: any, elements: any) => {
     if (elements.length > 0) {
@@ -54,7 +56,7 @@ const ProjectTimeSheetChart: React.FC = () => {
     labels,
     datasets: [
       {
-        label: 'Logged Time (hours)',
+        label: t('loggedTime'),
         data: dataValues,
         backgroundColor: colors,
         barThickness: 40,
@@ -86,7 +88,7 @@ const ProjectTimeSheetChart: React.FC = () => {
       x: {
         title: {
           display: true,
-          text: 'Logged Time(hours)',
+          text: t('loggedTime'),
           align: 'end' as const,
           font: {
             family: 'Helvetica',
@@ -100,7 +102,7 @@ const ProjectTimeSheetChart: React.FC = () => {
       y: {
         title: {
           display: true,
-          text: 'Projects',
+          text: t('projects'),
           align: 'end' as const,
           font: {
             family: 'Helvetica',

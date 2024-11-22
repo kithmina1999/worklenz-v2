@@ -12,6 +12,7 @@ import {
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import jsonData from './EstimatedVsActualTimeSheet.json';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
 
 ChartJS.register(
   CategoryScale,
@@ -28,19 +29,20 @@ const EstimatedVsActualTimeSheet = () => {
   const estimatedDays = jsonData.map((item) => item.estimated_value);
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const {t} = useTranslation('timeReport')
 
   // Chart data
   const data = {
     labels,
     datasets: [
       {
-        label: 'Estimated Days',
+        label: t('estimatedDays'),
         data: estimatedDays,
         backgroundColor: '#A5AAD9',
         barThickness: 50,
       },
       {
-        label: 'Actual Days',
+        label: t('actualDays'),
         data: actualDays,
         backgroundColor: '#c191cc',
         barThickness: 50,
@@ -73,7 +75,7 @@ const EstimatedVsActualTimeSheet = () => {
       x: {
         title: {
           display: true,
-          text: 'Project',
+          text: t('projects'),
           align: 'end' as const,
           font: {
             family: 'Helvetica',
@@ -87,7 +89,7 @@ const EstimatedVsActualTimeSheet = () => {
       y: {
         title: {
           display: true,
-          text: 'Days',
+          text: t('days'),
           align: 'end' as const,
           font: {
             family: 'Helvetica',

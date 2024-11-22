@@ -26,20 +26,20 @@ const ProjectTemplatesSettings = () => {
           style={{ display: 'flex', gap: '10px', justifyContent: 'right' }}
           className="button-visibilty"
         >
-          <Tooltip title="Edit">
+          <Tooltip title={t('editToolTip')}>
             <Button size="small" onClick={() => navigate(`/worklenz/settings/project-templates/edit/${record.id}/${record.name}`)}>
               <EditOutlined />
             </Button>
           </Tooltip>
-          <Tooltip title="Delete">
+          <Tooltip title={t('deleteToolTip')}>
             <Popconfirm
               title={
                 <Typography.Text style={{ fontWeight: 400 }}>
-                  Are you sure?
+                  {t('confirmText')}
                 </Typography.Text>
               }
-              okText="Yes"
-              cancelText="Cancel"
+              okText={t('okText')}
+              cancelText={t('cancelText')}
             >
               <Button size="small">
                 <DeleteOutlined />

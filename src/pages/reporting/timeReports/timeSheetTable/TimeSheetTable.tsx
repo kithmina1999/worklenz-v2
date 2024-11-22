@@ -6,11 +6,13 @@ import {
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { Progress } from 'antd';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
 
 const TimeSheetTable: React.FC = () => {
   const [projects, setProjects] = useState<ProjectType[]>([]);
   const [members, setMembers] = useState<MemberLoggedTimeType[]>([]);
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const {t} = useTranslation('timeReport')
 
   useEffect(() => {
     const fetchProjectsData = async () => {
@@ -86,7 +88,7 @@ const TimeSheetTable: React.FC = () => {
             right: 0,
           }}
         >
-          Total
+          {t('total')}
         </div>
       </div>
 
@@ -172,7 +174,7 @@ const TimeSheetTable: React.FC = () => {
             borderRight: themeMode === 'dark' ? '1px solid #2c2f38' : '1px solid #f5f5f5',
           }}
         >
-          Total
+          {t('total')}
         </div>
         {members.map((member) => (
           <div

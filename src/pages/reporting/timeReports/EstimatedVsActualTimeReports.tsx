@@ -1,39 +1,21 @@
 import {
-  Button,
   Card,
-  Checkbox,
-  Dropdown,
   Flex,
   Segmented,
-  Space,
-  Typography,
 } from 'antd';
 import React from 'react';
-import CustomPageHeader from '../pageHeader/CustomPageHeader';
-import { DownOutlined } from '@ant-design/icons';
 import TimeReportPageHeader from './pageHeader/TimeReportPageHeader';
 import EstimatedVsActualTimeSheet from './estimatedVsActualTimeSheet/EstimatedVsActualTimeSheet';
+import TimeReportingRightHeader from './timeReportingRightHeader/TimeReportingRightHeader';
+import { useTranslation } from 'react-i18next';
 
 const EstimatedVsActualTimeReports = () => {
+
+  const {t} = useTranslation('timeReport')
+
   return (
     <Flex vertical>
-      <CustomPageHeader
-        title="Estimated vs Actual"
-        children={
-          <Space>
-            <Button>
-              <Checkbox />
-              <Typography.Text>Include Archived Projects</Typography.Text>
-            </Button>
-
-            <Dropdown menu={{ items: [{ key: '1', label: 'Excel' }] }}>
-              <Button type="primary" icon={<DownOutlined />} iconPosition="end">
-                Export
-              </Button>
-            </Dropdown>
-          </Space>
-        }
-      />
+      <TimeReportingRightHeader title = {t('estimatedVsActual')}/>
 
       <Card
         style={{ borderRadius: '4px' }}
@@ -48,7 +30,7 @@ const EstimatedVsActualTimeReports = () => {
             <TimeReportPageHeader />
             <Segmented
               style={{ fontWeight: 500 }}
-              options={['Working Days', 'Man Days']}
+              options={[t('workingDays'), t('manDays')]}
             />
           </div>
         }

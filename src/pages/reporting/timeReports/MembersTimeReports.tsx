@@ -1,38 +1,20 @@
 import {
-  Button,
   Card,
-  Checkbox,
-  Dropdown,
   Flex,
-  Space,
-  Typography,
 } from 'antd';
 import React from 'react';
-import CustomPageHeader from '../pageHeader/CustomPageHeader';
-import { DownOutlined } from '@ant-design/icons';
 import TimeReportPageHeader from './pageHeader/TimeReportPageHeader';
 import MembersTimeSheet from './membersTimeSheet/MembersTimeSheet';
+import TimeReportingRightHeader from './timeReportingRightHeader/TimeReportingRightHeader';
+import { useTranslation } from 'react-i18next';
 
 const MembersTimeReports = () => {
+
+  const {t} = useTranslation('timeReport')
+
   return (
     <Flex vertical>
-      <CustomPageHeader
-        title="Members Time Sheet"
-        children={
-          <Space>
-            <Button>
-              <Checkbox />
-              <Typography.Text>Include Archived Projects</Typography.Text>
-            </Button>
-
-            <Dropdown menu={{ items: [{ key: '1', label: 'Excel' }] }}>
-              <Button type="primary" icon={<DownOutlined />} iconPosition="end">
-                Export
-              </Button>
-            </Dropdown>
-          </Space>
-        }
-      />
+      <TimeReportingRightHeader title = {t('Members Time Sheet')}/>
 
       <Card
         style={{ borderRadius: '4px' }}

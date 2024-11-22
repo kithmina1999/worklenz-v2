@@ -12,6 +12,7 @@ import {
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import jsonData from './MembersTimeSheet.json';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
 
 ChartJS.register(
   CategoryScale,
@@ -31,13 +32,14 @@ const MembersTimeSheet: React.FC = () => {
   const colors = jsonData.map((item) => item.color_code);
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const {t} = useTranslation('timeReport')
 
   // Chart data
   const data = {
     labels,
     datasets: [
       {
-        label: 'Logged Time (hours)',
+        label: t('loggedTime'),
         data: dataValues,
         backgroundColor: colors,
         barThickness: 40,
@@ -69,7 +71,7 @@ const MembersTimeSheet: React.FC = () => {
       x: {
         title: {
           display: true,
-          text: 'Logged Time(hours)',
+          text: t('loggedTime'),
           align: 'end' as const,
           font: {
             family: 'Helvetica',
@@ -83,7 +85,7 @@ const MembersTimeSheet: React.FC = () => {
       y: {
         title: {
           display: true,
-          text: 'Member',
+          text: t('member'),
           align: 'end' as const,
           font: {
             family: 'Helvetica',

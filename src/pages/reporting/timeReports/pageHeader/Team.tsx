@@ -2,11 +2,13 @@ import { CaretDownFilled } from "@ant-design/icons";
 import { Button, Checkbox, Divider, Dropdown, Input, MenuProps, Space } from "antd";
 import React, { useState } from "react";
 import type { CheckboxChangeEvent } from "antd/es/checkbox"; 
+import { useTranslation } from "react-i18next";
 
 const Team: React.FC = () => {
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [searchText, setSearchText] = useState("");
   const [selectAll, setSelectAll] = useState(false);
+  const {t} = useTranslation('timeReport')
 
   const allItems = [
     { key: '1', label: 'Team 1' },
@@ -39,7 +41,7 @@ const Team: React.FC = () => {
         key: 'search',
         label: (
           <Input
-            placeholder="Search by team name"
+            placeholder={t('searchByName')}
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
           />
@@ -50,7 +52,7 @@ const Team: React.FC = () => {
       label: (
         <div>
             <Checkbox onChange={handleSelectAllChange} checked={selectAll}>
-              Select All
+              {t('selectAll')}
             </Checkbox>
             <Divider style={{margin: '4px 0'}}/>
         </div>
@@ -78,7 +80,7 @@ const Team: React.FC = () => {
         overlayStyle={{maxHeight: '330px', overflowY: 'auto'}}
       >
         <Button >
-          Teams <CaretDownFilled />
+          {t('teams')} <CaretDownFilled />
         </Button>
       </Dropdown>
     </div>

@@ -1,56 +1,36 @@
 import {
-  Button,
   Card,
-  Checkbox,
-  Dropdown,
   Flex,
-  Space,
-  Typography,
 } from 'antd';
 import React from 'react';
-import CustomPageHeader from '../pageHeader/CustomPageHeader';
-import { DownOutlined } from '@ant-design/icons';
 import TimeReportPageHeader from './pageHeader/TimeReportPageHeader';
 import ProjectTimeSheetChart from './projectTimeSheet/ProjectTimeSheetChart';
+import TimeReportingRightHeader from './timeReportingRightHeader/TimeReportingRightHeader';
+import { useTranslation } from 'react-i18next';
 
 const ProjectsTimeReports = () => {
+  const {t} = useTranslation('timeReport')
   return (
     <Flex vertical>
-      <CustomPageHeader
-        title="Projects Time Sheet"
-        children={
-          <Space>
-            <Button>
-              <Checkbox />
-              <Typography.Text>Include Archived Projects</Typography.Text>
-            </Button>
+      <TimeReportingRightHeader title = {t('projectsTimeSheet')}/>
 
-            <Dropdown menu={{ items: [{ key: '1', label: 'Excel' }] }}>
-              <Button type="primary" icon={<DownOutlined />} iconPosition="end">
-                Export
-              </Button>
-            </Dropdown>
-          </Space>
+      <Card
+        style={{ borderRadius: '4px' }}
+        title={
+          <div style={{ padding: '16px 0' }}>
+            <TimeReportPageHeader />
+          </div>
         }
-      />
-
-<Card
-  style={{ borderRadius: '4px' }}
-  title={
-    <div style={{ padding: '16px 0',}}>
-      <TimeReportPageHeader />
-    </div>
-  }
-  styles={{
-    body: {
-      maxHeight: 'calc(100vh - 300px)',
-      overflowY: 'auto',
-      padding: '16px'
-    },
-  }}
->
-  <ProjectTimeSheetChart />
-</Card>
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 300px)',
+            overflowY: 'auto',
+            padding: '16px',
+          },
+        }}
+      >
+        <ProjectTimeSheetChart />
+      </Card>
     </Flex>
   );
 };

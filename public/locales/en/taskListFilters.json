@@ -32,5 +32,8 @@
   "highText": "High",
 
   "createStatusButtonTooltip": "Status settings",
-  "configPhaseButtonTooltip": "Phase settings"
+  "configPhaseButtonTooltip": "Phase settings",
+
+  "addStatusButton": "Add Status",
+  "addPhaseButton": "Add Phase"
 }

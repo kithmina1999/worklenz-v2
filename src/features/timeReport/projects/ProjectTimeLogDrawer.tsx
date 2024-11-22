@@ -7,11 +7,13 @@ import { DownloadOutlined } from "@ant-design/icons";
 import jsonData from "./ProjectTimeLog.json";
 import { avatarNamesMap } from "../../../shared/constants";
 import './ProjectTimeLogDrawer.css'
+import { useTranslation } from "react-i18next";
 
 const ProjectTimeLogDrawer: React.FC = () => {
     const isTimeLogDrawerOpen = useAppSelector((state) => state.timeLogReducer.isTimeLogDrawerOpen);
     const selectedLabel = useAppSelector((state) => state.timeLogReducer.selectedLabel);
     const dispatch = useAppDispatch();
+    const {t} = useTranslation('timeReport')
 
     // Filter the data based on selectedLabel
     const filteredData = jsonData.log_data.filter((logItem) =>
@@ -34,7 +36,7 @@ const ProjectTimeLogDrawer: React.FC = () => {
   return (
     <Drawer width={736} open={isTimeLogDrawerOpen} onClose={() => dispatch(toggleTimeLogDrawer())} title={<Typography.Title level={5}>{selectedLabel}</Typography.Title>}>
         <div style={{ textAlign: 'right', width: "100%", height: '40px' }}>
-            <Button size="small" icon={<DownloadOutlined />}>Export to Excel</Button>
+            <Button size="small" icon={<DownloadOutlined />}>{t('exportToExcel')}</Button>
         </div>
         {filteredData.map((logItem) => (
             <div>
@@ -47,7 +49,7 @@ const ProjectTimeLogDrawer: React.FC = () => {
                                         {log.user_name.charAt(0).toUpperCase()}
                                     </Avatar>
                                     <Typography.Text>
-                                        <b>{log.user_name}</b> logged <b>{log.time_spent_string}</b> for <b>{log.task_name}</b> <Tag>{log.task_key}</Tag>
+                                        <b>{log.user_name}</b> {t('logged')} <b>{log.time_spent_string}</b> {t('for')} <b>{log.task_name}</b> <Tag>{log.task_key}</Tag>
                                     </Typography.Text>
                                 </div>
                             </Timeline.Item>

@@ -75,7 +75,7 @@ const ProjectTemplateEditView = () => {
         <Flex gap={8} wrap={'wrap'}>
           <SearchDropdown />
           <Flex align="center" gap={4} style={{ marginInlineStart: 12 }}>
-            Group by:
+            {t('groupByText')}:
             <Select
               defaultValue={'status'}
               options={groupDropdownMenuItems}
@@ -88,11 +88,11 @@ const ProjectTemplateEditView = () => {
               type="primary"
               onClick={() => dispatch(togglePhaseDrawer())}
             >
-              Add Phase
+              {t('addPhaseButton')}
             </Button>
           ) : activeGroup === 'status' ? (
             <Button type="primary" onClick={() => dispatch(toggleDrawer())}>
-              Add Status
+              {t('addStatusButton')}
             </Button>
           ) : (
             ''
