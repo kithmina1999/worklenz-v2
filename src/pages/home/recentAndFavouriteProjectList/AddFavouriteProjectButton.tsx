@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { colors } from '../../../styles/colors';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { ProjectType } from '../../../types/project.types';
-import { toggleFavouriteProjectSelection } from '../../../features/projects/projectsSlice';
+import { toggleFavoriteProject } from '@/features/projects/projectsSlice';
 
 type AddFavouriteProjectButtonProps = {
   record: ProjectType;
@@ -20,7 +20,7 @@ const AddFavouriteProjectButton = ({
 
   // function for handle favourite project toggle
   const handleToggleFavoriteProject = () => {
-    dispatch(toggleFavouriteProjectSelection(record.projectId));
+    dispatch(toggleFavoriteProject(record.projectId));
   };
 
   // this useEffect handles the button color status when click  the favourite button

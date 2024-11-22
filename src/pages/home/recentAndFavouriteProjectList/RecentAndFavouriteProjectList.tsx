@@ -15,21 +15,18 @@ import React, { useState } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { ProjectType } from '../../../types/project.types';
 import AddFavouriteProjectButton from './AddFavouriteProjectButton';
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
 const RecentAndFavouriteProjectList = () => {
-  const [projectSegment, setProjectSegment] = useState<'Recent' | 'Favourites'>(
-    'Recent'
-  );
+  const [projectSegment, setProjectSegment] = useState<'Recent' | 'Favourites'>('Recent');
   const [isLoading, setIsLoading] = useState(false);
-  const projectsList = useAppSelector(
-    (state) => state.projectReducer.projects
-  );
+  const projectsList = useAppSelector(state => state.projectsReducer.projects);
 
   // this project list check wheather it's recent projects or favourite projects
   const activeProjectsList =
     projectSegment === 'Recent'
-      ? projectsList
-      : projectsList.filter((project) => project.isFavourite);
+      ? projectsList.data
+      : projectsList.data.filter(project => project.favorite);
 
   // function for handle refresh
   const handleRefresh = () => {
@@ -49,7 +46,7 @@ const RecentAndFavouriteProjectList = () => {
   };
 
   // table columns
-  const columns: TableProps<ProjectType>['columns'] = [
+  const columns: TableProps<IProjectViewModel>['columns'] = [
     {
       key: 'completeBtn',
       width: 32,
@@ -60,10 +57,7 @@ const RecentAndFavouriteProjectList = () => {
     {
       key: 'name',
       render: (record: ProjectType) => (
-        <Typography.Paragraph
-          key={record.projectId}
-          style={{ margin: 0, paddingInlineEnd: 6 }}
-        >
+        <Typography.Paragraph key={record.projectId} style={{ margin: 0, paddingInlineEnd: 6 }}>
           <Badge color={record.projectColor} style={{ marginInlineEnd: 4 }} />
           {record.projectName}
         </Typography.Paragraph>
@@ -88,9 +82,7 @@ const RecentAndFavouriteProjectList = () => {
           <Segmented<'Recent' | 'Favourites'>
             options={['Recent', 'Favourites']}
             defaultValue="Recent"
-            onChange={(value: 'Recent' | 'Favourites') =>
-              handleSegmentChange(value)
-            }
+            onChange={(value: 'Recent' | 'Favourites') => handleSegmentChange(value)}
           />
         </Flex>
       }
@@ -120,7 +112,7 @@ const RecentAndFavouriteProjectList = () => {
           ) : (
             <Table
               className="custom-two-colors-row-table"
-              rowKey={(record) => record.projectId}
+              rowKey="id"
               dataSource={activeProjectsList}
               columns={columns}
               showHeader={false}

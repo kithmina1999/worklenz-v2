@@ -25,7 +25,7 @@ const Homepage = () => {
         )}
       </Col>
 
-      {/* {isDesktop ? (
+      {isDesktop ? (
         <Flex
           gap={24}
           align="flex-start"
@@ -54,10 +54,8 @@ const Homepage = () => {
           <TodoList />
           <RecentAndFavouriteProjecList />
         </Flex>
-      )} */}
+      )}
 
-      {/* drawers */}
-      {/* create project drawer  */}
       <ProjectDrawer />
     </div>
   );
