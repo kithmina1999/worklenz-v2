@@ -7,6 +7,8 @@ import { DownOutlined } from '@ant-design/icons';
 import MembersReportsDrawerTabs from './MembersReportsDrawerTabs';
 import TimeWiseFilter from '../../../../pages/reporting/membersReports/TimeWiseFilter';
 import { useTranslation } from 'react-i18next';
+import MembersOverviewTasksStatsDrawer from './overviewTab/membersOverviewTasksStatsDrawer/MembersOverviewTasksStatsDrawer';
+import MembersOverviewProjectsStatsDrawer from './overviewTab/membersOverviewProjectsStatsDrawer/MembersOverviewProjectsStatsDrawer';
 
 type MembersReportsDrawerProps = {
   memberId: string | null;
@@ -72,6 +74,15 @@ const MembersReportsDrawer = ({ memberId }: MembersReportsDrawerProps) => {
     >
       {selectedMember && (
         <MembersReportsDrawerTabs memberId={selectedMember.id} />
+      )}
+
+      {/* members overview tasks stats drawer  */}
+      {selectedMember && (
+        <MembersOverviewTasksStatsDrawer memberId={selectedMember.id} />
+      )}
+      {/* members overview projects stats drawer  */}
+      {selectedMember && (
+        <MembersOverviewProjectsStatsDrawer memberId={selectedMember.id} />
       )}
     </Drawer>
   );

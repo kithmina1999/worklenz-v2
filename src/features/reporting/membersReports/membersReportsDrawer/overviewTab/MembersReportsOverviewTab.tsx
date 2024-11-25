@@ -9,7 +9,7 @@ type MembersReportsOverviewTabProps = {
 };
 
 const MembersReportsOverviewTab = ({
-  memberId = null,
+  memberId,
 }: MembersReportsOverviewTabProps) => {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
