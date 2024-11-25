@@ -32,6 +32,7 @@ import PhaseDrawer from '../../../features/projects/singleProject/phase/PhaseDra
 import StatusDrawer from '../../../features/projects/status/StatusDrawer';
 import UpdateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 import { avatarNamesMap } from '../../../shared/constants';
+import './ProjectView.css'
 
 const ProjectView = () => {
   const location = useLocation();
@@ -153,10 +154,9 @@ const ProjectView = () => {
             position: 'relative',
             right: '20px',
             top: '10px',
-            marginTop: '15px',
           }}
         >
-          <Badge status="success" dot />
+          <Badge status="success" dot className='profile-badge'/>
         </span>
       </div>
       {/* drawers  */}
