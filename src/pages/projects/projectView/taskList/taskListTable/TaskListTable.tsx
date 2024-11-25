@@ -209,10 +209,12 @@ const TaskListTable = ({
       // progress column
       case 'progress': {
         return task?.progress || task?.progress === 0 ? (
-          <TaskProgress
-            progress={task?.progress}
-            numberOfSubTasks={task?.subTasks?.length || 0}
-          />
+          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <TaskProgress
+              progress={task?.progress}
+              numberOfSubTasks={task?.subTasks?.length || 0}
+            />
+          </div>
         ) : (
           <div></div>
         );

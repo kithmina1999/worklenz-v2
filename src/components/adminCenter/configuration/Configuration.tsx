@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Form, Input, Row } from 'antd';
+import { Button, Card, Col, Divider, Form, Input, notification, Row } from 'antd';
 import React from 'react';
 import { RootState } from '../../../app/store';
 import { useAppSelector } from '../../../hooks/useAppSelector';
@@ -11,8 +11,19 @@ const Configuration: React.FC = () => {
   const name = 'Raveesha Dilanka';
   const emailAddress = 'raveeshadilanka1999@gmail.com';
 
+  const [api, contextHolder] = notification.useNotification()
+
+  const handleSave = () => {
+      api.open({
+        message: '',
+        description: 'Configuration Updated',
+        duration: 4.5,
+      });
+  }
+
   return (
     <div>
+      {contextHolder}
       <Card
         title={
           <span
@@ -150,7 +161,7 @@ const Configuration: React.FC = () => {
           <Row>
             <Col style={{ paddingLeft: '12px' }}>
               <Form.Item>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" onClick={handleSave}>
                   Save
                 </Button>
               </Form.Item>
