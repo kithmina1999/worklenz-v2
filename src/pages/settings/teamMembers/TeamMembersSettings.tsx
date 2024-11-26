@@ -338,6 +338,9 @@ const TeamMembersSettings = () => {
               showSizeChanger: true,
               defaultPageSize: 20,
             }}
+            scroll={{
+              x: 'max-content',
+            }}
             onRow={(record) => {
               return {
                 onMouseEnter: () => setHoverRow(record.memberId),

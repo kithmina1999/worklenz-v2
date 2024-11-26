@@ -13,8 +13,8 @@ export const navRoutes: NavRoutesType[] = [
     path: '/worklenz/projects',
   },
   {
-    name: 'schedules',
-    path: '/worklenz/schedules',
+    name: 'schedule',
+    path: '/worklenz/schedule',
   },
   {
     name: 'reporting',

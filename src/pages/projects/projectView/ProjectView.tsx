@@ -1,6 +1,19 @@
-import { PushpinFilled, PushpinOutlined } from '@ant-design/icons';
+import {
+  PushpinFilled,
+  PushpinOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons';
 
-import { Button, ConfigProvider, Flex, Tabs, TabsProps } from 'antd';
+import {
+  Avatar,
+  Badge,
+  Button,
+  ConfigProvider,
+  Flex,
+  Tabs,
+  TabsProps,
+  Tooltip,
+} from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import { colors } from '../../../styles/colors';
@@ -18,6 +31,8 @@ import CreateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/crea
 import PhaseDrawer from '../../../features/projects/singleProject/phase/PhaseDrawer';
 import StatusDrawer from '../../../features/projects/status/StatusDrawer';
 import UpdateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
+import { avatarNamesMap } from '../../../shared/constants';
+import './ProjectView.css'
 
 const ProjectView = () => {
   const location = useLocation();
@@ -122,6 +137,32 @@ const ProjectView = () => {
         onChange={handleTabChange}
         items={tabMenuItems}
       />
+      <div
+        style={{
+          position: 'relative',
+          bottom: '1270px',
+          zIndex: 999,
+          left: '97%',
+        }}
+      >
+        <Avatar size="small" style={{ backgroundColor: avatarNamesMap['R'] }}>
+          R
+        </Avatar>
+        <span style={{ position: 'relative', top: '-10px' }}>
+          <Tooltip title="Members who are active on this project will be displayed here.">
+            <QuestionCircleOutlined />
+          </Tooltip>
+        </span>
+        <span
+          style={{
+            position: 'relative',
+            right: '20px',
+            top: '10px',
+          }}
+        >
+          <Badge status="success" dot className='profile-badge'/>
+        </span>
+      </div>
       {/* drawers  */}
       {/* add project members drawer */}
       <ProjectMemberDrawer />
