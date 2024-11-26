@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { changeUserName } from '../../../features/user/userSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const ProfileSettings = () => {
   const [loading, setLoading] = useState(false);
@@ -24,6 +25,8 @@ const ProfileSettings = () => {
   // get user data from redux - user reducer
   const userDetails = useAppSelector((state) => state.userReducer);
   const dispatch = useAppDispatch();
+
+  useDocumentTitle('Profile Settings');
   // localization
   const { t } = useTranslation('profileSettings');
   const [form] = Form.useForm();

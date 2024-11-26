@@ -21,10 +21,13 @@ import { colors } from '../../../styles/colors';
 import { CategoryType } from '../../../types/categories.types';
 import CustomColordCategoryTag from '../../../features/settings/categories/CustomColordCategoryTag';
 import { deleteCategory } from '../../../features/settings/categories/categoriesSlice';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const CategoriesSettings = () => {
   // localization
   const { t } = useTranslation('categoriesSettings');
+
+  useDocumentTitle('Manage Categories');
 
   // get currently hover row
   const [hoverRow, setHoverRow] = useState<string | null>(null);

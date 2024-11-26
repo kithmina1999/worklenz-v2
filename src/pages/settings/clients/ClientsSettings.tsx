@@ -30,10 +30,13 @@ import { ClientType } from '../../../types/client.types';
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton';
 import UpdateClientDrawer from '../../../features/settings/client/UpdateClientDrawer';
 import { useTranslation } from 'react-i18next';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const ClientsSettings = () => {
   // localization
   const { t } = useTranslation('clientSettings');
+
+  useDocumentTitle('Manage Clients')
 
   // get currently hover row
   const [hoverRow, setHoverRow] = useState<string | null>(null);

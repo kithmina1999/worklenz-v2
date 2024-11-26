@@ -31,6 +31,7 @@ import {
 import UpdateJobTitlesDrawer from '../../../features/settings/job/UpdateJobTitlesDrawer';
 import { useTranslation } from 'react-i18next';
 import { colors } from '../../../styles/colors';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const JobTitlesSettings = () => {
   // localization
@@ -39,6 +40,8 @@ const JobTitlesSettings = () => {
   const [hoverRow, setHoverRow] = useState<string | null>(null);
   // get currently selected job id
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+
+  useDocumentTitle('Manage Job Titles');
 
   // get data from job reducer
   const jobTitlesList = useAppSelector((state) => state.jobReducer.jobsList);
