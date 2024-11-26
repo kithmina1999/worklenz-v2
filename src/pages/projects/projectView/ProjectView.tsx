@@ -80,6 +80,10 @@ const ProjectView = () => {
             <ConfigProvider wave={{ disabled: true }}>
               <Button
                 className="borderless-icon-btn"
+                style={{
+                  backgroundColor: colors.transparent,
+                  boxShadow: 'none',
+                }}
                 icon={
                   getFromLocalStorage('pinnedTab') === item.key ? (
                     <PushpinFilled
