@@ -1,3 +1,93 @@
-._2QjE6 {
-  margin-right: 12px;
+:root {
+  --odd-row-color: #fff;
+  --even-row-color: #f0f0f0;
+  --text-color: #181818;
+  --border: 1px solid #e0e0e0;
+  --stroke: #e0e0e0;
+}
+
+.dark-theme {
+  --odd-row-color: #181818;
+  --even-row-color: #3b3b3b;
+  --text-color: #fff;
+  --border: 1px solid #505050;
+  --stroke: #505050;
+}
+
+/* scroll bar size override  */
+._2k9Ys {
+  scrollbar-width: unset;
+}
+
+/* ----------------------------------------------------------------------- */
+/* task details side even rows  */
+._34SS0:nth-of-type(even) {
+  background-color: var(--even-row-color);
+}
+
+/* task details side header and body */
+._3_ygE {
+  border-top: var(--border);
+  border-left: var(--border);
+  position: relative;
+}
+._2B2zv {
+  border-bottom: var(--border);
+  border-left: var(--border);
+  position: relative;
+}
+
+._3ZbQT {
+  border: none;
+}
+
+._3_ygE::after,
+._2B2zv::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -25px;
+  width: 30px;
+  height: 100%;
+  box-shadow: inset 10px 0 8px -8px #00000026;
+}
+
+/* ----------------------------------------------------------------------- */
+/* calender side header  */
+._35nLX {
+  fill: var(--odd-row-color);
+  stroke: var(--stroke);
+  stroke-width: 1px;
+}
+
+/* calender side header texts  */
+._9w8d5,
+._2q1Kt {
+  fill: var(--text-color);
+}
+
+/* calender side odd rows  */
+._2dZTy:nth-child(odd) {
+  fill: var(--odd-row-color);
+}
+/* calender side even rows  */
+._2dZTy:nth-child(even) {
+  fill: var(--even-row-color);
+}
+
+/* calender side body row lines  */
+._3rUKi {
+  stroke: none;
+}
+
+/* calender side body ticks  */
+._RuwuK {
+  stroke: var(--stroke);
+  stroke-width: 1px;
+}
+
+/* calender side header ticks  */
+._1rLuZ {
+  stroke: var(--stroke);
+  stroke-width: 1px;
 }

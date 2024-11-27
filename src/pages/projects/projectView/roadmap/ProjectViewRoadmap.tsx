@@ -1,92 +1,109 @@
-import React, { useEffect, useState } from 'react';
-import { Gantt, Task, ViewMode } from 'gantt-task-react';
+import React, { useState } from 'react';
+import { Task, ViewMode, Gantt } from 'gantt-task-react';
+import { TimeFilter } from './TimeFilter';
 import 'gantt-task-react/dist/index.css';
 import './projectViewRoadmap.css';
-import { CaretDownOutlined } from '@ant-design/icons';
+import { getStartEndDateForProject, initTasks } from './helper';
+import 'gantt-task-react/dist/index.css';
+import { useAppDispatch } from '../../../../hooks/useAppDispatch';
+import { toggleUpdateTaskDrawer } from '../../../../features/tasks/taskSlice';
+import { Flex } from 'antd';
+import { useAppSelector } from '../../../../hooks/useAppSelector';
+import { colors } from '../../../../styles/colors';
 
+// Init
 const ProjectViewRoadmap = () => {
-  const initialTasks: Task[] = [
-    {
-      id: 'project-ceydigital',
-      name: 'Ceydigital',
-      start: new Date('2023-07-01'),
-      end: new Date('2024-12-31'),
-      type: 'project',
-      progress: 40,
-      hideChildren: false,
-    },
-    {
-      id: 'task-1',
-      name: 'UI Design',
-      start: new Date('2023-07-10'),
-      end: new Date('2023-08-15'),
-      type: 'task',
-      progress: 80,
-      project: 'project-ceydigital',
-    },
-    {
-      id: 'task-2',
-      name: 'Backend Development',
-      start: new Date('2023-08-20'),
-      end: new Date('2023-12-31'),
-      type: 'task',
-      progress: 50,
-      project: 'project-ceydigital',
-    },
-    {
-      id: 'task-3',
-      name: 'Frontend Development',
-      start: new Date('2023-09-01'),
-      end: new Date('2024-01-30'),
-      type: 'task',
-      progress: 30,
-      project: 'project-ceydigital',
-    },
-    {
-      id: 'task-4',
-      name: 'Testing & QA',
-      start: new Date('2024-02-01'),
-      end: new Date('2024-04-15'),
-      type: 'task',
-      progress: 0,
-      project: 'project-ceydigital',
-    },
-    {
-      id: 'task-5',
-      name: 'Deployment',
-      start: new Date('2024-05-01'),
-      end: new Date('2024-05-15'),
-      type: 'task',
-      progress: 0,
-      project: 'project-ceydigital',
-    },
-  ];
+  const [view, setView] = useState<ViewMode>(ViewMode.Day);
+  const [tasks, setTasks] = useState<Task[]>(initTasks());
+  const [isChecked, setIsChecked] = useState(true);
 
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
-  const handleExpanderClick = (task: Task) => {
-    const updatedTasks = tasks.map((t) =>
-      t.id === task.id ? { ...t, hideChildren: !t.hideChildren } : t
-    );
-    setTasks(updatedTasks);
+  const dispatch = useAppDispatch();
+
+  let columnWidth = 65;
+  if (view === ViewMode.Year) {
+    columnWidth = 350;
+  } else if (view === ViewMode.Month) {
+    columnWidth = 300;
+  } else if (view === ViewMode.Week) {
+    columnWidth = 250;
+  }
+
+  const handleTaskChange = (task: Task) => {
+    console.log('On date change Id:' + task.id);
+    let newTasks = tasks.map((t) => (t.id === task.id ? task : t));
+    if (task.project) {
+      const [start, end] = getStartEndDateForProject(newTasks, task.project);
+      const project =
+        newTasks[newTasks.findIndex((t) => t.id === task.project)];
+      if (
+        project.start.getTime() !== start.getTime() ||
+        project.end.getTime() !== end.getTime()
+      ) {
+        const changedProject = { ...project, start, end };
+        newTasks = newTasks.map((t) =>
+          t.id === task.project ? changedProject : t
+        );
+      }
+    }
+    setTasks(newTasks);
   };
 
-  useEffect(() => {
-    const expandDiv = document.querySelector('._2QjE6');
-    if (expandDiv) {
-      expandDiv.innerHTML = `<CaretDownOutlined />`;
-      console.log('chnaged');
+  const handleTaskDelete = (task: Task) => {
+    const conf = window.confirm('Are you sure about ' + task.name + ' ?');
+    if (conf) {
+      setTasks(tasks.filter((t) => t.id !== task.id));
     }
-  }, []);
+    return conf;
+  };
+
+  const handleProgressChange = async (task: Task) => {
+    setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
+    console.log('On progress change Id:' + task.id);
+  };
+
+  const handleDblClick = (task: Task) => {
+    dispatch(toggleUpdateTaskDrawer());
+    console.log('On Double Click event Id:' + task.id);
+  };
+
+  const handleClick = (task: Task) => {
+    console.log('On Click event Id:' + task.id);
+  };
+
+  const handleSelect = (task: Task, isSelected: boolean) => {
+    console.log(task.name + ' has ' + (isSelected ? 'selected' : 'unselected'));
+  };
+
+  const handleExpanderClick = (task: Task) => {
+    setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
+    console.log('On expander click Id:' + task.id);
+  };
 
   return (
-    <div style={{ maxWidth: '100%', overflowX: 'auto' }}>
+    <Flex vertical className={themeMode === 'dark' ? 'dark-theme' : ''}>
+      <TimeFilter
+        onViewModeChange={(viewMode) => setView(viewMode)}
+        onViewListChange={setIsChecked}
+        isChecked={isChecked}
+      />
+
       <Gantt
         tasks={tasks}
-        viewMode={ViewMode.Day}
+        viewMode={view}
+        onDateChange={handleTaskChange}
+        onDelete={handleTaskDelete}
+        onProgressChange={handleProgressChange}
+        onDoubleClick={handleDblClick}
+        onClick={handleClick}
+        onSelect={handleSelect}
         onExpanderClick={handleExpanderClick}
+        listCellWidth={isChecked ? '155px' : ''}
+        columnWidth={columnWidth}
+        todayColor={`rgba(64, 150, 255, 0.2)`}
       />
-    </div>
+    </Flex>
   );
 };
 
