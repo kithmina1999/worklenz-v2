@@ -7,6 +7,7 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { addTask, addTaskToTop } from '../../../features/tasks/taskSlice';
 import { setTaskCardDisabled } from '../../../features/board/createCardSlice';
 import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
 interface StatusProps {
   status: string;
   position: 'top' | 'bottom';
@@ -22,6 +23,7 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
     const [taskName, setTaskName] = useState('');
     const dispatch = useAppDispatch();
     const themeMode = useAppSelector((state) => state.themeReducer.mode);
+    const {t} = useTranslation('kanbanBoard')
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setCharacterLength(e.target.value.length);
@@ -183,7 +185,7 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
             <div style={{ height: '100%', width: '100%' }}>
               <DatePicker
                 className={`custom-placeholder ${!dueDate ? 'create-task-empty-date' : isToday ? 'selected-date' : isTomorrow ? 'selected-date' : isItPrevDate ? 'red-colored' : ''}`}
-                placeholder="Due date"
+                placeholder={t('dueDate')}
                 style={{
                   fontSize: '12px',
                   opacity: dueDate ? 1 : 0,
@@ -246,7 +248,7 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
             style={{ marginRight: '8px', fontSize: '12px' }}
             onClick={handleClose}
           >
-            Cancel
+            {t('cancel')}
           </Button>
           <Button
             size="small"
@@ -254,7 +256,7 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
             style={{ fontSize: '12px' }}
             onClick={handleAddTask}
           >
-            Add Task
+            {t('addTask')}
           </Button>
         </div>
       </div>
