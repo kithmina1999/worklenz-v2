@@ -37,6 +37,7 @@ const AddFavouriteProjectButton = ({
     <ConfigProvider wave={{ disabled: true }}>
       <Tooltip title={'Add to favourites'}>
         <Button
+          type='text'
           className="borderless-icon-btn"
           style={{ backgroundColor: colors.transparent }}
           shape="circle"

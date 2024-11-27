@@ -59,6 +59,11 @@
   color: #181818;
 }
 
+.custom-list-item.dark:hover {
+  background-color: #424242 !important;
+  color: rgba(255, 255, 255, 0.85);
+}
+
 /* dropdown render card manual shadow 
     used in project view filters
 */
