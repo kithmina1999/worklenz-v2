@@ -54,10 +54,9 @@ const TaskList = () => {
     <Flex vertical gap={16}>
       <TaskListFilters position="list" />
       <Skeleton active loading={loadingGroups}>
-        {taskGroups.map(group => (
-          // <TaskListTableWrapper taskList={group} groupId={group.id} name={group.name} color={group.color_code} key={group.id}></TaskListTableWrapper>
+        {taskGroups.map((group: ITaskListGroup) => (
           <OptimizedTaskListTable
-            taskList={group}
+            taskListGroup={group}
             tableId={group.id}
             visibleColumns={visibleColumns}
             onTaskSelect={onTaskSelect}

@@ -1,19 +1,19 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Avatar, Checkbox, DatePicker, Flex, Tag, Tooltip, Typography } from 'antd';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { Checkbox, Flex, Tag, Tooltip } from 'antd';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { RenderFunction } from 'antd/es/_util/getRenderPropValue';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { ITaskListGroup } from '@/types/tasks/taskList.types';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
-const OptimizedTaskListTable = ({
-  taskList,
-  tableId,
+const TaskListTable = ({
+  taskListGroup,
   visibleColumns,
   onTaskSelect,
   onTaskExpand
 }: {
-  taskList: any;
+  taskListGroup: ITaskListGroup;
   tableId: string;
-  visibleColumns: Array<{key: string; width: number}>;
+  visibleColumns: Array<{ key: string; width: number }>;
   onTaskSelect?: (taskId: string) => void;
   onTaskExpand?: (taskId: string) => void;
 }) => {
@@ -21,17 +21,17 @@ const OptimizedTaskListTable = ({
   const tableRef = useRef<HTMLDivElement | null>(null);
   const parentRef = useRef<HTMLDivElement | null>(null);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  
+
   // Memoize all tasks including subtasks for virtualization
   const flattenedTasks = useMemo(() => {
-    return taskList.tasks.reduce((acc: any[], task: { sub_tasks: any[]; }) => {
+    return taskListGroup.tasks.reduce((acc: IProjectTask[], task: IProjectTask) => {
       acc.push(task);
       if (task.sub_tasks?.length) {
         acc.push(...task.sub_tasks.map((st: any) => ({ ...st, isSubtask: true })));
       }
       return acc;
     }, []);
-  }, [taskList.tasks]);
+  }, [taskListGroup.tasks]);
 
   // Virtual row renderer
   const rowVirtualizer = useVirtualizer({
@@ -42,7 +42,7 @@ const OptimizedTaskListTable = ({
   });
 
   // Memoize cell render functions
-  const renderCell = useCallback((columnKey: string | number, task: { task_key: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | RenderFunction | null | undefined; name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }, isSubtask = false) => {
+  const renderCell = useCallback((columnKey: string | number, task: IProjectTask, isSubtask = false) => {
     const cellContent = {
       taskId: () => {
         const key = task.task_key?.toString() || '';
@@ -89,13 +89,13 @@ const OptimizedTaskListTable = ({
   }, []);
 
   return (
-    <div 
+    <div
       ref={parentRef}
       className="h-[400px] overflow-auto"
       onScroll={handleScroll}
     >
       {TableHeader}
-      
+
       <div
         ref={tableRef}
         style={{
@@ -109,26 +109,23 @@ const OptimizedTaskListTable = ({
           return (
             <div
               key={task.id}
-              className="absolute top-0 left-0 flex w-full border-b"
+              className="absolute top-0 left-0 flex w-full border-b hover:bg-gray-50 dark:hover:bg-gray-800"
               style={{
                 height: 42,
                 transform: `translateY(${virtualRow.start}px)`,
               }}
-              onMouseEnter={() => setHoverRow(task.id)}
-              onMouseLeave={() => setHoverRow(null)}
             >
               <div className="sticky left-0 z-10 w-8 flex items-center justify-center">
-                <Checkbox checked={task.selected} />
+                {/* <Checkbox checked={task.selected} /> */}
               </div>
               {visibleColumns.map(column => (
                 <div
                   key={column.key}
-                  className={`flex items-center px-3 border-r ${
-                    hoverRow === task.id ? 'bg-gray-50 dark:bg-gray-800' : ''
-                  }`}
+                  className={`flex items-center px-3 border-r ${hoverRow === task.id ? 'bg-gray-50 dark:bg-gray-800' : ''
+                    }`}
                   style={{ width: column.width }}
                 >
-                  {renderCell(column.key, task, task.isSubtask)}
+                  {renderCell(column.key, task, task.is_sub_task)}
                 </div>
               ))}
             </div>
@@ -139,4 +136,4 @@ const OptimizedTaskListTable = ({
   );
 };
 
-export default OptimizedTaskListTable;
+export default TaskListTable;
