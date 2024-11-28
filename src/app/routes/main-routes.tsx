@@ -5,7 +5,7 @@ import ProjectList from '@/pages/projects/project-list';
 import ProjectView from '@/pages/projects/project-view/project-view';
 import settingsRoutes from './settings-routes';
 import adminCenterRoutes from './admin-center-routes';
-import Schedule from '@/pages/schedule/Schedule';
+import Schedule from '@/pages/schedule/schedule';
 
 const mainRoutes: RouteObject[] = [
   {

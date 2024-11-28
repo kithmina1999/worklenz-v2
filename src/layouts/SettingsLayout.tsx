@@ -1,5 +1,5 @@
 import { Flex, Typography } from 'antd';
-import SettingSidebar from '../pages/settings/sidebar/SettingSidebar';
+import SettingsSidebar from '../pages/settings/sidebar/settings-sidebar';
 import { Outlet } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 
@@ -22,7 +22,7 @@ const SettingsLayout = () => {
           }}
         >
           <Flex style={{ width: '100%', maxWidth: 240 }}>
-            <SettingSidebar />
+            <SettingsSidebar />
           </Flex>
           <Flex style={{ width: '100%' }}>
             <Outlet />
@@ -36,7 +36,7 @@ const SettingsLayout = () => {
             marginBlockStart: 24,
           }}
         >
-          <SettingSidebar />
+          <SettingsSidebar />
           <Outlet />
         </Flex>
       )}

@@ -3,7 +3,7 @@ import ReportingLayout from '@/layouts/ReportingLayout';
 import {
   ReportingMenuItems,
   reportingsItems,
-} from '@/lib/reporting/reportingConstantants';
+} from '@/lib/reporting/reporting-constants';
 
 //  function to flatten nested menu items
 const flattenItems = (items: ReportingMenuItems[]): ReportingMenuItems[] => {

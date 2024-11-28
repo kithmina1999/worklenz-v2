@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import logger from '@/utils/errorLogger';
-import { projectCategoriesApiService } from '@/api/projects/lookups/projectCategories.api.service';
+import { categoriesApiService } from '@api/settings/categories/categories.api.service';
 import { IProjectCategoryViewModel } from '@/types/project/projectCategory.types';
 
 type ProjectCategoryState = {
@@ -14,7 +14,7 @@ export const fetchProjectCategories = createAsyncThunk(
   'projectCategories/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await projectCategoriesApiService.getCategories();
+      const response = await categoriesApiService.getCategories();
       return response.body;
     } catch (error) {
       logger.error('Fetch Project Categories', error);
@@ -30,7 +30,7 @@ export const createProjectCategory = createAsyncThunk(
   'projectCategories/create',
   async (category: Partial<IProjectCategoryViewModel>, { rejectWithValue }) => {
     try {
-      const response = await projectCategoriesApiService.createCategory(category);
+      const response = await categoriesApiService.createCategory(category);
       return response.body;
     } catch (error) {
       logger.error('Create Project Category', error);
@@ -46,7 +46,7 @@ export const updateProjectCategory = createAsyncThunk(
   'projectCategories/update',
   async (category: IProjectCategoryViewModel, { rejectWithValue }) => {
     try {
-      const response = await projectCategoriesApiService.updateCategory(category);
+      const response = await categoriesApiService.updateCategory(category);
       return response.body;
     } catch (error) {
       logger.error('Update Project Category', error);
@@ -62,7 +62,7 @@ export const deleteProjectCategory = createAsyncThunk(
   'projectCategories/delete',
   async (id: string, { rejectWithValue }) => {
     try {
-      await projectCategoriesApiService.deleteCategory(id);
+      await categoriesApiService.deleteCategory(id);
       return id;
     } catch (error) {
       logger.error('Delete Project Category', error);

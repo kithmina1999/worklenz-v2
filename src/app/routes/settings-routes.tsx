@@ -1,6 +1,6 @@
 import { RouteObject } from 'react-router-dom';
 import SettingsLayout from '@/layouts/SettingsLayout';
-import { settingsItems } from '@/lib/settings/settingsConstants';
+import { settingsItems } from '@/lib/settings/settings-constants';
 
 const settingsRoutes: RouteObject[] = [
   {

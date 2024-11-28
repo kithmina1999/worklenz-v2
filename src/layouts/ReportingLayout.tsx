@@ -17,9 +17,9 @@ import {
   RightCircleOutlined,
 } from '@ant-design/icons';
 import { themeWiseColor } from '../utils/themeWiseColor';
-import ReportingSider from '../pages/reporting/sidebar/ReportingSider';
+import ReportingSider from '../pages/reporting/sidebar/reporting-sider';
 import { Outlet } from 'react-router-dom';
-import ReportingCollapsedButton from '../pages/reporting/sidebar/ReportingCollapsedButton';
+import ReportingCollapsedButton from '../pages/reporting/sidebar/reporting-collapsed-button';
 
 const ReportingLayout = () => {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);

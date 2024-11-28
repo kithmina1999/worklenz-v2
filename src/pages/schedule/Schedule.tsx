@@ -1,16 +1,10 @@
-import {
-  Button,
-  DatePicker,
-  DatePickerProps,
-  Select,
-  Space,
-} from 'antd';
+import { Button, DatePicker, DatePickerProps, Select, Space } from 'antd';
 import React, { useState } from 'react';
 import Team from '../../components/schedule/team/Team';
 import { SettingOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { toggleSettingsDrawer } from '../../features/schedule/scheduleSlice';
-import ScheduleSettingsDrawer from '../../features/schedule/ScheduleSettingsDrawer';
+import { toggleSettingsDrawer } from '@features/schedule/scheduleSlice';
+import ScheduleSettingsDrawer from '@features/schedule/ScheduleSettingsDrawer';
 import dayjs from 'dayjs';
 
 const { Option } = Select;
@@ -18,9 +12,9 @@ const { Option } = Select;
 type PickerType = 'week' | 'month';
 
 const PickerWithType = ({
-  type,
-  onChange,
-}: {
+                          type,
+                          onChange,
+                        }: {
   type: PickerType;
   onChange: DatePickerProps['onChange'];
 }) => {
@@ -41,7 +35,7 @@ const Schedule: React.FC = () => {
     if (type === 'month') {
       selectedDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
     }
-    
+
     setDate(selectedDate);
   };
 
@@ -70,7 +64,7 @@ const Schedule: React.FC = () => {
             />
           </Space>
         </div>
-        <Button size='small' shape='circle' onClick={() => dispatch(toggleSettingsDrawer())}>
+        <Button size="small" shape="circle" onClick={() => dispatch(toggleSettingsDrawer())}>
           <SettingOutlined />
         </Button>
       </div>
