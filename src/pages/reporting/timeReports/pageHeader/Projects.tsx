@@ -1,7 +1,6 @@
 import { CaretDownFilled } from "@ant-design/icons";
-import { Button, Divider, Dropdown, Input, MenuProps } from "antd";
+import { Button, Checkbox, Divider, Dropdown, Input, MenuProps } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
-import { Checkbox } from "antd/lib";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 

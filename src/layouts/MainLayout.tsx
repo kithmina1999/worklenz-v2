@@ -36,7 +36,7 @@ const MainLayout = () => {
             display: 'flex',
             alignItems: 'center',
             padding: 0,
-            borderBottom: '1px solid #303030'
+            borderBottom: themeMode === 'dark' ? '1px solid #303030' : ''
           }}
         >
           <Navbar />

@@ -95,3 +95,11 @@
 .custom-reporting-sider .ant-menu:nth-child(2) .ant-menu-item {
   padding-inline-start: 32px !important;
 }
+
+.ql-snow .ql-picker {
+  color: #6C757D !important;
+}
+
+.ql-snow .ql-stroke {
+  stroke: #6C757D !important;
+}

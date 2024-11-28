@@ -32,7 +32,8 @@ import PhaseDrawer from '../../../features/projects/singleProject/phase/PhaseDra
 import StatusDrawer from '../../../features/projects/status/StatusDrawer';
 import UpdateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 import { avatarNamesMap } from '../../../shared/constants';
-import './ProjectView.css'
+import './ProjectView.css';
+import { PageHeader } from '@ant-design/pro-components';
 
 const ProjectView = () => {
   const location = useLocation();
@@ -121,44 +122,49 @@ const ProjectView = () => {
       children: item.element,
     })),
   ];
-
+  
   return (
     <div style={{ marginBlock: 80, minHeight: '80vh' }}>
       {/* page header for the project view  */}
       <ProjectViewHeader />
 
       {/* tabs  */}
-      <Tabs
-        activeKey={activeTab}
-        onChange={handleTabChange}
-        items={tabMenuItems}
-      />
       <div
         style={{
-          position: 'relative',
-          bottom: '1270px',
-          zIndex: 999,
-          left: '97%',
+          display: 'flex',
         }}
       >
-        <Avatar size="small" style={{ backgroundColor: avatarNamesMap['R'] }}>
-          R
-        </Avatar>
-        <span style={{ position: 'relative', top: '-10px' }}>
-          <Tooltip title="Members who are active on this project will be displayed here.">
-            <QuestionCircleOutlined />
-          </Tooltip>
-        </span>
-        <span
-          style={{
-            position: 'relative',
-            right: '20px',
-            top: '10px',
-          }}
-        >
-          <Badge status="success" dot className='profile-badge'/>
-        </span>
+        {/* Tabs container */}
+        <div style={{ flex: 1, overflow: 'auto', minWidth: '0' }}>
+          <Tabs
+            activeKey={activeTab}
+            onChange={handleTabChange}
+            items={tabMenuItems}
+          />
+        </div>
+
+        {/* Right-side content */}
+        <div>
+          <Avatar size="small" style={{ backgroundColor: avatarNamesMap['R'] }}>
+            R
+          </Avatar>
+          <span style={{ position: 'relative', top: '-10px' }}>
+            <Tooltip title="Members who are active on this project will be displayed here.">
+              <QuestionCircleOutlined />
+            </Tooltip>
+          </span>
+          <span
+            style={{
+              position: 'relative',
+              right: '20px',
+              top: '10px',
+            }}
+          >
+            <Badge status="success" dot className="profile-badge" />
+          </span>
+        </div>
       </div>
+
       {/* drawers  */}
       {/* add project members drawer */}
       <ProjectMemberDrawer />

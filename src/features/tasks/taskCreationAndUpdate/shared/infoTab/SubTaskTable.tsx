@@ -184,7 +184,7 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
             <Input
               onFocus={() => setIsEdit(true)}
               value="+ Add Subtask"
-              className={`border-none hover:bg-[#edebf0] hover:text-[#1890ff]`}
+              className={`border-none ${themeMode === 'dark' ? `hover:bg-[#343a40]` : `hover:bg-[#edebf0]`} hover:text-[#1890ff]`}
             />
           )}
         </div>

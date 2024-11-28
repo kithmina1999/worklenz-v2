@@ -1,5 +1,6 @@
 import {
   ArrowLeftOutlined,
+  BellFilled,
   BellOutlined,
   CalendarOutlined,
   DownOutlined,
@@ -23,6 +24,8 @@ import { toggleCreateTaskDrawer } from '../../../features/tasks/taskSlice';
 const ProjectViewHeader = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  const [isSubcribe, setIsSubcribe] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
@@ -140,8 +143,8 @@ const ProjectViewHeader = () => {
             title={'Receive a project summary every evening.'}
             trigger={'hover'}
           >
-            <Button shape="round" icon={<BellOutlined />}>
-              Subscribe
+            <Button shape="round" icon={isSubcribe ? <BellFilled /> : <BellOutlined />} onClick={() => setIsSubcribe(!isSubcribe)}>
+              {isSubcribe ? 'Unsubscribe' : 'Subscribe'}
             </Button>
           </Tooltip>
 
