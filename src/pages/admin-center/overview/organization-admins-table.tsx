@@ -1,8 +1,8 @@
 import { Table, TableProps } from 'antd';
 import React from 'react';
-import './OrganizationAdminsTable.css';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { RootState } from '../../../app/store';
+import './organization-admins-table.css';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { RootState } from '@/app/store';
 
 interface DataType {
   key: string;

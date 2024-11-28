@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import logo from '@/assets/images/logo.png';
 import { Space, Steps, Typography } from 'antd';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+
+import logo from '@/assets/images/logo.png';
+import logoDark from '@/assets/images/logo-dark-mode.png';
 import OrganizationNameForm from '@/components/accountSetup/organizationName/OrgnizationNameForm';
 import CreateFirstProjectForm from '@/components/accountSetup/createFirstProject/create-first-project-form';
 import CreateFirstTasks from '@/components/accountSetup/createFirstTasks/CreateFirstTasks';
 import InviteInitialTeamMembers from '@/components/accountSetup/inviteInitialTeamMembers/InviteInitialTeamMembers';
 import './AccountSetup.css';
-import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
-import { useTranslation } from 'react-i18next';
 
 const { Title } = Typography;
 
@@ -68,7 +70,7 @@ const AccountSetup: React.FC = () => {
       }}
     >
       <div>
-        <img src={logo} alt="Logo" width={235} height={50} />
+        <img src={themeMode === 'dark' ? logoDark : logo} alt="Logo" width={235} height={50} />
       </div>
       <Title
         level={5}

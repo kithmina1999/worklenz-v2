@@ -1,7 +1,7 @@
 import UserGreetingWithTime from './UserGreetingWithTime';
-import TasksList from './taskList/TasksList';
+import TasksList from '@/pages/home/task-list/tasks-list';
 import TodoList from './todoList/TodoList';
-import RecentAndFavouriteProjecList from './recentAndFavouriteProjectList/RecentAndFavouriteProjectList';
+import RecentAndFavouriteProjecList from '@/pages/home/recent-and-favourite-project-list/recent-and-favourite-project-list';
 import { Col, Flex } from 'antd';
 import { useMediaQuery } from 'react-responsive';
 import ProjectDrawer from '../../components/projects/projectDrawer/ProjectDrawer';

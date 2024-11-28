@@ -87,7 +87,7 @@ const TaskListTable = ({
       dispatch(deselectAll());
     } else {
       //   const allTaskIds =
-      //     taskList?.flatMap((task) => [
+      //     task-list?.flatMap((task) => [
       //       task.taskId,
       //       ...(task.subTasks?.map((subtask) => subtask.taskId) || []),
       //     ]) || [];

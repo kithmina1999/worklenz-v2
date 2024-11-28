@@ -4,8 +4,8 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
-import { adminCenterItems } from '../adminCenterConstants';
-import './AdminCenterSidebar.css';
+import { adminCenterItems } from '../admin-center-constants';
+import './admin-center-sidebar.css';
 
 const AdminCenterSidebar: React.FC = () => {
   // localization
