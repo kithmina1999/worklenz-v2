@@ -1,13 +1,13 @@
 import React from 'react';
-import { useAppSelector } from '../../../../hooks/useAppSelector';
-import { TaskType } from '../../../../types/task.types';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { TaskType } from '@/types/task.types';
 import TaskListFilters from '../taskList/taskListFilters/TaskListFilters';
 import { Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import CommonStatusSection from '../../../../components/board/commonStatusSection/CommonStatusSection';
 import { useMediaQuery } from 'react-responsive';
-import { toggleDrawer } from '../../../../features/projects/status/StatusSlice';
+import { toggleDrawer } from '@features/projects/status/StatusSlice';
 
 const ProjectViewBoard: React.FC = () => {
   const dataSource: TaskType[] = useAppSelector(

@@ -12,9 +12,9 @@ import {
   Typography,
 } from 'antd';
 import React, { useState } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { ProjectType } from '../../../types/project.types';
-import AddFavouriteProjectButton from './AddFavouriteProjectButton';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { ProjectType } from '@/types/project.types';
+import AddFavouriteProjectButton from './add-favourite-project-button';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
 const RecentAndFavouriteProjectList = () => {

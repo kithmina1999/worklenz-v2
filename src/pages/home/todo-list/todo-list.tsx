@@ -13,14 +13,14 @@ import {
   Typography,
 } from 'antd';
 import React, { useRef, useState } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { TodoType } from '../../../types/todo.types';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { TodoType } from '@/types/todo.types';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
-import { addTodo } from '../../../features/todo/todoSlice';
-import EmptyListPlaceholder from '../../../components/EmptyListPlaceholder';
+import { addTodo } from '@features/todo/todoSlice';
+import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
 import { nanoid } from '@reduxjs/toolkit';
-import TodoDoneButton from './TodoDoneButton';
+import TodoDoneButton from './todo-done-button';
 
 const TodoList = () => {
   const todoList = useAppSelector((state) => state.todoReducer.todoList);

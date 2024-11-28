@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 const NotFoundPage = () => {
   // Localization
-  const { t } = useTranslation('notFoundPage');
+  const { t } = useTranslation('404-page');
 
   return (
     <Layout

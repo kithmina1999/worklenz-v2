@@ -1,7 +1,7 @@
-import StatusGroupTables from "@/pages/projects/projectView/taskList/statusTables/StatusGroupTables";
+import StatusGroupTables from "@/pages/projects/project-view/taskList/statusTables/StatusGroupTables";
 import { TaskType } from "@/types/task.types";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import GroupByFilterDropdown from "@/pages/projects/projectView/taskList/taskListFilters/GroupByFilterDropdown";
+import GroupByFilterDropdown from "@/pages/projects/project-view/taskList/taskListFilters/GroupByFilterDropdown";
 
 const WithStartAndEndDates = () => {
     const dataSource: TaskType[] = useAppSelector(

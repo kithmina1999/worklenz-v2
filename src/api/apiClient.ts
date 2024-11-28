@@ -3,12 +3,12 @@ import axios from 'axios';
 import alertService from '@/services/alerts/alertService';
 
 const getCsrfToken = (): string | null => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split('; XSRF-TOKEN=');
-  if (parts.length === 2) {
-    return decodeURIComponent(parts.pop()?.split(';').shift() || '');
-  }
-  return null;
+  return decodeURIComponent(
+    document.cookie
+      .split('; ')
+      .find((cookie) => cookie.startsWith('XSRF-TOKEN='))
+      ?.split('=')[1] || ''
+  );
 };
 
 const apiClient = axios.create({
@@ -25,10 +25,9 @@ apiClient.interceptors.request.use(
   config => {
     const token = getCsrfToken();
     if (token) {
-      const decodedToken = decodeURIComponent(token);
-      config.headers['X-CSRF-Token'] = decodedToken;
-      config.headers['X-XSRF-TOKEN'] = decodedToken;
-      config.headers['XSRF-TOKEN'] = decodedToken;
+      config.headers['X-CSRF-Token'] = token;
+      config.headers['X-XSRF-TOKEN'] = token;
+      config.headers['XSRF-TOKEN'] = token;
     }
     return config;
   },
@@ -56,13 +55,13 @@ apiClient.interceptors.response.use(
     return response;
   },
   async error => {
-    // Handle errors
     const { status, data } = error.response || {};
     const errorMessage = data?.message || 'An unexpected error occurred';
-
+    const errorTitle = data?.title || 'Error';
+  
     // Show error notification
-    alertService.error('Error', errorMessage);
-
+    alertService.error(errorTitle, errorMessage);
+  
     // Development logging
     if (import.meta.env.VITE_APP_ENV === 'development') {
       console.error('API Error:', {
@@ -72,7 +71,7 @@ apiClient.interceptors.response.use(
         cookies: document.cookie,
       });
     }
-
+  
     return Promise.reject(error);
   }
 );

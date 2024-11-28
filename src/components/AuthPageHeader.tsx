@@ -1,6 +1,7 @@
 import { Flex, Typography } from 'antd';
-import React from 'react';
 import logo from '../assets/images/logo.png';
+import logoDark from '@/assets/images/logo-dark-mode.png';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 type AuthPageHeaderProp = {
   description: string;
@@ -8,10 +9,11 @@ type AuthPageHeaderProp = {
 
 // this page header used in only in auth pages
 const AuthPageHeader = ({ description }: AuthPageHeaderProp) => {
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
   return (
     <Flex vertical align="center" gap={8} style={{ marginBottom: 24 }}>
       <img
-        src={logo}
+        src={themeMode === 'dark' ? logoDark : logo}
         alt="worklenz logo"
         style={{ width: '100%', maxWidth: 220 }}
       />

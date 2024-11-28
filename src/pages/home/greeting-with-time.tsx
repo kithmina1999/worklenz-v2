@@ -5,7 +5,7 @@ import { greetingString } from '../../utils/greetingString';
 import dayjs from 'dayjs';
 import { useAppSelector } from '../../hooks/useAppSelector';
 
-const UserGreetingWithTime = () => {
+const GreetingWithTime = () => {
   // get user data from redux - user reducer
   const userDetails = useAppSelector((state) => state.userReducer);
   // get the first name from the user details
@@ -35,4 +35,4 @@ const UserGreetingWithTime = () => {
   );
 };
 
-export default UserGreetingWithTime;
+export default GreetingWithTime;

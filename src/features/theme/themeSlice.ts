@@ -1,38 +1,52 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type ThemeType = 'light' | 'dark';
 
-type ThemeState = {
+interface ThemeState {
   mode: ThemeType;
   isInitialized: boolean;
-};
+}
 
 const isBrowser = typeof window !== 'undefined';
 
-// Get preloaded theme state from window
-const getPreloadedTheme = (): ThemeType => {
-  if (!isBrowser) return 'light';
-  return (window as any).__THEME_STATE__ || 'light';
-};
+const getPreloadedTheme = (): ThemeType => 
+  !isBrowser ? 'light' : ((window as any).__THEME_STATE__ || 'light');
 
-const getSystemTheme = (): ThemeType => {
-  if (!isBrowser) return 'light';
-  return window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
-};
+const getSystemTheme = (): ThemeType =>
+  !isBrowser ? 'light' : 
+  window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
 const getThemeModeFromLocalStorage = (): ThemeType => {
   if (!isBrowser) return 'light';
   try {
-    const savedTheme = localStorage.getItem('theme') as ThemeType | null;
-    return savedTheme || getSystemTheme();
-  } catch (error) {
+    return localStorage.getItem('theme') as ThemeType || getSystemTheme();
+  } catch {
     return 'light';
   }
 };
 
-const saveThemeModeToLocalStorage = (themeMode: ThemeType) => {
+const updateDocumentTheme = (themeMode: ThemeType): void => {
+  if (!isBrowser) return;
+  
+  const root = document.documentElement;
+  const oppositeTheme = themeMode === 'dark' ? 'light' : 'dark';
+  const themeColor = themeMode === 'dark' ? '#181818' : '#ffffff';
+  
+  [root, document.body].forEach(element => {
+    element.classList.remove(oppositeTheme);
+    element.classList.add(themeMode);
+  });
+  
+  root.style.colorScheme = themeMode;
+  
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', themeColor);
+    
+  (window as any).__THEME_STATE__ = themeMode;
+};
+
+const saveThemeModeToLocalStorage = (themeMode: ThemeType): void => {
   if (!isBrowser) return;
   try {
     localStorage.setItem('theme', themeMode);
@@ -42,34 +56,6 @@ const saveThemeModeToLocalStorage = (themeMode: ThemeType) => {
   }
 };
 
-const updateDocumentTheme = (themeMode: ThemeType) => {
-  if (!isBrowser) return;
-  
-  // Update root element
-  const root = document.documentElement;
-  const oppositeTheme = themeMode === 'dark' ? 'light' : 'dark';
-  
-  root.classList.remove(oppositeTheme);
-  root.classList.add(themeMode);
-  
-  // Update body
-  document.body.classList.remove(oppositeTheme);
-  document.body.classList.add(themeMode);
-  
-  // Update color scheme
-  root.style.colorScheme = themeMode;
-  
-  // Update theme color
-  const themeColor = themeMode === 'dark' ? '#181818' : '#ffffff';
-  document
-    .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', themeColor);
-    
-  // Store theme for page transitions
-  (window as any).__THEME_STATE__ = themeMode;
-};
-
-// Initialize with preloaded state
 const initialState: ThemeState = {
   mode: getPreloadedTheme(),
   isInitialized: false
@@ -79,15 +65,15 @@ const themeSlice = createSlice({
   name: 'themeReducer',
   initialState,
   reducers: {
-    toggleTheme: (state) => {
+    toggleTheme: (state: ThemeState) => {
       state.mode = state.mode === 'light' ? 'dark' : 'light';
       saveThemeModeToLocalStorage(state.mode);
     },
-    setTheme: (state, action) => {
+    setTheme: (state: ThemeState, action: PayloadAction<ThemeType>) => {
       state.mode = action.payload;
       saveThemeModeToLocalStorage(state.mode);
     },
-    initializeTheme: (state) => {
+    initializeTheme: (state: ThemeState) => {
       if (!state.isInitialized) {
         state.mode = getThemeModeFromLocalStorage();
         state.isInitialized = true;

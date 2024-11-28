@@ -10,8 +10,8 @@ import {
   Typography,
 } from 'antd';
 import React, { useState } from 'react';
-import { filesData, FilesDataType } from './filesDate';
-import { colors } from '../../../../styles/colors';
+import { filesData, FilesDataType } from './files-date';
+import { colors } from '@/styles/colors';
 import {
   AppstoreOutlined,
   BarsOutlined,
@@ -21,9 +21,9 @@ import {
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import fileIcon from '../../../../assets/icons/file-icon.png';
-import { durationDateFormat } from '../../../../utils/durationDateFormat';
-import EmptyListPlaceholder from '../../../../components/EmptyListPlaceholder';
+import fileIcon from '@/assets/icons/file-icon.png';
+import { durationDateFormat } from '@utils/durationDateFormat';
+import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
 
 const ProjectViewFiles = () => {
   // get currently hover row

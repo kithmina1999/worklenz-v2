@@ -1,6 +1,6 @@
 import { RouteObject } from 'react-router-dom';
 import AdminCenterLayout from '@/layouts/AdminCenterLayout';
-import { adminCenterItems } from '@/pages/adminCenter/adminCenterConstants';
+import { adminCenterItems } from '@/pages/admin-center/admin-center-constants';
 
 const adminCenterRoutes: RouteObject[] = [
   {

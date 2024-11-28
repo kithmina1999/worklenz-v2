@@ -4,7 +4,7 @@ import { PageHeader } from '@ant-design/pro-components';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import './ProjectList.css';
+import './project-list.css';
 import ProjectDrawer from '@components/projects/projectDrawer/ProjectDrawer';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import {

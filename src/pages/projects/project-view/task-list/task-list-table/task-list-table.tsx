@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Avatar, Checkbox, DatePicker, Flex, Tag, Tooltip, Typography } from 'antd';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { columnList } from '@/pages/projects/projectView/taskList/taskListTable/columns/columnList';
-import AddTaskListRow from '@/pages/projects/projectView/taskList/taskListTable/taskListTableRows/AddTaskListRow';
+import { columnList } from '@/pages/projects/project-view/taskList/taskListTable/columns/columnList';
+import AddTaskListRow from '@/pages/projects/project-view/taskList/taskListTable/taskListTableRows/AddTaskListRow';
 
 import CustomAvatar from '@/components/CustomAvatar';
 import LabelsSelector from '@/components/taskListCommon/labelsSelector/LabelsSelector';
@@ -16,12 +16,12 @@ import CustomColordLabel from '@/components/taskListCommon/labelsSelector/Custom
 import CustomNumberLabel from '@/components/taskListCommon/labelsSelector/CustomNumberLabel';
 import PhaseDropdown from '@/components/taskListCommon/phaseDropdown/PhaseDropdown';
 import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
-import TaskCell from '@/pages/projects/projectView/taskList/taskListTable/taskListTableCells/TaskCell';
-import AddSubTaskListRow from '@/pages/projects/projectView/taskList/taskListTable/taskListTableRows/AddSubTaskListRow';
+import TaskCell from '@/pages/projects/project-view/taskList/taskListTable/taskListTableCells/TaskCell';
+import AddSubTaskListRow from '@/pages/projects/project-view/taskList/taskListTable/taskListTableRows/AddSubTaskListRow';
 import { colors } from '@/styles/colors';
-import TimeTracker from '@/pages/projects/projectView/taskList/taskListTable/taskListTableCells/TimeTracker';
-import TaskContextMenu from '@/pages/projects/projectView/taskList/taskListTable/contextMenu/TaskContextMenu';
-import TaskProgress from '@/pages/projects/projectView/taskList/taskListTable/taskListTableCells/TaskProgress';
+import TimeTracker from '@/pages/projects/project-view/taskList/taskListTable/taskListTableCells/TimeTracker';
+import TaskContextMenu from '@/pages/projects/project-view/taskList/taskListTable/contextMenu/TaskContextMenu';
+import TaskProgress from '@/pages/projects/project-view/taskList/taskListTable/taskListTableCells/TaskProgress';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 import { useTranslation } from 'react-i18next';

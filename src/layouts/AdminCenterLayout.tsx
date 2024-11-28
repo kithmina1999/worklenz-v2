@@ -2,7 +2,7 @@ import { Flex, Typography } from 'antd';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import AdminCenterSidebar from '../pages/adminCenter/sidebar/AdminCenterSidebar';
+import AdminCenterSidebar from '@/pages/admin-center/sidebar/admin-center-sidebar';
 import { useTranslation } from 'react-i18next';
 
 const AdminCenterLayout: React.FC = () => {
@@ -19,7 +19,7 @@ const AdminCenterLayout: React.FC = () => {
         marginRight: `${isMarginAvailable ? '5%' : ''}`,
       }}
     >
-      <Typography.Title level={4}>{t('adminCenter')}</Typography.Title>
+      <Typography.Title level={4}>{t('admin-center')}</Typography.Title>
 
       {isTablet ? (
         <Flex

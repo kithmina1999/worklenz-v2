@@ -29,7 +29,7 @@ const DependenciesTable = () => {
 
   // handle adding a new dependency
   const handleAddDependency = (taskId: string) => {
-    // find the selected task from taskList
+    // find the selected task from task-list
     const selectedTask = taskList.find((task) => task.taskId === taskId);
 
     if (!selectedTask) return;

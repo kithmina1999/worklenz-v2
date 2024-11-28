@@ -1,10 +1,10 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { Button, ConfigProvider, Tooltip } from 'antd';
 import React, { useState } from 'react';
-import { colors } from '../../../styles/colors';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { completeTodo } from '../../../features/todo/todoSlice';
-import { TodoType } from '../../../types/todo.types';
+import { colors } from '@/styles/colors';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { completeTodo } from '@features/todo/todoSlice';
+import { TodoType } from '@/types/todo.types';
 
 type TodoDoneButtonProps = {
   record: TodoType;

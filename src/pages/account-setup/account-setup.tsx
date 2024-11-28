@@ -9,8 +9,8 @@ import OrganizationNameForm from '@/components/accountSetup/organizationName/Org
 import CreateFirstProjectForm from '@/components/accountSetup/createFirstProject/create-first-project-form';
 import CreateFirstTasks from '@/components/accountSetup/createFirstTasks/CreateFirstTasks';
 import InviteInitialTeamMembers from '@/components/accountSetup/inviteInitialTeamMembers/InviteInitialTeamMembers';
-import './AccountSetup.css';
-import { RootState } from '../../app/store';
+import './account-setup.css';
+import { RootState } from '@/app/store';
 
 const { Title } = Typography;
 

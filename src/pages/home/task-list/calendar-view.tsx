@@ -2,8 +2,8 @@ import React from 'react';
 import HomeCalendar from '../../../components/calendars/homeCalendar/HomeCalendar';
 import { Tag, Typography } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import AddTaskInlineForm from './AddTaskInlineForm';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import AddTaskInlineForm from './add-task-inline-form';
 
 const CalendarView = () => {
   const date = useAppSelector((state) => state.dateReducer.date);

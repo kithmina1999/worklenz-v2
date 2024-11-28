@@ -1,9 +1,9 @@
 import { StarFilled } from '@ant-design/icons';
 import { Button, ConfigProvider, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { colors } from '../../../styles/colors';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { ProjectType } from '../../../types/project.types';
+import { colors } from '@/styles/colors';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { ProjectType } from '@/types/project.types';
 import { toggleFavoriteProject } from '@/features/projects/projectsSlice';
 
 type AddFavouriteProjectButtonProps = {

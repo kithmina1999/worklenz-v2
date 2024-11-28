@@ -13,12 +13,12 @@ import {
   Typography,
 } from 'antd';
 import React, { useState } from 'react';
-import ListView from './ListView';
-import CalendarView from './CalendarView';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import EmptyListPlaceholder from '../../../components/EmptyListPlaceholder';
-import StatusDropdown from '../../../components/taskListCommon/statusDropdown/StatusDropdown';
-import { TaskType } from '../../../types/task.types';
+import ListView from './list-view';
+import CalendarView from './calendar-view';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
+import StatusDropdown from '@components/taskListCommon/statusDropdown/StatusDropdown';
+import { TaskType } from '@/types/task.types';
 
 const TasksList = () => {
   const tasksList = useAppSelector((state) => state.taskReducer.tasks);

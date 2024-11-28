@@ -2,9 +2,9 @@ import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
 import { Button, Card, Flex, Input, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
-import UsersTable from './UsersTable';
-import { RootState } from '../../../app/store';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import UsersTable from './users-table';
+import { RootState } from '@/app/store';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 
 const Users: React.FC = () => {

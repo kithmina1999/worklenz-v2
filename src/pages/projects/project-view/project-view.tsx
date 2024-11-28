@@ -4,11 +4,11 @@ import { Button, ConfigProvider, Flex, Tabs, TabsProps } from 'antd';
 import { useEffect, useState } from 'react';
 
 import { colors } from '@/styles/colors';
-import { tabItems } from '../../../lib/project/projectViewConstants';
+import { tabItems } from '@/lib/project/projectViewConstants';
 import { getFromLocalStorage, saveToLocalStorage } from '@utils/localStorageFunctions';
 import ProjectMemberDrawer from '@features/projects/singleProject/members/ProjectMemberDrawer';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
-import ProjectViewHeader from './ProjectViewHeader';
+import ProjectViewHeader from './project-view-header';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import PhaseDrawer from '@features/projects/singleProject/phase/PhaseDrawer';
 import StatusDrawer from '@features/projects/status/StatusDrawer';

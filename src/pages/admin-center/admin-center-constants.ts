@@ -6,11 +6,11 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import React, { ReactNode } from 'react';
-import Overview from './overview/Overview';
-import Users from './users/Users';
-import Teams from './teams/Teams';
-import Billing from './billing/Billing';
-import Projects from './projects/Projects';
+import Overview from './overview/overview';
+import Users from './users/users';
+import Teams from './teams/teams';
+import Billing from './billing/billing';
+import Projects from './projects/projects';
 
 // type of a menu item in admin center sidebar
 type AdminCenterMenuItems = {

@@ -1,6 +1,6 @@
 import { Tabs } from 'antd';
 import React from 'react';
-import AddTaskInlineForm from './AddTaskInlineForm';
+import AddTaskInlineForm from './add-task-inline-form';
 
 const ListView = () => {
   // tasks filter tab items

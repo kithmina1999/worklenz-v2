@@ -1,6 +1,6 @@
 import { Avatar, Table, TableProps } from 'antd';
 import React from 'react';
-import './UsersTable.css';
+import './users-table.css';
 import { useMediaQuery } from 'react-responsive';
 import { useTranslation } from 'react-i18next';
 

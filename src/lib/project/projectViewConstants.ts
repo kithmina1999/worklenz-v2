@@ -1,12 +1,12 @@
 import React, { ReactNode } from 'react';
-import ProjectViewBoard from '../../pages/projects/projectView/board/ProjectViewBoard';
-import ProjectViewWorkload from '../../pages/projects/projectView/workload/ProjectViewWorkload';
-import ProjectViewRoadmap from '../../pages/projects/projectView/roadmap/ProjectViewRoadmap';
-import ProjectViewInsights from '../../pages/projects/projectView/insights/ProjectViewInsights';
-import ProjectViewFiles from '../../pages/projects/projectView/files/ProjectViewFiles';
-import ProjectViewMembers from '../../pages/projects/projectView/members/ProjectViewMembers';
-import ProjectViewUpdates from '../../pages/projects/projectView/updates/ProjectViewUpdates';
-import TaskList from '@/pages/projects/projectView/task-list/task-list';
+import ProjectViewBoard from '@/pages/projects/project-view/board/project-view-board';
+import ProjectViewWorkload from '@/pages/projects/project-view/workload/ProjectViewWorkload';
+import ProjectViewRoadmap from '@/pages/projects/project-view/roadmap/ProjectViewRoadmap';
+import ProjectViewInsights from '@/pages/projects/project-view/insights/ProjectViewInsights';
+import ProjectViewFiles from '@/pages/projects/project-view/files/project-view-files';
+import ProjectViewMembers from '@/pages/projects/project-view/members/ProjectViewMembers';
+import ProjectViewUpdates from '@/pages/projects/project-view/updates/ProjectViewUpdates';
+import TaskList from '@/pages/projects/project-view/task-list/task-list';
 
 // type of a tab items
 type TabItems = {

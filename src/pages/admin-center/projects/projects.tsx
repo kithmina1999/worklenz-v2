@@ -16,14 +16,14 @@ import {
   Typography,
 } from 'antd';
 import React, { useMemo, useState } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
-import { RootState } from '../../../app/store';
-import { ProjectType } from '../../../types/project.types';
+import { RootState } from '@/app/store';
+import { ProjectType } from '@/types/project.types';
 import { useMediaQuery } from 'react-responsive';
-import './Projects.css';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { deleteProject } from '../../../features/projects/projectsSlice';
+import './projects.css';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { deleteProject } from '@features/projects/projectsSlice';
 
 const Projects: React.FC = () => {
   const themeMode = useAppSelector(

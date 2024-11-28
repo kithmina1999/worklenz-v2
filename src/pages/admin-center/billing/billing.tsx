@@ -1,8 +1,8 @@
 import { PageHeader } from '@ant-design/pro-components';
 import { Tabs, TabsProps } from 'antd';
 import React from 'react';
-import CurrentBill from '../../../components/adminCenter/billing/CurrentBill';
-import Configuration from '../../../components/adminCenter/configuration/Configuration';
+import CurrentBill from '@components/adminCenter/billing/CurrentBill';
+import Configuration from '@components/adminCenter/configuration/Configuration';
 import { useTranslation } from 'react-i18next';
 
 const Billing: React.FC = () => {

@@ -7,10 +7,10 @@ import {
 import { PageHeader } from '@ant-design/pro-components';
 import { Button, Card, Input, Tooltip, Typography } from 'antd';
 import React, { useState } from 'react';
-import OrganizationAdminsTable from './OrganizationAdminsTable';
+import OrganizationAdminsTable from './organization-admins-table';
 import TextArea from 'antd/es/input/TextArea';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { RootState } from '../../../app/store';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { RootState } from '@/app/store';
 import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;

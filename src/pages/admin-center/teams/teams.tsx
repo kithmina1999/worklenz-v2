@@ -23,14 +23,14 @@ import {
   deleteTeam,
   toggleDrawer,
   toggleSettingDrawer,
-} from '../../../features/teams/teamSlice';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import CreateTeamDrawer from '../../../features/adminCenter/teams/CreateTeamDrawer';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { RootState } from '../../../app/store';
-import { TeamsType } from '../../../types/adminCenter/team.types';
-import './Teams.css';
-import SettingTeamDrawer from '../../../features/adminCenter/teams/SettingTeamDrawer';
+} from '@features/teams/teamSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import CreateTeamDrawer from '@features/adminCenter/teams/CreateTeamDrawer';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { RootState } from '@/app/store';
+import { TeamsType } from '@/types/adminCenter/team.types';
+import './teams.css';
+import SettingTeamDrawer from '@features/adminCenter/teams/SettingTeamDrawer';
 import { useMediaQuery } from 'react-responsive';
 import { useTranslation } from 'react-i18next';
 

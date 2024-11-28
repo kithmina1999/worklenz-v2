@@ -1,6 +1,6 @@
 import React from 'react';
 import { RouteObject } from 'react-router-dom';
-import AccountSetup from '@/pages/accountSetup/AccountSetup';
+import AccountSetup from '@/pages/account-setup/account-setup';
 
 const accountSetupRoute: RouteObject = {
   path: '/worklenz/setup',
