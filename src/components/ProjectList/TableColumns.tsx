@@ -218,7 +218,21 @@ const TableColumns = (): ColumnsType<DataType> => {
           });
         }
 
-        return <>{displayText}</>;
+        return (
+          <>
+            <Tooltip title={updatedDate.toLocaleString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+              hour: 'numeric',
+              minute: 'numeric',
+              second: 'numeric',
+              hour12: true,
+            })}>
+              {displayText}
+            </Tooltip>
+          </>
+        );
       },
     },
     {

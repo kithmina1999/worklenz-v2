@@ -7,6 +7,7 @@ import {
   GetProp,
   Input,
   message,
+  Tooltip,
   Typography,
   Upload,
   UploadProps,
@@ -93,23 +94,26 @@ const ProfileSettings = () => {
         }}
         style={{ width: '100%', maxWidth: 350 }}
       >
-        <Form.Item>
-          <Upload
-            name="avatar"
-            listType="picture-card"
-            className="avatar-uploader"
-            showUploadList={false}
-            action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-            beforeUpload={beforeUpload}
-            onChange={handleChange}
-          >
-            {imageUrl ? (
-              <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
-            ) : (
-              uploadButton
-            )}
-          </Upload>
-        </Form.Item>
+          <Form.Item>
+        <Tooltip title='Click to upload an avata' placement="topLeft">
+            <Upload
+              name="avatar"
+              listType="picture-card"
+              className="avatar-uploader"
+              showUploadList={false}
+              action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+              beforeUpload={beforeUpload}
+              onChange={handleChange}
+
+            >
+              {imageUrl ? (
+                <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
+              ) : (
+                uploadButton
+              )}
+            </Upload>
+        </Tooltip>
+          </Form.Item>
         <Form.Item
           name="name"
           label={t('nameLabel')}

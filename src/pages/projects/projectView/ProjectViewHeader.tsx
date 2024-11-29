@@ -5,6 +5,7 @@ import {
   CalendarOutlined,
   DownOutlined,
   EditOutlined,
+  ImportOutlined,
   SaveOutlined,
   SettingOutlined,
   SyncOutlined,
@@ -54,7 +55,7 @@ const ProjectViewHeader = () => {
     {
       key: '1',
       label: (
-        <div style={{ width: '100%', margin: 0, padding: 0 }}>Import task</div>
+        <div style={{ width: '100%', margin: 0, padding: 0 }}><ImportOutlined/> Import task</div>
       ),
     },
   ];

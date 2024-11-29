@@ -83,14 +83,16 @@ const JobTitlesSettings = () => {
       render: (record: JobType) =>
         hoverRow === record.jobId && (
           <Flex gap={8} style={{ padding: 0 }}>
-            <Button
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => {
-                setSelectedJobId(record.jobId);
-                dispatch(toggleUpdateJobTitleDrawer());
-              }}
-            />
+            <Tooltip title="Edit">
+              <Button
+                size="small"
+                icon={<EditOutlined />}
+                onClick={() => {
+                  setSelectedJobId(record.jobId);
+                  dispatch(toggleUpdateJobTitleDrawer());
+                }}
+              />
+            </Tooltip>
 
             <Popconfirm
               title={t('deleteConfirmationTitle')}
@@ -103,7 +105,13 @@ const JobTitlesSettings = () => {
               cancelText={t('deleteConfirmationCancel')}
               onConfirm={() => dispatch(deleteJobTitle(record.jobId))}
             >
-              <Button shape="default" icon={<DeleteOutlined />} size="small" />
+              <Tooltip title="Delete">
+                <Button
+                  shape="default"
+                  icon={<DeleteOutlined />}
+                  size="small"
+                />
+              </Tooltip>
             </Popconfirm>
           </Flex>
         ),

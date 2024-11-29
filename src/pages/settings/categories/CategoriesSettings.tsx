@@ -11,6 +11,7 @@ import {
   Popconfirm,
   Table,
   TableProps,
+  Tooltip,
   Typography,
 } from 'antd';
 import React, { useMemo, useState } from 'react';
@@ -78,7 +79,9 @@ const CategoriesSettings = () => {
             cancelText={t('deleteConfirmationCancel')}
             onConfirm={() => dispatch(deleteCategory(record.categoryId))}
           >
-            <Button shape="default" icon={<DeleteOutlined />} size="small" />
+            <Tooltip title= 'Delete'>
+              <Button shape="default" icon={<DeleteOutlined />} size="small" />
+            </Tooltip>
           </Popconfirm>
         ),
     },

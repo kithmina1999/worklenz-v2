@@ -76,7 +76,9 @@ const LabelsSettings = () => {
             cancelText={t('deleteConfirmationCancel')}
             onConfirm={() => dispatch(deleteLabel(record.labelId))}
           >
-            <Button shape="default" icon={<DeleteOutlined />} size="small" />
+            <Tooltip title="Delete">
+              <Button shape="default" icon={<DeleteOutlined />} size="small" />
+            </Tooltip>
           </Popconfirm>
         ),
     },

@@ -36,7 +36,7 @@ const ClientsSettings = () => {
   // localization
   const { t } = useTranslation('clientSettings');
 
-  useDocumentTitle('Manage Clients')
+  useDocumentTitle('Manage Clients');
 
   // get currently hover row
   const [hoverRow, setHoverRow] = useState<string | null>(null);
@@ -105,14 +105,16 @@ const ClientsSettings = () => {
       render: (record: ClientType) =>
         hoverRow === record.clientId && (
           <Flex gap={8} style={{ padding: 0 }}>
-            <Button
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => {
-                setSelectedClientId(record.clientId);
-                dispatch(toggleUpdateClientDrawer());
-              }}
-            />
+            <Tooltip title="Edit">
+              <Button
+                size="small"
+                icon={<EditOutlined />}
+                onClick={() => {
+                  setSelectedClientId(record.clientId);
+                  dispatch(toggleUpdateClientDrawer());
+                }}
+              />
+            </Tooltip>
 
             <Popconfirm
               title={t('deleteConfirmationTitle')}
@@ -125,7 +127,13 @@ const ClientsSettings = () => {
               cancelText={t('deleteConfirmationCancel')}
               onConfirm={() => dispatch(deleteClient(record.clientId))}
             >
-              <Button shape="default" icon={<DeleteOutlined />} size="small" />
+              <Tooltip title="Delete">
+                <Button
+                  shape="default"
+                  icon={<DeleteOutlined />}
+                  size="small"
+                />
+              </Tooltip>
             </Popconfirm>
           </Flex>
         ),
