@@ -35,6 +35,15 @@ apiClient.interceptors.request.use(
 // Response interceptor with notification handling based on done flag
 apiClient.interceptors.response.use(
   response => {
+     // Handle 302 redirect
+     if (response.status === 302) {
+      const redirectUrl = response.headers.location;
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+        return response;
+      }
+    }
+    
     if (response.data) {
       const { title, message, auth_error, done } = response.data;
 

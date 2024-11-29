@@ -1,7 +1,7 @@
 import { IServerResponse } from '@/types/common.types';
 import { API_BASE_URL } from '@/shared/constants';
 import { IProjectHealth } from '@/types/project/projectHealth.types';
-import apiClient from '@api/apiClient';
+import apiClient from '@api/api-client';
 
 const rootUrl = `${API_BASE_URL}/project-healths`;
 

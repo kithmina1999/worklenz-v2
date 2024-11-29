@@ -1,5 +1,5 @@
 import { IServerResponse } from '@/types/common.types';
-import apiClient from '../apiClient';
+import apiClient from '../api-client';
 import { ITeamActivateResponse, ITeamGetResponse } from '@/types/teams/team.type';
 import { API_BASE_URL } from '@/shared/constants';
 

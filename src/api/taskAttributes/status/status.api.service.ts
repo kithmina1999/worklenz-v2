@@ -1,5 +1,5 @@
 import { IServerResponse } from '@/types/common.types';
-import apiClient from '@/api/apiClient';
+import apiClient from '@api/api-client';
 import { API_BASE_URL } from '@/shared/constants';
 import { ITaskStatus, ITaskStatusCategory } from '@/types/status.types';
 

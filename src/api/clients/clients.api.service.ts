@@ -1,5 +1,5 @@
 import { IClient, IClientsViewModel } from '@/types/client.types';
-import apiClient from '@/api/apiClient';
+import apiClient from '@api/api-client';
 import { API_BASE_URL } from '@/shared/constants';
 import { IServerResponse } from '@/types/common.types';
 import { toQueryString } from '@/utils/toQueryString';

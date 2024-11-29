@@ -1,7 +1,7 @@
 import { IServerResponse } from '@/types/common.types';
 import { API_BASE_URL } from '@/shared/constants';
 import { ITaskPrioritiesGetResponse, ITaskPriority } from '@/types/tasks/taskPriority.types';
-import apiClient from '@/api/apiClient';
+import apiClient from '@api/api-client';
 
 const rootUrl = `${API_BASE_URL}/task-priorities`;
 

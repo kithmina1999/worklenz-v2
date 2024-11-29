@@ -1,6 +1,6 @@
 import { IServerResponse } from '@/types/common.types';
 import { API_BASE_URL } from '@/shared/constants';
-import apiClient from '@/api/apiClient';
+import apiClient from '@api/api-client';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 
 const rootUrl = `${API_BASE_URL}/labels`;

@@ -1,5 +1,5 @@
 import { IServerResponse } from '@/types/common.types';
-import apiClient from '../apiClient';
+import apiClient from '../api-client';
 import { API_BASE_URL } from '@/shared/constants';
 import { IProjectsViewModel } from '@/types/project/projectsViewModel.types';
 import { toQueryString } from '@/utils/toQueryString';
