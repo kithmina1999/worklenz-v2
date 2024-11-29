@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import ProjectViewTaskList from '../../pages/projects/projectView/taskList/ProjectViewTaskList';
 import ProjectViewBoard from '../../pages/projects/projectView/board/ProjectViewBoard';
 import ProjectViewWorkload from '../../pages/projects/projectView/workload/ProjectViewWorkload';
-import ProjectViewRoadmap from '../../pages/projects/projectView/roadmap/ProjectViewRoadmap';
+import ProjectViewRoadmap from '../../pages/projects/projectView/roadmap/project-view-roadmap';
 import ProjectViewInsights from '../../pages/projects/projectView/insights/ProjectViewInsights';
 import ProjectViewFiles from '../../pages/projects/projectView/files/ProjectViewFiles';
 import ProjectViewMembers from '../../pages/projects/projectView/members/ProjectViewMembers';

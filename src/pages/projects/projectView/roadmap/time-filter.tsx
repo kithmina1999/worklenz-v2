@@ -1,17 +1,11 @@
 import React from 'react';
 import 'gantt-task-react/dist/index.css';
 import { ViewMode } from 'gantt-task-react';
-import { Flex, Select, Switch, Tooltip } from 'antd';
+import { Flex, Select } from 'antd';
 type TimeFilterProps = {
-  isChecked: boolean;
-  onViewListChange: (isChecked: boolean) => void;
   onViewModeChange: (viewMode: ViewMode) => void;
 };
-export const TimeFilter = ({
-  onViewModeChange,
-  onViewListChange,
-  isChecked,
-}: TimeFilterProps) => {
+export const TimeFilter = ({ onViewModeChange }: TimeFilterProps) => {
   //   function to handle time change
   const handleChange = (value: string) => {
     switch (value) {
@@ -80,10 +74,6 @@ export const TimeFilter = ({
         options={timeFilterItems}
         defaultValue={'day'}
       />
-
-      <Tooltip title={isChecked ? 'Hide Task List' : 'Show Task List'}>
-        <Switch defaultChecked onClick={() => onViewListChange(!isChecked)} />
-      </Tooltip>
     </Flex>
   );
 };
