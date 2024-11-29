@@ -20,20 +20,16 @@ const apiClient = axios.create({
   },
 });
 
-// Request interceptor to add CSRF token
+// Request interceptor
 apiClient.interceptors.request.use(
   config => {
     const token = getCsrfToken();
     if (token) {
       config.headers['X-CSRF-Token'] = token;
-      config.headers['X-XSRF-TOKEN'] = token;
-      config.headers['XSRF-TOKEN'] = token;
     }
     return config;
   },
-  error => {
-    return Promise.reject(error);
-  }
+  error => Promise.reject(error)
 );
 
 // Response interceptor with notification handling based on done flag
