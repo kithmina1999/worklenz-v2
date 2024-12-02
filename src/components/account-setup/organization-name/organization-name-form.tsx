@@ -1,9 +1,9 @@
 import React, { startTransition, useEffect, useState } from 'react';
 import { Button, Form, Input, Typography } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../../app/store';
+import { RootState } from '@/app/store';
 import { setButtonDisabled } from '@features/actionSetup/buttonSlice';
-import './OrganizationNameForm.css';
+import './organization-name-form.css';
 import { useTranslation } from 'react-i18next';
 
 const { Title } = Typography;

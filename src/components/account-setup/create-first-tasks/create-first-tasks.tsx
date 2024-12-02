@@ -1,9 +1,9 @@
 import React, { startTransition, useEffect, useState } from 'react';
 import { Alert, Button, Form, Input, List, Typography } from 'antd';
 import { CloseCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import './CreateFirstTasks.css';
+import './create-first-tasks.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../../app/store';
+import { RootState } from '@/app/store';
 import { setButtonDisabled } from '@features/actionSetup/buttonSlice';
 import { useTranslation } from 'react-i18next';
 
@@ -30,7 +30,7 @@ const CreateFirstTasks: React.FC<CreateFirstTasksProps> = ({
   );
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
 
-  const { t } = useTranslation('createFirstTasks');
+  const { t } = useTranslation('create-first-tasks');
 
   useEffect(() => {
     dispatch(setButtonDisabled(true));

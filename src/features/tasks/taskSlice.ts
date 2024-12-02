@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { TaskType } from '../../types/task.types';
-import { MemberType } from '../../types/member.types';
-import { LabelType } from '../../types/label.type';
+import { TaskType } from '@/types/task.types';
+import { MemberType } from '@/types/member.types';
 import { ITaskListConfigV2, ITaskListGroup } from '@/types/tasks/taskList.types';
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import logger from '@/utils/errorLogger';
+import { ITaskLabel } from '@/types/label.type';
 
 type TaskState = {
   search: string | null;
@@ -97,7 +97,7 @@ const taskSlice = createSlice({
       // }
     },
     // add or remove labels to the task
-    toggleLabel: (state, action: PayloadAction<{ taskId: string; label: LabelType }>) => {
+    toggleLabel: (state, action: PayloadAction<{ taskId: string; label: ITaskLabel }>) => {
       // const { taskId, label } = action.payload;
       // const task = state.tasks.find((task) => task.taskId === taskId);
       // if (task) {

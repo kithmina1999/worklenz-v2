@@ -1,8 +1,8 @@
 import type { MenuProps } from 'antd';
 import { List, Menu, Tabs, Tag, Typography } from 'antd';
 import React from 'react';
-import './TemplateDrawer.css';
-import { RootState } from '../../../app/store';
+import './template-drawer.css';
+import { RootState } from '@/app/store';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +11,7 @@ const { Title, Text } = Typography;
 const TemplateDrawer: React.FC = () => {
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
 
-  const { t } = useTranslation('templateDrawer');
+  const { t } = useTranslation('template-drawer');
 
   type MenuItem = Required<MenuProps>['items'][number];
 

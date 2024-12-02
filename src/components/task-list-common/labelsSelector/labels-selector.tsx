@@ -1,27 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { PlusOutlined } from '@ant-design/icons';
-import {
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  Divider,
-  Dropdown,
-  Flex,
-  Input,
-  InputRef,
-  List,
-  Typography,
-} from 'antd';
+import { Badge, Button, Card, Checkbox, Divider, Dropdown, Flex, Input, InputRef, List, Typography } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { colors } from '../../../styles/colors';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { LabelType } from '../../../types/label.type';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { nanoid } from '@reduxjs/toolkit';
-import { addLabel } from '../../../features/settings/label/labelSlice';
-import { toggleLabel } from '../../../features/tasks/taskSlice';
+import { addLabel } from '@features/settings/label/labelSlice';
 import { useTranslation } from 'react-i18next';
+import { ITaskLabel } from '@/types/label.type';
 
 const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
   const labelInputRef = useRef<InputRef>(null);
@@ -37,22 +24,22 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
 
   // get task list from redux and find the selected task
   const selectedTask = useAppSelector((state) => state.taskReducer.tasks).find(
-    (task) => task.taskId === taskId
+    (task) => task.taskId === taskId,
   );
 
-  // used useMemo hook for re render the list when searching
+  // used useMemo hook for re-render the list when searching
   const filteredLabelData = useMemo(() => {
     return labelList.filter((label) =>
-      label.labelName.toLowerCase().includes(searchQuery.toLowerCase())
+      label.labelName.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [labelList, searchQuery]);
 
-  const handleCreateLabel = (labelName: string) => {
-    if (labelName.length > 0) {
-      const newLabel: LabelType = {
-        labelId: nanoid(),
-        labelName,
-        labelColor: '#1E90FF',
+  const handleCreateLabel = (name: string) => {
+    if (name.length > 0) {
+      const newLabel: ITaskLabel = {
+        id: nanoid(),
+        name,
+        color_code: '#1E90FF',
       };
 
       dispatch(addLabel(newLabel));
@@ -71,7 +58,7 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
           placeholder={t('searchInputPlaceholder')}
           onKeyDown={(e) => {
             const isLabel = filteredLabelData.findIndex(
-              (label) => label.labelName.toLowerCase === searchQuery.toLowerCase
+              (label) => label.labelName.toLowerCase === searchQuery.toLowerCase,
             );
 
             if (isLabel === -1) {
@@ -101,12 +88,12 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
                   checked={
                     selectedTask?.labels
                       ? selectedTask?.labels.some(
-                          (existingLabel) =>
-                            existingLabel.labelId === label.labelId
-                        )
+                        (existingLabel) =>
+                          existingLabel.labelId === label.labelId,
+                      )
                       : false
                   }
-                  onChange={() => dispatch(toggleLabel({ taskId, label }))}
+                  onChange={() => console.log(123)}
                 />
 
                 <Flex gap={8}>

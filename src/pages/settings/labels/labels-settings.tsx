@@ -1,34 +1,24 @@
-import {
-  Button,
-  Card,
-  Flex,
-  Input,
-  Popconfirm,
-  Table,
-  TableProps,
-  Tooltip,
-  Typography,
-} from 'antd';
+import { Button, Card, Flex, Input, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton';
 import { useTranslation } from 'react-i18next';
 import { DeleteOutlined, ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons';
 import { ITaskLabel } from '@/types/label.type';
-import CustomColordLabel from '@components/taskListCommon/labelsSelector/CustomColordLabel';
 import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service';
+import CustomColorLabel from '@components/task-list-common/labelsSelector/custom-color-label';
 
-const LabelsSettings = () => {  
+const LabelsSettings = () => {
   const { t } = useTranslation('settings-labels');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [labels, setLabels] = useState<ITaskLabel[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const filteredData = useMemo(() => labels.filter(record => 
-    Object.values(record).some(value => 
-      value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
-    )
+  const filteredData = useMemo(() => labels.filter(record =>
+    Object.values(record).some(value =>
+      value?.toString().toLowerCase().includes(searchQuery.toLowerCase()),
+    ),
   ), [labels, searchQuery]);
 
   const getLabels = useMemo(() => {
@@ -58,7 +48,7 @@ const LabelsSettings = () => {
     {
       key: 'label',
       title: t('labelColumn'),
-      render: (record: ITaskLabel) => <CustomColordLabel label={record} />,
+      render: (record: ITaskLabel) => <CustomColorLabel label={record} />,
     },
     {
       key: 'associatedTask',
@@ -77,9 +67,9 @@ const LabelsSettings = () => {
             cancelText="Cancel"
             onConfirm={() => deleteLabel(record.id!)}
           >
-            <Button 
-              shape="default" 
-              icon={<DeleteOutlined />} 
+            <Button
+              shape="default"
+              icon={<DeleteOutlined />}
               size="small"
             />
           </Popconfirm>

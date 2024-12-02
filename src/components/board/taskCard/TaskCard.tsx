@@ -26,7 +26,7 @@ import './TaskCard.css';
 import dayjs, { Dayjs } from 'dayjs';
 import { AvatarNamesMap } from '../../../shared/constants';
 import AddMembersDropdown from '../../addMembersDropdown/AddMembersDropdown';
-import StatusDropdown from '../../taskListCommon/statusDropdown/StatusDropdown';
+import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
 import { TaskType } from '../../../types/task.types';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { deleteTask } from '../../../features/tasks/taskSlice';

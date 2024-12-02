@@ -5,9 +5,9 @@ import {
   MailOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import './InviteInitialTeamMembers.css';
+import './invite-team-members.css';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../app/store';
+import { RootState } from '@/app/store';
 import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
@@ -29,7 +29,7 @@ const InviteInitialTeamMembers: React.FC<InviteInitialTeamMembersProps> = ({
   ]);
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
 
-  const { t } = useTranslation('inviteInitialTeamMembers');
+  const { t } = useTranslation('invite-team-members');
 
   const handleInputChange = (
     id: number,

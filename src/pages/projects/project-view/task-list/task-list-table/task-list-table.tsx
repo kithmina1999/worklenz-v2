@@ -6,16 +6,16 @@ import { columnList } from '@/pages/projects/project-view/taskList/taskListTable
 import AddTaskListRow from '@/pages/projects/project-view/taskList/taskListTable/taskListTableRows/AddTaskListRow';
 
 import CustomAvatar from '@/components/CustomAvatar';
-import LabelsSelector from '@/components/taskListCommon/labelsSelector/LabelsSelector';
+import LabelsSelector from '@components/task-list-common/labelsSelector/labels-selector';
 import { useSelectedProject } from '@/hooks/useSelectedProject';
-import StatusDropdown from '@/components/taskListCommon/statusDropdown/StatusDropdown';
-import PriorityDropdown from '@/components/taskListCommon/priorityDropdown/PriorityDropdown';
+import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
+import PriorityDropdown from '@components/task-list-common/priorityDropdown/PriorityDropdown';
 import { simpleDateFormat } from '@/utils/simpleDateFormat';
 import { durationDateFormat } from '@/utils/durationDateFormat';
-import CustomColordLabel from '@/components/taskListCommon/labelsSelector/CustomColordLabel';
-import CustomNumberLabel from '@/components/taskListCommon/labelsSelector/CustomNumberLabel';
-import PhaseDropdown from '@/components/taskListCommon/phaseDropdown/PhaseDropdown';
-import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
+import CustomColorLabel from '@components/task-list-common/labelsSelector/custom-color-label';
+import CustomNumberLabel from '@components/task-list-common/labelsSelector/custom-number-label';
+import PhaseDropdown from '@components/task-list-common/phaseDropdown/PhaseDropdown';
+import AssigneeSelector from '@components/task-list-common/assigneeSelector/AssigneeSelector';
 import TaskCell from '@/pages/projects/project-view/taskList/taskListTable/taskListTableCells/TaskCell';
 import AddSubTaskListRow from '@/pages/projects/project-view/taskList/taskListTable/taskListTableRows/AddSubTaskListRow';
 import { colors } from '@/styles/colors';
@@ -216,11 +216,11 @@ const TaskListTable = ({
         return (
           <Flex>
             {task?.labels && task?.labels?.length <= 2 ? (
-              task?.labels?.map(label => <CustomColordLabel label={label} />)
+              task?.labels?.map(label => <CustomColorLabel label={label} />)
             ) : (
               <Flex>
-                <CustomColordLabel label={task?.labels ? task.labels[0] : null} />
-                <CustomColordLabel label={task?.labels ? task.labels[1] : null} />
+                <CustomColorLabel label={task?.labels ? task.labels[0] : null} />
+                <CustomColorLabel label={task?.labels ? task.labels[1] : null} />
                 {/* this component show other label names  */}
                 <CustomNumberLabel
                   // this label list get the labels without 1, 2 elements

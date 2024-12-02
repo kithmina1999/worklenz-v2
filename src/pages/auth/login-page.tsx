@@ -9,10 +9,10 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import PageHeader from '@components/AuthPageHeader';
 import googleIcon from '@assets/images/google-icon.png';
-import { login, verifyAuthentication } from '@/features/auth/authSlice';
+import { login } from '@/features/auth/authSlice';
 import logger from '@/utils/errorLogger';
 import { setUser } from '@/features/user/userSlice';
-import { createAuthService } from '@/services/auth/auth.service';
+import { useAuth } from '@/hooks/useAuth';
 
 interface LoginFormValues {
   email: string;
@@ -25,21 +25,24 @@ const LoginPage: React.FC = () => {
   const { t } = useTranslation('loginPage');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
   const dispatch = useAppDispatch();
-  const authService = createAuthService(navigate);
+  const authService = useAuth();
 
-  // Get loading state from Redux store instead of local state
   const { isLoading } = useAppSelector(state => state.auth);
+
   useEffect(() => {
     const verifyAuthStatus = async () => {
-      const result = await dispatch(verifyAuthentication()).unwrap();
-      if(result.authenticated) {
-        dispatch(setUser(result.user));
-        authService.setCurrentSession(result.user);
-        navigate('/worklenz/home');
+      try {
+        const response = await authService.getCurrentSession();
+        if (response) {
+          dispatch(setUser(response));
+          navigate('/worklenz/home');
+        }
+      } catch (error) {
+        logger.error('Verify Auth Status', error);
       }
     };
     verifyAuthStatus();
-  }, [dispatch]);
+  }, [dispatch, navigate]);
   
   const onFinish = useCallback(
     async (values: LoginFormValues) => {

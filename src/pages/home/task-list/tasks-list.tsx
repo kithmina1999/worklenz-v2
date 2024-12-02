@@ -17,7 +17,7 @@ import ListView from './list-view';
 import CalendarView from './calendar-view';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
-import StatusDropdown from '@components/taskListCommon/statusDropdown/StatusDropdown';
+import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
 import { TaskType } from '@/types/task.types';
 
 const TasksList = () => {

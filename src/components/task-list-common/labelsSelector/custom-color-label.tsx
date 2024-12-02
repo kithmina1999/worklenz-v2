@@ -1,12 +1,13 @@
 import { Tag, Typography } from 'antd';
-import { colors } from '../../../styles/colors';
+import { colors } from '@/styles/colors';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
+import { ALPHA_CHANNEL } from '@/shared/constants';
 
-const CustomColordLabel = ({ label }: { label: ITaskLabel | null }) => {
+const CustomColorLabel = ({ label }: { label: ITaskLabel | null }) => {
   return (
     <Tag
       key={label?.id}
-      color={label?.color_code}
+      color={label?.color_code + ALPHA_CHANNEL}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -22,4 +23,4 @@ const CustomColordLabel = ({ label }: { label: ITaskLabel | null }) => {
   );
 };
 
-export default CustomColordLabel;
+export default CustomColorLabel;

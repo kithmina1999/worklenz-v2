@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { authApiService } from '@/api/auth/auth.api.service';
 import { IUserSignUpRequest } from '@/types/auth/signup.types';
+import { Rule } from 'antd/es/form';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const SignupPage = () => {
   const [validating, setValidating] = useState(false);
   const [urlParams, setUrlParams] = useState({
     email: '',
-    name: '', 
+    name: '',
     teamId: '',
     teamMemberId: '',
     projectId: ''
@@ -37,17 +38,24 @@ const SignupPage = () => {
 
   const getInvitationQueryParams = () => {
     const { teamId, teamMemberId, projectId } = urlParams;
-    const params = [];
-    if (teamId) params.push(`team=${teamId}`);
-    if (teamMemberId) params.push(`teamMember=${teamMemberId}`);
-    if (projectId) params.push(`project=${projectId}`);
-    return params.length ? `?${params.join('&')}` : '';
+    return Object.entries({ team: teamId, teamMember: teamMemberId, project: projectId })
+      .filter(([, value]) => value)
+      .map(([key, value]) => `${key}=${value}`)
+      .join('&');
+  };
+
+  const handleSignUpSuccess = async () => {
+    const response = await authApiService.verify();
+    if (response.authenticated) {
+      message.success(t('signupSuccessMessage'));
+      navigate('/worklenz/setup');
+    }
   };
 
   const onFinish = async (values: IUserSignUpRequest) => {
     try {
       setValidating(true);
-      const body: IUserSignUpRequest = {
+      const body = {
         name: values.name,
         email: values.email,
         password: values.password,
@@ -56,11 +64,7 @@ const SignupPage = () => {
       const res = await authApiService.signUpCheck(body);
       if (res.done) {
         await signUpWithEmail(body);
-        const response = await authApiService.verify();
-        if (response.authenticated) {
-          message.success('Successfully signed up!');
-          navigate('/worklenz/setup');
-        }
+        await handleSignUpSuccess();
       }
     } catch (error: any) {
       message.error(error?.response?.data?.message || 'Failed to validate signup details');
@@ -74,13 +78,14 @@ const SignupPage = () => {
       setLoading(true);
       const response = await authApiService.signUp({
         ...body,
-        team_id: urlParams.teamId,
-        team_member_id: urlParams.teamMemberId,
-        project_id: urlParams.projectId
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        team_id: urlParams.teamId || null,
+        team_member_id: urlParams.teamMemberId || null,
+        project_id: urlParams.projectId || null
       });
-      
+
       if (response.done) {
-        message.success('Successfully signed up!');
+        message.success(t('signupSuccessMessage'));
         navigate('/auth/login');
       }
     } catch (error: any) {
@@ -92,10 +97,47 @@ const SignupPage = () => {
 
   const onGoogleSignUpClick = () => {
     try {
-      window.location.href = `${import.meta.env.VITE_API_URL}/secure/google${getInvitationQueryParams()}`;
+      const queryParams = getInvitationQueryParams();
+      const url = `${import.meta.env.VITE_API_URL}/secure/google${queryParams ? `?${queryParams}` : ''}`;
+      window.location.href = url;
     } catch (error) {
       message.error('Failed to redirect to Google sign up');
     }
+  };
+
+  const formRules = {
+    name: [
+      {
+        required: true,
+        message: t('nameRequired'),
+        whitespace: true,
+      },
+      {
+        min: 4,
+        message: t('nameMinCharacterRequired'),
+      },
+    ],
+    email: [
+      {
+        required: true,
+        type: 'email',
+        message: t('emailRequired'),
+      },
+    ],
+    password: [
+      {
+        required: true,
+        message: t('passwordRequired'),
+      },
+      {
+        min: 8,
+        message: t('passwordMinCharacterRequired'),
+      },
+      {
+        pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])/,
+        message: t('passwordPatternRequired'),
+      },
+    ],
   };
 
   return (
@@ -120,21 +162,7 @@ const SignupPage = () => {
         onFinish={onFinish}
         style={{ width: '100%' }}
       >
-        <Form.Item
-          name="name"
-          label={t('nameLabel')}
-          rules={[
-            {
-              required: true,
-              message: t('nameRequired'),
-              whitespace: true,
-            },
-            {
-              min: 4,
-              message: t('nameMinCharacterRequired'),
-            },
-          ]}
-        >
+        <Form.Item name="name" label={t('nameLabel')} rules={formRules.name}>
           <Input
             prefix={<UserOutlined />}
             placeholder={t('namePlaceholder')}
@@ -143,17 +171,7 @@ const SignupPage = () => {
           />
         </Form.Item>
 
-        <Form.Item
-          name="email"
-          label={t('emailLabel')}
-          rules={[
-            {
-              required: true,
-              type: 'email',
-              message: t('emailRequired'),
-            },
-          ]}
-        >
+        <Form.Item name="email" label={t('emailLabel')} rules={formRules.email as Rule[]}>
           <Input
             prefix={<MailOutlined />}
             placeholder={t('emailPlaceholder')}
@@ -162,24 +180,7 @@ const SignupPage = () => {
           />
         </Form.Item>
 
-        <Form.Item
-          name="password"
-          label={t('passwordLabel')}
-          rules={[
-            {
-              required: true,
-              message: t('passwordRequired'),
-            },
-            {
-              min: 8,
-              message: t('passwordMinCharacterRequired'),
-            },
-            {
-              pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])/,
-              message: t('passwordPatternRequired'),
-            },
-          ]}
-        >
+        <Form.Item name="password" label={t('passwordLabel')} rules={formRules.password}>
           <div>
             <Input.Password
               prefix={<LockOutlined />}

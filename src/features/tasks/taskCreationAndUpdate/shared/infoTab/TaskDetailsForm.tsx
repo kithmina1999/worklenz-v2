@@ -11,8 +11,8 @@ import {
   ConfigProvider,
   Flex,
 } from 'antd';
-import AssigneeSelector from '../../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
-import LabelsSelector from '../../../../../components/taskListCommon/labelsSelector/LabelsSelector';
+import AssigneeSelector from '@components/task-list-common/assigneeSelector/AssigneeSelector';
+import LabelsSelector from '@components/task-list-common/labelsSelector/labels-selector';
 import {
   DoubleLeftOutlined,
   MinusOutlined,

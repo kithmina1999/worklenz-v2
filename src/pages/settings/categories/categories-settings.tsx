@@ -13,32 +13,46 @@ import {
   TableProps,
   Typography,
 } from 'antd';
-import React, { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '@/hooks/useAppSelector';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { colors } from '@/styles/colors';
 import { CategoryType } from '@/types/categories.types';
 import CustomColorsCategoryTag from '@features/settings/categories/CustomColorsCategoryTag';
 import { deleteCategory } from '@features/settings/categories/categoriesSlice';
+import { categoriesApiService } from '@/api/settings/categories/categories.api.service';
+import { IProjectCategory } from '@/types/project/projectCategory.types';
 
 const CategoriesSettings = () => {
   // localization
-  const { t } = useTranslation('categoriesSettings');
+  const { t } = useTranslation('settings-categories');
 
   // get currently hover row
   const [hoverRow, setHoverRow] = useState<string | null>(null);
+  const [categories, setCategories] = useState<IProjectCategory[]>([]);
+  const [loading, setLoading] = useState(false);
 
-
-  // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // used useMemo hook for re-render the list when searching
-  const filteredCategoriesData = useMemo(() => {
-    return categoriesList.filter((item) =>
-      item.name?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [categoriesList, searchQuery]);
+  const filteredData = useMemo(() => categories.filter(record => 
+    Object.values(record).some(value => 
+      value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  ), [categories, searchQuery]);
+
+  const getCategories = useMemo(() => {
+    setLoading(true);
+    return async () => {
+      const response = await categoriesApiService.getCategories();
+      if (response.done) {
+        setCategories(response.body);
+      }
+      setLoading(false);
+    };
+  }, []);
+
+  useEffect(() => {
+    getCategories();
+  }, [getCategories]);
 
   // table columns
   const columns: TableProps['columns'] = [
@@ -103,7 +117,7 @@ const CategoriesSettings = () => {
           emptyText: <Typography.Text>{t('emptyText')}</Typography.Text>,
         }}
         className="custom-two-colors-row-table"
-        dataSource={filteredCategoriesData}
+        dataSource={filteredData}
         columns={columns}
         rowKey={(record) => record.categoryId}
         pagination={{

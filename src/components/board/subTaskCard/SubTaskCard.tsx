@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { TaskType } from '../../../types/task.types';
 import { Avatar, Col, DatePicker, Divider, Flex, Row, Tooltip, Typography } from 'antd';
-import StatusDropdown from '../../taskListCommon/statusDropdown/StatusDropdown';
+import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
 import { AvatarNamesMap } from '../../../shared/constants';
 import dayjs, { Dayjs } from 'dayjs';
 

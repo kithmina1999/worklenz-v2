@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Space, Steps, Typography } from 'antd';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import logo from '@/assets/images/logo.png';
 import logoDark from '@/assets/images/logo-dark-mode.png';
-import OrganizationNameForm from '@/components/accountSetup/organizationName/OrgnizationNameForm';
-import CreateFirstProjectForm from '@/components/accountSetup/createFirstProject/create-first-project-form';
-import CreateFirstTasks from '@/components/accountSetup/createFirstTasks/CreateFirstTasks';
-import InviteInitialTeamMembers from '@/components/accountSetup/inviteInitialTeamMembers/InviteInitialTeamMembers';
+import OrganizationNameForm from '@components/account-setup/organization-name/organization-name-form';
+import CreateFirstProjectForm from '@components/account-setup/create-first-project/create-first-project-form';
+import CreateFirstTasks from '@components/account-setup/create-first-tasks/create-first-tasks';
+import InviteInitialTeamMembers from '@components/account-setup/invite-team-members/invite-initial-team-members';
 import './account-setup.css';
 import { RootState } from '@/app/store';
+import { setUser } from '@/features/user/userSlice';
+import { verifyAuthentication } from '@/features/auth/authSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { createAuthService } from '@/services/auth/auth.service';
+import { useNavigate } from 'react-router-dom';
 
 const { Title } = Typography;
 
@@ -22,6 +27,10 @@ const AccountSetup: React.FC = () => {
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
 
   const { t } = useTranslation('accountSetupPage');
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const authService = createAuthService(navigate);
 
   const steps = [
     {

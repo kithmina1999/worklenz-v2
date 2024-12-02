@@ -3,7 +3,7 @@ import { startTransition, useEffect, useState } from 'react';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { toggleDrawer } from '../../../features/projects/projectsSlice';
 import { DownOutlined, EditOutlined, ImportOutlined } from '@ant-design/icons';
-import TemplateDrawer from '../../accountSetup/templateDrawer/TemplateDrawer';
+import TemplateDrawer from '@components/account-setup/template-drawer/template-drawer';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 

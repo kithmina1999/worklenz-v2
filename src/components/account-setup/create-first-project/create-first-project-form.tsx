@@ -1,9 +1,9 @@
 import React, { startTransition, useEffect, useState } from 'react';
 import { Button, Drawer, Form, Input, Typography } from 'antd';
 import './create-first-project-form.css';
-import TemplateDrawer from '../templateDrawer/TemplateDrawer';
+import TemplateDrawer from '@components/account-setup/template-drawer/template-drawer';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../../app/store';
+import { RootState } from '@/app/store';
 import { setButtonDisabled } from '@features/actionSetup/buttonSlice';
 import { useTranslation } from 'react-i18next';
 
