@@ -42,7 +42,7 @@ const Configuration: React.FC = () => {
     'sdasd',
     'dasdas',
     'sdasdas',
-    'sdasd'
+    'sdasd',
     // Add more countries as needed
   ];
 
@@ -112,8 +112,21 @@ const Configuration: React.FC = () => {
                 name="contactNumber"
                 label="Contact Number"
                 layout="vertical"
+                rules={[
+                  {
+                    pattern: /^\d{10}$/,
+                    message: 'Phone number must be exactly 10 digits',
+                  },
+                ]}
               >
-                <Input placeholder="Phone Number" />
+                <Input
+                  placeholder="Phone Number"
+                  maxLength={10}
+                  onInput={(e) => {
+                    const input = e.target as HTMLInputElement; // Type assertion to access 'value'
+                    input.value = input.value.replace(/[^0-9]/g, ''); // Restrict non-numeric input
+                  }}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -162,11 +175,18 @@ const Configuration: React.FC = () => {
             </Col>
           </Row>
           <Row>
-            <Col span={8} style={{ padding: '0 12px', height: '86px', scrollbarColor: 'red'}}>
+            <Col
+              span={8}
+              style={{
+                padding: '0 12px',
+                height: '86px',
+                scrollbarColor: 'red',
+              }}
+            >
               <Form.Item name="country" label="Country" layout="vertical">
                 <Select
                   dropdownStyle={{ maxHeight: 256, overflow: 'auto' }}
-                  placement='topLeft'
+                  placement="topLeft"
                   showSearch
                   placeholder="Country"
                   optionFilterProp="label"
