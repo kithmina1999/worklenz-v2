@@ -9,9 +9,13 @@ import { useMediaQuery } from 'react-responsive';
 import { authApiService } from '@/api/auth/auth.api.service';
 import { IUserSignUpRequest } from '@/types/auth/signup.types';
 import { Rule } from 'antd/es/form';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { signUp } from '@/features/auth/authSlice';
 
 const SignupPage = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
   const { t } = useTranslation('signupPage');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
 
@@ -44,14 +48,6 @@ const SignupPage = () => {
       .join('&');
   };
 
-  const handleSignUpSuccess = async () => {
-    const response = await authApiService.verify();
-    if (response.authenticated) {
-      message.success(t('signupSuccessMessage'));
-      navigate('/worklenz/setup');
-    }
-  };
-
   const onFinish = async (values: IUserSignUpRequest) => {
     try {
       setValidating(true);
@@ -64,7 +60,6 @@ const SignupPage = () => {
       const res = await authApiService.signUpCheck(body);
       if (res.done) {
         await signUpWithEmail(body);
-        await handleSignUpSuccess();
       }
     } catch (error: any) {
       message.error(error?.response?.data?.message || 'Failed to validate signup details');
@@ -76,17 +71,10 @@ const SignupPage = () => {
   const signUpWithEmail = async (body: IUserSignUpRequest) => {
     try {
       setLoading(true);
-      const response = await authApiService.signUp({
-        ...body,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        team_id: urlParams.teamId || null,
-        team_member_id: urlParams.teamMemberId || null,
-        project_id: urlParams.projectId || null
-      });
-
-      if (response.done) {
-        message.success(t('signupSuccessMessage'));
-        navigate('/auth/login');
+      const result = await dispatch(signUp(body)).unwrap();
+      if (result?.authenticated) {
+        message.success(t('loginSuccess'));
+        navigate('/worklenz/setup');
       }
     } catch (error: any) {
       message.error(error?.response?.data?.message || 'Failed to create account');

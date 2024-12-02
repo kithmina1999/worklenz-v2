@@ -23,7 +23,6 @@ export const authApiService = {
 
   signUp: async (body: any): Promise<IServerResponse<void>> => {
     const response = await apiClient.post<IServerResponse<void>>('/secure/signup', body);
-    console.log('response', response);
     return response.data;
   },
 

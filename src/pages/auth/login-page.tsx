@@ -13,7 +13,9 @@ import { login } from '@/features/auth/authSlice';
 import logger from '@/utils/errorLogger';
 import { setUser } from '@/features/user/userSlice';
 import { useAuth } from '@/hooks/useAuth';
+import { Rule } from 'antd/es/form';
 
+// Types
 interface LoginFormValues {
   email: string;
   password: string;
@@ -21,20 +23,27 @@ interface LoginFormValues {
 }
 
 const LoginPage: React.FC = () => {
+  // Hooks
   const navigate = useNavigate();
   const { t } = useTranslation('loginPage');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
   const dispatch = useAppDispatch();
   const authService = useAuth();
-
   const { isLoading } = useAppSelector(state => state.auth);
 
+  // Form validation rules
+  const validationRules = {
+    email: [{ required: true, type: 'email', message: t('emailRequired') }],
+    password: [{ required: true, message: t('passwordRequired'), min: 8 }]
+  };
+
+  // Effects
   useEffect(() => {
     const verifyAuthStatus = async () => {
       try {
-        const response = await authService.getCurrentSession();
-        if (response) {
-          dispatch(setUser(response));
+        const session = await authService.getCurrentSession();
+        if (session) {
+          dispatch(setUser(session));
           navigate('/worklenz/home');
         }
       } catch (error) {
@@ -42,8 +51,9 @@ const LoginPage: React.FC = () => {
       }
     };
     verifyAuthStatus();
-  }, [dispatch, navigate]);
-  
+  }, [dispatch, navigate, authService]);
+
+  // Handlers
   const onFinish = useCallback(
     async (values: LoginFormValues) => {
       try {
@@ -57,20 +67,42 @@ const LoginPage: React.FC = () => {
         logger.error('LoginPage', error);
       }
     },
-    [dispatch, navigate, t]
+    [dispatch, navigate, t, authService]
   );
 
   const handleGoogleLogin = () => {
     window.location.href = `${import.meta.env.VITE_API_URL}/secure/auth/google`;
   };
 
+  // Styles
+  const cardStyles = {
+    width: '100%',
+    boxShadow: 'none'
+  };
+
+  const buttonStyles = {
+    borderRadius: 4
+  };
+
+  const googleButtonStyles = {
+    ...buttonStyles,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  };
+
+  const linkStyles = {
+    fontSize: 14
+  };
+
   return (
     <Card
-      style={{ width: '100%', boxShadow: 'none' }}
+      style={cardStyles}
       styles={{ body: { paddingInline: isMobile ? 24 : 48 } }}
       bordered={false}
     >
       <PageHeader description={t('headerDescription')} />
+      
       <Form
         name="login"
         layout="vertical"
@@ -80,27 +112,21 @@ const LoginPage: React.FC = () => {
         onFinish={onFinish}
         style={{ width: '100%' }}
       >
-        <Form.Item
-          name="email"
-          rules={[{ required: true, type: 'email', message: t('emailRequired') }]}
-        >
+        <Form.Item name="email" rules={validationRules.email as Rule[]}>
           <Input
             prefix={<UserOutlined />}
             placeholder={t('emailPlaceholder')}
             size="large"
-            style={{ borderRadius: 4 }}
+            style={buttonStyles}
           />
         </Form.Item>
 
-        <Form.Item
-          name="password"
-          rules={[{ required: true, message: t('passwordRequired'), min: 8 }]}
-        >
+        <Form.Item name="password" rules={validationRules.password}>
           <Input.Password
             prefix={<LockOutlined />}
             placeholder={t('passwordPlaceholder')}
             size="large"
-            style={{ borderRadius: 4 }}
+            style={buttonStyles}
           />
         </Form.Item>
 
@@ -112,7 +138,7 @@ const LoginPage: React.FC = () => {
             <Link
               to="/auth/forgot-password"
               className="ant-typography ant-typography-link blue-link"
-              style={{ fontSize: 14 }}
+              style={linkStyles}
             >
               {t('forgotPasswordButton')}
             </Link>
@@ -127,24 +153,27 @@ const LoginPage: React.FC = () => {
               htmlType="submit"
               size="large"
               loading={isLoading}
-              style={{ borderRadius: 4 }}
+              style={buttonStyles}
             >
               {t('loginButton')}
             </Button>
-            <Typography.Text style={{ textAlign: 'center' }}>{t('orText')}</Typography.Text>
+            
+            <Typography.Text style={{ textAlign: 'center' }}>
+              {t('orText')}
+            </Typography.Text>
+            
             <Button
               block
               type="default"
               size="large"
               onClick={handleGoogleLogin}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 4,
-              }}
+              style={googleButtonStyles}
             >
-              <img src={googleIcon} alt="google icon" style={{ maxWidth: 20, marginRight: 8 }} />
+              <img 
+                src={googleIcon} 
+                alt="google icon" 
+                style={{ maxWidth: 20, marginRight: 8 }} 
+              />
               {t('signInWithGoogleButton')}
             </Button>
           </Flex>
@@ -152,11 +181,13 @@ const LoginPage: React.FC = () => {
 
         <Form.Item>
           <Space>
-            <Typography.Text style={{ fontSize: 14 }}>{t('dontHaveAccountText')}</Typography.Text>
+            <Typography.Text style={linkStyles}>
+              {t('dontHaveAccountText')}
+            </Typography.Text>
             <Link
               to="/auth/signup"
               className="ant-typography ant-typography-link blue-link"
-              style={{ fontSize: 14 }}
+              style={linkStyles}
             >
               {t('signupButton')}
             </Link>
