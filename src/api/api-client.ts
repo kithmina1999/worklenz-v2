@@ -48,6 +48,7 @@ apiClient.interceptors.response.use(
       const { title, message, auth_error, done } = response.data;
 
       if (message && message.charAt(0) !== '$') {
+        console.log('message', message);
         if (done) {
           alertService.success(title || '', message);
         } else {

@@ -25,7 +25,6 @@ export const login = createAsyncThunk(
       const authorizeResponse = await authApiService.verify();
 
       if (!authorizeResponse.authenticated) {
-        alertService.error('loginFailed', 'Please check your email and password and try again.');
         return rejectWithValue(authorizeResponse.auth_error || 'Authorization failed');
       }
 
@@ -45,7 +44,6 @@ export const signUp = createAsyncThunk(
       const authorizeResponse = await authApiService.verify();
 
       if (!authorizeResponse.authenticated) {
-        alertService.error('loginFailed', 'Please check your email and password and try again.');
         return rejectWithValue(authorizeResponse.auth_error || 'Authorization failed');
       }
 

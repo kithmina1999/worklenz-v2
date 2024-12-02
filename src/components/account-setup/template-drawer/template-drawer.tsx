@@ -1,49 +1,166 @@
 import type { MenuProps } from 'antd';
 import { List, Menu, Tabs, Tag, Typography } from 'antd';
-import React from 'react';
-import './template-drawer.css';
-import { RootState } from '@/app/store';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { RootState } from '@/app/store';
+import { projectTemplatesApiService } from '@/api/project-templates/project-templates.api.service';
+import {
+  IProjectTemplate,
+  IWorklenzTemplate,
+} from '@/types/project-templates/project-templates.types';
+import './template-drawer.css';
 
 const { Title, Text } = Typography;
 
-const TemplateDrawer: React.FC = () => {
-  const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
+interface TemplateDrawerProps {
+  showBothTabs: boolean;
+  onTemplateImport: () => void;
+}
 
+const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
+  showBothTabs = false,
+  onTemplateImport = () => {},
+}) => {
+  const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
   const { t } = useTranslation('template-drawer');
 
-  type MenuItem = Required<MenuProps>['items'][number];
+  const [templates, setTemplates] = useState<IWorklenzTemplate[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<IProjectTemplate | null>(null);
 
-  const data = [
-    'Testing and Verification',
-    'Bug Prioritization',
-    'Bug reporting',
-    'Bug Assignment',
-    'Bug Closure',
-    'Documentation',
-    'Reporting',
-  ];
+  const getSelectedTemplate = async (templateId: string) => {
+    const res = await projectTemplatesApiService.getByTemplateId(templateId);
+    if (res.done) {
+      setSelectedTemplate(res.body);
+    }
+  };
 
-  const items: MenuItem[] = [
-    { key: '1', label: t('bugTracking') },
-    { key: '2', label: t('construction') },
-    { key: '3', label: t('designCreative') },
-    { key: '4', label: t('education') },
-    { key: '5', label: t('finance') },
-    { key: '6', label: t('hrRecruiting') },
-    { key: '7', label: t('informationTechnology') },
-    { key: '8', label: t('legal') },
-    { key: '9', label: t('manufacturing') },
-    { key: '10', label: t('marketing') },
-    { key: '11', label: t('nonprofit') },
-    { key: '12', label: t('personalUse') },
-    { key: '13', label: t('salesCRM') },
-    { key: '14', label: t('serviceConsulting') },
-    { key: '15', label: t('softwareDevelopment') },
-  ];
+  const getTemplates = async () => {
+    const res = await projectTemplatesApiService.getWorklenzTemplates();
+    if (res.done) {
+      setTemplates(res.body);
+      if (res.body.length > 0 && res.body[0].id) {
+        getSelectedTemplate(res.body[0].id);
+      }
+    }
+  };
 
-  const onClick = () => {};
+  useEffect(() => {
+    getTemplates();
+  }, []);
+
+  const menuItems: MenuProps['items'] = templates.map(template => ({
+    key: template.id,
+    label: template.name,
+    type: 'item'
+  }));
+
+  const handleMenuClick = (templateId: string) => {
+    getSelectedTemplate(templateId);
+  };
+
+  const renderTemplateDetails = () => (
+    <div>
+      {/* Description */}
+      <div className="template-detail-row">
+        <div className="template-detail-label">
+          <Text strong>{t('description')}</Text>
+        </div>
+        <div>
+          <Text>{selectedTemplate?.description}</Text>
+        </div>
+      </div>
+
+      {/* Phase */}
+      <div className="template-detail-row">
+        <div className="template-detail-label">
+          <Text strong>{t('phase')}</Text>
+        </div>
+        <div>
+          {selectedTemplate?.phases?.map(phase => (
+            <Tag
+              key={phase.name}
+              color={phase.color_code}
+              style={{ color: 'black', marginBottom: '8px' }}
+            >
+              {phase.name}
+            </Tag>
+          ))}
+        </div>
+      </div>
+
+      {/* Statuses */}
+      <div className="template-detail-row">
+        <div className="template-detail-label">
+          <Text strong>{t('statuses')}</Text>
+        </div>
+        <div>
+          {selectedTemplate?.status?.map(status => (
+            <Tag
+              key={status.name}
+              color={status.color_code}
+              style={{ color: 'black', marginBottom: '8px' }}
+            >
+              {status.name}
+            </Tag>
+          ))}
+        </div>
+      </div>
+
+      {/* Priorities */}
+      <div className="template-detail-row">
+        <div className="template-detail-label">
+          <Text strong>{t('priorities')}</Text>
+        </div>
+        <div>
+          {selectedTemplate?.priorities?.map(priority => (
+            <Tag
+              key={priority.name}
+              color={priority.color_code}
+              style={{ color: 'black', marginBottom: '8px' }}
+            >
+              {priority.name}
+            </Tag>
+          ))}
+        </div>
+      </div>
+
+      {/* Labels */}
+      <div className="template-detail-row">
+        <div className="template-detail-label">
+          <Text strong>{t('labels')}</Text>
+        </div>
+        <div>
+          {selectedTemplate?.labels?.map(label => (
+            <Tag
+              key={label.name}
+              color={label.color_code}
+              style={{ color: 'black', marginBottom: '8px' }}
+            >
+              {label.name}
+            </Tag>
+          ))}
+        </div>
+      </div>
+
+      {/* Tasks */}
+      <div className="template-detail-row">
+        <div className="template-detail-label">
+          <Text strong>{t('tasks')}</Text>
+        </div>
+        <div style={{ marginTop: '0.5rem' }}>
+          <List
+            dataSource={selectedTemplate?.tasks}
+            renderItem={item => (
+              <List.Item key={item.name}>
+                <Text>{item.name}</Text>
+              </List.Item>
+            )}
+          />
+        </div>
+      </div>
+    </div>
+  );
 
   const tabs = [
     {
@@ -52,344 +169,21 @@ const TemplateDrawer: React.FC = () => {
       children: (
         <div style={{ display: 'flex', height: 'calc(100vh - 200px)' }}>
           {/* Menu Area */}
-          <div
-            style={{
-              minWidth: '250px',
-              overflowY: 'auto',
-              height: '100%',
-            }}
-          >
+          <div style={{ minWidth: '250px', overflowY: 'auto', height: '100%' }}>
             <Menu
               className="template-menu"
-              onClick={onClick}
+              onClick={({ key }) => handleMenuClick(key)}
               style={{ width: 256 }}
-              defaultSelectedKeys={['1']}
+              defaultSelectedKeys={[templates[0]?.id || '']}
               mode="inline"
-              items={items}
+              items={menuItems}
             />
           </div>
           {/* Content Area */}
           <div className="temp-details" style={{ flex: 1 }}>
-            {/* Placeholder for content */}
             <Title level={4}>Details</Title>
-            <img
-              src="https://worklenz.s3.amazonaws.com/project-template-gifs/bug-tracking.gif"
-              alt="preview"
-            />
-            <div>
-              {/* Description */}
-              <div
-                style={{
-                  display: 'flex',
-                  marginBottom: '1rem',
-                }}
-              >
-                <div
-                  style={{
-                    maxWidth: '120px',
-                    minWidth: '120px',
-                  }}
-                >
-                  <Text style={{ fontWeight: 500 }}>{t('description')}</Text>
-                </div>
-                <div>
-                  <Text>
-                    The “Bug Tracking” project template is a versatile solution
-                    meticulously designed to streamline and enhance the bug
-                    management processes of businesses across diverse
-                    industries. This template is especially valuable for
-                    organizations that rely on software development, IT
-                    services, or digital product management. It provides a
-                    structured and efficient approach to tracking, resolving,
-                    and improving software issues.
-                  </Text>
-                </div>
-              </div>
-
-              {/* Phase */}
-              <div
-                style={{
-                  display: 'flex',
-                  marginBottom: '1.5rem',
-                }}
-              >
-                <div
-                  style={{
-                    maxWidth: '120px',
-                    minWidth: '120px',
-                  }}
-                >
-                  <Text style={{ fontWeight: 500 }}>{t('phase')}</Text>
-                </div>
-                <div>
-                  <Tag
-                    color="#75c9c069"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Incoming
-                  </Tag>
-                  <Tag
-                    color="#3b7ad469"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Backlog
-                  </Tag>
-                  <Tag
-                    color="#7781ca69"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Development work
-                  </Tag>
-                  <Tag
-                    color="#bf494969"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Resolved
-                  </Tag>
-                  <Tag
-                    color="#ff9c3c69"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Testing & Review
-                  </Tag>
-                </div>
-              </div>
-
-              {/* Statuses */}
-              <div
-                style={{
-                  display: 'flex',
-                  marginBottom: '1.5rem',
-                }}
-              >
-                <div
-                  style={{
-                    maxWidth: '120px',
-                    minWidth: '120px',
-                  }}
-                >
-                  <Text style={{ fontWeight: 500 }}>{t('statuses')}</Text>
-                </div>
-                <div>
-                  <Tag
-                    color="#a9a9a969"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    To Do
-                  </Tag>
-                  <Tag
-                    color="#70a6f369"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Doing
-                  </Tag>
-                  <Tag
-                    color="#70a6f369"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Done
-                  </Tag>
-                </div>
-              </div>
-
-              {/* Priorities */}
-              <div
-                style={{
-                  display: 'flex',
-                  marginBottom: '1.5rem',
-                }}
-              >
-                <div
-                  style={{
-                    maxWidth: '120px',
-                    minWidth: '120px',
-                  }}
-                >
-                  <Text style={{ fontWeight: 500 }}>{t('priorities')}</Text>
-                </div>
-                <div>
-                  <Tag
-                    color="#75c99769"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Low
-                  </Tag>
-                  <Tag
-                    color="#fbc84c69"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Medium
-                  </Tag>
-                  <Tag
-                    color="#f3707069"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    High
-                  </Tag>
-                </div>
-              </div>
-
-              {/* Labels */}
-              <div
-                style={{
-                  display: 'flex',
-                  marginBottom: '1.5rem',
-                }}
-              >
-                <div
-                  style={{
-                    maxWidth: '120px',
-                    minWidth: '120px',
-                  }}
-                >
-                  <Text style={{ fontWeight: 500 }}>{t('labels')}</Text>
-                </div>
-                <div>
-                  <Tag
-                    color="#cbbc7869"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    UI/UX Bug
-                  </Tag>
-                  <Tag
-                    color="#7781ca69"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Ready for Dev
-                  </Tag>
-                  <Tag
-                    color="#cb987869"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Regression
-                  </Tag>
-                  <Tag
-                    color="#154c9b69"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Critical
-                  </Tag>
-                  <Tag
-                    color="#905b3969"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Awaiting review
-                  </Tag>
-                  <Tag
-                    color="#cbc8a169"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Fixed
-                  </Tag>
-                  <Tag
-                    color="#aacb7869"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Duplicate
-                  </Tag>
-                  <Tag
-                    color="#ee87c569"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Documentation
-                  </Tag>
-                  <Tag
-                    color="#80ca7969"
-                    style={{
-                      color: 'black',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Fixing
-                  </Tag>
-                </div>
-              </div>
-
-              {/* Tasks */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  marginBottom: '1.5rem',
-                }}
-              >
-                <div
-                  style={{
-                    maxWidth: '120px',
-                    minWidth: '120px',
-                  }}
-                >
-                  <Text style={{ fontWeight: 500 }}>{t('tasks')}</Text>
-                </div>
-                <div style={{ marginTop: '0.5rem' }}>
-                  <List
-                    dataSource={data}
-                    renderItem={(item) => (
-                      <List.Item>
-                        <Text>{item}</Text>
-                      </List.Item>
-                    )}
-                  />
-                </div>
-              </div>
-            </div>
+            <img src={selectedTemplate?.image_url} alt="template preview" />
+            {renderTemplateDetails()}
           </div>
         </div>
       ),
@@ -398,7 +192,6 @@ const TemplateDrawer: React.FC = () => {
 
   return (
     <div style={{ height: '100vh', overflow: 'hidden' }}>
-      {/* Sticky Tabs Header */}
       <div
         style={{
           position: 'sticky',

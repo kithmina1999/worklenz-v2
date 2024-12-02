@@ -1,11 +1,11 @@
 import React, { startTransition, useEffect, useState } from 'react';
 import { Button, Drawer, Form, Input, Typography } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import './create-first-project-form.css';
 import TemplateDrawer from '@components/account-setup/template-drawer/template-drawer';
-import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { setButtonDisabled } from '@features/actionSetup/buttonSlice';
-import { useTranslation } from 'react-i18next';
 
 const { Title } = Typography;
 
@@ -14,20 +14,23 @@ interface CreateFirstProjectProps {
   onGoBack: () => void;
 }
 
-const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
-  onContinue,
-  onGoBack,
-}) => {
+const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({ onContinue, onGoBack }) => {
+  // State & Hooks
   const dispatch = useDispatch();
+  const { t } = useTranslation('createFirstProjectFormPage');
   const [inputValue, setInputValue] = useState('');
-  const isButtonDisabled = useSelector(
-    (state: RootState) => state.button.isButtonDisable
-  );
   const [open, setOpen] = useState(false);
+
+  // Selectors
+  const isButtonDisabled = useSelector((state: RootState) => state.button.isButtonDisable);
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
 
-  const { t } = useTranslation('createFirstProjectFormPage');
+  // Effects
+  useEffect(() => {
+    dispatch(setButtonDisabled(true));
+  }, [dispatch]);
 
+  // Handlers
   const openTemplateSelector = () => {
     startTransition(() => {
       setOpen(true);
@@ -38,19 +41,10 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
     setOpen(false);
   };
 
-  useEffect(() => {
-    dispatch(setButtonDisabled(true));
-  }, [dispatch]);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputValue(value);
-
-    if (value.trim() === '') {
-      dispatch(setButtonDisabled(true));
-    } else {
-      dispatch(setButtonDisabled(false));
-    }
+    dispatch(setButtonDisabled(value.trim() === ''));
   };
 
   const handleGoBack = () => {
@@ -65,16 +59,38 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
     });
   };
 
+  const handleTemplateImport = () => {
+    console.log('template imported');
+  };
+
+  // Styles
+  const formStyles = {
+    width: '600px',
+    paddingBottom: '1rem',
+    marginBottom: '3rem',
+    marginTop: '3rem',
+  };
+
+  const labelStyles = {
+    color: themeMode === 'dark' ? '' : '#00000073',
+    fontWeight: 500,
+  };
+
+  const buttonContainerStyles = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '1rem',
+  };
+
+  const drawerFooterStyles = {
+    display: 'flex',
+    justifyContent: 'right',
+    padding: '10px 16px 10px 16px',
+  };
+
   return (
-    <Form
-      className="first-project-form"
-      style={{
-        width: '600px',
-        paddingBottom: '1rem',
-        marginBottom: '3rem',
-        marginTop: '3rem',
-      }}
-    >
+    <Form className="first-project-form" style={formStyles}>
       <Form.Item>
         <Title level={2} style={{ marginBottom: '1rem' }}>
           {t('formTitle')}
@@ -84,16 +100,7 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
       <Form.Item
         layout="vertical"
         rules={[{ required: true }]}
-        label={
-          <span
-            style={{
-              color: themeMode === 'dark' ? '' : '#00000073',
-              fontWeight: 500,
-            }}
-          >
-            {t('inputLabel')}
-          </span>
-        }
+        label={<span style={labelStyles}>{t('inputLabel')}</span>}
       >
         <Input
           placeholder="e.g. Worklenz marketing plan"
@@ -103,34 +110,14 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
       </Form.Item>
 
       <div style={{ position: 'relative' }}>
-        <Title
-          level={4}
-          className={themeMode === 'dark' ? 'vert-text-dark' : 'vert-text'}
-        >
+        <Title level={4} className={themeMode === 'dark' ? 'vert-text-dark' : 'vert-text'}>
           {t('or')}
         </Title>
-        <div
-          className={themeMode === 'dark' ? 'vert-line-dark' : 'vert-line'}
-        ></div>
+        <div className={themeMode === 'dark' ? 'vert-line-dark' : 'vert-line'}></div>
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: '1rem',
-        }}
-      >
-        <Button
-          onClick={openTemplateSelector}
-          type="primary"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
+      <div style={buttonContainerStyles}>
+        <Button onClick={openTemplateSelector} type="primary" style={buttonContainerStyles}>
           {t('templateButton')}
         </Button>
         <Drawer
@@ -139,24 +126,15 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
           onClose={closeTemplateSelector}
           open={open}
           footer={
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'right',
-                padding: '10px 16px 10px 16px',
-              }}
-            >
-              <Button
-                style={{ marginRight: '8px' }}
-                onClick={closeTemplateSelector}
-              >
+            <div style={drawerFooterStyles}>
+              <Button style={{ marginRight: '8px' }} onClick={closeTemplateSelector}>
                 {t('cancel')}
               </Button>
               <Button type="primary">{t('create')}</Button>
             </div>
           }
         >
-          <TemplateDrawer />
+          <TemplateDrawer showBothTabs={false} onTemplateImport={handleTemplateImport} />
         </Drawer>
       </div>
 

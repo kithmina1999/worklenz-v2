@@ -73,11 +73,10 @@ const SignupPage = () => {
       setLoading(true);
       const result = await dispatch(signUp(body)).unwrap();
       if (result?.authenticated) {
-        message.success(t('loginSuccess'));
         navigate('/worklenz/setup');
       }
     } catch (error: any) {
-      message.error(error?.response?.data?.message || 'Failed to create account');
+
     } finally {
       setLoading(false);
     }

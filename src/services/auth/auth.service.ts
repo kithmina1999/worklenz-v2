@@ -64,6 +64,11 @@ class AuthService {
     }
   }
 
+  public hasCompletedSetup(): boolean {
+    const user = this.getCurrentSession();
+    return !!user?.setup_completed;
+  }
+
   private onSignOutConfirm(): void {
     void this.signOut();
     window.location.href = '/secure/logout';

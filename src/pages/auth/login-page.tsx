@@ -71,7 +71,11 @@ const LoginPage: React.FC = () => {
   );
 
   const handleGoogleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/secure/auth/google`;
+    try {
+      window.location.href = `${import.meta.env.VITE_API_URL}/secure/google`;
+    } catch (error) {
+      message.error('Failed to redirect to Google sign up');
+    }
   };
 
   // Styles

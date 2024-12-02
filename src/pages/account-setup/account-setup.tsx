@@ -21,16 +21,14 @@ const { Title } = Typography;
 
 const AccountSetup: React.FC = () => {
   const [current, setCurrent] = useState(0);
+
   const isButtonDisabled = useSelector(
     (state: RootState) => state.button.isButtonDisable
   );
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
 
   const { t } = useTranslation('accountSetupPage');
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  const authService = createAuthService(navigate);
 
   const steps = [
     {

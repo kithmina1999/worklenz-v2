@@ -40,16 +40,11 @@ export const AdminGuard = ({ children }: GuardProps) => {
 
 export const SetupGuard = ({ children }: GuardProps) => {
   const isAuthenticated = useAuth().isAuthenticated();
-  const hasCompletedSetup = useAuth().hasCompletedSetup();
 
   const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
-  }
-
-  if (!hasCompletedSetup) {
-    return <Navigate to="/account-setup" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
