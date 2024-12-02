@@ -38,9 +38,13 @@ const initialState: TaskState = {
         },
       ],
       labels: [
-        { labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' },
-        { labelId: 'label1', labelName: 'AI', labelColor: '#a3c4dc' },
-        { labelId: 'label1', labelName: 'Admin', labelColor: '#dce3a3' },
+        { labelId: 'label1', labelName: 'Bug', labelColor: '#ff9c3c' },
+        { labelId: 'label2', labelName: 'Test', labelColor: '#905b39' },
+        {
+          labelId: 'label3',
+          labelName: 'Documentation',
+          labelColor: '#cbbc78',
+        },
       ],
       status: 'todo',
       priority: 'high',
@@ -78,9 +82,9 @@ const initialState: TaskState = {
           ],
           labels: [
             {
-              labelId: 'label3',
-              labelName: 'Documentation',
-              labelColor: '#a3c4dc',
+              labelId: 'label4',
+              labelName: 'Template',
+              labelColor: '#154c9b',
             },
           ],
           status: 'doing',
@@ -137,9 +141,9 @@ const initialState: TaskState = {
           members: [],
           labels: [
             {
-              labelId: 'label4',
-              labelName: 'Template',
-              labelColor: '#e2dcbf',
+              labelId: 'label3',
+              labelName: 'Documentation',
+              labelColor: '#cbbc78',
             },
           ],
           status: 'doing',
@@ -157,7 +161,7 @@ const initialState: TaskState = {
       description: 'Define the basic',
       progress: 0,
       members: [],
-      labels: [{ labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' }],
+      labels: [{ labelId: 'label2', labelName: 'Test', labelColor: '#905b39' }],
       status: 'todo',
       priority: 'low',
       timeTracking: 100,
@@ -179,19 +183,19 @@ const initialState: TaskState = {
       members: [],
       labels: [
         {
-          labelId: 'label5',
-          labelName: 'UI',
-          labelColor: '#dce3a3',
+          labelId: 'label3',
+          labelName: 'Documentation',
+          labelColor: '#cbbc78',
         },
         {
           labelId: 'label4',
           labelName: 'Template',
-          labelColor: '#e2dcbf',
+          labelColor: '#154c9b',
         },
         {
-          labelId: 'label3',
-          labelName: 'Documentation',
-          labelColor: '#a3c4dc',
+          labelId: 'label5',
+          labelName: 'UI',
+          labelColor: '#f37070',
         },
       ],
       status: 'done',
