@@ -9,6 +9,8 @@ import {
 import { useTranslation } from 'react-i18next'; // Assuming you're using i18next for translations
 import './TableColumns.css';
 import { useNavigate } from 'react-router-dom';
+import { toggleDrawer, toggleUpdatedrawer } from '../../features/projects/projectSlice';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
 
 interface DataType {
   key: string;
@@ -24,11 +26,12 @@ interface DataType {
   members: string[];
 }
 
+
 const avatarColors = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#87d068'];
 
 const TableColumns = (): ColumnsType<DataType> => {
   const { t } = useTranslation('allProjectList'); // Use translation hook if you're using i18next
-
+  const dispatch = useAppDispatch()
   const navigate = useNavigate();
 
   return [
@@ -264,10 +267,10 @@ const TableColumns = (): ColumnsType<DataType> => {
       title: '',
       key: 'button',
       dataIndex: '',
-      render: () => (
-        <div>
+      render: (render) => (
+        <div className='hover-button'>
           <Tooltip title={t('setting')}>
-            <Button style={{ marginRight: '8px' }} size="small">
+            <Button onClick={() => dispatch(toggleUpdatedrawer(render.id))} style={{ marginRight: '8px' }} size="small">
               <SettingOutlined />
             </Button>
           </Tooltip>

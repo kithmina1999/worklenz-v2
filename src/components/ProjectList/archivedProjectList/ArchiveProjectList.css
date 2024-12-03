@@ -14,14 +14,6 @@ table td {
   display: none;
 }
 
-.custom-row td:last-child {
-  visibility: hidden;
-}
-
-.custom-row:hover td:last-child {
-  visibility: visible;
-}
-
 :where(.css-dev-only-do-not-override-ezht69).ant-rate .ant-rate-star-first,
 :where(.css-dev-only-do-not-override-ezht69).ant-rate .ant-rate-star-second {
   color: #dedede;

@@ -19,7 +19,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useMediaQuery } from 'react-responsive';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleDrawer } from '../../../features/adminCenter/billing/billingSlice';
+import { toggleDrawer, toggleUpgradeModal } from '../../../features/adminCenter/billing/billingSlice';
 import RedeemCodeDrawer from '../../../features/adminCenter/billing/RedeemCodeDrawer';
 
 const CurrentBill: React.FC = () => {
@@ -33,14 +33,14 @@ const CurrentBill: React.FC = () => {
 
   const percentage = (usedData / totalData) * 100;
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const isModalOpen = useAppSelector((state) => state.billingReducer.isModalOpen)
 
   const showModal = () => {
-    setIsModalOpen(true);
+    dispatch(toggleUpgradeModal())
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    dispatch(toggleUpgradeModal())
   };
 
   const isTablet = useMediaQuery({ query: '(min-width: 1025px)' });

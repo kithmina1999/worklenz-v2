@@ -4,6 +4,8 @@ import { ProjectType } from '../../types/project.types';
 type ProjectState = {
   projectsList: ProjectType[];
   isDrawerOpen: boolean;
+  isUpdateDrawerOpen: boolean;
+  drawerProjectId: string | null; // To store the project ID associated with the drawer
 };
 
 const saveProjectListToLocalStorage = (projectsList: ProjectType[]) => {
@@ -31,6 +33,8 @@ const getProjectListFromLocalStorage = (): ProjectType[] => {
 const initialState: ProjectState = {
   projectsList: getProjectListFromLocalStorage(),
   isDrawerOpen: false,
+  isUpdateDrawerOpen: false,
+  drawerProjectId: null, // Initially, no project ID is selected
 };
 
 const projectSlice = createSlice({
@@ -38,24 +42,22 @@ const projectSlice = createSlice({
   initialState,
   reducers: {
     toggleDrawer: (state) => {
-      state.isDrawerOpen
-        ? (state.isDrawerOpen = false)
-        : (state.isDrawerOpen = true);
+      state.isDrawerOpen = !state.isDrawerOpen;
     },
-    // action for create project
+    toggleUpdatedrawer: (state, action: PayloadAction<string | null>) => {
+      state.isUpdateDrawerOpen = !state.isUpdateDrawerOpen;
+      state.drawerProjectId = state.isDrawerOpen ? action.payload : null;
+    },
     createProject: (state, action: PayloadAction<ProjectType>) => {
       state.projectsList.push(action.payload);
       saveProjectListToLocalStorage(state.projectsList);
     },
-    // action for set the is favourite state
     toggleFavouriteProjectSelection: (state, action: PayloadAction<string>) => {
       const project = state.projectsList.find(
         (project) => project.projectId === action.payload
       );
       if (project) {
-        project.isFavourite
-          ? (project.isFavourite = false)
-          : (project.isFavourite = true);
+        project.isFavourite = !project.isFavourite;
       }
     },
     deleteProject: (state, action: PayloadAction<string>) => {
@@ -64,13 +66,31 @@ const projectSlice = createSlice({
       );
       saveProjectListToLocalStorage(state.projectsList);
     },
+    updateProject: (
+      state,
+      action: PayloadAction<{ projectId: string; updatedData: Partial<ProjectType> }>
+    ) => {
+      const { projectId, updatedData } = action.payload;
+      const projectIndex = state.projectsList.findIndex(
+        (project) => project.projectId === projectId
+      );
+      if (projectIndex !== -1) {
+        state.projectsList[projectIndex] = {
+          ...state.projectsList[projectIndex],
+          ...updatedData,
+        };
+        saveProjectListToLocalStorage(state.projectsList);
+      }
+    },
   },
 });
 
 export const {
   toggleDrawer,
+  toggleUpdatedrawer,
   createProject,
   toggleFavouriteProjectSelection,
   deleteProject,
+  updateProject,
 } = projectSlice.actions;
 export default projectSlice.reducer;

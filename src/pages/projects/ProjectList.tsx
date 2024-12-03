@@ -11,6 +11,7 @@ import ArchiveProjectList from '../../components/ProjectList/archivedProjectList
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useDocumentTitle } from '../../hooks/useDoumentTItle';
+import UpdateProjectDrawer from '../../features/projects/update-project/update-project-drawer';
 
 const ProjectList: React.FC = () => {
   // localization
@@ -114,6 +115,7 @@ const ProjectList: React.FC = () => {
 
       {/* drawers  */}
       <CreateProjectDrawer />
+      <UpdateProjectDrawer />
     </div>
   );
 };
