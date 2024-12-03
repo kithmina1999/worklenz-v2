@@ -5,12 +5,14 @@ import { Col, Flex } from 'antd';
 import { useMediaQuery } from 'react-responsive';
 import ProjectDrawer from '@components/projects/projectDrawer/ProjectDrawer';
 import CreateProjectButton from '@components/projects/projectDrawer/CreateProjectButton';
-import RecentAndFavouriteProjectList
-  from '@/pages/home/recent-and-favourite-project-list/recent-and-favourite-project-list';
+import RecentAndFavouriteProjectList from '@/pages/home/recent-and-favourite-project-list/recent-and-favourite-project-list';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const HomePage = () => {
   // media queries from react-responsive package
   const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
+
+  useDocumentTitle('Home');
 
   return (
     <div style={{ marginBlock: 96, minHeight: '90vh' }}>

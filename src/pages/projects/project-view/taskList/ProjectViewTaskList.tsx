@@ -10,7 +10,7 @@ const ProjectViewTaskList = () => {
   const dataSource: TaskType[] = useAppSelector(state => state.taskReducer.tasks);
 
   return (
-    <Flex vertical gap={16}>
+    <Flex vertical gap={16} style={{overflowX: 'hidden'}}>
       <TaskListFilters position="list" />
 
       <StatusGroupTables datasource={dataSource} />

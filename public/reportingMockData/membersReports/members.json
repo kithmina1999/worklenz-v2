@@ -218,7 +218,7 @@
     "ongoing_by_activity_logs": 0,
     "color_code": "#fbc84c69",
     "tasks_stat": {
-      "todo": 0,
+      "todo": 1,
       "doing": 0,
       "done": 0
     },

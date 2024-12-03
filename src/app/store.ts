@@ -48,8 +48,13 @@ import buttonReducer from '@features/actionSetup/buttonSlice';
 import scheduleReducer from '../features/schedule/scheduleSlice';
 
 // Reports
+import timeLogReducer from '../features/timeReport/projects/timeLogSlice';
+import taskTemplateReducer from '../features/settings/taskTemplates/taskTemplateSlice';
 import projectReportsTableColumnsReducer from '../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
+import overviewReportsReducer from '../features/reporting/overviewReports/overviewReportsSlice';
 import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
+import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
+import roadmapReducer from '../features/roadmap/roadmap-slice';
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -105,8 +110,13 @@ export const store = configureStore({
     scheduleReducer: scheduleReducer,
 
     // Reports
+    timeLogReducer: timeLogReducer,
+    taskTemplateReducer: taskTemplateReducer,
     projectReportsTableColumnsReducer: projectReportsTableColumnsReducer,
+    overviewReportsReducer: overviewReportsReducer,
     projectReportsReducer: projectReportsReducer,
+    membersReportsReducer: membersReportsReducer,
+    roadmapReducer: roadmapReducer,
   },
 });
 

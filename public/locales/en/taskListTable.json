@@ -30,11 +30,12 @@
 
   "addTaskText": "+ Add Task",
   "addSubTaskText": "+ Add Sub Task",
-  "addTaskInputPlaceholder": "Type your task and hit enter!",
+  "addTaskInputPlaceholder": "Type your task and hit enter",
 
   "openButton": "Open",
   "okButton": "Ok",
-  "searchInputPlaceholder": "Search by name",
-  "assigneeSelectorInviteButton": "Invite a new member by email",
-  "noLabelsFound": "No labels found"
+
+  "noLabelsFound": "No labels found",
+  "searchInputPlaceholder": "Search or create",
+  "assigneeSelectorInviteButton": "Invite a new member by email"
 }

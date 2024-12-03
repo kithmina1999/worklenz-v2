@@ -1,4 +1,4 @@
-import { SyncOutlined } from '@ant-design/icons';
+import { ExpandAltOutlined, SyncOutlined } from '@ant-design/icons';
 import {
   Badge,
   Button,
@@ -19,14 +19,18 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
 import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
 import { TaskType } from '@/types/task.types';
+import { toggleUpdateTaskDrawer } from '@features/tasks/taskSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { colors } from '@/styles/colors';
+import UpdateTaskDrawer from '@features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 
 const TasksList = () => {
-  const tasksList = useAppSelector((state) => state.taskReducer.tasks);
-  const projectList = useAppSelector(
-    (state) => state.projectReducer.projects
-  );
+  const tasksList = useAppSelector(state => state.taskReducer.tasks);
+  const projectList = useAppSelector(state => state.projectReducer.projects);
   const [listView, setListView] = useState<'List' | 'Calendar'>('List');
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // function for handle refresh
   const handleRefresh = () => {
@@ -51,29 +55,46 @@ const TasksList = () => {
       key: 'task',
       title: 'Task',
       width: '400px',
-      render: (values) => (
-        <Typography.Text style={{ textTransform: 'capitalize' }}>
-          {values.task}
-        </Typography.Text>
+      render: values => (
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Tooltip title={values.task}>
+            <Typography.Text style={{ textTransform: 'capitalize' }}>{values.task}</Typography.Text>
+          </Tooltip>
+          <div className="row-button">
+            <Tooltip title={'Click open task form'}>
+              <Button
+                type="text"
+                icon={<ExpandAltOutlined />}
+                onClick={() => {
+                  dispatch(toggleUpdateTaskDrawer());
+                }}
+                style={{
+                  backgroundColor: colors.transparent,
+                  padding: 0,
+                  height: 'fit-content',
+                }}
+              >
+                Open
+              </Button>
+            </Tooltip>
+          </div>
+        </div>
       ),
     },
     {
       key: 'project',
       title: 'Project',
       width: '180px',
-      render: (values) => {
-        const project = projectList.data?.find(
-          (project) => project.name === values.project
-        );
+      render: values => {
+        const project = projectList.data?.find(project => project.name === values.project);
         return (
           project && (
-            <Typography.Paragraph style={{ margin: 0, paddingInlineEnd: 6 }}>
-              <Badge
-                color={project.color_code}
-                style={{ marginInlineEnd: 4 }}
-              />
-              {project.name}
-            </Typography.Paragraph>
+            <Tooltip title={project.projectName}>
+              <Typography.Paragraph style={{ margin: 0, paddingInlineEnd: 6 }}>
+                <Badge color={project.color_code} style={{ marginInlineEnd: 4 }} />
+                {project.name}
+              </Typography.Paragraph>
+            </Tooltip>
           )
         );
       },
@@ -82,7 +103,7 @@ const TasksList = () => {
       key: 'status',
       title: 'Status',
       width: '180px',
-      render: (values) => <StatusDropdown currentStatus={values.status} />,
+      render: values => <StatusDropdown currentStatus={values.status} />,
     },
     {
       key: 'dueDate',
@@ -126,16 +147,17 @@ const TasksList = () => {
           <Segmented<'List' | 'Calendar'>
             options={['List', 'Calendar']}
             defaultValue="List"
-            onChange={(value: 'List' | 'Calendar') =>
-              handleSegmentChange(value)
-            }
+            onChange={(value: 'List' | 'Calendar') => handleSegmentChange(value)}
           />
         </Flex>
       }
       style={{
         width: '100%',
         border: '1px solid transparent',
-        boxShadow: '#7a7a7a26 0 5px 16px',
+        boxShadow:
+          themeMode === 'dark'
+            ? 'rgba(0, 0, 0, 0.4) 0px 4px 12px, rgba(255, 255, 255, 0.06) 0px 2px 4px'
+            : '#7a7a7a26 0 5px 16px',
       }}
     >
       {/* toggle task view list / calendar */}
@@ -153,11 +175,14 @@ const TasksList = () => {
         <Table
           className="custom-two-colors-row-table"
           dataSource={tasksList}
-          rowKey={(record) => record.taskId}
+          rowKey={record => record.taskId}
           columns={columns}
           pagination={false}
+          size="middle"
+          rowClassName={() => 'custom-row-height'}
         />
       )}
+      <UpdateTaskDrawer taskId={'SP-1'} />
     </Card>
   );
 };

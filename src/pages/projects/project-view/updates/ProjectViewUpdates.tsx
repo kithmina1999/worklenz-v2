@@ -1,5 +1,6 @@
-import { Button, ConfigProvider, Flex, Form, Mentions, Space, Typography } from 'antd';
+import { Button, ConfigProvider, Flex, Form, Mentions, Space, Tooltip, Typography } from 'antd';
 import { useState } from 'react';
+
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import CustomAvatar from '../../../../components/CustomAvatar';
@@ -42,9 +43,13 @@ const ProjectViewUpdates = () => {
               <Typography.Text style={{ fontSize: 13, color: colors.lightGray }}>
                 Sachintha Prasad
               </Typography.Text>
-              <Typography.Text style={{ fontSize: 13, color: colors.deepLightGray }}>
+              <Tooltip title = 'Nov 25,2024,10.45.54 AM'>
+              <Typography.Text
+                style={{ fontSize: 13, color: colors.deepLightGray }}
+              >
                 7 hours ago
               </Typography.Text>
+              </Tooltip>
             </Space>
             <Typography.Paragraph>Hello this is a test message</Typography.Paragraph>
             <ConfigProvider

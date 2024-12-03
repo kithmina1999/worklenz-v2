@@ -1,12 +1,13 @@
 import React, { ReactNode } from 'react';
 import ProjectViewBoard from '@/pages/projects/project-view/board/project-view-board';
 import ProjectViewWorkload from '@/pages/projects/project-view/workload/ProjectViewWorkload';
-import ProjectViewRoadmap from '@/pages/projects/project-view/roadmap/ProjectViewRoadmap';
 import ProjectViewInsights from '@/pages/projects/project-view/insights/ProjectViewInsights';
 import ProjectViewFiles from '@/pages/projects/project-view/files/project-view-files';
 import ProjectViewMembers from '@/pages/projects/project-view/members/ProjectViewMembers';
 import ProjectViewUpdates from '@/pages/projects/project-view/updates/ProjectViewUpdates';
 import TaskList from '@/pages/projects/project-view/task-list/task-list';
+import ProjectViewTaskList from '@/pages/projects/project-view/taskList/ProjectViewTaskList';
+import ProjectViewRoadmap from '@/pages/projects/project-view/roadmap/project-view-roadmap';
 
 // type of a tab items
 type TabItems = {

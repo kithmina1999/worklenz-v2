@@ -165,6 +165,13 @@ const TableColumns = (navigate: NavigateFunction): ColumnsType<IProjectViewModel
       title: t('name'),
       dataIndex: 'name',
       key: 'name',
+      onCell: (record) => {
+        return {
+          style: {
+            cursor: 'pointer',
+          },
+        };
+      },
       defaultSortOrder: 'ascend',
       showSorterTooltip: false,
       sorter: true,

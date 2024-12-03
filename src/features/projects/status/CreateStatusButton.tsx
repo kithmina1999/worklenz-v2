@@ -16,6 +16,7 @@ const CreateStatusButton = () => {
     <Tooltip title={t('createStatusButtonTooltip')}>
       <Button
         className="borderless-icon-btn"
+        style={{ backgroundColor: colors.transparent, boxShadow: 'none' }}
         onClick={() => dispatch(toggleDrawer())}
         icon={
           <SettingOutlined

@@ -6,8 +6,20 @@ import {
   SyncOutlined,
   UserSwitchOutlined,
 } from '@ant-design/icons';
-import { Badge, Button, Card, Flex, Input, Popconfirm, Skeleton, Table, TableProps, Tooltip, Typography } from 'antd';
-import React, { useMemo, useState } from 'react';
+import {
+  Badge,
+  Button,
+  Card,
+  Flex,
+  Input,
+  Popconfirm,
+  Skeleton,
+  Table,
+  TableProps,
+  Tooltip,
+  Typography,
+} from 'antd';
+import { useMemo, useState } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   deleteMember,
@@ -21,10 +33,13 @@ import { colors } from '@/styles/colors';
 import UpdateMemberDrawer from '@features/settings/member/UpdateMemberDrawer';
 import { useTranslation } from 'react-i18next';
 import CustomAvatar from '@components/CustomAvatar';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const TeamMembersSettings = () => {
   // localization
   const { t } = useTranslation('teamMembersSettings');
+
+  useDocumentTitle('Team Members');
 
   // get currently hover row
   const [hoverRow, setHoverRow] = useState<string | null>(null);
@@ -34,17 +49,12 @@ const TeamMembersSettings = () => {
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
   // get all members lists from redux - add member reducer
-  const owner = useAppSelector((state) => state.memberReducer.owner);
-  const membersList = useAppSelector(
-    (state) => state.memberReducer.membersList,
-  );
+  const owner = useAppSelector(state => state.memberReducer.owner);
+  const membersList = useAppSelector(state => state.memberReducer.membersList);
   const dispatch = useAppDispatch();
 
   // all members
-  const allMembersList: MemberType[] = useMemo(
-    () => [owner, ...membersList],
-    [owner, membersList],
-  );
+  const allMembersList: MemberType[] = useMemo(() => [owner, ...membersList], [owner, membersList]);
 
   // function for handle refresh
   const handleRefresh = () => {
@@ -57,9 +67,7 @@ const TeamMembersSettings = () => {
 
   // function to get name
   const getMemberName = (memberId: string) => {
-    const member = allMembersList.find(
-      (member) => member.memberId === memberId,
-    );
+    const member = allMembersList.find(member => member.memberId === memberId);
 
     if (member?.memberName) {
       return member.memberName;
@@ -82,10 +90,8 @@ const TeamMembersSettings = () => {
 
   // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
-    return allMembersList.filter((item) =>
-      (item.memberName || item.memberEmail)
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()),
+    return allMembersList.filter(item =>
+      (item.memberName || item.memberEmail)?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [allMembersList, searchQuery]);
 
@@ -95,7 +101,7 @@ const TeamMembersSettings = () => {
       key: 'name',
       title: t('nameColumn'),
       sorter: (a, b) => a.name.length - b.name.length,
-      onCell: (record) => ({
+      onCell: record => ({
         onClick: () => {
           setSelectedMemberId(record.memberId);
           dispatch(toggleUpdateMemberDrawer());
@@ -136,7 +142,7 @@ const TeamMembersSettings = () => {
       key: 'projects',
       title: t('projectsColumn'),
       sorter: (a, b) => a.projects - b.projects,
-      onCell: (record) => ({
+      onCell: record => ({
         onClick: () => {
           setSelectedMemberId(record.memberId);
           dispatch(toggleUpdateMemberDrawer());
@@ -156,7 +162,7 @@ const TeamMembersSettings = () => {
       key: 'memberEmail',
       title: t('emailColumn'),
       sorter: (a, b) => a.memberEmail.localeCompare(b.memberEmail),
-      onCell: (record) => ({
+      onCell: record => ({
         onClick: () => {
           setSelectedMemberId(record.memberId);
           dispatch(toggleUpdateMemberDrawer());
@@ -216,11 +222,7 @@ const TeamMembersSettings = () => {
             </Tooltip>
 
             <Tooltip
-              title={
-                record.isActivate
-                  ? t('deactivateTooltip')
-                  : t('activateTooltip')
-              }
+              title={record.isActivate ? t('deactivateTooltip') : t('activateTooltip')}
               trigger={'hover'}
             >
               <Popconfirm
@@ -236,11 +238,7 @@ const TeamMembersSettings = () => {
                 cancelText={t('cancelText')}
                 onConfirm={() => dispatch(toggleMemberStatus(record))}
               >
-                <Button
-                  shape="default"
-                  icon={<UserSwitchOutlined />}
-                  size="small"
-                />
+                <Button shape="default" icon={<UserSwitchOutlined />} size="small" />
               </Popconfirm>
             </Tooltip>
 
@@ -258,11 +256,7 @@ const TeamMembersSettings = () => {
                 cancelText={t('cancelText')}
                 onConfirm={() => dispatch(deleteMember(record.memberId))}
               >
-                <Button
-                  shape="default"
-                  icon={<DeleteOutlined />}
-                  size="small"
-                />
+                <Button shape="default" icon={<DeleteOutlined />} size="small" />
               </Popconfirm>
             </Tooltip>
           </Flex>
@@ -272,42 +266,24 @@ const TeamMembersSettings = () => {
 
   return (
     <div style={{ width: '100%' }}>
-      <Flex
-        align="center"
-        justify="space-between"
-        style={{ marginBlockEnd: 24 }}
-      >
+      <Flex align="center" justify="space-between" style={{ marginBlockEnd: 24 }}>
         <Typography.Title level={4} style={{ marginBlockEnd: 0 }}>
           {filteredMembersData.length}{' '}
-          {filteredMembersData.length !== 1
-            ? t('membersCountPlural')
-            : t('memberCount')}
+          {filteredMembersData.length !== 1 ? t('membersCountPlural') : t('memberCount')}
         </Typography.Title>
 
-        <Flex
-          gap={8}
-          align="center"
-          justify="flex-end"
-          style={{ width: '100%', maxWidth: 400 }}
-        >
+        <Flex gap={8} align="center" justify="flex-end" style={{ width: '100%', maxWidth: 400 }}>
           <Tooltip title={t('pinTooltip')} trigger={'hover'}>
-            <Button
-              shape="circle"
-              icon={<SyncOutlined />}
-              onClick={() => handleRefresh()}
-            />
+            <Button shape="circle" icon={<SyncOutlined />} onClick={() => handleRefresh()} />
           </Tooltip>
           <Input
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.currentTarget.value)}
+            onChange={e => setSearchQuery(e.currentTarget.value)}
             placeholder={t('searchPlaceholder')}
             style={{ maxWidth: 232 }}
             suffix={<SearchOutlined />}
           />
-          <Button
-            type="primary"
-            onClick={() => dispatch(toggleCreateMemberDrawer())}
-          >
+          <Button type="primary" onClick={() => dispatch(toggleCreateMemberDrawer())}>
             {t('addMemberButton')}
           </Button>
         </Flex>
@@ -321,12 +297,17 @@ const TeamMembersSettings = () => {
             className="custom-two-colors-row-table"
             columns={columns}
             dataSource={filteredMembersData}
-            rowKey={(record) => record.memberId}
+            rowKey={record => record.memberId}
             pagination={{
               showSizeChanger: true,
               defaultPageSize: 20,
+              pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+              size: 'small',
             }}
-            onRow={(record) => {
+            scroll={{
+              x: 'max-content',
+            }}
+            onRow={record => {
               return {
                 onMouseEnter: () => setHoverRow(record.memberId),
                 onMouseLeave: () => setHoverRow(null),
