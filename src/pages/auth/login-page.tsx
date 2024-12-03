@@ -9,11 +9,12 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import PageHeader from '@components/AuthPageHeader';
 import googleIcon from '@assets/images/google-icon.png';
-import { login } from '@/features/auth/authSlice';
+import { login, verifyAuthentication } from '@/features/auth/authSlice';
 import logger from '@/utils/errorLogger';
 import { setUser } from '@/features/user/userSlice';
 import { useAuth } from '@/hooks/useAuth';
 import { Rule } from 'antd/es/form';
+import { setSession } from '@/utils/session-helper';
 
 // Types
 interface LoginFormValues {
@@ -41,9 +42,11 @@ const LoginPage: React.FC = () => {
   useEffect(() => {
     const verifyAuthStatus = async () => {
       try {
-        const session = await authService.getCurrentSession();
-        if (session) {
-          dispatch(setUser(session));
+        const session = await dispatch((verifyAuthentication())).unwrap();
+        console.log('session', session);
+        if (session && session.authenticated) {
+          setSession(session.user);
+          dispatch(setUser(session.user));
           navigate('/worklenz/home');
         }
       } catch (error) {
@@ -60,7 +63,8 @@ const LoginPage: React.FC = () => {
         const result = await dispatch(login(values)).unwrap();
         if (result.authenticated) {
           message.success(t('loginSuccess'));
-          authService.setCurrentSession(result.user);
+          setSession(result.user);
+          dispatch(setUser(result.user));
           navigate('/auth/authenticating');
         }
       } catch (error) {

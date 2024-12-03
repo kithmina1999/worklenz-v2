@@ -4,12 +4,13 @@ import { colors } from '../../styles/colors';
 import { greetingString } from '../../utils/greetingString';
 import dayjs from 'dayjs';
 import { useAppSelector } from '../../hooks/useAppSelector';
+import { getSession } from '@/utils/session-helper';
 
 const GreetingWithTime = () => {
   // get user data from redux - user reducer
-  const userDetails = useAppSelector((state) => state.userReducer);
+  const userDetails = getSession();
   // get the first name from the user details
-  const firstName = userDetails.name.split(' ');
+  const firstName = userDetails?.name?.split(' ') || '';
 
   const date = dayjs();
   // get a greeting message based on the time

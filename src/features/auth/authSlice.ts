@@ -78,8 +78,8 @@ export const logout = createAsyncThunk(
 export const verifyAuthentication = createAsyncThunk(
   'secure/verify',
   async () => {
-    const user = await authApiService.verify();
-    return user;
+    const response = await authApiService.verify();
+    return response;
   }
 );
 
