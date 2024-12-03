@@ -32,7 +32,8 @@ import PhaseDrawer from '../../../features/projects/singleProject/phase/PhaseDra
 import StatusDrawer from '../../../features/projects/status/StatusDrawer';
 import UpdateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 import { avatarNamesMap } from '../../../shared/constants';
-import './ProjectView.css'
+import './ProjectView.css';
+import CustomAvatar from '../../../components/CustomAvatar';
 
 const ProjectView = () => {
   const location = useLocation();
@@ -132,36 +133,30 @@ const ProjectView = () => {
       <ProjectViewHeader />
 
       {/* tabs  */}
-      <Tabs
-        activeKey={activeTab}
-        onChange={handleTabChange}
-        items={tabMenuItems}
-      />
-      <div
-        style={{
-          position: 'relative',
-          bottom: '1270px',
-          zIndex: 999,
-          left: '97%',
-        }}
-      >
-        <Avatar size="small" style={{ backgroundColor: avatarNamesMap['R'] }}>
-          R
-        </Avatar>
-        <span style={{ position: 'relative', top: '-10px' }}>
-          <Tooltip title="Members who are active on this project will be displayed here.">
-            <QuestionCircleOutlined />
-          </Tooltip>
-        </span>
-        <span
-          style={{
-            position: 'relative',
-            right: '20px',
-            top: '10px',
-          }}
-        >
-          <Badge status="success" dot className='profile-badge'/>
-        </span>
+      <div className="relative">
+        <Tabs
+          activeKey={activeTab}
+          onChange={handleTabChange}
+          items={tabMenuItems}
+        />
+
+        <div className="absolute right-0 top-0 translate-y-1/2">
+          <CustomAvatar avatarName="Raveesha dilanka" size={26} />
+          <span style={{ position: 'relative', top: '-10px' }}>
+            <Tooltip title="Members who are active on this project will be displayed here.">
+              <QuestionCircleOutlined />
+            </Tooltip>
+          </span>
+          <span
+            style={{
+              position: 'relative',
+              right: '20px',
+              top: '10px',
+            }}
+          >
+            <Badge status="success" dot className="profile-badge" />
+          </span>
+        </div>
       </div>
       {/* drawers  */}
       {/* add project members drawer */}

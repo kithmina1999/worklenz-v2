@@ -5,5 +5,6 @@
   "deleteConfirmationCancel": "Cancel",
   "associatedTaskColumn": "Associated Task",
   "searchPlaceholder": "Search by name",
-  "emptyText": "Categories can be created while updating or creating projects."
+  "emptyText": "Categories can be created while updating or creating projects.",
+  "colorChangeTooltip": "Click to change color"
 }
