@@ -16,6 +16,7 @@ const ProjectViewBoard: React.FC = () => {
   const setOfStatus = useAppSelector((state) => state.statusReducer.status);
   const dispatch = useDispatch();
   const isTablet = useMediaQuery({ query: '(max-width: 1275px)' });
+  const groupBy = useAppSelector((state) => state.groupByFilterDropdownReducer.groupBy)
 
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -44,8 +45,9 @@ const ProjectViewBoard: React.FC = () => {
             overflowX: 'scroll',
             paddingBottom: '10px',
           }}
-        >
-          {setOfStatus?.map((status) => {
+        > 
+        {groupBy === 'status' &&
+          setOfStatus?.map((status) => {
             // Filter tasks based on the current status
             const filteredTasks = dataSource.filter(
               (task) => task.status === status.name
@@ -57,10 +59,10 @@ const ProjectViewBoard: React.FC = () => {
                 category={status.category}
                 id={status.id}
                 dataSource={filteredTasks}
-                statusId={''}
               />
             );
-          })}
+          })
+        }
           <Button
             icon={<PlusOutlined />}
             onClick={() => dispatch(toggleDrawer())}
