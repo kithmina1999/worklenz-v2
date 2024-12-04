@@ -1,7 +1,10 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type MembersReportsState = {
   isMembersReportsDrawerOpen: boolean;
+  isMembersOverviewTasksStatsDrawerOpen: boolean;
+  isMembersOverviewProjectsStatsDrawerOpen: boolean;
+  activeTab: 'overview' | 'timeLogs' | 'activityLogs' | 'tasks';
   membersList: any[];
   isLoading: boolean;
   error: string | null;
@@ -21,6 +24,9 @@ export const fetchMembersData = createAsyncThunk(
 
 const initialState: MembersReportsState = {
   isMembersReportsDrawerOpen: false,
+  isMembersOverviewTasksStatsDrawerOpen: false,
+  isMembersOverviewProjectsStatsDrawerOpen: false,
+  activeTab: 'overview',
   membersList: [],
   isLoading: false,
   error: null,
@@ -32,6 +38,20 @@ const membersReportsSlice = createSlice({
   reducers: {
     toggleMembersReportsDrawer: (state) => {
       state.isMembersReportsDrawerOpen = !state.isMembersReportsDrawerOpen;
+    },
+    toggleMembersOverviewTasksStatsDrawer: (state) => {
+      state.isMembersOverviewTasksStatsDrawerOpen =
+        !state.isMembersOverviewTasksStatsDrawerOpen;
+    },
+    toggleMembersOverviewProjectsStatsDrawer: (state) => {
+      state.isMembersOverviewProjectsStatsDrawerOpen =
+        !state.isMembersOverviewProjectsStatsDrawerOpen;
+    },
+    setMemberReportingDrawerActiveTab: (
+      state,
+      action: PayloadAction<'overview' | 'timeLogs' | 'activityLogs' | 'tasks'>
+    ) => {
+      state.activeTab = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -51,5 +71,10 @@ const membersReportsSlice = createSlice({
   },
 });
 
-export const { toggleMembersReportsDrawer } = membersReportsSlice.actions;
+export const {
+  toggleMembersReportsDrawer,
+  toggleMembersOverviewTasksStatsDrawer,
+  toggleMembersOverviewProjectsStatsDrawer,
+  setMemberReportingDrawerActiveTab,
+} = membersReportsSlice.actions;
 export default membersReportsSlice.reducer;

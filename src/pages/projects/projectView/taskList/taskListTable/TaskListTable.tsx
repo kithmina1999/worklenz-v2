@@ -35,6 +35,7 @@ import {
   selectTaskIds,
 } from '../../../../../features/projects/bulkActions/bulkActionSlice';
 import { useTranslation } from 'react-i18next';
+import { HolderOutlined } from '@ant-design/icons';
 
 const TaskListTable = ({
   taskList,
@@ -357,9 +358,11 @@ const TaskListTable = ({
               <th
                 key={'selector'}
                 className={`${customHeaderColumnStyles('selector')}`}
-                style={{ width: 20, fontWeight: 500 }}
+                style={{ width: 56, fontWeight: 500 }}
               >
-                <Checkbox checked={isSelectAll} onChange={toggleSelectAll} />
+                <Flex justify="flex-end">
+                  <Checkbox checked={isSelectAll} onChange={toggleSelectAll} />
+                </Flex>
               </th>
               {/* other header cells  */}
               {visibleColumns.map((column) => (
@@ -390,7 +393,7 @@ const TaskListTable = ({
                     key={'selector'}
                     className={customBodyColumnStyles('selector')}
                     style={{
-                      width: 20,
+                      width: 56,
                       backgroundColor: selectedRows.includes(task.taskId)
                         ? themeMode === 'dark'
                           ? colors.skyBlue
@@ -404,10 +407,13 @@ const TaskListTable = ({
                             : '#fff',
                     }}
                   >
-                    <Checkbox
-                      checked={selectedRows.includes(task.taskId)}
-                      onChange={() => toggleRowSelection(task)}
-                    />
+                    <Flex gap={8} align="center">
+                      <HolderOutlined />
+                      <Checkbox
+                        checked={selectedRows.includes(task.taskId)}
+                        onChange={() => toggleRowSelection(task)}
+                      />
+                    </Flex>
                   </td>
                   {/* other cells  */}
                   {visibleColumns.map((column) => (

@@ -5,7 +5,7 @@ import { mockTaskData, MockTaskType } from '../../mockData/mockTaskData';
 import { simpleDateFormat } from '../../../../../../utils/simpleDateFormat';
 import { getStatusColor } from '../../../../../../utils/getStatusColor';
 import { colors } from '../../../../../../styles/colors';
-import { Flex, Typography } from 'antd';
+import { Flex, Tooltip, Typography } from 'antd';
 
 interface AssignedTasksListTableProps {
   memberId: string;
@@ -48,7 +48,13 @@ const AssignedTasksListTable: React.FC<AssignedTasksListTableProps> = ({
   const renderColumnContent = (key: string, task: MockTaskType) => {
     switch (key) {
       case 'name':
-        return task.task;
+        return (
+          <Tooltip title={task.task}>
+            <Typography.Text ellipsis={{ expanded: false }}>
+              {task.task}
+            </Typography.Text>
+          </Tooltip>
+        );
       case 'status':
         return (
           <Flex

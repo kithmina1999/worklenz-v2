@@ -20,10 +20,10 @@ import {
 } from '@ant-design/icons';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { LabelType } from '../../../types/label.type';
-import CustomColordLabel from '../../../components/taskListCommon/labelsSelector/CustomColordLabel';
 import { colors } from '../../../styles/colors';
 import { deleteLabel } from '../../../features/settings/label/labelSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import ColorChangedLabel from '../../../components/taskListCommon/labelsSelector/color-changed-label';
 import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const LabelsSettings = () => {
@@ -53,7 +53,7 @@ const LabelsSettings = () => {
     {
       key: 'label',
       title: t('labelColumn'),
-      render: (record: LabelType) => <CustomColordLabel label={record} />,
+      render: (record: LabelType) => <ColorChangedLabel label={record} />,
     },
     {
       key: 'associatedTask',

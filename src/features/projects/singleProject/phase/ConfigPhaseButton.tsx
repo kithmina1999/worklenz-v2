@@ -20,6 +20,7 @@ const ConfigPhaseButton = ({ color }: { color: string }) => {
     <Tooltip title={t('configPhaseButtonTooltip')}>
       <Button
         className="borderless-icon-btn"
+        style={{ backgroundColor: colors.transparent, boxShadow: 'none' }}
         onClick={() => dispatch(toggleDrawer())}
         icon={
           <SettingOutlined

@@ -6,16 +6,28 @@ import MembersReportsTimeLogsTab from './timeLogTab/MembersReportsTimeLogsTab';
 import MembersReportsActivityLogsTab from './activityLogTab/MembersReportsActivityLogsTab';
 import MembersReportsTasksTab from './taskTab/MembersReportsTasksTab';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../../hooks/useAppSelector';
+import { useAppDispatch } from '../../../../hooks/useAppDispatch';
+import { setMemberReportingDrawerActiveTab } from '../membersReportsSlice';
 
 type MembersReportsDrawerProps = {
   memberId?: string | null;
 };
+
+type TabsType = 'overview' | 'timeLogs' | 'activityLogs' | 'tasks';
 
 const MembersReportsDrawerTabs = ({
   memberId = null,
 }: MembersReportsDrawerProps) => {
   // localization
   const { t } = useTranslation('reportingMembersDrawer');
+
+  const dispatch = useAppDispatch();
+
+  // get active tab state from member reporting reducer
+  const activeTab = useAppSelector(
+    (state) => state.membersReportsReducer.activeTab
+  );
 
   const tabItems: TabsProps['items'] = [
     {
@@ -40,7 +52,16 @@ const MembersReportsDrawerTabs = ({
     },
   ];
 
-  return <Tabs type="card" items={tabItems} />;
+  return (
+    <Tabs
+      type="card"
+      items={tabItems}
+      activeKey={activeTab}
+      onTabClick={(key) =>
+        dispatch(setMemberReportingDrawerActiveTab(key as TabsType))
+      }
+    />
+  );
 };
 
 export default MembersReportsDrawerTabs;

@@ -20,7 +20,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { colors } from '../../../styles/colors';
 import { CategoryType } from '../../../types/categories.types';
-import CustomColordCategoryTag from '../../../features/settings/categories/CustomColordCategoryTag';
+import CustomColordCategoryTag from '../../../features/settings/categories/color-changed-category';
 import { deleteCategory } from '../../../features/settings/categories/categoriesSlice';
 import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 

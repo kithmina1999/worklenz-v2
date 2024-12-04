@@ -23,12 +23,13 @@ import statusReducer from '../features/projects/status/StatusSlice';
 import bulkActionReducer from '../features/projects/bulkActions/bulkActionSlice';
 import scheduleReducer from '../features/schedule/scheduleSlice';
 import updatesReducer from '../features/projects/singleProject/updates/updatesSlice';
-import timeLogReducer from '../features/timeReport/projects/timeLogSlice'
+import timeLogReducer from '../features/timeReport/projects/timeLogSlice';
 import taskTemplateReducer from '../features/settings/taskTemplates/taskTemplateSlice';
 import projectReportsTableColumnsReducer from '../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
 import overviewReportsReducer from '../features/reporting/overviewReports/overviewReportsSlice';
 import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
 import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
+import roadmapReducer from '../features/roadmap/roadmap-slice';
 
 export const store = configureStore({
   // there is error  occured with day js package when use with redux it shows a non-serializable value was detected
@@ -67,6 +68,7 @@ export const store = configureStore({
     overviewReportsReducer: overviewReportsReducer,
     projectReportsReducer: projectReportsReducer,
     membersReportsReducer: membersReportsReducer,
+    roadmapReducer: roadmapReducer,
   },
 });
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { LabelType } from '../../../types/label.type';
-import { Tag, Typography } from 'antd';
-import { colors } from '../../../styles/colors';
+import { Tag } from 'antd';
 
 const CustomColordLabel = ({ label }: { label: LabelType | null }) => {
   return (
@@ -14,11 +13,10 @@ const CustomColordLabel = ({ label }: { label: LabelType | null }) => {
         justifyItems: 'center',
         height: 18,
         width: 'fit-content',
+        fontSize: 11,
       }}
     >
-      <Typography.Text style={{ fontSize: 11, color: colors.darkGray }}>
-        {label?.labelName}
-      </Typography.Text>
+      {label?.labelName}
     </Tag>
   );
 };

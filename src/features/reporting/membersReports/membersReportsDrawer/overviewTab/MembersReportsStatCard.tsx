@@ -3,18 +3,42 @@ import {
   ExclamationCircleOutlined,
   FileExcelOutlined,
 } from '@ant-design/icons';
-import { Card, Flex, Typography } from 'antd';
+import { Button, Card, Flex } from 'antd';
 import React, { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
+import {
+  setMemberReportingDrawerActiveTab,
+  toggleMembersOverviewTasksStatsDrawer,
+  toggleMembersOverviewProjectsStatsDrawer,
+} from '../../membersReportsSlice';
 
 const MembersReportsStatCard = () => {
   // localization
   const { t } = useTranslation('reportingMembersDrawer');
 
+  const dispatch = useAppDispatch();
+
+  // function to handle members overview tasks stat drawer open
+  const handleMembersOverviewTasksStatsDrawerToggle = () => {
+    dispatch(toggleMembersOverviewTasksStatsDrawer());
+  };
+
+  // function to handle members overview projects stat drawer open
+  const handleMembersOverviewProjectsStatsDrawerToggle = () => {
+    dispatch(toggleMembersOverviewProjectsStatsDrawer());
+  };
+
+  // fuction to handle tab change
+  const handleNavigateTimeLogsTab = () => {
+    dispatch(setMemberReportingDrawerActiveTab('timeLogs'));
+  };
+
   type StatItemsType = {
     name: string;
     icon: ReactNode;
     value: string;
+    onClick: () => void;
   };
 
   // stat items array
@@ -23,6 +47,7 @@ const MembersReportsStatCard = () => {
       name: 'projects',
       icon: <FileExcelOutlined style={{ fontSize: 24, color: '#f6ce69' }} />,
       value: '4',
+      onClick: handleMembersOverviewProjectsStatsDrawerToggle,
     },
     {
       name: 'totalTasks',
@@ -30,6 +55,7 @@ const MembersReportsStatCard = () => {
         <ExclamationCircleOutlined style={{ fontSize: 24, color: '#70eded' }} />
       ),
       value: '20',
+      onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'assignedTasks',
@@ -37,6 +63,7 @@ const MembersReportsStatCard = () => {
         <ExclamationCircleOutlined style={{ fontSize: 24, color: '#7590c9' }} />
       ),
       value: '0',
+      onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'completedTasks',
@@ -44,6 +71,7 @@ const MembersReportsStatCard = () => {
         <ExclamationCircleOutlined style={{ fontSize: 24, color: '#75c997' }} />
       ),
       value: '0',
+      onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'ongoingTasks',
@@ -51,6 +79,7 @@ const MembersReportsStatCard = () => {
         <ExclamationCircleOutlined style={{ fontSize: 24, color: '#7cb5ec' }} />
       ),
       value: '0',
+      onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'overdueTasks',
@@ -58,11 +87,13 @@ const MembersReportsStatCard = () => {
         <ExclamationCircleOutlined style={{ fontSize: 24, color: '#eb6363' }} />
       ),
       value: '4',
+      onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'loggedHours',
       icon: <ClockCircleOutlined style={{ fontSize: 24, color: '#75c997' }} />,
       value: '0h 0m',
+      onClick: handleNavigateTimeLogsTab,
     },
   ];
 
@@ -72,9 +103,13 @@ const MembersReportsStatCard = () => {
         {statItems.map((item) => (
           <Flex gap={12} align="center">
             {item.icon}
-            <Typography.Text>
+            <Button
+              type="link"
+              onClick={item.onClick}
+              className="text-[#181818] hover:text-[#1890ff]"
+            >
               {item.value} {t(`${item.name}Text`)}
-            </Typography.Text>
+            </Button>
           </Flex>
         ))}
       </Flex>

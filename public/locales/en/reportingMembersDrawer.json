@@ -51,6 +51,7 @@
   "selectProjectPlaceholder": "Select Project",
 
   "taskColumn": "Task",
+  "nameColumn": "Name",
   "projectColumn": "Project",
   "statusColumn": "Status",
   "priorityColumn": "Priority",
@@ -58,5 +59,32 @@
   "completedDateColumn": "Completed Date",
   "estimatedTimeColumn": "Estimated Time",
   "loggedTimeColumn": "Logged Time",
-  "overloggedTimeColumn": "Overlogged Time"
+  "overloggedTimeColumn": "Overlogged Time",
+  "daysLeftColumn": "Days Left/Overdue",
+  "startDateColumn": "Start Date",
+  "endDateColumn": "End Date",
+  "actualTimeColumn": "Actual Time",
+  "projectHealthColumn": "Project Health",
+  "categoryColumn": "Category",
+  "projectManagerColumn": "Project Manager",
+
+  "tasksStatsOverviewDrawerTitle": "'s Tasks",
+  "projectsStatsOverviewDrawerTitle": "'s Projects",
+
+  "cancelledText": "Cancelled",
+  "blockedText": "Blocked",
+  "onHoldText": "On Hold",
+  "proposedText": "Proposed",
+  "inPlanningText": "In Planning",
+  "inProgressText": "In Progress",
+  "completedText": "Completed",
+  "continuousText": "Continuous",
+
+  "daysLeftText": "days left",
+  "daysOverdueText": "days overdue",
+
+  "notSetText": "NotSet",
+  "needsAttentionText": "Needs Attention",
+  "atRiskText": "At Risk",
+  "goodText": "Good"
 }

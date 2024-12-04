@@ -33,6 +33,7 @@ import StatusDrawer from '../../../features/projects/status/StatusDrawer';
 import UpdateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 import { avatarNamesMap } from '../../../shared/constants';
 import './ProjectView.css';
+import CustomAvatar from '../../../components/CustomAvatar';
 import { PageHeader } from '@ant-design/pro-components';
 
 const ProjectView = () => {
@@ -96,6 +97,10 @@ const ProjectView = () => {
             <ConfigProvider wave={{ disabled: true }}>
               <Button
                 className="borderless-icon-btn"
+                style={{
+                  backgroundColor: colors.transparent,
+                  boxShadow: 'none',
+                }}
                 icon={
                   getFromLocalStorage('pinnedTab') === item.key ? (
                     <PushpinFilled
