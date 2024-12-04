@@ -3,12 +3,14 @@ import axios from 'axios';
 import alertService from '@/services/alerts/alertService';
 
 const getCsrfToken = (): string | null => {
-  return decodeURIComponent(
-    document.cookie
-      .split('; ')
-      .find((cookie) => cookie.startsWith('XSRF-TOKEN='))
-      ?.split('=')[1] || ''
-  );
+  const match = document.cookie
+    .split('; ')
+    .find((cookie) => cookie.startsWith('XSRF-TOKEN='));
+  
+  if (!match) {
+    return null;
+  }
+  return decodeURIComponent(match.split('=')[1]);
 };
 
 const apiClient = axios.create({
@@ -26,6 +28,8 @@ apiClient.interceptors.request.use(
     const token = getCsrfToken();
     if (token) {
       config.headers['X-CSRF-Token'] = token;
+    } else {
+      console.warn('No CSRF token found');
     }
     return config;
   },
@@ -35,6 +39,7 @@ apiClient.interceptors.request.use(
 // Response interceptor with notification handling based on done flag
 apiClient.interceptors.response.use(
   response => {
+    console.log('response', response);
      // Handle 302 redirect
      if (response.status === 302) {
       const redirectUrl = response.headers.location;
