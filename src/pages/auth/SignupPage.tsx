@@ -138,9 +138,9 @@ const SignupPage = () => {
         <Form.Item>
           <Typography.Paragraph style={{ fontSize: 14 }}>
             {t('bySigningUpText')}
-            <Link to="/privacy-policy"> {t('privacyPolicyLink')}</Link>{' '}
+            <Link to="https://worklenz.com/privacy/"> {t('privacyPolicyLink')}</Link>{' '}
             {t('andText')}
-            <Link to="/terms-of-use"> {t('termsOfUseLink')}</Link>.
+            <Link to="https://worklenz.com/terms/"> {t('termsOfUseLink')}</Link>.
           </Typography.Paragraph>
         </Form.Item>
 
