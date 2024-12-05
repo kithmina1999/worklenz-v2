@@ -95,7 +95,7 @@ const ProfileSettings = () => {
         style={{ width: '100%', maxWidth: 350 }}
       >
           <Form.Item>
-        <Tooltip title='Click to upload an avata' placement="topLeft">
+        <Tooltip title='Click to upload an avatar' placement="topLeft">
             <Upload
               name="avatar"
               listType="picture-card"

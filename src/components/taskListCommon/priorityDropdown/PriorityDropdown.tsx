@@ -15,11 +15,11 @@ import { useAppSelector } from '../../../hooks/useAppSelector';
 import { getPriorityColor } from '../../../utils/getPriorityColors';
 
 type PriorityDropdownProps = {
-  currentPriority: TaskPriorityType;
+  currentPriority: TaskPriorityType | string;
 };
 
 const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
-  const [priority, setPriority] = useState<TaskPriorityType>(currentPriority);
+  const [priority, setPriority] = useState<TaskPriorityType | string>(currentPriority);
 
   // localization
   const { t } = useTranslation('taskListTable');

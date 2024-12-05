@@ -41,6 +41,7 @@ const GroupByFilterDropdown = () => {
       value: 'phase',
       label: phase ? phase?.phase : t('phaseText'),
     },
+    { key: 'members', value: 'members', label: t('memberText') },
   ];
 
   return (
@@ -51,6 +52,7 @@ const GroupByFilterDropdown = () => {
         options={groupDropdownMenuItems}
         onChange={handleChange}
         suffixIcon={<CaretDownFilled />}
+        dropdownStyle={{width: 'wrap-content'}}
       />
       {(activeGroup === 'status' || activeGroup === 'phase') && (
         <ConfigProvider wave={{ disabled: true }}>

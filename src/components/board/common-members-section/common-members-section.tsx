@@ -16,14 +16,14 @@ import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
 import TaskCard from '../taskCard/TaskCard';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 
-import './CommonStatusSection.css';
+import '../commonStatusSection/CommonStatusSection'
 
 import { deleteStatus } from '../../../features/projects/status/StatusSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import ChangeCategoryDropdown from '../changeCategoryDropdown/ChangeCategoryDropdown';
 import { useTranslation } from 'react-i18next';
 
-interface CommonStatusSectionProps {
+interface CommonMembersSectionProps {
   status: string;
   dataSource: TaskType[];
   category: string;
@@ -31,7 +31,7 @@ interface CommonStatusSectionProps {
 }
 
 
-const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
+const CommonMembersSection: React.FC<CommonMembersSectionProps> = ({
   status,
   dataSource,
   category,
@@ -40,6 +40,16 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
   const dispatch = useAppDispatch();
   const createTaskInputRef = useRef<InputRef>(null);
 
+  const colorPalette = [
+    '#d1d0d3',
+    '#b9cef1',
+    '#c2e4d0',
+    '#f9e3b1',
+    '#f6bfc0',
+  ];
+  
+  const getRandomColorFromPalette = () =>
+    colorPalette[Math.floor(Math.random() * colorPalette.length)];
   // Initialize status in the Redux store if not already set
   useEffect(() => {
     dispatch(initializeStatus(status));
@@ -178,12 +188,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
               padding: '8px',
               display: 'flex',
               justifyContent: 'space-between',
-              backgroundColor:
-                category === 'todo'
-                  ? '#d1d0d3'
-                  : category === 'doing'
-                    ? '#b9cef1'
-                    : '#c2e4d0',
+              backgroundColor: getRandomColorFromPalette(),
               borderRadius: '10px',
             }}
           >
@@ -310,4 +315,4 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
   );
 };
 
-export default CommonStatusSection;
+export default CommonMembersSection;

@@ -16,14 +16,14 @@ import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
 import TaskCard from '../taskCard/TaskCard';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 
-import './CommonStatusSection.css';
+import '../commonStatusSection/CommonStatusSection'
 
 import { deleteStatus } from '../../../features/projects/status/StatusSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import ChangeCategoryDropdown from '../changeCategoryDropdown/ChangeCategoryDropdown';
 import { useTranslation } from 'react-i18next';
 
-interface CommonStatusSectionProps {
+interface CommonPhaseSectionProps {
   status: string;
   dataSource: TaskType[];
   category: string;
@@ -31,7 +31,7 @@ interface CommonStatusSectionProps {
 }
 
 
-const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
+const CommonPhaseSection: React.FC<CommonPhaseSectionProps> = ({
   status,
   dataSource,
   category,
@@ -179,11 +179,9 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
               display: 'flex',
               justifyContent: 'space-between',
               backgroundColor:
-                category === 'todo'
-                  ? '#d1d0d3'
-                  : category === 'doing'
-                    ? '#b9cef1'
-                    : '#c2e4d0',
+                category === 'unmapped'
+                  ? 'rgba(251, 200, 76, 0.41)'
+                  : '#d1d0d3',
               borderRadius: '10px',
             }}
           >
@@ -310,4 +308,4 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
   );
 };
 
-export default CommonStatusSection;
+export default CommonPhaseSection;

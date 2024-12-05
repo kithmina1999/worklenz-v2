@@ -114,7 +114,16 @@ const initialState: TaskState = {
       task: 'Settings (task templates)',
       description: null,
       progress: 30,
-      members: [],
+      members: [
+        {
+          memberId: '1',
+          memberName: 'Raveesha Dilanka',
+          memberEmail: '',
+          memberRole: 'owner',
+          isActivate: null,
+          isInivitationAccept: false,
+        }
+      ],
       labels: [
         {
           labelId: 'label3',
@@ -132,7 +141,7 @@ const initialState: TaskState = {
       createdDate: new Date('2023-09-25'),
       lastUpdated: new Date('2023-10-05'),
       reporter: '-',
-      phase: '-',
+      phase: '',
       subTasks: [
         {
           taskId: 'SP-15',
@@ -172,7 +181,7 @@ const initialState: TaskState = {
       createdDate: new Date('2023-10-01'),
       lastUpdated: new Date('2023-10-10'),
       reporter: '-',
-      phase: '-',
+      phase: '',
       subTasks: [],
     },
     {
@@ -208,7 +217,7 @@ const initialState: TaskState = {
       createdDate: new Date('2023-08-28'),
       lastUpdated: new Date('2023-09-14'),
       reporter: '-',
-      phase: '-',
+      phase: '',
       subTasks: [],
     },
   ],

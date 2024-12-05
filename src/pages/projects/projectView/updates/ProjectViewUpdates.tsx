@@ -79,9 +79,11 @@ const ProjectViewUpdates = () => {
               }}
             >
               <Button
+              type='text'
                 style={{
                   width: 'fit-content',
                   border: 'none',
+                  backgroundColor: 'transparent',
                   padding: 0,
                   fontSize: 13,
                   height: 24,
