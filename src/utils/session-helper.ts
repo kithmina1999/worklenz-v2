@@ -1,6 +1,6 @@
-import { ILocalSession } from "@/types/auth/local-session.types";
+import { ILocalSession } from '@/types/auth/local-session.types';
 
-export const WORKLENZ_SESSION_ID = "worklenz.sid";
+export const WORKLENZ_SESSION_ID = 'worklenz.sid';
 const storage: Storage = localStorage;
 
 export function setSession(user: ILocalSession): void {
@@ -22,4 +22,12 @@ export function hasSession() {
 
 export function deleteSession() {
   storage.removeItem(WORKLENZ_SESSION_ID);
+}
+
+export function getRole() {
+  const session = getSession();
+  if (!session) return 'Unknown';
+  if (session.owner) return 'Owner';
+  if (session.is_admin) return 'Admin';
+  return 'Member';
 }

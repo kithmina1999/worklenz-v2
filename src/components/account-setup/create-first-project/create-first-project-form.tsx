@@ -59,7 +59,7 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({ onContinue,
     });
   };
 
-  const handleTemplateImport = () => {
+  const handleTemplateSelected = () => {
     console.log('template imported');
   };
 
@@ -135,7 +135,7 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({ onContinue,
             </div>
           }
         >
-          <TemplateDrawer showBothTabs={false} onTemplateImport={handleTemplateImport} />
+          <TemplateDrawer showBothTabs={false} templateSelected={handleTemplateSelected} />
         </Drawer>
       </div>
 
