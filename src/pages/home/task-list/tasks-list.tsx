@@ -23,14 +23,48 @@ import { toggleUpdateTaskDrawer } from '@features/tasks/taskSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { colors } from '@/styles/colors';
 import UpdateTaskDrawer from '@features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
+import { t } from 'i18next';
+import { IMyDashboardMyTask } from '@/types/home/tasks.types';
+import { IHomeTasksConfig } from '@/types/home/home-page.types';
 
 const TasksList = () => {
-  const tasksList = useAppSelector(state => state.taskReducer.tasks);
-  const projectList = useAppSelector(state => state.projectReducer.projects);
-  const [listView, setListView] = useState<'List' | 'Calendar'>('List');
+  // const tasksList = useAppSelector(state => state.taskReducer.tasks);
+  const [tasksList, setTasksList] = useState<IMyDashboardMyTask[]>([]);
+  const [groups, setGroups] = useState<IMyDashboardMyTask[]>([]);
+
+  const [viewOptions, setViewOptions] = useState<'List' | 'Calendar'>('List');
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const myTasksActiveFilterKey = 'my-dashboard-active-filter';
+  const options = [
+    {
+      value: 0,
+      label: t('home:tasks.assignedToMe'),
+    },
+    {
+      value: 1,
+      label: t('home:tasks.assignedByMe'),
+    },
+  ];
+
+  const [config, setConfig] = useState<IHomeTasksConfig>({
+    tasks_group_by: options[0].value,
+    current_view: 0,
+    current_tab: 'my_tasks',
+    selected_date: new Date(),
+    is_calendar_view: false,
+    time_zone: '',
+  });
+
+
+  const getActiveProjectsFilter = () => {
+    return +(localStorage.getItem(myTasksActiveFilterKey) || 0);
+  };
+
+  const setActiveProjectsFilter = (value: number) => {
+    localStorage.setItem(myTasksActiveFilterKey, value.toString());
+  };
 
   // function for handle refresh
   const handleRefresh = () => {
@@ -41,10 +75,10 @@ const TasksList = () => {
   // function for handle segmaent change and render the calender
   const handleSegmentChange = (value: 'List' | 'Calendar') => {
     if (value === 'Calendar') {
-      setListView('Calendar');
+      setViewOptions('Calendar');
       handleRefresh();
     } else {
-      setListView('List');
+      setViewOptions('List');
       handleRefresh();
     }
   };
@@ -121,17 +155,8 @@ const TasksList = () => {
             Tasks
           </Typography.Title>
           <Select
-            defaultValue="assigned to me"
-            options={[
-              {
-                value: 'assigned to me',
-                label: 'assigned to me',
-              },
-              {
-                value: 'assigned by me',
-                label: 'assigned by me',
-              },
-            ]}
+            defaultValue="0"
+            options={options}
           />
         </Flex>
       }
@@ -161,7 +186,7 @@ const TasksList = () => {
       }}
     >
       {/* toggle task view list / calendar */}
-      {listView === 'List' ? <ListView /> : <CalendarView />}
+      {viewOptions === 'List' ? <ListView /> : <CalendarView />}
 
       {/* task list table --> render with different filters and views  */}
       {isLoading ? (

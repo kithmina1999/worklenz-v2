@@ -26,7 +26,6 @@ import projectHealthReducer from '@features/projects/lookups/projectHealth/proje
 
 // Tasks
 import taskReducer from '@features/tasks/taskSlice';
-import todoReducer from '@features/todo/todoSlice';
 import createCardReducer from '@features/board/createCardSlice';
 import priorityReducer from '@features/taskAttributes/taskPrioritySlice';
 import taskLabelsReducer from '@features/taskAttributes/taskLabelSlice';
@@ -88,7 +87,6 @@ export const store = configureStore({
 
     // Tasks
     taskReducer: taskReducer,
-    todoReducer: todoReducer,
     createCardReducer: createCardReducer,
     priorityReducer: priorityReducer,
     taskLabelsReducer: taskLabelsReducer,

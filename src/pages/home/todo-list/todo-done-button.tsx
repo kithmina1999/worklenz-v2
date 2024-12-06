@@ -3,15 +3,13 @@ import { Button, ConfigProvider, Tooltip } from 'antd';
 import React, { useState } from 'react';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { completeTodo } from '@features/todo/todoSlice';
-import { TodoType } from '@/types/todo.types';
+import { IMyTask } from '@/types/home/my-tasks.types';
 
 type TodoDoneButtonProps = {
-  record: TodoType;
+  record: IMyTask;
 };
 
 const TodoDoneButton = ({ record }: TodoDoneButtonProps) => {
-  const dispatch = useAppDispatch();
   const [checkIconColor, setCheckIconColor] = useState<string>(
     colors.lightGray
   );
@@ -20,7 +18,6 @@ const TodoDoneButton = ({ record }: TodoDoneButtonProps) => {
     setCheckIconColor(colors.limeGreen);
 
     setTimeout(() => {
-      dispatch(completeTodo(record));
       setCheckIconColor(colors.lightGray);
     }, 500);
   };

@@ -1,7 +1,6 @@
 import apiClient from '@api/api-client';
 import { API_BASE_URL } from '@/shared/constants';
 import { IServerResponse } from '@/types/common.types';
-import { toQueryString } from '@/utils/toQueryString';
 import { IProfileSettings } from '@/types/settings/profile.types';
 import { INotificationSettings } from '../notifications/notifications.types';
 import { IAccountSetupRequest, IAccountSetupResponse } from '@/types/project-templates/project-templates.types';
