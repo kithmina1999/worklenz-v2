@@ -15,6 +15,8 @@ import { projectTemplatesApiService } from '@/api/project-templates/project-temp
 
 import './account-setup.css';
 import { IAccountSetupRequest } from '@/types/project-templates/project-templates.types';
+import { profileSettingsApiService } from '@/api/settings/profile/profile-settings.api.service';
+import { useNavigate } from 'react-router-dom';
 
 const { Title } = Typography;
 
@@ -33,6 +35,7 @@ const AccountSetup: React.FC = () => {
   const userDetails = getSession();
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
   useDocumentTitle(t('setupYourAccount', 'Account Setup'));
+  const navigate = useNavigate();
 
   const [current, setCurrent] = useState(0);
   const [organizationName, setOrganizationName] = useState('');
@@ -129,6 +132,7 @@ const AccountSetup: React.FC = () => {
     setter(items.map(item => (item.id === id ? { ...item, value } : item)));
   };
 
+  // TODO: automatically focus on the next input field
   const handleAddItem = (
     items: Task[] | Email[],
     setter: React.Dispatch<React.SetStateAction<Task[] | Email[]>>,
@@ -164,21 +168,26 @@ const AccountSetup: React.FC = () => {
         team_members: emails.map(email => email.value),
       };
       const res = await projectTemplatesApiService.setupAccount(model);
+      if (res.done) {
+        navigate('/worklenz/home');
+      }
     } catch (error) {
       console.log('error', error);
     }
   };
 
-  const completeAccountSetup = async () => {
+  const completeAccountSetup = async (skip = false) => {
     try {
       const model: IAccountSetupRequest = {
         team_name: organizationName,
         project_name: projectName,
-        template_id: templateId || null,
         tasks: tasks.map(task => task.value),
-        team_members: emails.map(email => email.value),
+        team_members: skip ? [] : emails.map(email => email.value),
       };
-      const res = await projectTemplatesApiService.setupAccount(model);
+      const res = await profileSettingsApiService.setupAccount(model);
+      if (res.done) {
+        navigate('/worklenz/home');
+      }
     } catch (error) {
       console.log('error', error);
     }
@@ -368,6 +377,14 @@ const AccountSetup: React.FC = () => {
     return false;
   };
 
+  const nextStep = () => {
+    if (current === 3) {
+      completeAccountSetup();
+    } else {
+      setCurrent(prev => prev + 1);
+    }
+  };
+
   return (
     <div style={styles.container}>
       <div>
@@ -409,6 +426,7 @@ const AccountSetup: React.FC = () => {
                       style={{ color: isDarkMode ? '' : '#00000073', fontWeight: 500 }}
                       type="link"
                       className="my-7"
+                      onClick={() => completeAccountSetup(true)}
                     >
                       {t('skipForNow')}
                     </Button>
@@ -420,7 +438,7 @@ const AccountSetup: React.FC = () => {
                 htmlType="submit"
                 disabled={isValid()}
                 className="my-7"
-                onClick={() => setCurrent(prev => prev + 1)}
+                onClick={() => nextStep()}
               >
                 {t('continue')}
               </Button>
