@@ -1,8 +1,6 @@
 import { Button, Drawer, Form, Input, message, Typography } from 'antd';
 import { useEffect } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
-import { IJobTitle } from '@/types/job.types';
 import { jobTitlesApiService } from '@/api/settings/job-titles/job-titles.api.service';
 
 type JobTitleDrawerProps = {

@@ -1,3 +1,12 @@
+import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import { jobTitlesApiService } from '@/api/settings/job-titles/job-titles.api.service';
+import { DEFAULT_PAGE_SIZE } from '@/shared/constants';
+import { colors } from '@/styles/colors';
+import { IJobTitle, IJobTitlesViewModel } from '@/types/job.types';
+import { deleteJobTitle } from '@features/settings/job/jobSlice';
+import PinRouteToNavbarButton from '@components/PinRouteToNavbarButton';
 import {
   Button,
   Card,
@@ -10,24 +19,18 @@ import {
   Typography,
 } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
-
-import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { deleteJobTitle } from '@features/settings/job/jobSlice';
-
-import PinRouteToNavbarButton from '@components/PinRouteToNavbarButton';
-import {
-  DeleteOutlined,
-  EditOutlined,
-  ExclamationCircleFilled,
-  SearchOutlined,
-} from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { colors } from '@/styles/colors';
-import { IJobTitle, IJobTitlesViewModel } from '@/types/job.types';
-import { jobTitlesApiService } from '@/api/settings/job-titles/job-titles.api.service';
 import JobTitleDrawer from './job-titles-drawer';
-import { DEFAULT_PAGE_SIZE } from '@/shared/constants';
-import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+
+interface PaginationType {
+  current: number;
+  pageSize: number;
+  field: string;
+  order: string;
+  total: number;
+  pageSizeOptions: string[];
+  size: 'small' | 'default';
+}
 
 const JobTitlesSettings = () => {
   const { t } = useTranslation('jobTitlesSettings');
@@ -38,7 +41,7 @@ const JobTitlesSettings = () => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [jobTitles, setJobTitles] = useState<IJobTitlesViewModel>({});
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState<PaginationType>({
     current: 1,
     pageSize: DEFAULT_PAGE_SIZE,
     field: 'name',
@@ -84,14 +87,21 @@ const JobTitlesSettings = () => {
     getJobTitles();
   };
 
+  const deleteJobTitle = async (id: string) => {
+    const res = await jobTitlesApiService.deleteJobTitle(id);
+    if (res.done) {
+      getJobTitles();
+    }
+  };
+
   const columns: TableProps['columns'] = useMemo(
     () => [
       {
         key: 'jobTitle',
         title: t('nameColumn'),
-        sorter: (a, b) => a.jobTitle.localeCompare(b.jobTitle),
+        sorter: true,
         onCell: record => ({
-          onClick: () => handleEditClick(record.jobId),
+          onClick: () => handleEditClick(record.id),
         }),
         render: (record: IJobTitle) => <Typography.Text>{record.name}</Typography.Text>,
       },
@@ -113,7 +123,7 @@ const JobTitlesSettings = () => {
               icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
               okText={t('deleteConfirmationOk')}
               cancelText={t('deleteConfirmationCancel')}
-              onConfirm={() => record.id && dispatch(deleteJobTitle(record.id))}
+              onConfirm={() => record.id && deleteJobTitle(record.id)}
             >
               <Tooltip title="Delete">
                 <Button shape="default" icon={<DeleteOutlined />} size="small" />
@@ -154,7 +164,7 @@ const JobTitlesSettings = () => {
             </Button>
 
             <Tooltip title={t('pinTooltip')} trigger={'hover'}>
-              <PinRouteToNavbarButton name="jobTitles" path="/worklenz/settings/job-titles" />
+              <PinRouteToNavbarButton name="jobTitles" path="/worklenz/settings/job-titles" adminOnly />
             </Tooltip>
           </Flex>
         </Flex>
