@@ -10,7 +10,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AvatarNamesMap } from '@/shared/constants';
 import { getRole, getSession } from '@/utils/session-helper';
 
-const ProfileButton = () => {
+const ProfileButton = ({ isOwnerOrAdmin }: { isOwnerOrAdmin: boolean }) => {
   const userDetails = getSession();
   const role = getRole();
 
@@ -56,14 +56,16 @@ const ProfileButton = () => {
           bordered={false}
           style={{ width: 230 }}
         >
-          <Link
-            to="/worklenz/admin-center/overview"
-            style={{
-              color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
+          {isOwnerOrAdmin && (
+            <Link
+              to="/worklenz/admin-center/overview"
+              style={{
+                color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
             }}
           >
-            Admin Center
-          </Link>
+              Admin Center
+            </Link>
+          )}
           <Link
             to="/worklenz/settings/profile"
             style={{

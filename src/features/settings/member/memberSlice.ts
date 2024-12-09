@@ -5,7 +5,7 @@ type MemberState = {
   owner: MemberType;
   membersList: MemberType[];
   isUpdateMemberDrawerOpen: boolean;
-  isCreateMemberDrawerOpen: boolean;
+  isInviteMemberDrawerOpen: boolean;
 };
 
 const initialState: MemberState = {
@@ -19,17 +19,17 @@ const initialState: MemberState = {
   },
   membersList: [],
   isUpdateMemberDrawerOpen: false,
-  isCreateMemberDrawerOpen: false,
+  isInviteMemberDrawerOpen: false,
 };
 
 const memberSlice = createSlice({
   name: 'memberReducer',
   initialState,
   reducers: {
-    toggleCreateMemberDrawer: (state) => {
-      state.isCreateMemberDrawerOpen
-        ? (state.isCreateMemberDrawerOpen = false)
-        : (state.isCreateMemberDrawerOpen = true);
+    toggleInviteMemberDrawer: (state) => {
+      state.isInviteMemberDrawerOpen
+        ? (state.isInviteMemberDrawerOpen = false)
+        : (state.isInviteMemberDrawerOpen = true);
     },
     toggleUpdateMemberDrawer: (state) => {
       state.isUpdateMemberDrawerOpen
@@ -66,7 +66,7 @@ const memberSlice = createSlice({
 });
 
 export const {
-  toggleCreateMemberDrawer,
+  toggleInviteMemberDrawer,
   toggleUpdateMemberDrawer,
   addMember,
   toggleMemberStatus,

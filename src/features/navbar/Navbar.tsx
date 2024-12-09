@@ -19,9 +19,13 @@ import UpgradePlanButton from './upgradePlan/UpgradePlanButton';
 import { useResponsive } from '@/hooks/useResponsive';
 import { getFromLocalStorage } from '@/utils/localStorageFunctions';
 import { navRoutes, NavRoutesType } from './navRoutes';
+import { getSession } from '@/utils/session-helper';
+import { useAuth } from '@/hooks/useAuth';
 
 const Navbar = () => {
   const [current, setCurrent] = useState<string>('home');
+  const isOwnerOrAdmin = useAuth().isOwnerOrAdmin();
+
   const location = useLocation();
   // media queries from useResponsive custom hook
   const { isDesktop, isMobile, isTablet } = useResponsive();
@@ -99,13 +103,13 @@ const Navbar = () => {
           <ConfigProvider wave={{ disabled: true }}>
             {isDesktop && (
               <Flex gap={20} align="center">
-                <UpgradePlanButton />
-                <InviteButton />
+                {isOwnerOrAdmin && <UpgradePlanButton />}
+                {isOwnerOrAdmin && <InviteButton />}
                 <Flex align="center">
                   <SwitchTeamButton />
                   <NotificationButton />
                   <HelpButton />
-                  <ProfileButton />
+                  <ProfileButton isOwnerOrAdmin={isOwnerOrAdmin} />
                 </Flex>
               </Flex>
             )}
@@ -113,14 +117,14 @@ const Navbar = () => {
               <Flex gap={12} align="center">
                 <SwitchTeamButton />
                 <NotificationButton />
-                <ProfileButton />
+                <ProfileButton isOwnerOrAdmin={isOwnerOrAdmin} />
                 <MobileMenuButton />
               </Flex>
             )}
             {isMobile && (
               <Flex gap={12} align="center">
                 <NotificationButton />
-                <ProfileButton />
+                <ProfileButton isOwnerOrAdmin={isOwnerOrAdmin} />
                 <MobileMenuButton />
               </Flex>
             )}
@@ -130,7 +134,7 @@ const Navbar = () => {
 
       {/* drawers  */}
       {/* add member drawer  */}
-      <AddMemberDrawer />
+      {isOwnerOrAdmin && <AddMemberDrawer />}
       {/* notification drawer */}
       <NotficationDrawer />
     </Col>

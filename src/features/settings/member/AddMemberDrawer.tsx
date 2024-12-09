@@ -11,7 +11,7 @@ import {
 import React from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { addMember, toggleCreateMemberDrawer } from './memberSlice';
+import { addMember, toggleInviteMemberDrawer } from './memberSlice';
 import { colors } from '../../../styles/colors';
 import { MemberType } from '../../../types/member.types';
 import { nanoid } from '@reduxjs/toolkit';
@@ -21,9 +21,7 @@ const AddMemberDrawer = () => {
   // localization
   const { t } = useTranslation('teamMembersSettings');
 
-  const isDrawerOpen = useAppSelector(
-    (state) => state.memberReducer.isCreateMemberDrawerOpen
-  );
+  const isDrawerOpen = useAppSelector((state) => state.memberReducer.isInviteMemberDrawerOpen);
   const dispatch = useAppDispatch();
 
   // get job titles from redux - job reducer
@@ -46,7 +44,7 @@ const AddMemberDrawer = () => {
       dispatch(addMember(newMember));
       form.resetFields();
       message.success(t('createMemberSuccessMessage'));
-      dispatch(toggleCreateMemberDrawer());
+      dispatch(toggleInviteMemberDrawer());
     } catch (error) {
       message.error(t('createMemberErrorMessage'));
     }
@@ -60,7 +58,7 @@ const AddMemberDrawer = () => {
         </Typography.Text>
       }
       open={isDrawerOpen}
-      onClose={() => dispatch(toggleCreateMemberDrawer())}
+      onClose={() => dispatch(toggleInviteMemberDrawer())}
     >
       <Form
         form={form}

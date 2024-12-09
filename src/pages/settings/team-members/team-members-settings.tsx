@@ -23,7 +23,7 @@ import { useMemo, useState } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   deleteMember,
-  toggleCreateMemberDrawer,
+  toggleInviteMemberDrawer,
   toggleMemberStatus,
   toggleUpdateMemberDrawer,
 } from '@features/settings/member/memberSlice';
@@ -283,7 +283,7 @@ const TeamMembersSettings = () => {
             style={{ maxWidth: 232 }}
             suffix={<SearchOutlined />}
           />
-          <Button type="primary" onClick={() => dispatch(toggleCreateMemberDrawer())}>
+          <Button type="primary" onClick={() => dispatch(toggleInviteMemberDrawer())}>
             {t('addMemberButton')}
           </Button>
         </Flex>

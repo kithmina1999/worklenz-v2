@@ -73,10 +73,11 @@ const SignupPage = () => {
       setLoading(true);
       const result = await dispatch(signUp(body)).unwrap();
       if (result?.authenticated) {
-        navigate('/worklenz/setup');
+        message.success('Successfully signed up!');
+        navigate('/worklenz/setup', { replace: true });
       }
     } catch (error: any) {
-
+      message.error(error?.response?.data?.message || 'Failed to sign up');
     } finally {
       setLoading(false);
     }
