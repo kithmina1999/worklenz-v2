@@ -25,7 +25,7 @@ export const tabItems: TabItems[] = [
     key: 'tasks-list',
     label: 'Task List',
     isPinned: true,
-    element: React.createElement(TaskList),
+    element: React.createElement(ProjectViewTaskList),
   },
   {
     index: 1,
@@ -34,18 +34,18 @@ export const tabItems: TabItems[] = [
     isPinned: true,
     element: React.createElement(ProjectViewBoard),
   },
-  {
-    index: 2,
-    key: 'workload',
-    label: 'Workload',
-    element: React.createElement(ProjectViewWorkload),
-  },
-  {
-    index: 3,
-    key: 'roadmap',
-    label: 'Roadmap',
-    element: React.createElement(ProjectViewRoadmap),
-  },
+  // {
+  //   index: 2,
+  //   key: 'workload',
+  //   label: 'Workload',
+  //   element: React.createElement(ProjectViewWorkload),
+  // },
+  // {
+  //   index: 3,
+  //   key: 'roadmap',
+  //   label: 'Roadmap',
+  //   element: React.createElement(ProjectViewRoadmap),
+  // },
   {
     index: 4,
     key: 'project-insights-member-overview',

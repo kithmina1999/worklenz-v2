@@ -6,10 +6,9 @@ import { createPortal } from 'react-dom';
 import BulkTasksActionContainer from '@/features/projects/bulkActions/BulkTasksActionContainer';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
+import { ITaskListGroup } from '@/types/tasks/taskList.types';
 
-const StatusGroupTables = ({ datasource }: { datasource: TaskType[] }) => {
-  const statusList = useAppSelector((state) => state.statusReducer.status);
-
+const StatusGroupTables = ({ group }: { group: ITaskListGroup }) => {
   const dispatch = useAppDispatch();
 
   // get bulk action detatils
@@ -35,17 +34,15 @@ const StatusGroupTables = ({ datasource }: { datasource: TaskType[] }) => {
 
   return (
     <Flex gap={24} vertical>
-      {statusList.map((status) => (
+      {group.tasks.map((status) => (
         <TaskListTableWrapper
           key={status.id}
-          taskList={datasource.filter(
-            (task) => task.status === status.category
-          )}
-          tableId={status.id}
-          name={status.name}
+          taskList={group.tasks}
+          tableId={status.id || ''}
+          name={status.name || ''}
           type="status"
-          statusCategory={status.category}
-          color={getStatusColor(status.category)}
+          statusCategory={status.status || ''}
+          color={getStatusColor(status.status || '')}
         />
       ))}
 

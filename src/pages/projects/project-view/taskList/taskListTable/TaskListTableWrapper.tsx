@@ -207,7 +207,7 @@ const TaskListTableWrapper = ({
             </Dropdown>
           )}
         </Flex>
-        <Collapse
+        {/* <Collapse
           collapsible="header"
           className="border-l-[4px]"
           bordered={false}
@@ -222,7 +222,7 @@ const TaskListTableWrapper = ({
               children: <TaskListTable taskList={taskList} tableId={tableId} />,
             },
           ]}
-        />
+        /> */}
       </Flex>
     </ConfigProvider>
   );

@@ -6,9 +6,9 @@ import { ITaskListConfigV2, ITaskListGroup } from '@/types/tasks/taskList.types'
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchTaskGroups } from '@/features/tasks/taskSlice';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
-import TaskListTableWrapper from './task-list-table-wrapper/task-list-table-wrapper';
-import OptimizedTaskListTable from './table-v2';
+
 import { columnList } from '@/pages/projects/project-view/taskList/taskListTable/columns/columnList';
+import StatusGroupTables from '../taskList/statusTables/StatusGroupTables';
 
 const TaskList = () => {
   const dispatch = useAppDispatch();
@@ -55,13 +55,7 @@ const TaskList = () => {
       <TaskListFilters position="list" />
       <Skeleton active loading={loadingGroups}>
         {taskGroups.map((group: ITaskListGroup) => (
-          <OptimizedTaskListTable
-            taskListGroup={group}
-            tableId={group.id}
-            visibleColumns={visibleColumns}
-            onTaskSelect={onTaskSelect}
-            onTaskExpand={onTaskExpand}
-          />
+          
         ))}
       </Skeleton>
     </Flex>
