@@ -152,7 +152,7 @@ const ProjectList: React.FC = () => {
         <Table<IProjectViewModel>
           columns={TableColumns(navigate)}
           dataSource={projects.data}
-          rowKey="id"
+          rowKey={record => record.id || ''}
           loading={loading}
           size="small"
           onChange={handleTableChange}

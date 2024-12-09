@@ -15,6 +15,8 @@ import './TableColumns.css';
 import { ColumnFilterItem } from 'antd/es/table/interface';
 import Avatars from '../avatars/Avatars';
 import { InlineMember } from '@/types/teamMembers/inlineMember.types';
+import { formatDateTime } from '@/utils/format-time-strings';
+import { calculateTimeAgo } from '@/utils/calculateTimeAgo';
 
 // Constants
 const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
@@ -226,8 +228,8 @@ const TableColumns = (navigate: NavigateFunction): ColumnsType<IProjectViewModel
       showSorterTooltip: false,
       sorter: true,
       render: (date: Date, record) => (
-        <Tooltip title={formatDate(date)} placement="topLeft" mouseEnterDelay={0.5}>
-          {record.updated_at_string}
+        <Tooltip title={record.updated_at ? formatDateTime(record.updated_at) : ''} placement="topLeft" mouseEnterDelay={0.5}>
+          {record.updated_at ? calculateTimeAgo(record.updated_at) : ''}
         </Tooltip>
       ),
     },
