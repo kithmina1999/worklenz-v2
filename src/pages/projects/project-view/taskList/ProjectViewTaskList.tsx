@@ -8,6 +8,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { fetchTaskGroups } from '@/features/tasks/taskSlice';
 import { ITaskListConfigV2 } from '@/types/tasks/taskList.types';
+import TaskListTableWrapper from './taskListTable/TaskListTableWrapper';
 
 const ProjectViewTaskList = () => {
   // sample data from task reducer
@@ -40,7 +41,15 @@ const ProjectViewTaskList = () => {
       <TaskListFilters position="list" />
 
       {taskGroups.map((group) => (
-        <StatusGroupTables key={group.id} group={group} />
+        <TaskListTableWrapper
+          key={group.id}
+          taskList={group.tasks}
+          tableId={group.id || ''}
+          name={group.name || ''}
+          type="status"
+          statusCategory={group.id || ''}
+          color={group.color_code || ''}
+        />
       ))}
     </Flex>
   );

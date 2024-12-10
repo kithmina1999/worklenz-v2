@@ -54,9 +54,9 @@ const TaskList = () => {
     <Flex vertical gap={16}>
       <TaskListFilters position="list" />
       <Skeleton active loading={loadingGroups}>
-        {taskGroups.map((group: ITaskListGroup) => (
+        {/* {taskGroups.map((group: ITaskListGroup) => (
           
-        ))}
+        ))} */}
       </Skeleton>
     </Flex>
   );

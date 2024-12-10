@@ -163,7 +163,7 @@ const TaskListTable = ({
       case 'taskId':
         return (
           <Tooltip title={task.id} className="flex justify-center">
-            <Tag>{task.id}</Tag>
+            <Tag>{task.task_key}</Tag>
           </Tooltip>
         );
 
@@ -175,7 +175,6 @@ const TaskListTable = ({
             task={task}
             isSubTask={isSubtask}
             expandedTasks={expandedTasks}
-            hoverRow={hoverRow}
             setSelectedTaskId={setSelectedTaskId}
             toggleTaskExpansion={toggleTaskExpansion}
           />
@@ -194,14 +193,7 @@ const TaskListTable = ({
 
       // progress column
       case 'progress': {
-        return task?.progress || task?.progress === 0 ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <TaskProgress
-              progress={task?.progress}
-              numberOfSubTasks={task?.sub_tasks?.length || 0}
-            />
-          </div>
-        ) : (
+        return (
           <div></div>
         );
       }
@@ -209,48 +201,26 @@ const TaskListTable = ({
       // members column
       case 'members':
         return (
-          <Flex gap={4} align="center">
-            <Avatar.Group>
-              {task.assignees?.map(member => (
-                <CustomAvatar key={member.id} avatarName={member.name} size={26} />
-              ))}
-            </Avatar.Group>
-            <AssigneeSelector taskId={selectedTaskId || '0'} />
-          </Flex>
+          <div></div>
         );
 
       // labels column
       case 'labels':
         return (
-          <Flex>
-            {task?.labels && task?.labels?.length <= 2 ? (
-              task?.labels?.map(label => <CustomColorLabel label={label} />)
-            ) : (
-              <Flex>
-                <CustomColorLabel label={task?.labels ? task.labels[0] : null} />
-                <CustomColorLabel label={task?.labels ? task.labels[1] : null} />
-                {/* this component show other label names  */}
-                <CustomNumberLabel
-                  // this label list get the labels without 1, 2 elements
-                  labelList={task?.labels ? task.labels : null}
-                />
-              </Flex>
-            )}
-            <LabelsSelector taskId={task.id} />
-          </Flex>
+          <div></div>
         );
 
       // phase column
       case 'phases':
-        return <PhaseDropdown projectId={selectedProject?.id || ''} />;
+        return <div></div>;
 
       // status column
       case 'status':
-        return <StatusDropdown currentStatus={task.status || ''} size={'default'} />;
+        return <div></div>;
 
       // priority column
       case 'priority':
-        return <PriorityDropdown currentPriority={task.priority || ''} />;
+        return <div></div>;
 
       // // time tracking column
       // case 'timeTracking':
@@ -263,47 +233,31 @@ const TaskListTable = ({
 
       // estimation column
       case 'estimation':
-        return <Typography.Text>0h 0m</Typography.Text>;
+        return <div></div>;
 
       // start date column
       case 'startDate':
-        return task.start_date ? (
-          <Typography.Text>{simpleDateFormat(task.start_date)}</Typography.Text>
-        ) : (
-          <DatePicker
-            placeholder="Set a start date"
-            suffixIcon={null}
-            style={{ border: 'none', width: '100%', height: '100%' }}
-          />
-        );
+        return <div></div>;
 
       // due date column
       case 'dueDate':
-        return task.end_date ? (
-          <Typography.Text>{simpleDateFormat(task.end_date)}</Typography.Text>
-        ) : (
-          <DatePicker
-            placeholder="Set a due date"
-            suffixIcon={null}
-            style={{ border: 'none', width: '100%', height: '100%' }}
-          />
-        );
+        return <div></div>;
 
       // completed date column
       case 'completedDate':
-        return <Typography.Text>{durationDateFormat(task.completed_at || null)}</Typography.Text>;
+        return <div></div>;
 
       // created date column
       case 'createdDate':
-        return <Typography.Text>{durationDateFormat(task.created_at || null)}</Typography.Text>;
+        return <div></div>;
 
       // last updated column
       case 'lastUpdated':
-        return <Typography.Text>{durationDateFormat(task.updated_at || null)}</Typography.Text>;
+        return <div></div>;
 
       // recorder column
       case 'reporter':
-        return <Typography.Text>Sachintha Prasad</Typography.Text>;
+        return <div></div>;
 
       // default case for unsupported columns
       default:
@@ -347,8 +301,6 @@ const TaskListTable = ({
                 <tr
                   key={task.id}
                   onContextMenu={e => handleContextMenu(e, task)}
-                  onMouseEnter={() => setHoverRow(task.id || '')}
-                  onMouseLeave={() => setHoverRow(null)}
                   className={`${taskList.length === 0 ? 'h-0' : 'h-[42px]'}`}
                 >
                   {/* this cell render the select the related task checkbox  */}
