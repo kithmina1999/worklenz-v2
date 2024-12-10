@@ -12,12 +12,14 @@ import {
   toggleMembersOverviewTasksStatsDrawer,
   toggleMembersOverviewProjectsStatsDrawer,
 } from '../../membersReportsSlice';
+import { useAppSelector } from '../../../../../hooks/useAppSelector';
 
 const MembersReportsStatCard = () => {
   // localization
   const { t } = useTranslation('reportingMembersDrawer');
 
   const dispatch = useAppDispatch();
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // function to handle members overview tasks stat drawer open
   const handleMembersOverviewTasksStatsDrawerToggle = () => {
@@ -51,41 +53,31 @@ const MembersReportsStatCard = () => {
     },
     {
       name: 'totalTasks',
-      icon: (
-        <ExclamationCircleOutlined style={{ fontSize: 24, color: '#70eded' }} />
-      ),
+      icon: <ExclamationCircleOutlined style={{ fontSize: 24, color: '#70eded' }} />,
       value: '20',
       onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'assignedTasks',
-      icon: (
-        <ExclamationCircleOutlined style={{ fontSize: 24, color: '#7590c9' }} />
-      ),
+      icon: <ExclamationCircleOutlined style={{ fontSize: 24, color: '#7590c9' }} />,
       value: '0',
       onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'completedTasks',
-      icon: (
-        <ExclamationCircleOutlined style={{ fontSize: 24, color: '#75c997' }} />
-      ),
+      icon: <ExclamationCircleOutlined style={{ fontSize: 24, color: '#75c997' }} />,
       value: '0',
       onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'ongoingTasks',
-      icon: (
-        <ExclamationCircleOutlined style={{ fontSize: 24, color: '#7cb5ec' }} />
-      ),
+      icon: <ExclamationCircleOutlined style={{ fontSize: 24, color: '#7cb5ec' }} />,
       value: '0',
       onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'overdueTasks',
-      icon: (
-        <ExclamationCircleOutlined style={{ fontSize: 24, color: '#eb6363' }} />
-      ),
+      icon: <ExclamationCircleOutlined style={{ fontSize: 24, color: '#eb6363' }} />,
       value: '4',
       onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
@@ -100,13 +92,17 @@ const MembersReportsStatCard = () => {
   return (
     <Card style={{ width: '100%' }}>
       <Flex vertical gap={16} style={{ padding: '12px 24px' }}>
-        {statItems.map((item) => (
+        {statItems.map(item => (
           <Flex gap={12} align="center">
             {item.icon}
             <Button
               type="link"
               onClick={item.onClick}
-              className="text-[#181818] hover:text-[#1890ff]"
+              className={
+                themeMode === 'dark'
+                  ? 'text-[#ffffffd9] hover:text-[#1890FF]'
+                  : 'text-[#181818] hover:text-[#1890ff]'
+              }
             >
               {item.value} {t(`${item.name}Text`)}
             </Button>

@@ -1,13 +1,6 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
-import {
-  Chart,
-  ArcElement,
-  Tooltip,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-} from 'chart.js';
+import { Chart, ArcElement, Tooltip, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import { ChartOptions } from 'chart.js';
 import { Flex } from 'antd';
 
@@ -38,6 +31,15 @@ const PriorityGraph = () => {
           color: 'rgba(200, 200, 200, 0.5)',
         },
         beginAtZero: true,
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+        position: 'top' as const,
+      },
+      datalabels: {
+        display: false,
       },
     },
   };

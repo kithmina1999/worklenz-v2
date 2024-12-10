@@ -33,6 +33,18 @@ const EstimatedVsActualCell = ({
         display: false,
       },
     },
+    plugins: {
+      legend: {
+        display: false,
+        position: 'top' as const,
+      },
+      datalabels: {
+        display: false,
+      },
+      tooltip: {
+        enabled: false,
+      },
+    },
   };
 
   // data for the chart
