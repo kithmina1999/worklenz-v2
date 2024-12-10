@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import ProjectViewBoard from '@/pages/projects/project-view/board/project-view-board';
 import ProjectViewWorkload from '@/pages/projects/project-view/workload/ProjectViewWorkload';
-import ProjectViewInsights from '@/pages/projects/project-view/insights/ProjectViewInsights';
+import ProjectViewInsights from '@/pages/projects/project-view/insights/project-view-insights';
 import ProjectViewFiles from '@/pages/projects/project-view/files/project-view-files';
 import ProjectViewMembers from '@/pages/projects/project-view/members/ProjectViewMembers';
 import ProjectViewUpdates from '@/pages/projects/project-view/updates/ProjectViewUpdates';

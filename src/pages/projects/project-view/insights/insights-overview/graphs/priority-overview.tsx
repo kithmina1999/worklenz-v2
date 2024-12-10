@@ -1,12 +1,46 @@
-import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart, ArcElement, Tooltip, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import { ChartOptions } from 'chart.js';
 import { Flex } from 'antd';
+import { ITaskPriorityCounts } from '@/types/project/project-insights.types';
+import { useEffect, useState } from 'react';
+import { projectInsightsApiService } from '@/api/projects/insights/project-insights.api.service';
 
 Chart.register(ArcElement, Tooltip, CategoryScale, LinearScale, BarElement);
 
-const PriorityGraph = () => {
+const PriorityOverview = ({
+  includeArchivedTasks,
+  projectId,
+}: {
+  includeArchivedTasks: boolean;
+  projectId: string;
+}) => {
+  const [stats, setStats] = useState<ITaskPriorityCounts[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const getTaskPriorityCounts = async () => {
+    if (!projectId) return;
+
+    setLoading(true);
+    try {
+      const res = await projectInsightsApiService.getPriorityOverview(
+        projectId,
+        includeArchivedTasks
+      );
+      if (res.done) {
+        setStats(res.body);
+      }
+    } catch (error) {
+      console.error('Error fetching task priority counts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getTaskPriorityCounts();
+  }, [projectId, includeArchivedTasks]);
+
   const options: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -44,7 +78,18 @@ const PriorityGraph = () => {
     },
   };
 
-  //   priority mock data
+  const data = {
+    labels: stats.map((stat) => stat.name),
+    datasets: [
+      {
+        label: 'Tasks',
+        data: stats.map((stat) => stat.data),
+        backgroundColor: stats.map((stat) => stat.color),
+        
+      },
+    ],
+  };
+
   const mockPriorityData = {
     labels: ['Low', 'Medium', 'High'],
     datasets: [
@@ -61,11 +106,11 @@ const PriorityGraph = () => {
     <Flex justify="center">
       <Bar
         options={options}
-        data={mockPriorityData}
+        data={data}
         className="h-[350px] w-full md:max-w-[580px]"
       />
     </Flex>
   );
 };
 
-export default PriorityGraph;
+export default PriorityOverview;

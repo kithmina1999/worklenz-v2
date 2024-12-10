@@ -1,21 +1,22 @@
 import { DownloadOutlined } from '@ant-design/icons';
 import { Badge, Button, Checkbox, Flex, Segmented } from 'antd';
-import React, { useState } from 'react';
-import { colors } from '../../../../styles/colors';
-import OverviewInsights from './overviewInsights/OverviewInsights';
-import MembersInsights from './membersInsights/MembersInsights';
-import TasksInsights from './tasksInsights/TasksInsights';
-import { useAppSelector } from '../../../../hooks/useAppSelector';
+import { useState } from 'react';
+
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
+import InsightsMembers from './insights-members/insights-members';
+import InsightsOverview from './insights-overview/insights-overview';
+import InsightsTasks from './insights-tasks/insights-tasks';
+import { useParams } from 'react-router-dom';
 
 const ProjectViewInsights = () => {
-  const [activeSegment, setActiveSegment] = useState<
-    'Overview' | 'Members' | 'Tasks'
-  >('Overview');
-  const [isIncludeArchivedTasks, setIsIncludeArchivedTasks] =
-    useState<boolean>(false);
+  const { projectId } = useParams();
+    
+  const [activeSegment, setActiveSegment] = useState<'Overview' | 'Members' | 'Tasks'>('Overview');
+  const [isIncludeArchivedTasks, setIsIncludeArchivedTasks] = useState<boolean>(false);
 
   // get theme data from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   return (
     <Flex vertical gap={24}>
@@ -41,14 +42,9 @@ const ProjectViewInsights = () => {
           >
             <Checkbox
               checked={isIncludeArchivedTasks}
-              onClick={() => setIsIncludeArchivedTasks((prev) => !prev)}
+              onClick={() => setIsIncludeArchivedTasks(prev => !prev)}
             />
-            <Badge
-              color={
-                isIncludeArchivedTasks ? colors.limeGreen : colors.vibrantOrange
-              }
-              dot
-            >
+            <Badge color={isIncludeArchivedTasks ? colors.limeGreen : colors.vibrantOrange} dot>
               Include Archived Tasks
             </Badge>
           </Flex>
@@ -61,11 +57,11 @@ const ProjectViewInsights = () => {
 
       {/* each segment content  */}
       {activeSegment === 'Overview' ? (
-        <OverviewInsights />
+        projectId && <InsightsOverview includeArchivedTasks={isIncludeArchivedTasks} projectId={projectId} />
       ) : activeSegment === 'Members' ? (
-        <MembersInsights />
+        projectId && <InsightsMembers includeArchivedTasks={isIncludeArchivedTasks} projectId={projectId} />
       ) : (
-        <TasksInsights />
+        projectId && <InsightsTasks includeArchivedTasks={isIncludeArchivedTasks} projectId={projectId} />
       )}
     </Flex>
   );

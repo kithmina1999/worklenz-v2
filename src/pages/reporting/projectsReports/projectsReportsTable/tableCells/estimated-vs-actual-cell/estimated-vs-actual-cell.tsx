@@ -24,7 +24,6 @@ const EstimatedVsActualCell = ({
   const { t } = useTranslation('reportingProjects');
 
   const options: ChartOptions<'bar'> = {
-    indexAxis: 'y',
     scales: {
       x: {
         display: false,
