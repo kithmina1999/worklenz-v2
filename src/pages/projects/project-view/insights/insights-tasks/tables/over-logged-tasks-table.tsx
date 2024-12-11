@@ -1,57 +1,58 @@
 import { Avatar, Button, Flex, Table, Typography } from 'antd';
-import React, { useState } from 'react';
-import { colors } from '../../../../../../styles/colors';
+import { useState, useEffect } from 'react';
+import { colors } from '@/styles/colors';
 import { TableProps } from 'antd/lib';
-import { simpleDateFormat } from '../../../../../../utils/simpleDateFormat';
-import { mockTaskData, MockTaskType } from '../../mockData/mockTaskData';
-import { getStatusColor } from '../../../../../../utils/getStatusColor';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import CustomAvatar from '../../../../../../components/CustomAvatar';
 import { PlusOutlined } from '@ant-design/icons';
+import { IInsightTasks } from '@/types/project/projectInsights.types';
+import logger from '@/utils/errorLogger';
+import { projectInsightsApiService } from '@/api/projects/insights/project-insights.api.service';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const OverLoggedTasksTable = () => {
-  // get currently hover row
-  const [hoverRow, setHoverRow] = useState<string | null>(null);
+  const { includeArchivedTasks, projectId } = useAppSelector(state => state.projectInsightsReducer);
 
-  // get theme details from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const [overLoggedTaskList, setOverLoggedTaskList] = useState<IInsightTasks[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  const getOverLoggedTasks = async () => {
+  try {
+      const res = await projectInsightsApiService.getOverloggedTasks(projectId, includeArchivedTasks);
+      if (res.done) {
+        setOverLoggedTaskList(res.body);
+      }
+    } catch (error) {
+      logger.error('Error fetching over logged tasks', error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  // get status data from status slice
-  const statusList = useAppSelector((state) => state.statusReducer.status);
-
-  // filter over logged tasks from the mock task data
-  const overLoggedTaskList = mockTaskData.filter((task) => task.loggedTime);
+  useEffect(() => {
+    getOverLoggedTasks();
+  }, [projectId, includeArchivedTasks]);
 
   // table columns
   const columns: TableProps['columns'] = [
     {
       key: 'name',
       title: 'Name',
-      render: (record: MockTaskType) => (
-        <Typography.Text
-          style={{
-            color: hoverRow === record.taskId ? colors.skyBlue : 'inherit',
-          }}
-        >
-          {record.task}
+      render: (record: IInsightTasks) => (
+        <Typography.Text>
+          {record.name}
         </Typography.Text>
       ),
     },
     {
       key: 'status',
       title: 'Status',
-      render: (record: MockTaskType) => (
+      render: (record: IInsightTasks) => (
         <Flex
           gap={4}
           style={{
             width: 'fit-content',
             borderRadius: 24,
             paddingInline: 6,
-            backgroundColor: getStatusColor(
-              statusList?.find((status) => status.name === record.status)
-                ?.category || '',
-              themeMode
-            ),
+            backgroundColor: record.status_color,
             color: colors.darkGray,
             cursor: 'pointer',
           }}
@@ -63,7 +64,7 @@ const OverLoggedTasksTable = () => {
               fontSize: 13,
             }}
           >
-            {record.status}
+            {record.status_name}
           </Typography.Text>
         </Flex>
       ),
@@ -71,12 +72,12 @@ const OverLoggedTasksTable = () => {
     {
       key: 'members',
       title: 'Members',
-      render: (record: MockTaskType) =>
-        record.members ? (
+      render: (record: IInsightTasks) =>
+        record.status_name ? (
           <Avatar.Group>
-            {record.members.map((member) => (
+            {/* {record.names.map((member) => (
               <CustomAvatar avatarName={member.memberName} size={26} />
-            ))}
+            ))} */}
           </Avatar.Group>
         ) : (
           <Button
@@ -102,13 +103,9 @@ const OverLoggedTasksTable = () => {
     {
       key: 'overLoggedTime',
       title: 'Over Logged Time',
-      render: (record: MockTaskType) => (
-        <Typography.Text
-          style={{
-            color: hoverRow === record.taskId ? colors.skyBlue : 'inherit',
-          }}
-        >
-          {record.loggedTime}
+      render: (record: IInsightTasks) => (
+        <Typography.Text>
+          {record.overlogged_time}
         </Typography.Text>
       ),
     },
@@ -124,10 +121,9 @@ const OverLoggedTasksTable = () => {
         showSizeChanger: false,
         defaultPageSize: 10,
       }}
+      loading={loading}
       onRow={(record) => {
         return {
-          onMouseEnter: () => setHoverRow(record.taskId),
-          onMouseLeave: () => setHoverRow(null),
           style: {
             cursor: 'pointer',
             height: 36,

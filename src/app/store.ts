@@ -18,6 +18,7 @@ import phaseReducer from '@features/projects/singleProject/phase/phaseSlice';
 import updatesReducer from '../features/projects/singleProject/updates/updatesSlice';
 import statusReducer from '@features/projects/status/StatusSlice';
 import bulkActionReducer from '@features/projects/bulkActions/bulkActionSlice';
+import projectInsightsReducer from '@features/projects/insights/project-insights.slice';
 
 // Project Lookups
 import projectCategoriesReducer from '@features/projects/lookups/projectCategories/projectCategoriesSlice';
@@ -79,6 +80,7 @@ export const store = configureStore({
     updatesReducer: updatesReducer,
     statusReducer: statusReducer,
     bulkActionReducer: bulkActionReducer,
+    projectInsightsReducer: projectInsightsReducer,
 
     // Project Lookups
     projectCategoriesReducer: projectCategoriesReducer,

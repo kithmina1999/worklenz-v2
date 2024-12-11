@@ -5,16 +5,13 @@ import { Flex } from 'antd';
 import { ITaskPriorityCounts } from '@/types/project/project-insights.types';
 import { useEffect, useState } from 'react';
 import { projectInsightsApiService } from '@/api/projects/insights/project-insights.api.service';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 Chart.register(ArcElement, Tooltip, CategoryScale, LinearScale, BarElement);
 
-const PriorityOverview = ({
-  includeArchivedTasks,
-  projectId,
-}: {
-  includeArchivedTasks: boolean;
-  projectId: string;
-}) => {
+const PriorityOverview = () => {
+  const { includeArchivedTasks, projectId } = useAppSelector(state => state.projectInsightsReducer);
+
   const [stats, setStats] = useState<ITaskPriorityCounts[]>([]);
   const [loading, setLoading] = useState(false);
 

@@ -1,3 +1,5 @@
+import { ITeamMember } from "@/features/taskAttributes/taskMemberSlice";
+
 export interface IProjectInsightsGetRequest {
   total_tasks_count?: number;
   archived_tasks_count?: number;
@@ -63,4 +65,17 @@ export interface ITaskPriorityCounts {
   name?: string;
   color?: string;
   data?: number[];
+}
+
+export interface ITeamMemberOverviewGetResponse extends ITeamMember {
+  task_count?: number;
+  done_task_count?: number;
+  pending_task_count?: number;
+  overdue_task_count?: number;
+  progress?: number;
+  contribution?: number;
+  job_title?: string;
+  id: string;
+  name?: string;
+  tasks?: IInsightTasks[];
 }

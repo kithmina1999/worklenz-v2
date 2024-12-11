@@ -1,24 +1,28 @@
 import { Button, Card, Flex, Tooltip, Typography } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
-import OverdueTasksTable from './tables/OverdueTasksTable';
-import OverLoggedTasksTable from './tables/OverLoggedTasksTable';
-import TaskCompletedEarlyTable from './tables/TaskCompletedEarlyTable';
-import TaskCompletedLateTable from './tables/TaskCompletedLateTable';
+import OverdueTasksTable from './tables/overdue-tasks-table';
+import OverLoggedTasksTable from './tables/over-logged-tasks-table';
+import TaskCompletedEarlyTable from './tables/task-completed-early-table';
+import TaskCompletedLateTable from './tables/task-completed-late-table';
 import ProjectStats from '../project-stats/project-stats';
+import { TFunction } from 'i18next';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
-const InsightsTasks = ({ includeArchivedTasks = false, projectId = '' }: { includeArchivedTasks: boolean, projectId: string }) => {
+const InsightsTasks = ({ t, }: {   t: TFunction }) => {
+  const { includeArchivedTasks, projectId } = useAppSelector(state => state.projectInsightsReducer);
+
   return (
     <Flex vertical gap={24}>
-      <ProjectStats includeArchivedTasks={includeArchivedTasks} projectId={projectId} />
+      <ProjectStats t={t} />
 
       <Flex gap={24} className="grid lg:grid-cols-2">
         <Card
           className="custom-insights-card"
           title={
             <Typography.Text style={{ fontSize: 16, fontWeight: 500 }}>
-              Overdue Tasks
-              <Tooltip title={'Tasks that are past their due date'}>
+              {t('tasks.overdueTasks')}
+              <Tooltip title={t('tasks.overdueTasksTooltip')}>
                 <ExclamationCircleOutlined
                   style={{
                     color: colors.skyBlue,
@@ -29,18 +33,18 @@ const InsightsTasks = ({ includeArchivedTasks = false, projectId = '' }: { inclu
               </Tooltip>
             </Typography.Text>
           }
-          extra={<Button type="link">See all</Button>}
+          extra={<Button type="link">{t('common.seeAll')}</Button>}
           style={{ width: '100%' }}
         >
-          <OverdueTasksTable />
+          <OverdueTasksTable projectId={projectId} includeArchivedTasks={includeArchivedTasks} />
         </Card>
 
         <Card
           className="custom-insights-card"
           title={
             <Typography.Text style={{ fontSize: 16, fontWeight: 500 }}>
-              Over logged Tasks
-              <Tooltip title={'Tasks that has time logged past their estimated time'}>
+              {t('tasks.overLoggedTasks')}
+              <Tooltip title={t('tasks.overLoggedTasksTooltip')}>
                 <ExclamationCircleOutlined
                   style={{
                     color: colors.skyBlue,
@@ -51,36 +55,36 @@ const InsightsTasks = ({ includeArchivedTasks = false, projectId = '' }: { inclu
               </Tooltip>
             </Typography.Text>
           }
-          extra={<Button type="link">See all</Button>}
+          extra={<Button type="link">{t('common.seeAll')}</Button>}
           style={{ width: '100%' }}
         >
-          <OverLoggedTasksTable />
+          <OverLoggedTasksTable projectId={projectId} includeArchivedTasks={includeArchivedTasks} />
         </Card>
 
         <Card
           className="custom-insights-card"
           title={
             <Typography.Text style={{ fontSize: 16, fontWeight: 500 }}>
-              Tasks completed early
+              {t('tasks.tasksCompletedEarly')}
             </Typography.Text>
           }
-          extra={<Button type="link">See all</Button>}
+          extra={<Button type="link">{t('common.seeAll')}</Button>}
           style={{ width: '100%' }}
         >
-          <TaskCompletedEarlyTable />
+          <TaskCompletedEarlyTable projectId={projectId} includeArchivedTasks={includeArchivedTasks} />
         </Card>
 
         <Card
           className="custom-insights-card"
           title={
             <Typography.Text style={{ fontSize: 16, fontWeight: 500 }}>
-              Tasks completed late
+              {t('tasks.tasksCompletedLate')}
             </Typography.Text>
           }
-          extra={<Button type="link">See all</Button>}
+          extra={<Button type="link">{t('common.seeAll')}</Button>}
           style={{ width: '100%' }}
         >
-          <TaskCompletedLateTable />
+          <TaskCompletedLateTable projectId={projectId} includeArchivedTasks={includeArchivedTasks} />
         </Card>
       </Flex>
     </Flex>

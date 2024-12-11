@@ -8,22 +8,20 @@ import { useEffect, useState } from 'react';
 import { projectInsightsApiService } from '@/api/projects/insights/project-insights.api.service';
 import { IProjectInsightsGetRequest } from '@/types/project/projectInsights.types';
 import logger from '@/utils/errorLogger';
+import { TFunction } from 'i18next';
+import { useParams } from 'react-router-dom';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
-const ProjectStats = ({
-  includeArchivedTasks = false,
-  projectId = '',
-}: {
-  includeArchivedTasks: boolean;
-  projectId: string;
-}) => {
+const ProjectStats = ({ t, }: { t: TFunction }) => {
+  const { includeArchivedTasks, projectId } = useAppSelector(state => state.projectInsightsReducer);
   const [stats, setStats] = useState<IProjectInsightsGetRequest>({});
   const [loading, setLoading] = useState(false);
 
   const getProjectStats = async () => {
     if (!projectId) return;
-    
+
     setLoading(true);
-    
+
     try {
       const res = await projectInsightsApiService.getProjectOverviewData(
         projectId,
@@ -47,11 +45,11 @@ const ProjectStats = ({
     <table>
       <tbody>
         <tr style={{ display: 'flex', gap: 12 }}>
-          <td style={{ width: 120 }}>Total estimation</td>
+          <td style={{ width: 120 }}>{t('common.totalEstimation')}</td>
           <td>{stats.total_estimated_hours_string || '0h'}</td>
         </tr>
         <tr style={{ display: 'flex', gap: 12 }}>
-          <td style={{ width: 120 }}>Total logged</td>
+          <td style={{ width: 120 }}>{t('common.totalLogged')}</td>
           <td>{stats.total_logged_hours_string || '0h'}</td>
         </tr>
       </tbody>
@@ -62,33 +60,30 @@ const ProjectStats = ({
     <Flex gap={24} className="grid sm:grid-cols-2 sm:grid-rows-2 lg:grid-cols-4 lg:grid-rows-1">
       <ProjectStatsCard
         icon={checkIcon}
-        title="Completed tasks"
+        title={t('common.completedTasks')}
         loading={loading}
         children={stats.completed_tasks_count ?? 0}
       />
       <ProjectStatsCard
         icon={clipboardIcon}
-        title="Incomplete tasks"
+        title={t('common.incompleteTasks')}
         loading={loading}
         children={stats.todo_tasks_count ?? 0}
       />
       <ProjectStatsCard
         icon={warningIcon}
-        title="Overdue tasks"
-        tooltip={'Tasks that are past their due date'}
+        title={t('common.overdueTasks')}
+        tooltip={t('common.overdueTasksTooltip')}
         loading={loading}
         children={stats.overdue_count ?? 0}
       />
       <ProjectStatsCard
         icon={clockIcon}
-        title="Total logged hours"
-        tooltip={'Task estimation and logged time for tasks.'}
+        title={t('common.totalLoggedHours')}
+        tooltip={t('common.totalLoggedHoursTooltip')}
         loading={loading}
         children={
-          <Tooltip
-            title={tooltipTable}
-            trigger={'hover'}
-          >
+          <Tooltip title={tooltipTable} trigger={'hover'}>
             {stats.total_logged_hours_string || '0h'}
           </Tooltip>
         }

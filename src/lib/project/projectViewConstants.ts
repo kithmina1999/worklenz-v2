@@ -3,7 +3,7 @@ import ProjectViewBoard from '@/pages/projects/project-view/board/project-view-b
 import ProjectViewWorkload from '@/pages/projects/project-view/workload/ProjectViewWorkload';
 import ProjectViewInsights from '@/pages/projects/project-view/insights/project-view-insights';
 import ProjectViewFiles from '@/pages/projects/project-view/files/project-view-files';
-import ProjectViewMembers from '@/pages/projects/project-view/members/ProjectViewMembers';
+import ProjectViewMembers from '@/pages/projects/project-view/members/project-view-members';
 import ProjectViewUpdates from '@/pages/projects/project-view/updates/ProjectViewUpdates';
 import TaskList from '@/pages/projects/project-view/task-list/task-list';
 import ProjectViewTaskList from '@/pages/projects/project-view/taskList/ProjectViewTaskList';

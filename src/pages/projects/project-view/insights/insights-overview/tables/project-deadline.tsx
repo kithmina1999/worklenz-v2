@@ -8,14 +8,11 @@ import { projectInsightsApiService } from '@/api/projects/insights/project-insig
 import { IDeadlineTaskStats, IInsightTasks } from '@/types/project/project-insights.types';
 import ProjectStatsCard from '@/components/projects/project-stats-card';
 import warningIcon from '@assets/icons/insightsIcons/warning.png';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
-const ProjectDeadline = ({
-  includeArchivedTasks,
-  projectId,
-}: {
-  includeArchivedTasks: boolean;
-  projectId: string;
-}) => {
+const ProjectDeadline = () => {
+  const { includeArchivedTasks, projectId } = useAppSelector(state => state.projectInsightsReducer);
+
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<IDeadlineTaskStats | null>(null);
 

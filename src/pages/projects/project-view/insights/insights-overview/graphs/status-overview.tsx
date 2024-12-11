@@ -5,16 +5,13 @@ import { Badge, Flex, Tooltip, Typography, Spin } from 'antd';
 import { ChartOptions } from 'chart.js';
 import { projectInsightsApiService } from '@/api/projects/insights/project-insights.api.service';
 import { ITaskStatusCounts } from '@/types/project/project-insights.types';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 Chart.register(ArcElement);
 
-const StatusOverview = ({
-  includeArchivedTasks = false,
-  projectId = '',
-}: {
-  includeArchivedTasks: boolean;
-  projectId: string;
-}) => {
+const StatusOverview = () => {
+  const { includeArchivedTasks, projectId } = useAppSelector(state => state.projectInsightsReducer);
+
   const [stats, setStats] = useState<ITaskStatusCounts[]>([]);
   const [loading, setLoading] = useState(false);
 

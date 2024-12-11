@@ -1,4 +1,4 @@
-import { Flex, Table, Tooltip, Typography } from 'antd';
+import { Flex, Table, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { colors } from '@/styles/colors';
 import { TableProps } from 'antd/lib';
@@ -6,34 +6,33 @@ import { simpleDateFormat } from '@/utils/simpleDateFormat';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IInsightTasks } from '@/types/project/projectInsights.types';
 import { projectInsightsApiService } from '@/api/projects/insights/project-insights.api.service';
-import logger from '@/utils/errorLogger';
-import { calculateTimeAgo } from '@/utils/calculateTimeAgo';
-import { formatDateTime } from '@/utils/format-time-strings';
 
-const LastUpdatedTasks = () => {
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  const { includeArchivedTasks, projectId } = useAppSelector(state => state.projectInsightsReducer);
+const OverdueTasksTable = ({
+  projectId,
+  includeArchivedTasks,
+}: {
+  projectId: string;
+  includeArchivedTasks: boolean;
+}) => {
+  const [overdueTaskList, setOverdueTaskList] = useState<IInsightTasks[]>([]);
+  const [loading, setLoading] = useState(true);
 
-
-  const [data, setData] = useState<IInsightTasks[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const getLastUpdatedTasks = async () => {
+  const getOverdueTasks = async () => {
     setLoading(true);
     try {
-      const res = await projectInsightsApiService.getLastUpdatedTasks(projectId, includeArchivedTasks);
-      if (res.done ) {
-        setData(res.body);
+      const res = await projectInsightsApiService.getOverdueTasks(projectId, includeArchivedTasks);
+      if (res.done) {
+        setOverdueTaskList(res.body);
       }
     } catch (error) {
-      logger.error('getLastUpdatedTasks', error);
+      console.error('Error fetching overdue tasks:', error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    getLastUpdatedTasks();
+    getOverdueTasks();
   }, [projectId, includeArchivedTasks]);
 
   // table columns
@@ -41,11 +40,7 @@ const LastUpdatedTasks = () => {
     {
       key: 'name',
       title: 'Name',
-      render: (record: IInsightTasks) => (
-        <Typography.Text>
-          {record.name}
-        </Typography.Text>
-      ),
+      render: (record: IInsightTasks) => <Typography.Text>{record.name}</Typography.Text>,
     },
     {
       key: 'status',
@@ -69,14 +64,14 @@ const LastUpdatedTasks = () => {
               fontSize: 13,
             }}
           >
-            {record.status}
+            {record.status_name}
           </Typography.Text>
         </Flex>
       ),
     },
     {
       key: 'dueDate',
-      title: 'Due Date',
+      title: 'End Date',
       render: (record: IInsightTasks) => (
         <Typography.Text>
           {record.end_date ? simpleDateFormat(record.end_date) : 'N/A'}
@@ -84,34 +79,24 @@ const LastUpdatedTasks = () => {
       ),
     },
     {
-      key: 'lastUpdated',
-      title: 'Last Updated',
-      render: (record: IInsightTasks) => (
-        <Tooltip title={record.updated_at ? formatDateTime(record.updated_at) : 'N/A'}>
-          <Typography.Text>
-            {record.updated_at ? calculateTimeAgo(record.updated_at) : 'N/A'}
-          </Typography.Text>
-        </Tooltip>
-      ),
+      key: 'daysOverdue',
+      title: 'Days overdue',
+      render: (record: IInsightTasks) => <Typography.Text>{record.days_overdue}</Typography.Text>,
     },
   ];
-
-  const dataSource = data.map((record) => ({
-    ...record,
-    key: record.id,
-  }));
 
   return (
     <Table
       className="custom-two-colors-row-table"
-      dataSource={dataSource}
+      dataSource={overdueTaskList}
       columns={columns}
-      rowKey={(record) => record.id}
+      rowKey={record => record.taskId}
       pagination={{
-        showSizeChanger: true,
-        defaultPageSize: 20,
+        showSizeChanger: false,
+        defaultPageSize: 10,
       }}
-      onRow={() => {
+      loading={loading}
+      onRow={record => {
         return {
           style: {
             cursor: 'pointer',
@@ -123,4 +108,4 @@ const LastUpdatedTasks = () => {
   );
 };
 
-export default LastUpdatedTasks;
+export default OverdueTasksTable;

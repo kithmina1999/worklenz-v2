@@ -66,27 +66,27 @@ export const projectInsightsApiService = {
   getOverdueTasks: async (
     id: string,
     include_archived: boolean
-  ): Promise<IServerResponse<IProjectLogs[]>> => {
+  ): Promise<IServerResponse<IInsightTasks[]>> => {
     const url = `${rootUrl}/overdue-tasks/${id}?archived=${include_archived}`;
-    const response = await apiClient.get<IServerResponse<IProjectLogs[]>>(url);
+    const response = await apiClient.get<IServerResponse<IInsightTasks[]>>(url);
     return response.data;
   },
 
   getTasksCompletedEarly: async (
     id: string,
     include_archived: boolean
-  ): Promise<IServerResponse<IProjectLogs[]>> => {
+  ): Promise<IServerResponse<IInsightTasks[]>> => {
     const url = `${rootUrl}/early-tasks/${id}?archived=${include_archived}`;
-    const response = await apiClient.get<IServerResponse<IProjectLogs[]>>(url);
+    const response = await apiClient.get<IServerResponse<IInsightTasks[]>>(url);
     return response.data;
   },
 
   getTasksCompletedLate: async (
     id: string,
     include_archived: boolean
-  ): Promise<IServerResponse<IProjectLogs[]>> => {
+  ): Promise<IServerResponse<IInsightTasks[]>> => {
     const url = `${rootUrl}/late-tasks/${id}?archived=${include_archived}`;
-    const response = await apiClient.get<IServerResponse<IProjectLogs[]>>(url);
+    const response = await apiClient.get<IServerResponse<IInsightTasks[]>>(url);
     return response.data;
   },
 
@@ -117,9 +117,9 @@ export const projectInsightsApiService = {
   getOverloggedTasks: async (
     id: string,
     include_archived: boolean
-  ): Promise<IServerResponse<IProjectLogs[]>> => {
+  ): Promise<IServerResponse<IInsightTasks[]>> => {
     const url = `${rootUrl}/overlogged-tasks/${id}?archived=${include_archived}`;
-    const response = await apiClient.get<IServerResponse<IProjectLogs[]>>(url);
+    const response = await apiClient.get<IServerResponse<IInsightTasks[]>>(url);
     return response.data;
   },
 };
