@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Button,
   Card,
   Flex,
@@ -20,21 +21,13 @@ import {
 import { useTranslation } from 'react-i18next';
 import EmptyListPlaceholder from '../../../../components/EmptyListPlaceholder';
 import CustomAvatar from '../../../../components/CustomAvatar';
-import { useAppSelector } from '../../../../hooks/useAppSelector';
-import { ProjectMemberType } from '../../../../types/projectMember.types';
+import { IProjectMembersViewModel, IProjectMemberViewModel } from '@/types/projectMember.types';
 
 const ProjectViewMembers = () => {
-  // get currently hover row
-  const [hoverRow, setHoverRow] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [members, setMembers] = useState<IProjectMembersViewModel>()
   // localization
   const { t } = useTranslation('projectViewMembersTab');
-
-  // get member list from project members slice
-  const projectMembersList = useAppSelector(
-    (state) => state.projectMemberReducer.membersList
-  );
 
   // function for handle refresh
   const handleRefresh = () => {
@@ -48,15 +41,11 @@ const ProjectViewMembers = () => {
       key: 'memberName',
       title: t('nameColumn'),
       sorter: (a, b) => a.memberName.localeCompare(b.memberName),
-      render: (record: ProjectMemberType) => (
+      render: (record: IProjectMemberViewModel) => (
         <Flex gap={8} align="center">
-          <CustomAvatar avatarName={record.memberName} size={26} />
-          <Typography.Text
-            style={{
-              color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
-            }}
-          >
-            {record.memberName}
+          <Avatar size={28} src={record.avatar_url}>{record.name?.charAt(0)}</Avatar>
+          <Typography.Text>
+            {record.name}
           </Typography.Text>
         </Flex>
       ),
@@ -66,14 +55,13 @@ const ProjectViewMembers = () => {
       title: t('jobTitleColumn'),
       sorter: (a, b) => a.jobTitle.localeCompare(b.jobTitle),
       width: 120,
-      render: (record: ProjectMemberType) => (
+      render: (record: IProjectMemberViewModel) => (
         <Typography.Text
           style={{
-            color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
             marginInlineStart: 12,
           }}
         >
-          {record.jobTitle || '-'}
+          {record.job_title || '-'}
         </Typography.Text>
       ),
     },
@@ -81,13 +69,9 @@ const ProjectViewMembers = () => {
       key: 'email',
       title: t('emailColumn'),
       sorter: (a, b) => a.email.localeCompare(b.email),
-      render: (record: ProjectMemberType) => (
-        <Typography.Text
-          style={{
-            color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
-          }}
-        >
-          {record.memberEmail}
+      render: (record: IProjectMemberViewModel) => (
+        <Typography.Text>
+          {record.email}
         </Typography.Text>
       ),
     },
@@ -95,24 +79,23 @@ const ProjectViewMembers = () => {
       key: 'tasks',
       title: t('tasksColumn'),
       width: 90,
-      render: (record: ProjectMemberType) => (
+      render: (record: IProjectMemberViewModel) => (
         <Typography.Text
           style={{
-            color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
             marginInlineStart: 12,
           }}
         >
-          {`${record.completedTasks}/${record.totalAssignedTasks}`}
+          {`${record.completed_tasks_count}/${record.all_tasks_count}`}
         </Typography.Text>
       ),
     },
     {
       key: 'taskProgress',
       title: t('taskProgressColumn'),
-      render: (record: ProjectMemberType) => (
+      render: (record: IProjectMemberViewModel) => (
         <Progress
           percent={Math.floor(
-            (record.completedTasks / record.totalAssignedTasks) * 100
+            ((record.completed_tasks_count || 0) / (record.all_tasks_count || 0)) * 100
           )}
         />
       ),
@@ -121,22 +104,21 @@ const ProjectViewMembers = () => {
       key: 'access',
       title: t('accessColumn'),
       sorter: (a, b) => a.access.localeCompare(b.access),
-      render: (record: ProjectMemberType) => (
+      render: (record: IProjectMemberViewModel) => (
         <Typography.Text
           style={{
-            color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
             textTransform: 'capitalize',
           }}
         >
-          {record.memberRole}
+          {/* {record.memberRole} */}
         </Typography.Text>
       ),
     },
     {
       key: 'actionBtns',
       width: 80,
-      render: (record: ProjectMemberType) =>
-        hoverRow === record.memberId && (
+      render: (record: IProjectMemberViewModel) =>
+        (
           <Flex gap={8} style={{ padding: 0 }}>
             <Popconfirm
               title={t('deleteConfirmationTitle')}
@@ -169,8 +151,8 @@ const ProjectViewMembers = () => {
       title={
         <Flex justify="space-between">
           <Typography.Text style={{ fontSize: 16, fontWeight: 500 }}>
-            {projectMembersList?.length}{' '}
-            {projectMembersList?.length !== 1
+            {members?.total}{' '}
+            {members?.total !== 1
               ? t('membersCountPlural')
               : t('memberCount')}
           </Typography.Text>
@@ -185,7 +167,7 @@ const ProjectViewMembers = () => {
         </Flex>
       }
     >
-      {projectMembersList?.length === 0 ? (
+      {members?.total === 0 ? (
         <EmptyListPlaceholder
           imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
           imageHeight={120}
@@ -196,7 +178,7 @@ const ProjectViewMembers = () => {
       ) : (
         <Table
           className="custom-two-colors-row-table"
-          dataSource={projectMembersList ? projectMembersList : []}
+          dataSource={members?.data}
           columns={columns}
           rowKey={(record) => record.memberId}
           pagination={{
@@ -205,8 +187,6 @@ const ProjectViewMembers = () => {
           }}
           onRow={(record) => {
             return {
-              onMouseEnter: () => setHoverRow(record.memberId),
-              onMouseLeave: () => setHoverRow(null),
               style: {
                 cursor: 'pointer',
                 height: 42,
