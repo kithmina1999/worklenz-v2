@@ -6,6 +6,7 @@ import { toQueryString } from '@/utils/toQueryString';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { IProject } from '@/types/project/project.types';
 import { ITeamMemberOverviewGetResponse } from '@/types/project/project-insights.types';
+import { IProjectMembersViewModel } from '@/types/projectMember.types';
 
 const rootUrl = `${API_BASE_URL}/projects`;
 
@@ -49,7 +50,23 @@ export const projectsApiService = {
     archived = false
   ): Promise<IServerResponse<ITeamMemberOverviewGetResponse[]>> => {
     const url = `${rootUrl}/overview-members/${id}?archived=${archived}`;
-    const response = await apiClient.get<IServerResponse<ITeamMemberOverviewGetResponse[]>>(`${url}`);
+    const response = await apiClient.get<IServerResponse<ITeamMemberOverviewGetResponse[]>>(
+      `${url}`
+    );
+    return response.data;
+  },
+
+  getMembers: async (
+    id: string,
+    index: number,
+    size: number,
+    field: string | null,
+    order: string | null,
+    search: string | null
+  ): Promise<IServerResponse<IProjectMembersViewModel>> => {
+    const s = encodeURIComponent(search || '');
+    const url = `${rootUrl}/members/${id}${toQueryString({ index, size, field, order, search: s })}`;
+    const response = await apiClient.get<IServerResponse<IProjectMembersViewModel>>(`${url}`);
     return response.data;
   },
 };
