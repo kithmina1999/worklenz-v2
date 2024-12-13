@@ -14,11 +14,11 @@ const LastUpdatedTasks = () => {
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
   const { includeArchivedTasks, projectId } = useAppSelector(state => state.projectInsightsReducer);
 
-
   const [data, setData] = useState<IInsightTasks[]>([]);
   const [loading, setLoading] = useState(false);
 
   const getLastUpdatedTasks = async () => {
+    if (!projectId) return;
     setLoading(true);
     try {
       const res = await projectInsightsApiService.getLastUpdatedTasks(projectId, includeArchivedTasks);
@@ -111,6 +111,7 @@ const LastUpdatedTasks = () => {
         showSizeChanger: true,
         defaultPageSize: 20,
       }}
+      loading={loading}
       onRow={() => {
         return {
           style: {
