@@ -1,13 +1,14 @@
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
-import { Chart, ArcElement, Tooltip } from 'chart.js';
+import { Chart, ArcElement, Tooltip, ChartOptions } from 'chart.js';
 import { Badge, Card, Flex, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { IRPTOverviewTeamByHealth, IRPTOverviewTeamChartData } from '@/types/reporting/reporting.types';
+import { ALPHA_CHANNEL } from '@/shared/constants';
 
 Chart.register(ArcElement, Tooltip);
 
-const OverviewReportsProjectHealthGraph = () => {
-  // localization
+const OverviewReportsProjectHealthGraph = ({ data }: { data: IRPTOverviewTeamByHealth| undefined }) => {
   const { t } = useTranslation('reporting-overview-drawer');
 
   type HealthGraphItemType = {
@@ -16,30 +17,44 @@ const OverviewReportsProjectHealthGraph = () => {
     count: number;
   };
 
+  const options: ChartOptions<'doughnut'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      datalabels: {
+        display: false,
+      },
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const value = context.raw as number;
+            return `${context.label}: ${value} task${value !== 1 ? 's' : ''}`;
+          }
+        }
+      }
+    },
+  };
+
   // mock data
   const healthGraphItems: HealthGraphItemType[] = [
-    { name: 'notSet', color: '#a9a9a9', count: 2 },
-    { name: 'needsAttention', color: '#f37070', count: 1 },
-    { name: 'atRisk', color: '#fbc84c', count: 0 },
-    { name: 'good', color: '#75c997', count: 1 },
+    { name: 'notSet', color: '#a9a9a9', count: data?.not_set ?? 0 },
+    { name: 'needsAttention', color: '#f37070', count: data?.needs_attention ?? 0 },
+    { name: 'atRisk', color: '#fbc84c', count: data?.at_risk ?? 0 },
+    { name: 'good', color: '#75c997', count: data?.good ?? 0 },
   ];
 
-  // chart data
   const chartData = {
-    labels: healthGraphItems.map((item) => t(`${item.name}Text`)),
+    labels: healthGraphItems.map(item => item.name),
     datasets: [
       {
-        label: t('projectsText'),
-        data: healthGraphItems.map((item) => item.count),
-        backgroundColor: healthGraphItems.map((item) => item.color),
+        data: healthGraphItems.map(item => item.count),
+        backgroundColor: healthGraphItems.map(item => item.color + ALPHA_CHANNEL),
       },
     ],
   };
-
-  const totalTasks = healthGraphItems.reduce(
-    (sum, item) => sum + item.count,
-    0
-  );
 
   return (
     <Card
@@ -52,7 +67,7 @@ const OverviewReportsProjectHealthGraph = () => {
       <div className="flex flex-wrap items-center justify-center gap-6 xl:flex-nowrap">
         <Doughnut
           data={chartData}
-          options={{ responsive: true }}
+          options={options}
           className="max-h-[200px] w-full max-w-[200px]"
         />
 
@@ -61,7 +76,7 @@ const OverviewReportsProjectHealthGraph = () => {
           <Flex gap={4} align="center">
             <Badge color="#a9a9a9" />
             <Typography.Text ellipsis>
-              {t('allText')} ({totalTasks})
+              {t('allText')} ({data?.all})
             </Typography.Text>
           </Flex>
 

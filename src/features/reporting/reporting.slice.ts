@@ -4,12 +4,14 @@ interface ReportingState {
   includeArchivedProjects: boolean;
   selectedProjectIds: string[];
   selectedTeamIds: string[];
+  showOverViewTeamDrawer: boolean;
 }
 
 const initialState: ReportingState = {
   includeArchivedProjects: false,
   selectedProjectIds: [],
-  selectedTeamIds: []
+  selectedTeamIds: [],
+  showOverViewTeamDrawer: false,
 };
 
 const reportingSlice = createSlice({
@@ -28,6 +30,9 @@ const reportingSlice = createSlice({
     clearSelections: (state) => {
       state.selectedProjectIds = [];
       state.selectedTeamIds = [];
+    },
+    toggleOverViewTeamDrawer: (state) => {
+      state.showOverViewTeamDrawer = !state.showOverViewTeamDrawer;
     }
   }
 });
@@ -36,7 +41,8 @@ export const {
   toggleIncludeArchived,
   setSelectedProjects,
   setSelectedTeams,
-  clearSelections
+  clearSelections,
+  toggleOverViewTeamDrawer
 } = reportingSlice.actions;
 
 export default reportingSlice.reducer;

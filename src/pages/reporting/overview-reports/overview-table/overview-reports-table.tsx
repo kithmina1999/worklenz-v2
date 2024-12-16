@@ -3,13 +3,13 @@ import { ConfigProvider, Table, TableColumnsType } from 'antd';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 import CustomTableTitle from '../../../../components/CustomTableTitle';
 import { useTranslation } from 'react-i18next';
-import OverviewReportsDrawer from '../../../../features/reporting/overviewReports/overviewDrawer/OverviewReportsDrawer';
-import { toggleOverviewReportsDrawer } from '../../../../features/reporting/overviewReports/overviewReportsSlice';
 import { IRPTTeam } from '@/types/reporting/reporting.types';
 import { reportingApiService } from '@/api/reporting/reporting.api.service';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import logger from '@/utils/errorLogger';
 import Avatars from '@/components/avatars/Avatars';
+import OverviewTeamInfoDrawer from '@/components/reporting/drawers/overview-team-info/overview-team-info-drawer';
+import { toggleOverViewTeamDrawer } from '@/features/reporting/reporting.slice';
 
 const OverviewReportsTable = () => {
   const { t } = useTranslation('reporting-overview');
@@ -40,7 +40,7 @@ const OverviewReportsTable = () => {
 
   const handleDrawerOpen = (team: IRPTTeam) => {
     setSelectedTeam(team);
-    dispatch(toggleOverviewReportsDrawer());
+    dispatch(toggleOverViewTeamDrawer());
   };
 
   const columns: TableColumnsType = [
@@ -81,6 +81,7 @@ const OverviewReportsTable = () => {
         dataSource={teams}
         scroll={{ x: 'max-content' }}
         rowKey={(record) => record.id}
+        loading={loading}
         onRow={(record) => {
           return {
             onClick: () => handleDrawerOpen(record as IRPTTeam),
@@ -90,7 +91,7 @@ const OverviewReportsTable = () => {
         }}
       />
 
-      <OverviewReportsDrawer teamsId={selectedTeam && selectedTeam?.id} />
+      <OverviewTeamInfoDrawer team={selectedTeam} />
     </ConfigProvider>
   );
 };

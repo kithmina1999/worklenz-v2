@@ -1,26 +1,22 @@
 import { Tabs } from 'antd';
 import { TabsProps } from 'antd/lib';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
-import OverviewReportsOverviewTab from './overviewTab/OverviewReportsOverviewTab';
-import OverviewReportsProjectsTab from './projectsTab/OverviewReportsProjectsTab';
-import OverviewReportsMembersTab from './membersTab/OverviewReportsMembersTab';
+import OverviewReportsOverviewTab from './overview-tab/reports-overview-tab';
+import OverviewReportsProjectsTab from './projects-tab/reporting-overview-projects-tab';
+import OverviewReportsMembersTab from './members-tab/reporting-overview-members-tab';
 
-type OverviewReportsDrawerProps = {
+type OverviewTeamInfoDrawerProps = {
   teamsId?: string | null;
 };
 
-const OverviewReportsDrawerTabs = ({
-  teamsId = null,
-}: OverviewReportsDrawerProps) => {
-  // localization
+const OverviewTeamInfoDrawerTabs = ({ teamsId = null }: OverviewTeamInfoDrawerProps) => {
   const { t } = useTranslation('reporting-overview-drawer');
 
   const tabItems: TabsProps['items'] = [
     {
       key: 'overview',
       label: t('overviewTab'),
-      children: <OverviewReportsOverviewTab teamsId={teamsId} />,
+      children: <OverviewReportsOverviewTab teamId={teamsId} />,
     },
     {
       key: 'projects',
@@ -37,4 +33,4 @@ const OverviewReportsDrawerTabs = ({
   return <Tabs type="card" items={tabItems} />;
 };
 
-export default OverviewReportsDrawerTabs;
+export default OverviewTeamInfoDrawerTabs;

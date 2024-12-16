@@ -1,61 +1,80 @@
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
-import { Chart, ArcElement, Tooltip } from 'chart.js';
+import { Chart, ArcElement, Tooltip, ChartOptions } from 'chart.js';
 import { Badge, Card, Flex, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { IRPTOverviewTeamChartData } from '@/types/reporting/reporting.types';
 
 Chart.register(ArcElement, Tooltip);
 
-const OverviewReportsProjectStatusGraph = () => {
+const OverviewReportsProjectCategoryGraph = ({ data }: { data: IRPTOverviewTeamChartData | undefined }) => {
   // localization
   const { t } = useTranslation('reporting-overview-drawer');
 
-  type StatusGraphItemType = {
+  type CategoryGraphItemType = {
     name: string;
     color: string;
     count: number;
   };
 
   // mock data
-  const statusGraphItems: StatusGraphItemType[] = [
-    { name: 'inProgress', color: '#80ca79', count: 0 },
-    { name: 'inPlanning', color: '#cbc8a1', count: 0 },
-    { name: 'completed', color: '#80ca79', count: 1 },
-    { name: 'proposed', color: '#cbc8a1', count: 43 },
-    { name: 'onHold', color: '#cbc8a1', count: 1 },
-    { name: 'blocked', color: '#cbc8a1', count: 0 },
-    { name: 'cancelled', color: '#f37070', count: 0 },
-  ];
+  const categoryGraphItems: CategoryGraphItemType[] = data?.data.map((category) => ({
+    name: category.label,
+    color: category.color,
+    count: category.count,
+  })) ?? [];
 
   // chart data
   const chartData = {
-    labels: statusGraphItems.map((item) => t(`${item.name}Text`)),
+    labels: categoryGraphItems.map((item) => item.name),
     datasets: [
       {
         label: t('projectsText'),
-        data: statusGraphItems.map((item) => item.count),
-        backgroundColor: statusGraphItems.map((item) => item.color),
+        data: categoryGraphItems.map((item) => item.count),
+        backgroundColor: categoryGraphItems.map((item) => item.color),
       },
     ],
   };
 
-  const totalTasks = statusGraphItems.reduce(
+  const totalTasks = categoryGraphItems.reduce(
     (sum, item) => sum + item.count,
     0
   );
+
+  const options: ChartOptions<'doughnut'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      datalabels: {
+        display: false,
+      },
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const value = context.raw as number;
+            return `${context.label}: ${value} task${value !== 1 ? 's' : ''}`;
+          }
+        }
+      }
+    },
+  };
+
 
   return (
     <Card
       title={
         <Typography.Text style={{ fontSize: 16, fontWeight: 500 }}>
-          {t('projectsByStatusText')}
+          {t('projectsByCategoryText')}
         </Typography.Text>
       }
     >
       <div className="flex flex-wrap items-center justify-center gap-6 xl:flex-nowrap">
         <Doughnut
           data={chartData}
-          options={{ responsive: true }}
+          options={options}
           className="max-h-[200px] w-full max-w-[200px]"
         />
 
@@ -68,12 +87,12 @@ const OverviewReportsProjectStatusGraph = () => {
             </Typography.Text>
           </Flex>
 
-          {/* status-specific tasks */}
-          {statusGraphItems.map((item) => (
+          {/* category-specific tasks */}
+          {categoryGraphItems.map((item) => (
             <Flex key={item.name} gap={4} align="center">
               <Badge color={item.color} />
               <Typography.Text ellipsis>
-                {t(`${item.name}Text`)} ({item.count})
+                {item.name} ({item.count})
               </Typography.Text>
             </Flex>
           ))}
@@ -83,4 +102,4 @@ const OverviewReportsProjectStatusGraph = () => {
   );
 };
 
-export default OverviewReportsProjectStatusGraph;
+export default OverviewReportsProjectCategoryGraph;

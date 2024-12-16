@@ -52,7 +52,6 @@ import reportingReducer from '@features/reporting/reporting.slice';
 import timeLogReducer from '../features/timeReport/projects/timeLogSlice';
 import taskTemplateReducer from '../features/settings/taskTemplates/taskTemplateSlice';
 import projectReportsTableColumnsReducer from '../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
-import overviewReportsReducer from '../features/reporting/overviewReports/overviewReportsSlice';
 import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
 import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
 import roadmapReducer from '../features/roadmap/roadmap-slice';
@@ -115,7 +114,6 @@ export const store = configureStore({
     timeLogReducer: timeLogReducer,
     taskTemplateReducer: taskTemplateReducer,
     projectReportsTableColumnsReducer: projectReportsTableColumnsReducer,
-    overviewReportsReducer: overviewReportsReducer,
     projectReportsReducer: projectReportsReducer,
     membersReportsReducer: membersReportsReducer,
     roadmapReducer: roadmapReducer,

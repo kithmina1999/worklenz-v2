@@ -25,9 +25,13 @@ import { useTranslation } from 'react-i18next';
 
 type ProjectReportsTableProps = {
   projectList: any[];
+  loading: boolean;
 };
 
-const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
+const ProjectsReportsTable = ({
+  projectList,
+  loading = false,
+}: ProjectReportsTableProps) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // localization
@@ -206,6 +210,7 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
         dataSource={projectList}
         pagination={{ showSizeChanger: true, defaultPageSize: 10 }}
         scroll={{ x: 'max-content' }}
+        loading={loading}
         onRow={(record) => {
           return {
             style: { height: 56, cursor: 'pointer' },
