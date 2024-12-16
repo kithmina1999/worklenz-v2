@@ -1,14 +1,14 @@
 {
-    "profile": "Profile",
-    "notifications": "Notifications",
-    "clients": "Clients",
-    "job-titles": "Job Titles",
-    "labels": "Labels",
-    "categories": "Categories",
-    "project-templates": "Project Templates",
-    "task-templates": "Task Templates",
-    "team-members": "Team Members",
-    "teams": "Teams",
-    "change-password": "Change Password",
-    "language-and-region": "Language and Region"
+    "profile": "Perfil",
+    "notifications": "Notificações",
+    "clients": "Clientes",
+    "job-titles": "Títulos de Emprego",
+    "labels": "Rótulos",
+    "categories": "Categorias",
+    "project-templates": "Modelos de Projeto",
+    "task-templates": "Modelos de Tarefa",
+    "team-members": "Membros da Equipe",
+    "teams": "Equipes",
+    "change-password": "Alterar Senha",
+    "language-and-region": "Idioma e Região"
 }

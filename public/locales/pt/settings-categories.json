@@ -1,10 +1,10 @@
 {
-  "categoryColumn": "Category",
-  "deleteConfirmationTitle": "Are you sure?",
-  "deleteConfirmationOk": "Yes",
-  "deleteConfirmationCancel": "Cancel",
-  "associatedTaskColumn": "Associated Task",
-  "searchPlaceholder": "Search by name",
-  "emptyText": "Categories can be created while updating or creating projects.",
-  "colorChangeTooltip": "Click to change color"
+  "categoryColumn": "Categoria",
+  "deleteConfirmationTitle": "Tem a certeza?",
+  "deleteConfirmationOk": "Sim",
+  "deleteConfirmationCancel": "Cancelar",
+  "associatedTaskColumn": "Tarefa Associada",
+  "searchPlaceholder": "Pesquisar por nome",
+  "emptyText": "As categorias podem ser criadas ao atualizar ou criar projetos.",
+  "colorChangeTooltip": "Clique para mudar a cor"
 }

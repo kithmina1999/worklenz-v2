@@ -1,41 +1,41 @@
 {
   "overview": {
-    "title": "Overview",
-    "statusOverview": "Status Overview",
-    "priorityOverview": "Priority Overview",
-    "lastUpdatedTasks": "Last Updated Tasks"
+    "title": "Visão Geral",
+    "statusOverview": "Visão Geral do Status",
+    "priorityOverview": "Visão Geral da Prioridade",
+    "lastUpdatedTasks": "Últimas Tarefas Atualizadas"
   },
   "members": {
-    "title": "Members",
-    "tooltip": "Members",
-    "tasksByMembers": "Tasks by members",
-    "tasksByMembersTooltip": "Tasks by members",
-    "name": "Name",
-    "taskCount": "Task Count",
-    "contribution": "Contribution",
-    "completed": "Completed",
-    "incomplete": "Incomplete",
-    "overdue": "Overdue",
-    "progress": "Progress"
+    "title": "Membros",
+    "tooltip": "Membros",
+    "tasksByMembers": "Tarefas por membros",
+    "tasksByMembersTooltip": "Tarefas por membros",
+    "name": "Nome",
+    "taskCount": "Contagem de Tarefas",
+    "contribution": "Contribuição",
+    "completed": "Concluído",
+    "incomplete": "Incompleto",
+    "overdue": "Atrasado",
+    "progress": "Progresso"
   },
   "tasks": {
-    "overdueTasks": "Overdue Tasks",
-    "overLoggedTasks": "Over logged Tasks",
-    "tasksCompletedEarly": "Tasks completed early",
-    "tasksCompletedLate": "Tasks completed late",
-    "overLoggedTasksTooltip": "Tasks that has time logged past their estimated time",
-    "overdueTasksTooltip": "Tasks that are past their due date"
+    "overdueTasks": "Tarefas Atrasadas",
+    "overLoggedTasks": "Tarefas com excesso de tempo registrado",
+    "tasksCompletedEarly": "Tarefas concluídas cedo",
+    "tasksCompletedLate": "Tarefas concluídas tarde",
+    "overLoggedTasksTooltip": "Tarefas que têm tempo registrado além do tempo estimado",
+    "overdueTasksTooltip": "Tarefas que estão atrasadas"
   },
   "common": {
-    "seeAll": "See all",
-    "totalLoggedHours": "Total logged hours",
-    "totalEstimation": "Total estimation",
-    "completedTasks": "Completed tasks",
-    "incompleteTasks": "Incomplete tasks",
-    "overdueTasks": "Overdue tasks",
-    "overdueTasksTooltip": "Tasks that are past their due date",
-    "totalLoggedHoursTooltip": "Task estimation and logged time for tasks.",
-    "includeArchivedTasks": "Include Archived Tasks",
-    "export": "Export"
+    "seeAll": "Ver tudo",
+    "totalLoggedHours": "Total de horas registradas",
+    "totalEstimation": "Total de estimativa",
+    "completedTasks": "Tarefas concluídas",
+    "incompleteTasks": "Tarefas incompletas",
+    "overdueTasks": "Tarefas atrasadas",
+    "overdueTasksTooltip": "Tarefas que estão atrasadas",
+    "totalLoggedHoursTooltip": "Estimativa de tarefas e tempo registrado.",
+    "includeArchivedTasks": "Incluir Tarefas Arquivadas",
+    "export": "Exportar"
   }
 }

@@ -1,38 +1,38 @@
 {
-    "includeArchivedProjects": "Include Archived Projects",
-    "export": "Export",
-    "timeSheet": "Time Sheet",
+    "includeArchivedProjects": "Incluir Projetos Arquivados",
+    "export": "Exportar",
+    "timeSheet": "Folha de Tempo",
 
-    "searchByName": "Search by name",
-    "selectAll": "Select All",
-    "teams": "Teams",
+    "searchByName": "Pesquisar por nome",
+    "selectAll": "Selecionar Todos",
+    "teams": "Equipes",
 
-    "searchByProject": "Search by project name",
-    "projects": "Projects",
+    "searchByProject": "Pesquisar por nome do projeto",
+    "projects": "Projetos",
 
-    "searchByCategory": "Search by category name",
-    "categories": "Categories",
+    "searchByCategory": "Pesquisar por nome da categoria",
+    "categories": "Categorias",
 
-    "billable": "Billable",
-    "nonBillable": "Non Billable",
+    "billable": "Cobrável",
+    "nonBillable": "Não Cobrável",
 
     "total": "Total",
 
-    "projectsTimeSheet": "Projects Time Sheet",
+    "projectsTimeSheet": "Folha de Tempo dos Projetos",
 
-    "loggedTime": "Logged Time(hours)",
+    "loggedTime": "Tempo Registrado (horas)",
 
-    "exportToExcel": "Export to Excel",
-    "logged": "logged",
-    "for": "for",
+    "exportToExcel": "Exportar para Excel",
+    "logged": "registrado",
+    "for": "para",
 
-    "membersTimeSheet": "Members Time Sheet",
-    "member": "Member",
+    "membersTimeSheet": "Folha de Tempo dos Membros",
+    "member": "Membro",
 
-    "estimatedVsActual": "Estimated vs Actual",
-    "workingDays": "Working Days",
-    "manDays": "Man Days",
-    "days": "Days",
-    "estimatedDays": "Estimated Days",
-    "actualDays": "Actual Days"
+    "estimatedVsActual": "Estimado vs Real",
+    "workingDays": "Dias de Trabalho",
+    "manDays": "Dias-Homem",
+    "days": "Dias",
+    "estimatedDays": "Dias Estimados",
+    "actualDays": "Dias Reais"
 }

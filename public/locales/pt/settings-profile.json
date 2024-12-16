@@ -1,12 +1,12 @@
 {
-    "uploadError": "You can only upload JPG/PNG file!",
-    "uploadSizeError": "Image must be smaller than 2MB!",
-    "upload": "Upload",
-    "nameLabel": "Name",
-    "nameRequiredError": "Name is required",
+    "uploadError": "Você só pode fazer upload de arquivos JPG/PNG!",
+    "uploadSizeError": "A imagem deve ser menor que 2MB!",
+    "upload": "Carregar",
+    "nameLabel": "Nome",
+    "nameRequiredError": "Nome é obrigatório",
     "emailLabel": "Email",
-    "emailRequiredError": "Email is required",
-    "saveChanges": "Save Changes",
-    "profileJoinedText": "Joined a month ago",
-    "profileLastUpdatedText": "Last updated a month ago"
+    "emailRequiredError": "Email é obrigatório",
+    "saveChanges": "Salvar Alterações",
+    "profileJoinedText": "Entrou há um mês",
+    "profileLastUpdatedText": "Última atualização há um mês"
 }

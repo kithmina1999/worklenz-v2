@@ -1,14 +1,14 @@
 {
-  "nameColumn": "Name",
-  "attachedTaskColumn": "Attached Task",
-  "sizeColumn": "Size",
-  "uploadedByColumn": "Uploaded By",
-  "uploadedAtColumn": "Uploaded At",
-  "fileIconAlt": "File icon",
-  "titleDescriptionText": "All attachments to tasks in this project will appear here.",
-  "deleteConfirmationTitle": "Are you sure?",
-  "deleteConfirmationOk": "Yes",
-  "deleteConfirmationCancel": "Cancel",
-  "segmentedTooltip": "Coming soon! Switch between list view and thumbnail view.",
-  "emptyText": "There are no attachments in the project."
+  "nameColumn": "Nome",
+  "attachedTaskColumn": "Tarefa Anexada",
+  "sizeColumn": "Tamanho",
+  "uploadedByColumn": "Enviado Por",
+  "uploadedAtColumn": "Enviado Em",
+  "fileIconAlt": "Ícone do Arquivo",
+  "titleDescriptionText": "Todos os anexos das tarefas neste projeto aparecerão aqui.",
+  "deleteConfirmationTitle": "Tem certeza?",
+  "deleteConfirmationOk": "Sim",
+  "deleteConfirmationCancel": "Cancelar",
+  "segmentedTooltip": "Em breve! Alterne entre a visualização em lista e a visualização em miniatura.",
+  "emptyText": "Não há anexos no projeto."
 }

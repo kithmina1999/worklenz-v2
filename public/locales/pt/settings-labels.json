@@ -1,11 +1,11 @@
 {
-  "labelColumn": "Label",
-  "deleteConfirmationTitle": "Are you sure?",
-  "deleteConfirmationOk": "Yes",
-  "deleteConfirmationCancel": "Cancel",
-  "associatedTaskColumn": "Associated Task Count",
-  "searchPlaceholder": "Search by name",
-  "emptyText": "Labels can be created while updating or creating tasks.",
-  "pinTooltip": "Click to pin this into the main menu",
-  "colorChangeTooltip": "Click to change color"
+  "labelColumn": "Rótulo",
+  "deleteConfirmationTitle": "Tem a certeza?",
+  "deleteConfirmationOk": "Sim",
+  "deleteConfirmationCancel": "Cancelar",
+  "associatedTaskColumn": "Contagem de Tarefas Associadas",
+  "searchPlaceholder": "Pesquisar por nome",
+  "emptyText": "Os rótulos podem ser criados ao atualizar ou criar tarefas.",
+  "pinTooltip": "Clique para fixar isso no menu principal",
+  "colorChangeTooltip": "Clique para mudar a cor"
 }

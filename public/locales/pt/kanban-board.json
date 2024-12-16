@@ -1,14 +1,14 @@
 {
-    "rename": "Rename",
-    "delete": "Delete",
-    "addTask": "Add Task",
-    "changeCategory": "Change category",
+    "rename": "Renomear",
+    "delete": "Deletar",
+    "addTask": "Adicionar Tarefa",
+    "changeCategory": "Mudar Categoria",
 
-    "dueDate": "Due date",
-    "cancel": "Cancel",
+    "dueDate": "Data de Vencimento",
+    "cancel": "Cancelar",
 
-    "today": "Today",
-    "tomorrow": "Tomorrow",
-    "assignToMe": "Assign to me",
-    "archive": "Archive"
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "assignToMe": "Atribuir a mim",
+    "archive": "Arquivar"
 }

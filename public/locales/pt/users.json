@@ -1,9 +1,8 @@
 {
-    "title": "Users",
-    "subTitle": "users",
-    "placeholder": "Search by name",
-    "user": "User",
+    "title": "Usuários",
+    "subTitle": "usuários",
+    "placeholder": "Pesquisar por nome",
+    "user": "Usuário",
     "email": "Email",
-    "lastActivity": "Last Activity"
-
+    "lastActivity": "Última Atividade"
 }
