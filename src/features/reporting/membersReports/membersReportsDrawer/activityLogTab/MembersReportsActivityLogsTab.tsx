@@ -19,7 +19,7 @@ const MembersReportsActivityLogsTab = ({
   const [activityLogsData, setActivityLogsData] = useState<any[]>([]);
 
   // localization
-  const { t } = useTranslation('reportingMembersDrawer');
+  const { t } = useTranslation('reporting-members-drawer');
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {

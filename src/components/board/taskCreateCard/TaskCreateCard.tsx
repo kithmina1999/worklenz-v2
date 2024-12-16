@@ -23,7 +23,7 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
     const [taskName, setTaskName] = useState('');
     const dispatch = useAppDispatch();
     const themeMode = useAppSelector((state) => state.themeReducer.mode);
-    const {t} = useTranslation('kanbanBoard')
+    const {t} = useTranslation('kanban-board')
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setCharacterLength(e.target.value.length);

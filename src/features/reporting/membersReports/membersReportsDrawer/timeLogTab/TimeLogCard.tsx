@@ -28,7 +28,7 @@ type TimeLogCardProps = {
 
 const TimeLogCard = ({ data, setSelectedTaskId }: TimeLogCardProps) => {
   // localization
-  const { t } = useTranslation('reportingMembersDrawer');
+  const { t } = useTranslation('reporting-members-drawer');
 
   const dispatch = useAppDispatch();
 

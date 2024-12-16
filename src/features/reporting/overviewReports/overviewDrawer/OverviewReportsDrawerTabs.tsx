@@ -14,7 +14,7 @@ const OverviewReportsDrawerTabs = ({
   teamsId = null,
 }: OverviewReportsDrawerProps) => {
   // localization
-  const { t } = useTranslation('reportingOverviewDrawer');
+  const { t } = useTranslation('reporting-overview-drawer');
 
   const tabItems: TabsProps['items'] = [
     {

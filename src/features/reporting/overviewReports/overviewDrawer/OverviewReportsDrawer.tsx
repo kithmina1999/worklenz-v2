@@ -15,7 +15,7 @@ type OverviewReportsDrawerProps = {
 
 const OverviewReportsDrawer = ({ teamsId }: OverviewReportsDrawerProps) => {
   // localization
-  const { t } = useTranslation('reportingOverviewDrawer');
+  const { t } = useTranslation('reporting-overview-drawer');
 
   const dispatch = useAppDispatch();
 

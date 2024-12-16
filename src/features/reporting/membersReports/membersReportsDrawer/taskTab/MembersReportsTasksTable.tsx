@@ -18,7 +18,7 @@ const MembersReportsTasksTable = ({
   setSelectedTaskId,
 }: MembersReportsTasksTableProps) => {
   // localization
-  const { t } = useTranslation('reportingMembersDrawer');
+  const { t } = useTranslation('reporting-members-drawer');
 
   const dispatch = useAppDispatch();
 

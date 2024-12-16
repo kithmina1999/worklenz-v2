@@ -25,7 +25,7 @@ const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
   const membersInputRef = useRef<InputRef>(null);
 
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   const membersList = [
     ...useAppSelector((state) => state.memberReducer.membersList),

@@ -26,7 +26,7 @@ interface TaskListFiltersProps {
 
 const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   // Selectors
   const priorities = useAppSelector(state => state.priorityReducer.priorities);

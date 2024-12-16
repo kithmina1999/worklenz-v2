@@ -11,7 +11,7 @@ type GroupByFilterProps = {
 
 const GroupByFilter = ({ setActiveGroup }: GroupByFilterProps) => {
   // localization
-  const { t } = useTranslation('reportingProjectsDrawer');
+  const { t } = useTranslation('reporting-projects-drawer');
 
   const handleChange = (value: string) => {
     setActiveGroup(value as GroupType);

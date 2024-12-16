@@ -27,7 +27,7 @@ const ProjectViewUpdates = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const { t } = useTranslation('projectViewUpdatesTab');
+  const { t } = useTranslation('project-view-updates');
   const [form] = Form.useForm();
 
   const getMembers = useCallback(async () => {

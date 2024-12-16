@@ -16,7 +16,7 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // localization
-  const { t } = useTranslation('taskListTable');
+  const { t } = useTranslation('task-list-table');
 
   // get label list from label reducer
   const labelList = useAppSelector((state) => state.labelReducer.labelList);

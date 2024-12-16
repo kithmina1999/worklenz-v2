@@ -16,7 +16,7 @@ import { useAppSelector } from '../../../../../hooks/useAppSelector';
 
 const MembersReportsStatCard = () => {
   // localization
-  const { t } = useTranslation('reportingMembersDrawer');
+  const { t } = useTranslation('reporting-members-drawer');
 
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector(state => state.themeReducer.mode);

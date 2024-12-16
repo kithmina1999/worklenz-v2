@@ -24,7 +24,7 @@ const AddMemberDrawer = () => {
 
   const [form] = Form.useForm<FormValues>();
 
-  const { t } = useTranslation('teamMembersSettings');
+  const { t } = useTranslation('settings-team-members');
   const isDrawerOpen = useAppSelector(state => state.memberReducer.isInviteMemberDrawerOpen);
   const dispatch = useAppDispatch();
 

@@ -17,7 +17,7 @@ interface CreateFirstProjectProps {
 const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({ onContinue, onGoBack }) => {
   // State & Hooks
   const dispatch = useDispatch();
-  const { t } = useTranslation('createFirstProjectFormPage');
+  const { t } = useTranslation('create-first-project-form');
   const [inputValue, setInputValue] = useState('');
   const [open, setOpen] = useState(false);
 

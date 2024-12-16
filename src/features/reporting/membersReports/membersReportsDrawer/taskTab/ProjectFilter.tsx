@@ -11,7 +11,7 @@ type ProjectFilterProps = {
 
 const ProjectFilter = ({ projectList }: ProjectFilterProps) => {
   // localization
-  const { t } = useTranslation('reportingMembersDrawer');
+  const { t } = useTranslation('reporting-members-drawer');
 
   const selectOptions = projectList.map((project) => ({
     key: project.projectId,

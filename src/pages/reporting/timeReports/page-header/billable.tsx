@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 const Billable:React.FC = () => {
   
-    const {t} = useTranslation('timeReport')
+    const {t} = useTranslation('time-report')
     // Dropdown items for the menu
     const menuItems: MenuProps['items'] = [
         {

@@ -14,7 +14,7 @@ const OverviewReportsMembersReportsTable = ({
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // localization
-  const { t } = useTranslation('reportingOverviewDrawer');
+  const { t } = useTranslation('reporting-overview-drawer');
 
   const dispatch = useAppDispatch();
 

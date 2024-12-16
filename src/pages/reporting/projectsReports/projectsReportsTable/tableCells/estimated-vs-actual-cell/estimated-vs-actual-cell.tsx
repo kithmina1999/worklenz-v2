@@ -21,7 +21,7 @@ const EstimatedVsActualCell = ({
   estimatedTimeString,
 }: EstimatedVsActualCellProps) => {
   // localization
-  const { t } = useTranslation('reportingProjects');
+  const { t } = useTranslation('reporting-projects');
 
   const options: ChartOptions<'bar'> = {
     scales: {

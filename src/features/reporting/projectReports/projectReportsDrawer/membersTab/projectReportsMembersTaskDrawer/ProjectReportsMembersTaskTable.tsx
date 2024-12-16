@@ -18,7 +18,7 @@ const ProjectReportsMembersTasksTable = ({
   setSeletedTaskId,
 }: ProjectReportsMembersTasksTableProps) => {
   // localization
-  const { t } = useTranslation('reportingProjectsDrawer');
+  const { t } = useTranslation('reporting-projects-drawer');
 
   const dispatch = useAppDispatch();
 

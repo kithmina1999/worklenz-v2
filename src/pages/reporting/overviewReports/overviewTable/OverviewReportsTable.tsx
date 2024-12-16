@@ -18,7 +18,7 @@ const OverviewReportsTable = ({ teamsList }: ProjectReportsTableProps) => {
   console.log(teamsList);
 
   // localization
-  const { t } = useTranslation('reportingOverview');
+  const { t } = useTranslation('reporting-overview');
 
   const dispatch = useAppDispatch();
 

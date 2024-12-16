@@ -55,7 +55,7 @@ const TaskListTableWrapper = ({
   );
 
   // localization
-  const { t } = useTranslation('taskListTable');
+  const { t } = useTranslation('task-list-table');
 
   // function to handle toggle expand
   const handlToggleExpand = () => {

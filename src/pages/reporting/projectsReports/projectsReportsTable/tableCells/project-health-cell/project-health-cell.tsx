@@ -17,7 +17,7 @@ const ProjectHealthCell = () => {
     useState<HealthStatusDataType | null>(healthStatusData[0] || null);
 
   // localization
-  const { t } = useTranslation('reportingProjects');
+  const { t } = useTranslation('reporting-projects');
 
   // health selection options
   const healthOptions = healthStatusData.map((status) => ({

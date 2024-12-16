@@ -12,7 +12,7 @@ import OverviewReportsTable from '../overviewReports/overviewTable/OverviewRepor
 
 const OverviewReports = () => {
   //   localization
-  const { t } = useTranslation('reportingOverview');
+  const { t } = useTranslation('reporting-overview');
 
   useDocumentTitle('Reporting - Overview');
 

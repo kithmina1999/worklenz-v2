@@ -30,7 +30,7 @@ const ProjectReportsTasksTab = ({
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   // localization
-  const { t } = useTranslation('reportingProjectsDrawer');
+  const { t } = useTranslation('reporting-projects-drawer');
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {

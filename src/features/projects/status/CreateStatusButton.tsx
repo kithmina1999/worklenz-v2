@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 const CreateStatusButton = () => {
   // localization
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   const dispatch = useAppDispatch();
 

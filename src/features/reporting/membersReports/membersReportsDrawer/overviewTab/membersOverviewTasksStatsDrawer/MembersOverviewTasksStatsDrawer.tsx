@@ -19,7 +19,7 @@ const MembersOverviewTasksStatsDrawer = ({
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   // localization
-  const { t } = useTranslation('reportingMembersDrawer');
+  const { t } = useTranslation('reporting-members-drawer');
 
   const dispatch = useAppDispatch();
 

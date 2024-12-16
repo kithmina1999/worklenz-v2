@@ -40,7 +40,7 @@ type ActivityLogCardProps = {
 
 const ActivityLogCard = ({ data, setSelectedTaskId }: ActivityLogCardProps) => {
   // localization
-  const { t } = useTranslation('reportingMembersDrawer');
+  const { t } = useTranslation('reporting-members-drawer');
 
   const dispatch = useAppDispatch();
 

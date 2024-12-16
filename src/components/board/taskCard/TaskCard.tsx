@@ -51,7 +51,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
   const handleDateChange = (date: Dayjs | null) => {
     setDueDate(date);
   };
-  const {t} = useTranslation('kanbanBoard')
+  const {t} = useTranslation('kanban-board')
 
   const formatDate = (date: Dayjs | null) => {
     if (!date) return '';

@@ -8,7 +8,7 @@ Chart.register(ArcElement, Tooltip);
 
 const ProjectReportsDueDateGraph = () => {
   // localization
-  const { t } = useTranslation('reportingProjectsDrawer');
+  const { t } = useTranslation('reporting-projects-drawer');
 
   type DueDateGraphItemType = {
     name: string;

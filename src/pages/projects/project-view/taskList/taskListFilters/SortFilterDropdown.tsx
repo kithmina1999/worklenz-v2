@@ -18,7 +18,7 @@ const SortFilterDropdown = () => {
   const themeMode = useAppSelector((state) => state.themeReducer.mode)
 
   // localization
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {

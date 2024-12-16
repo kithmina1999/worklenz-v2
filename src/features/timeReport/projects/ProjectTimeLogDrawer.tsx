@@ -13,7 +13,7 @@ const ProjectTimeLogDrawer: React.FC = () => {
     const isTimeLogDrawerOpen = useAppSelector((state) => state.timeLogReducer.isTimeLogDrawerOpen);
     const selectedLabel = useAppSelector((state) => state.timeLogReducer.selectedLabel);
     const dispatch = useAppDispatch();
-    const {t} = useTranslation('timeReport')
+    const {t} = useTranslation('time-report')
 
     // Filter the data based on selectedLabel
     const filteredData = jsonData.log_data.filter((logItem) =>

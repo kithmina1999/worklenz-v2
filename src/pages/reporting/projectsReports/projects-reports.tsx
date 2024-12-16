@@ -12,7 +12,7 @@ import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const ProjectsReports = () => {
   // localization
-  const { t } = useTranslation('reportingProjects');
+  const { t } = useTranslation('reporting-projects');
 
   useDocumentTitle('Reporting - Projects');
 

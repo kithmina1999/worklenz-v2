@@ -13,7 +13,7 @@ const ProjectReportsMembersTable = ({
   membersData,
 }: ProjectReportsMembersTableProps) => {
   // localization
-  const { t } = useTranslation('reportingProjectsDrawer');
+  const { t } = useTranslation('reporting-projects-drawer');
 
   const dispatch = useAppDispatch();
 

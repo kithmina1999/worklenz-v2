@@ -50,7 +50,7 @@ interface PaginationType {
 const ProjectViewMembers = () => {
   // Hooks
   const { projectId } = useParams();
-  const { t } = useTranslation('projectViewMembersTab');
+  const { t } = useTranslation('project-view-members');
   const auth = useAuth();
   const user = auth.getCurrentSession();
   const isOwnerOrAdmin = auth.isOwnerOrAdmin();

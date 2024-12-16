@@ -7,7 +7,7 @@ import { toCamelCase } from '../../../../../../utils/toCamelCase';
 
 const ProjectStatusCell = ({ status }: { status: string }) => {
   // localization
-  const { t } = useTranslation('reportingProjects');
+  const { t } = useTranslation('reporting-projects');
 
   // status selection options
   const statusOptions = [

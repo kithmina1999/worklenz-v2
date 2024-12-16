@@ -30,7 +30,7 @@ const ProjectViewFiles = () => {
   const [hoverRow, setHoverRow] = useState<string | null>(null);
 
   // localization
-  const { t } = useTranslation('projectViewFilesTab');
+  const { t } = useTranslation('project-view-files');
 
   // table columns
   const columns: TableProps['columns'] = [

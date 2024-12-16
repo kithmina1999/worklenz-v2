@@ -15,7 +15,7 @@ const ProjectReportsMembersTab = ({
   const [searchQuery, setSearhQuery] = useState<string>('');
 
   // localization
-  const { t } = useTranslation('reportingProjectsDrawer');
+  const { t } = useTranslation('reporting-projects-drawer');
 
   // mock data from the original site payload
   type TeamMemberTaskStats = {

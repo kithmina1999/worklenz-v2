@@ -45,7 +45,7 @@ const CurrentBill: React.FC = () => {
 
   const isTablet = useMediaQuery({ query: '(min-width: 1025px)' });
 
-  const { t } = useTranslation('currentBill');
+  const { t } = useTranslation('current-bill');
 
   return (
     <div style={{ width: '100%' }} className="current-billing">

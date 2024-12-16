@@ -14,7 +14,7 @@ type ProjectReportsDrawerProps = {
 
 const ProjectReportsDrawer = ({ projectId }: ProjectReportsDrawerProps) => {
   // localization
-  const { t } = useTranslation('reportingProjectsDrawer');
+  const { t } = useTranslation('reporting-projects-drawer');
 
   const dispatch = useAppDispatch();
 

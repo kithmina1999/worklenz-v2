@@ -15,7 +15,7 @@ const OverviewReportsProjectsTab = ({
   const [searchQuery, setSearhQuery] = useState<string>('');
 
   // localization
-  const { t } = useTranslation('reportingProjectsDrawer');
+  const { t } = useTranslation('reporting-projects-drawer');
 
   const dispatch = useAppDispatch();
 

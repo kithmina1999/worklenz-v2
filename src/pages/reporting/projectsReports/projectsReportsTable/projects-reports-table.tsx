@@ -31,7 +31,7 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // localization
-  const { t } = useTranslation('reportingProjects');
+  const { t } = useTranslation('reporting-projects');
 
   const dispatch = useAppDispatch();
 

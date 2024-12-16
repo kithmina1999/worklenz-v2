@@ -16,7 +16,7 @@ const MembersReportsTable = ({ membersList }: MembersReportsTableProps) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // localization
-  const { t } = useTranslation('reportingMembers');
+  const { t } = useTranslation('reporting-members');
 
   const dispatch = useAppDispatch();
 

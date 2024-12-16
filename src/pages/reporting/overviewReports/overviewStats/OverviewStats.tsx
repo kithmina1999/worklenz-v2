@@ -37,7 +37,7 @@ const OverviewStats = () => {
   const [stats, setStats] = useState<StatsType | null>(null);
 
   //   localization
-  const { t } = useTranslation('reportingOverview');
+  const { t } = useTranslation('reporting-overview');
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {

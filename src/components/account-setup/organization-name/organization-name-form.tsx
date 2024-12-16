@@ -16,7 +16,7 @@ interface OrganizationNameProps {
 const OrganizationNameForm: React.FC<OrganizationNameProps> = ({ organizationName, onContinue }) => {
   console.log('organizationName', organizationName);
   const dispatch = useDispatch();
-  const { t } = useTranslation('organizationNameFormPage');
+  const { t } = useTranslation('organization-name-form');
   const [inputValue, setInputValue] = useState(organizationName);
 
   const isButtonDisabled = useSelector((state: RootState) => state.button.isButtonDisable);

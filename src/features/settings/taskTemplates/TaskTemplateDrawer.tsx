@@ -14,7 +14,7 @@ const TaskTemplateDrawer = () => {
     (state) => state.taskTemplateReducer.selectedTemplate
   );
   const dispatch = useAppDispatch();
-  const {t} = useTranslation('taskTemplateDrawer')
+  const {t} = useTranslation('task-template-drawer')
 
   // Find the selected template data
   const filteredData = jsonData.find(

@@ -159,7 +159,7 @@ const ActionButtons: React.FC<{ t: (key: string) => string }> = ({ t }) => (
 );
 
 const TableColumns = (navigate: NavigateFunction): ColumnsType<IProjectViewModel> => {
-  const { t } = useTranslation('allProjectList');
+  const { t } = useTranslation('all-project-list');
   const { categories, statuses } = useProjectData();
 
   return useMemo(() => [

@@ -11,7 +11,7 @@ const ProjectDaysLeftAndOverdueCell = ({
   daysLeft,
 }: ProjectDaysLeftAndOverdueCellProps) => {
   // localization
-  const { t } = useTranslation('reportingProjects');
+  const { t } = useTranslation('reporting-projects');
 
   return (
     <Typography.Text style={{ cursor: 'pointer', color: colors.limeGreen }}>

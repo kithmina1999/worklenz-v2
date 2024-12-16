@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const ProjectsTimeReports = () => {
-  const { t } = useTranslation('timeReport');
+  const { t } = useTranslation('time-report');
 
   useDocumentTitle('Reporting - Allocation');
 

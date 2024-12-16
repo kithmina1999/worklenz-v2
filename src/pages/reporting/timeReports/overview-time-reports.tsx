@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const OverviewTimeReports: React.FC = () => {
-  const { t } = useTranslation('timeReport');
+  const { t } = useTranslation('time-report');
 
   useDocumentTitle('Reporting - Allocation');
 

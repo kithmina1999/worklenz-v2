@@ -19,7 +19,7 @@ const ProjectCategoryCell = ({ id, name, color_code }: IProjectCategory) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // localization
-  const { t } = useTranslation('reportingProjects');
+  const { t } = useTranslation('reporting-projects');
 
   //   get theme from theme slice
   const themeMode = useAppSelector((state) => state.themeReducer.mode);

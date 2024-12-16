@@ -9,7 +9,7 @@ const TimeSheetTable: React.FC = () => {
   const [projects, setProjects] = useState<ProjectType[]>([]);
   const [members, setMembers] = useState<MemberLoggedTimeType[]>([]);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const { t } = useTranslation('timeReport');
+  const { t } = useTranslation('time-report');
 
   useEffect(() => {
     const fetchProjectsData = async () => {

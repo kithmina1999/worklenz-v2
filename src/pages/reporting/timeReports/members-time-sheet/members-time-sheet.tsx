@@ -24,7 +24,7 @@ const MembersTimeSheet: React.FC = () => {
   const colors = jsonData.map(item => item.color_code);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const { t } = useTranslation('timeReport');
+  const { t } = useTranslation('time-report');
 
   // Chart data
   const data = {

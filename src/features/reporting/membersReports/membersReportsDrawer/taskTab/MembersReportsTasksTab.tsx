@@ -21,7 +21,7 @@ const MembersReportsTasksTab = ({ memberId }: MembersReportsTasksTabProps) => {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   // localization
-  const { t } = useTranslation('reportingMembersDrawer');
+  const { t } = useTranslation('reporting-members-drawer');
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {

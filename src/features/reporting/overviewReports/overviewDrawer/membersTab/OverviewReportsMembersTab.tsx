@@ -15,7 +15,7 @@ const OverviewReportsMembersTab = ({
   const [searchQuery, setSearhQuery] = useState<string>('');
 
   // localization
-  const { t } = useTranslation('reportingOverviewDrawer');
+  const { t } = useTranslation('reporting-overview-drawer');
 
   const dispatch = useAppDispatch();
 

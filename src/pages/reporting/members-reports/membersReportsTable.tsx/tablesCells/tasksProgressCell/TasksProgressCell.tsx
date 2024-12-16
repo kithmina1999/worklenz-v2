@@ -8,7 +8,7 @@ type TasksProgressCellProps = {
 
 const TasksProgressCell = ({ tasksStat }: TasksProgressCellProps) => {
   // localization
-  const { t } = useTranslation('reportingMembers');
+  const { t } = useTranslation('reporting-members');
 
   if (!tasksStat) return null;
 

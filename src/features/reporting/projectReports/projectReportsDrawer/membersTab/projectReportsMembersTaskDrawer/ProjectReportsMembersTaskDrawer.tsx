@@ -19,7 +19,7 @@ const ProjectReportsMembersTaskDrawer = () => {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   // localization
-  const { t } = useTranslation('reportingProjectsDrawer');
+  const { t } = useTranslation('reporting-projects-drawer');
 
   const dispatch = useAppDispatch();
 

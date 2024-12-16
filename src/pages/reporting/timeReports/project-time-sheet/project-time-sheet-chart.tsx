@@ -40,7 +40,7 @@ const ProjectTimeSheetChart: React.FC = () => {
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
   const dispatch = useAppDispatch();
-  const {t} = useTranslation('timeReport')
+  const {t} = useTranslation('time-report')
 
   const handleBarClick = (event: any, elements: any) => {
     if (elements.length > 0) {

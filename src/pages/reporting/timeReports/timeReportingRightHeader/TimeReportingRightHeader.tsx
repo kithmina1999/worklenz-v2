@@ -11,7 +11,7 @@ interface headerState {
 
 const TimeReportingRightHeader:React.FC<headerState> = ({title}) => {
 
-    const {t} = useTranslation('timeReport')
+    const {t} = useTranslation('time-report')
 
   return (
     <CustomPageHeader

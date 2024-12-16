@@ -26,7 +26,7 @@ const MembersReports = () => {
   useDocumentTitle('Reporting - Members');
 
   // localization
-  const { t } = useTranslation('reportingMembers');
+  const { t } = useTranslation('reporting-members');
 
   const dispatch = useAppDispatch();
 

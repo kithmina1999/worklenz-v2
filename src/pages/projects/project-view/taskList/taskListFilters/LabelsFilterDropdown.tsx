@@ -19,7 +19,7 @@ import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { useAppSelector } from '@/hooks/useAppSelector';
 
 const LabelsFilterDropdown = (props: { labels: ITaskLabel[] }) => {
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
   const labelInputRef = useRef<InputRef>(null);
   const [selectedCount, setSelectedCount] = useState<number>(0);
   const [filteredLabelList, setFilteredLabelList] = useState<ITaskLabel[]>(props.labels);

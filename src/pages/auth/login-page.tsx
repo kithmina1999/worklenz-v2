@@ -26,7 +26,7 @@ interface LoginFormValues {
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation('loginPage');
+  const { t } = useTranslation('login');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
   const dispatch = useAppDispatch();
   const authService = useAuth();

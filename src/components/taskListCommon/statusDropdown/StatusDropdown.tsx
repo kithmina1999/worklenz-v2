@@ -17,7 +17,7 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
   const [statusName, setStatusName] = useState<string>('');
 
   // localization
-  const { t } = useTranslation('taskListTable');
+  const { t } = useTranslation('task-list-table');
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
   const statusList = useAppSelector((state) => state.statusReducer.status);

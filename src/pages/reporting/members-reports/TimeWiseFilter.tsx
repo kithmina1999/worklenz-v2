@@ -15,7 +15,7 @@ import { colors } from '../../../styles/colors';
 
 const TimeWiseFilter = () => {
   // localization
-  const { t } = useTranslation('reportingMembers');
+  const { t } = useTranslation('reporting-members');
 
   // state to track dropdown open status
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

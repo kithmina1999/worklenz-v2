@@ -32,7 +32,7 @@ import ClientDrawer from './client-drawer';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const ClientsSettings: React.FC = () => {
-  const { t } = useTranslation('clientSettings');
+  const { t } = useTranslation('settings-clients');
   const { clients } = useAppSelector(state => state.clientReducer);
   const dispatch = useAppDispatch();
 

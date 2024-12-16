@@ -17,7 +17,7 @@ const ChangeCategoryDropdown: React.FC<ChangeCategoryDropdownProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   // const [currentStatus, setCurrentStatus] = useState(category);
-  const {t} = useTranslation('kanbanBoard')
+  const {t} = useTranslation('kanban-board')
 
   const getStatuColor = (status: TaskStatusType) => {
     if (status === 'todo') return colors.deepLightGray;

@@ -8,7 +8,7 @@ const Projects:React.FC = () => {
     const [checkedList, setCheckedList] = useState<string[]>([]);
     const [searchText, setSearchText] = useState("");
     const [selectAll, setSelectAll] = useState(false);
-    const {t} = useTranslation('timeReport')
+    const {t} = useTranslation('time-report')
     const [dropdownVisible, setDropdownVisible] = useState(false);
 
     const allItems = [

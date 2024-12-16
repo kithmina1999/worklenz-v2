@@ -8,7 +8,7 @@ Chart.register(ArcElement, Tooltip);
 
 const OverviewReportsProjectCategoryGraph = () => {
   // localization
-  const { t } = useTranslation('reportingOverviewDrawer');
+  const { t } = useTranslation('reporting-overview-drawer');
 
   type CategoryGraphItemType = {
     name: string;

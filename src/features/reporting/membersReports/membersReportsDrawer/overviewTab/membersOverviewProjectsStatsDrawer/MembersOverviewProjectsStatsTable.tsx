@@ -24,7 +24,7 @@ const MembersOverviewProjectsStatsTable = ({
   projectList,
 }: ProjectReportsTableProps) => {
   // localization
-  const { t } = useTranslation('reportingMembersDrawer');
+  const { t } = useTranslation('reporting-members-drawer');
 
   const columns: TableColumnsType = [
     {

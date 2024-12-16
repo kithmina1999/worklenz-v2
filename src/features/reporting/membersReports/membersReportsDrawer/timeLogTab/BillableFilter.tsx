@@ -8,7 +8,7 @@ const BillableFilter = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // localization
-  const { t } = useTranslation('reportingMembersDrawer');
+  const { t } = useTranslation('reporting-members-drawer');
 
   // billable dropdown items
   type BillableFieldsType = {

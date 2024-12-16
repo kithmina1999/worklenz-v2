@@ -30,7 +30,7 @@ const ProjectTemplateEditView = () => {
     setActiveGroup(value as GroupTypes);
   };
 
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   // get selected project from useSelectedPro
   const selectedProject = useSelectedProject();

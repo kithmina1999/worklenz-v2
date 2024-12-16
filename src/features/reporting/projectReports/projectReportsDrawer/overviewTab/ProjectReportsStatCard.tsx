@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 const ProjectReportsStatCard = () => {
   // localization
-  const { t } = useTranslation('reportingProjectsDrawer');
+  const { t } = useTranslation('reporting-projects-drawer');
 
   type StatItemsType = {
     name: string;

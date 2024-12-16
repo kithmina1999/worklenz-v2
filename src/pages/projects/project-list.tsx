@@ -25,7 +25,7 @@ import { SorterResult } from 'antd/es/table/interface';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const ProjectList: React.FC = () => {
-  const { t } = useTranslation('allProjectList');
+  const { t } = useTranslation('all-project-list');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   useDocumentTitle('Projects')

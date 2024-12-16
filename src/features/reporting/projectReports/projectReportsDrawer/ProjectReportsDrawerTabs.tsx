@@ -14,7 +14,7 @@ const ProjectReportsDrawerTabs = ({
   projectId = null,
 }: ProjectReportsDrawerProps) => {
   // localization
-  const { t } = useTranslation('reportingProjectsDrawer');
+  const { t } = useTranslation('reporting-projects-drawer');
 
   const tabItems: TabsProps['items'] = [
     {

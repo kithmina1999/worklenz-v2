@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 const ReportingCollapsedButton = ({isCollapsed, handleCollapseToggler}: { isCollapsed: boolean; handleCollapseToggler: () => void;}) => {
   // localization
-  const { t } = useTranslation('reportingSidebar');
+  const { t } = useTranslation('reporting-sidebar');
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 

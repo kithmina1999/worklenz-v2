@@ -15,7 +15,7 @@ type MembersReportsDrawerProps = {
 
 const MembersReportsDrawer = ({ memberId }: MembersReportsDrawerProps) => {
   // localization
-  const { t } = useTranslation('reportingMembersDrawer');
+  const { t } = useTranslation('reporting-members-drawer');
 
   const dispatch = useAppDispatch();
 

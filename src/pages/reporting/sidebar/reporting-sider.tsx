@@ -8,7 +8,7 @@ const ReportingSider = () => {
   const location = useLocation();
 
   // localization
-  const { t } = useTranslation('reportingSidebar');
+  const { t } = useTranslation('reporting-sidebar');
 
   // function to get the active menu key based on the current location
   const getCurrentActiveKey = () => {

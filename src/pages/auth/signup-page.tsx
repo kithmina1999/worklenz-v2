@@ -19,7 +19,7 @@ const SignupPage = () => {
   const dispatch = useAppDispatch();
   const { trackMixpanelEvent } = useMixpanelTracking();
 
-  const { t } = useTranslation('signupPage');
+  const { t } = useTranslation('signup');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
 
   const [loading, setLoading] = useState(false);

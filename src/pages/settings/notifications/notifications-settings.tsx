@@ -6,7 +6,7 @@ import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const NotificationsSettings = () => {
   // localization
-  const { t } = useTranslation('notificationsSettings');
+  const { t } = useTranslation('settings-notifications');
   const themeMode = useAppSelector((state) => state.themeReducer.mode)
 
   useDocumentTitle('Notifications Settings');

@@ -8,7 +8,7 @@ Chart.register(ArcElement, Tooltip);
 
 const MembersReportsStatusGraph = () => {
   // localization
-  const { t } = useTranslation('reportingMembersDrawer');
+  const { t } = useTranslation('reporting-members-drawer');
 
   type StatusGraphItemType = {
     name: string;

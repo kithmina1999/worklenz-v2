@@ -42,7 +42,7 @@ import { colors } from '@/styles/colors';
 
 const TeamMembersSettings = () => {
   // Hooks
-  const { t } = useTranslation('teamMembersSettings');
+  const { t } = useTranslation('settings-team-members');
   const dispatch = useAppDispatch();
   useDocumentTitle('Team Members');
 

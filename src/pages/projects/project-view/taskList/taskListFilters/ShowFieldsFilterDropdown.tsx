@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 const ShowFieldsFilterDropdown = () => {
   // localization
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   const dispatch = useAppDispatch();
 
