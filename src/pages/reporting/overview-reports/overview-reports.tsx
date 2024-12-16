@@ -7,7 +7,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { fetchTeamsData } from '../../../features/reporting/overviewReports/overviewReportsSlice';
 import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
-import OverviewStats from '../overviewReports/overviewStats/OverviewStats';
+import OverviewStats from '../overviewReports/overview-stats/overview-stats';
 import OverviewReportsTable from '../overviewReports/overviewTable/OverviewReportsTable';
 
 const OverviewReports = () => {

@@ -1,6 +1,6 @@
 import { Flex, Typography } from 'antd';
 import React, { useMemo, useState } from 'react';
-import OverviewStatCard from './OverviewStatCard';
+import OverviewStatCard from './overview-stat-card';
 import {
   BankOutlined,
   FileOutlined,
