@@ -12,10 +12,11 @@ const Avatars: React.FC<AvatarsProps> = ({ members }) => {
       {members.map((member, index) => (
         <Tooltip key={member.team_member_id || index} title={member.end && member.names ? member.names.join(', ') : member.name}>
           {member.avatar_url ? (
-            <Avatar src={member.avatar_url} size={28} />
+            <Avatar src={member.avatar_url} size={28} key={member.team_member_id || index}/>
           ) : (
             <Avatar
               size={28}
+              key={member.team_member_id || index}
               style={{
                 backgroundColor: member.color_code || '#ececec',
                 fontSize: '14px',

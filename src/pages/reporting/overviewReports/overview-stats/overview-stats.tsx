@@ -1,110 +1,97 @@
 import { Flex, Typography } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import OverviewStatCard from './overview-stat-card';
 import {
   BankOutlined,
   FileOutlined,
   UsergroupAddOutlined,
 } from '@ant-design/icons';
-import { colors } from '../../../../styles/colors';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
-
-type TeamsStats = {
-  count: number;
-  projects: number;
-  members: number;
-};
-
-type ProjectsStats = {
-  count: number;
-  active: number;
-  overdue: number;
-};
-
-type MembersStats = {
-  count: number;
-  unassigned: number;
-  overdue: number;
-};
-
-type StatsType = {
-  teams: TeamsStats;
-  projects: ProjectsStats;
-  members: MembersStats;
-};
+import { IRPTOverviewStatistics } from '@/types/reporting/reporting.types';
+import { reportingApiService } from '@/api/reporting/reporting.api.service';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const OverviewStats = () => {
-  const [stats, setStats] = useState<StatsType | null>(null);
-
-  //   localization
+  const [stats, setStats] = useState<IRPTOverviewStatistics>({});
+  const [loading, setLoading] = useState(false);
   const { t } = useTranslation('reporting-overview');
+  const includeArchivedProjects = useAppSelector(state => state.reportingReducer.includeArchivedProjects);
 
-  // useMemo for memoizing the fetch functions
-  useMemo(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          '/reportingMockData/overviewReports/stats.json'
-        );
-        const data = await response.json();
-        setStats(data);
-      } catch (error) {
-        console.error(
-          `Error fetching data from /reportingMockData/overviewReports/stats.json:`,
-          error
-        );
+  const getOverviewStats = async () => {
+    setLoading(true);
+    try {
+      const { done, body } = await reportingApiService.getOverviewStatistics(includeArchivedProjects);
+      if (done) {
+        setStats(body);
       }
-    };
+    } catch (error) {
+      console.error('Failed to fetch overview statistics:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
-  }, []);
+  useEffect(() => {
+    getOverviewStats();
+  }, [includeArchivedProjects]);
+
+  const renderStatText = (count: number = 0, singularKey: string, pluralKey: string) => {
+    return `${count} ${count === 1 ? t(singularKey) : t(pluralKey)}`;
+  };
+
+  const renderStatCard = (
+    icon: React.ReactNode,
+    mainCount: number = 0,
+    mainKey: string,
+    stats: { text: string; type?: "secondary" | "danger" }[]
+  ) => (
+    <OverviewStatCard
+      icon={icon}
+      title={renderStatText(mainCount, mainKey, `${mainKey}Plural`)}
+      loading={loading}
+    >
+      <Flex vertical>
+        {stats.map((stat, index) => (
+          <Typography.Text key={index} type={stat.type}>
+            {stat.text}
+          </Typography.Text>
+        ))}
+      </Flex>
+    </OverviewStatCard>
+  );
 
   return (
     <Flex gap={24}>
-      <OverviewStatCard
-        icon={<BankOutlined style={{ color: colors.skyBlue, fontSize: 42 }} />}
-        title={`${stats?.teams.count} ${stats?.teams.count === 1 ? t('teamCount') : t('teamCountPlural')}`}
-        children={
-          <Flex vertical>
-            <Typography.Text type="secondary">{`${stats?.teams.projects} ${stats?.teams.projects === 1 ? t('projectCount') : t('projectCountPlural')}`}</Typography.Text>
-            <Typography.Text type="secondary">{`${stats?.teams.members} ${stats?.teams.members === 1 ? t('memberCount') : t('memberCountPlural')}`}</Typography.Text>
-          </Flex>
-        }
-      />
+      {renderStatCard(
+        <BankOutlined style={{ color: colors.skyBlue, fontSize: 42 }} />,
+        stats?.teams?.count,
+        'teamCount',
+        [
+          { text: renderStatText(stats?.teams?.projects, 'projectCount', 'projectCountPlural'), type: 'secondary' },
+          { text: renderStatText(stats?.teams?.members, 'memberCount', 'memberCountPlural'), type: 'secondary' }
+        ]
+      )}
 
-      <OverviewStatCard
-        icon={
-          <FileOutlined style={{ color: colors.limeGreen, fontSize: 42 }} />
-        }
-        title={`${stats?.projects.count} ${stats?.projects.count === 1 ? t('projectCount') : t('projectCountPlural')}`}
-        children={
-          <Flex vertical>
-            <Typography.Text type="secondary">
-              {`${stats?.projects.active} ${stats?.projects.active === 1 ? t('activeProjectCount') : t('activeProjectCountPlural')}`}
-            </Typography.Text>
-            <Typography.Text type="danger">{`${stats?.projects.overdue} ${stats?.projects.overdue === 1 ? t('overdueProjectCount') : t('overdueProjectCountPlural')}`}</Typography.Text>
-          </Flex>
-        }
-      />
+      {renderStatCard(
+        <FileOutlined style={{ color: colors.limeGreen, fontSize: 42 }} />,
+        stats?.projects?.count,
+        'projectCount',
+        [
+          { text: renderStatText(stats?.projects?.active, 'activeProjectCount', 'activeProjectCountPlural'), type: 'secondary' },
+          { text: renderStatText(stats?.projects?.overdue, 'overdueProjectCount', 'overdueProjectCountPlural'), type: 'danger' }
+        ]
+      )}
 
-      <OverviewStatCard
-        icon={
-          <UsergroupAddOutlined
-            style={{ color: colors.lightGray, fontSize: 42 }}
-          />
-        }
-        title={`${stats?.members.count} ${stats?.members.count === 1 ? t('memberCount') : t('memberCountPlural')}`}
-        children={
-          <Flex vertical>
-            <Typography.Text type="secondary">
-              {`${stats?.members.unassigned} ${stats?.members.unassigned === 1 ? t('unassignedMemberCount') : t('unassignedMemberCountPlural')}`}
-            </Typography.Text>
-            <Typography.Text type="danger">
-              {`${stats?.members.overdue} ${stats?.members.overdue === 1 ? t('memberWithOverdueTaskCount') : t('memberWithOverdueTaskCountPlural')}`}
-            </Typography.Text>
-          </Flex>
-        }
-      />
+      {renderStatCard(
+        <UsergroupAddOutlined style={{ color: colors.lightGray, fontSize: 42 }} />,
+        stats?.members?.count,
+        'memberCount',
+        [
+          { text: renderStatText(stats?.members?.unassigned, 'unassignedMemberCount', 'unassignedMemberCountPlural'), type: 'secondary' },
+          { text: renderStatText(stats?.members?.overdue, 'memberWithOverdueTaskCount', 'memberWithOverdueTaskCountPlural'), type: 'danger' }
+        ]
+      )}
     </Flex>
   );
 };

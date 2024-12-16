@@ -122,6 +122,7 @@ export const evt_settings_task_templates_visit = "settings_task_templates_visit"
 export const evt_settings_teams_visit = "settings_teams_visit";
 export const evt_settings_change_password_visit = "settings_change_password_visit";
 export const evt_settings_language_and_region_visit = "settings_language_and_region_visit";
+export const evt_settings_language_changed = "settings_language_changed";
 export const evt_settings_profile_update = "settings_profile_update";
 export const evt_settings_notifications_update = "settings_notifications_update";
 export const evt_settings_clients_create = "settings_clients_create";

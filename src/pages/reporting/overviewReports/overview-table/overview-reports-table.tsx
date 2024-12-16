@@ -1,30 +1,45 @@
-import React, { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { ConfigProvider, Table, TableColumnsType } from 'antd';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import { toggleProjectReportsDrawer } from '../../../../features/reporting/projectReports/projectReportsSlice';
 import CustomTableTitle from '../../../../components/CustomTableTitle';
 import { useTranslation } from 'react-i18next';
-import MembersAvatarGroupCell from './MembersAvatarGroupCell';
 import OverviewReportsDrawer from '../../../../features/reporting/overviewReports/overviewDrawer/OverviewReportsDrawer';
 import { toggleOverviewReportsDrawer } from '../../../../features/reporting/overviewReports/overviewReportsSlice';
+import { IRPTTeam } from '@/types/reporting/reporting.types';
+import { reportingApiService } from '@/api/reporting/reporting.api.service';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import logger from '@/utils/errorLogger';
+import Avatars from '@/components/avatars/Avatars';
 
-type ProjectReportsTableProps = {
-  teamsList: any[];
-};
-
-const OverviewReportsTable = ({ teamsList }: ProjectReportsTableProps) => {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  console.log(teamsList);
-
-  // localization
+const OverviewReportsTable = () => {
   const { t } = useTranslation('reporting-overview');
-
   const dispatch = useAppDispatch();
 
-  // function to handle drawer toggle
-  const handleDrawerOpen = (id: string) => {
-    setSelectedId(id);
+  const includeArchivedProjects = useAppSelector(state => state.reportingReducer.includeArchivedProjects);
+  const [selectedTeam, setSelectedTeam] = useState<IRPTTeam | null>(null);
+  const [teams, setTeams] = useState<IRPTTeam[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const getTeams = async () => {
+    setLoading(true);
+    try {
+      const { done, body } = await reportingApiService.getOverviewTeams(includeArchivedProjects);
+      if (done) {
+        setTeams(body);
+      }
+    } catch (error) {
+      logger.error('getTeams', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getTeams();
+  }, [includeArchivedProjects]);
+
+  const handleDrawerOpen = (team: IRPTTeam) => {
+    setSelectedTeam(team);
     dispatch(toggleOverviewReportsDrawer());
   };
 
@@ -45,7 +60,7 @@ const OverviewReportsTable = ({ teamsList }: ProjectReportsTableProps) => {
       key: 'members',
       title: <CustomTableTitle title={t('membersColumn')} />,
       render: (record) => (
-        <MembersAvatarGroupCell membersList={record.members} />
+        <Avatars members={record.members} maxCount={3} />
       ),
     },
   ];
@@ -63,18 +78,19 @@ const OverviewReportsTable = ({ teamsList }: ProjectReportsTableProps) => {
     >
       <Table
         columns={columns}
-        dataSource={teamsList}
+        dataSource={teams}
         scroll={{ x: 'max-content' }}
+        rowKey={(record) => record.id}
         onRow={(record) => {
           return {
-            onClick: () => handleDrawerOpen(record.id),
+            onClick: () => handleDrawerOpen(record as IRPTTeam),
             style: { height: 48, cursor: 'pointer' },
             className: 'group even:bg-[#4e4e4e10]',
           };
         }}
       />
 
-      <OverviewReportsDrawer teamsId={selectedId} />
+      <OverviewReportsDrawer teamsId={selectedTeam && selectedTeam?.id} />
     </ConfigProvider>
   );
 };

@@ -48,6 +48,7 @@ import buttonReducer from '@features/actionSetup/buttonSlice';
 import scheduleReducer from '../features/schedule/scheduleSlice';
 
 // Reports
+import reportingReducer from '@features/reporting/reporting.slice';
 import timeLogReducer from '../features/timeReport/projects/timeLogSlice';
 import taskTemplateReducer from '../features/settings/taskTemplates/taskTemplateSlice';
 import projectReportsTableColumnsReducer from '../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
@@ -110,6 +111,7 @@ export const store = configureStore({
     scheduleReducer: scheduleReducer,
 
     // Reports
+    reportingReducer: reportingReducer,
     timeLogReducer: timeLogReducer,
     taskTemplateReducer: taskTemplateReducer,
     projectReportsTableColumnsReducer: projectReportsTableColumnsReducer,
