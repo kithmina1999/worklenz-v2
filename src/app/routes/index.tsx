@@ -6,6 +6,7 @@ import notFoundRoute from './not-found-route';
 import accountSetupRoute from './account-setup-routes';
 import reportingRoutes from './reporting-routes';
 import { useAuth } from '@/hooks/useAuth';
+import { useSocket } from '@/socket/socketContext';
 
 interface GuardProps {
   children: React.ReactNode;

@@ -4,7 +4,5 @@ export const SOCKET_CONFIG = {
     transports: ['websocket'],
     path: '/socket',
     upgrade: true,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 1000,
   },
 };
