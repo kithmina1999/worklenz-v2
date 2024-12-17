@@ -17,6 +17,7 @@ import './account-setup.css';
 import { IAccountSetupRequest } from '@/types/project-templates/project-templates.types';
 import { profileSettingsApiService } from '@/api/settings/profile/profile-settings.api.service';
 import { useNavigate } from 'react-router-dom';
+import logger from '@/utils/errorLogger';
 
 const { Title } = Typography;
 
@@ -172,7 +173,7 @@ const AccountSetup: React.FC = () => {
         navigate('/worklenz/home');
       }
     } catch (error) {
-      console.log('error', error);
+      logger.error('createFromTemplate', error);
     }
   };
 
@@ -189,7 +190,7 @@ const AccountSetup: React.FC = () => {
         navigate('/worklenz/home');
       }
     } catch (error) {
-      console.log('error', error);
+      logger.error('completeAccountSetup', error);
     }
   };
 

@@ -18,7 +18,6 @@ const ForgotPasswordPage = () => {
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
 
   const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
     setIsLoading(true);
 
     setTimeout(() => {

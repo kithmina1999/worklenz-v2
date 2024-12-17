@@ -30,7 +30,7 @@ const OverviewTeamInfoDrawerTabs = ({ teamsId = null }: OverviewTeamInfoDrawerPr
     },
   ];
 
-  return <Tabs type="card" items={tabItems} />;
+  return <Tabs type="card" items={tabItems} destroyInactiveTabPane />;
 };
 
 export default OverviewTeamInfoDrawerTabs;

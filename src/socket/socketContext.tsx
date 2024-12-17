@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { SOCKET_CONFIG } from './config';
+import logger from '@/utils/errorLogger';
 
 interface SocketContextType {
   socket: Socket | null;
@@ -19,17 +20,17 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
 
     newSocket.on('connect', () => {
-      console.log('Socket connected');
+      logger.info('Socket connected');
       setConnected(true);
     });
 
     newSocket.on('connect_error', (error) => {
-      console.error('Connection error:', error);
+      logger.error('Connection error', { error });
       setConnected(false);
     });
 
     newSocket.on('disconnect', () => {
-      console.log('Socket disconnected');
+      logger.info('Socket disconnected');
       setConnected(false);
     });
 

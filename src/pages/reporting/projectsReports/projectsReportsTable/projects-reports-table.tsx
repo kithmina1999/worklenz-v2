@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { Button, ConfigProvider, Flex, Table, TableColumnsType } from 'antd';
+import { Button, ConfigProvider, Flex, PaginationProps, Table, TableColumnsType } from 'antd';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import './project-report-table.css';
 import ProjectCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-cell/project-cell';
@@ -26,11 +26,15 @@ import { useTranslation } from 'react-i18next';
 type ProjectReportsTableProps = {
   projectList: any[];
   loading: boolean;
+  pagination: PaginationProps;
+  setPagination: (pagination: PaginationProps) => void;
 };
 
 const ProjectsReportsTable = ({
   projectList,
   loading = false,
+  pagination,
+  setPagination,
 }: ProjectReportsTableProps) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 

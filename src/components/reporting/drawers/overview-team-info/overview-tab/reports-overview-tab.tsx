@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReportsOverviewStatusGraph from './reports-overview-status-graph';
 import OverviewReportsProjectCategoryGraph from './reports-overview-category-graph';
-import OverviewReportsProjectHealthGraph from './OverviewReportsProjectHealthGraph';
+import OverviewReportsProjectHealthGraph from './reports-overview-project-health-graph';
 import { IRPTOverviewTeamInfo } from '@/types/reporting/reporting.types';
 import { reportingApiService } from '@/api/reporting/reporting.api.service';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -21,7 +21,6 @@ const OverviewReportsOverviewTab = ({ teamId = null }: OverviewReportsOverviewTa
       setLoading(true);
       const { done, body } = await reportingApiService.getTeamInfo(teamId, includeArchivedProjects);
       if (done) {
-        console.log('body', body);
         setModel(body);
       }
     } catch (error) {

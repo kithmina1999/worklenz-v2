@@ -28,6 +28,7 @@ const OverviewTeamInfoDrawer = ({ team }: OverviewTeamInfoDrawerProps) => {
   return (
     <Drawer
       open={isDrawerOpen}
+      destroyOnClose
       onClose={handleClose}
       width={900}
       title={

@@ -95,28 +95,28 @@ class ConsoleLogger {
   }
 
   // Public logging methods
-  public info(title: string, data: unknown, options?: Omit<LogOptions, 'level'>): void {
+  public info(title: string, data: unknown | null = null, options?: Omit<LogOptions, 'level'>): void {
     this.log(title, data, { ...options, level: 'info' });
   }
 
-  public success(title: string, data: unknown, options?: Omit<LogOptions, 'level'>): void {
+  public success(title: string, data: unknown | null = null , options?: Omit<LogOptions, 'level'>): void {
     this.log(title, data, { ...options, level: 'success' });
   }
 
-  public warning(title: string, data: unknown, options?: Omit<LogOptions, 'level'>): void {
+  public warning(title: string, data: unknown | null = null, options?: Omit<LogOptions, 'level'>): void {
     this.log(title, data, { ...options, level: 'warning' });
   }
 
-  public error(title: string, data: unknown, options?: Omit<LogOptions, 'level'>): void {
+  public error(title: string, data: unknown | null = null, options?: Omit<LogOptions, 'level'>): void {
     this.log(title, data, { ...options, level: 'error' });
   }
 
-  public debug(title: string, data: unknown, options?: Omit<LogOptions, 'level'>): void {
+  public debug(title: string, data: unknown | null = null, options?: Omit<LogOptions, 'level'>): void {
     this.log(title, data, { ...options, level: 'debug' });
   }
 
   // Table logging
-  public table(title: string, data: unknown[]): void {
+  public table(title: string, data: unknown[] | null = null): void {
     if (this.isProduction) return;
     
     console.group(`%c${title}`, this.styles.info.title);

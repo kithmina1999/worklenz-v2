@@ -9,7 +9,6 @@ import { ALPHA_CHANNEL } from '@/shared/constants';
 Chart.register(ArcElement, Tooltip);
 
 const OverviewReportsProjectStatusGraph = ({ data }: { data: IRPTOverviewTeamByStatus | undefined }) => {
-  console.log('data', data);
   const { t } = useTranslation('reporting-overview-drawer');
 
   type StatusGraphItemType = {
