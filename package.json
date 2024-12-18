@@ -7,17 +7,10 @@
     "@ant-design/icons": "^5.4.0",
     "@ant-design/pro-components": "^2.7.19",
     "@bitnoi.se/react-scheduler": "^0.3.1",
+    "@emotion/react": "^11.14.0",
     "@reduxjs/toolkit": "^2.2.7",
-    "@tanstack/react-virtual": "^3.10.9",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/dompurify": "^3.0.5",
-    "@types/jest": "^27.5.2",
-    "@types/mixpanel-browser": "^2.50.2",
-    "@types/node": "^20.8.4",
-    "@types/react": "^18.3.5",
-    "@types/react-dom": "^18.3.0",
+    "@tanstack/react-table": "^8.20.6",
+    "@tanstack/react-virtual": "^3.11.2",
     "antd": "^5.20.5",
     "axios": "^1.7.7",
     "chart.js": "^4.4.6",
@@ -42,8 +35,27 @@
     "react-timer-hook": "^3.0.8",
     "socket.io-client": "^4.8.1",
     "tinymce": "^7.5.1",
-    "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/chart.js": "^2.9.41",
+    "@types/dompurify": "^3.0.5",
+    "@types/jest": "^27.5.2",
+    "@types/mixpanel-browser": "^2.50.2",
+    "@types/node": "^20.8.4",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "prettier-plugin-tailwindcss": "^0.6.8",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^4.9.5",
+    "vite": "^5.4.10",
+    "vite-tsconfig-paths": "^5.0.1"
   },
   "scripts": {
     "start": "vite",
@@ -67,15 +79,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/chart.js": "^2.9.41",
-    "@vitejs/plugin-react": "^4.3.3",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.47",
-    "prettier-plugin-tailwindcss": "^0.6.8",
-    "tailwindcss": "^3.4.14",
-    "vite": "^5.4.10",
-    "vite-tsconfig-paths": "^5.0.1"
   }
 }

@@ -1,14 +1,12 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Flex } from 'antd';
 import TaskListFilters from './taskListFilters/TaskListFilters';
-import { TaskType } from '../../../../types/task.types';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
-import StatusGroupTables from './statusTables/StatusGroupTables';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { fetchTaskGroups } from '@/features/tasks/taskSlice';
 import { ITaskListConfigV2 } from '@/types/tasks/taskList.types';
-import TaskListTableWrapper from './taskListTable/TaskListTableWrapper';
+import TanStackTable from '../task-list/task-list-custom';
 
 const ProjectViewTaskList = () => {
   // sample data from task reducer
@@ -36,20 +34,51 @@ const ProjectViewTaskList = () => {
     }
   }, [dispatch, projectId]);
   
+  const columns = [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+    },
+    {
+      accessorKey: 'age',
+      header: 'Age',
+    },
+    {
+      accessorKey: 'city',
+      header: 'City',
+    },
+    {
+      accessorKey: 'email',
+      header: 'Email',
+    },
+    {
+      accessorKey: 'phone',
+      header: 'Phone',
+    },
+    {
+      accessorKey: 'company',
+      header: 'Company',
+    },
+  ];
   return (
     <Flex vertical gap={16} style={{overflowX: 'hidden'}}>
       <TaskListFilters position="list" />
 
       {taskGroups.map((group) => (
-        <TaskListTableWrapper
+        <TanStackTable
           key={group.id}
-          taskList={group.tasks}
-          tableId={group.id || ''}
-          name={group.name || ''}
-          type="status"
-          statusCategory={group.id || ''}
-          color={group.color_code || ''}
+          data={group.tasks}
+          columns={columns}
         />
+        // <TaskListTableWrapper
+        //   key={group.id}
+        //   taskList={group.tasks}
+        //   tableId={group.id || ''}
+        //   name={group.name || ''}
+        //   type="status"
+        //   statusCategory={group.id || ''}
+        //   color={group.color_code || ''}
+        // />
       ))}
     </Flex>
   );

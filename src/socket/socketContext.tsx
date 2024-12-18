@@ -3,7 +3,6 @@ import io, { Socket } from 'socket.io-client';
 import { SOCKET_CONFIG } from './config';
 import logger from '@/utils/errorLogger';
 import { Modal } from 'antd';
-import { useAppSelector } from '@/hooks/useAppSelector';
 import { SocketEvents } from '@/shared/socket-events';
 import { getSession } from '@/utils/session-helper';
 
@@ -41,8 +40,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       logger.info('Socket connected');
       setConnected(true);
     });
-
-    console.log(profile);
 
     // Emit login event
     if (profile && profile.id) {

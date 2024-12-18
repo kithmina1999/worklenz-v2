@@ -58,16 +58,13 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
   );
 
   const renderListSpecificFilters = () => (
-    <>
-      <GroupByFilterDropdown />
-      <Flex gap={12} wrap="wrap">
-        <Flex gap={4} align="center">
-          <Checkbox />
-          <Typography.Text>{t('showArchivedText')}</Typography.Text>
-        </Flex>
-        <ShowFieldsFilterDropdown />
+    <Flex gap={12} wrap="wrap">
+      <Flex gap={4} align="center">
+        <Checkbox />
+        <Typography.Text>{t('showArchivedText')}</Typography.Text>
       </Flex>
-    </>
+      <ShowFieldsFilterDropdown />
+    </Flex>
   );
 
   return (
