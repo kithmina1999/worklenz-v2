@@ -19,17 +19,15 @@ const ProjectViewExtra = () => {
   const LEAVE_TXT = 'leave';
 
   const emitJoinOrLeave = (type: string) => {
-    socket?.emit(SocketEvents.JOIN_OR_LEAVE_PROJECT_ROOM.toString(), {type, id: projectId});
+    socket?.emit(SocketEvents.JOIN_OR_LEAVE_PROJECT_ROOM.toString(), { type, id: projectId });
   };
 
   const handleMemberView = (res: any) => {
-    // dispatch(setActiveMembers(res));
-
+    dispatch(setActiveMembers(res));
   };
 
   const handleProjectUpdates = (res: any) => {
-        console.log(res);
-
+    console.log(res);
   };
 
   const handleProjectDataChange = (res: any) => {
@@ -48,7 +46,7 @@ const ProjectViewExtra = () => {
       socket?.removeListener(SocketEvents.PROJECT_UPDATES_AVAILABLE.toString(), handleProjectUpdates);
       socket?.removeListener(SocketEvents.PROJECT_DATA_CHANGE.toString(), handleProjectDataChange);
     };
-  }, [activeMembers, connected]);
+  }, [connected]);
 
   return (
     <div>
