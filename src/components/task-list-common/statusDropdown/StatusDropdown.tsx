@@ -6,43 +6,44 @@ import { useTranslation } from 'react-i18next';
 import { getStatusColor } from '../../../utils/getStatusColor';
 
 type StatusDropdownProps = {
-  currentStatus: string;
+  status_id: string | undefined;
+  onChange: (value: string) => void;
 };
 
-const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
-  const [status, setStatus] = useState<string>(currentStatus);
-
+const StatusDropdown = ({ status_id, onChange }: StatusDropdownProps) => {
   // localization
   const { t } = useTranslation('task-list-table');
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  const statusList = useAppSelector((state) => state.statusReducer.status);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const statusList = useAppSelector(state => state.statusReducer.status);
 
   const handleStatusChange = (value: string) => {
-    const selectedOption = statusList.find((el) => el.id === value);
+    const selectedOption = statusList.find(el => el.id === value);
     if (selectedOption) {
-      setStatus(selectedOption.category);
+      onChange(selectedOption.id);
     }
   };
 
   return (
-    <Select
-      value={status}
-      onChange={handleStatusChange}
-      style={{ width: 120 }}
-      dropdownStyle={{ borderRadius: 8 }}
-      options={statusList.map((status) => ({
-        value: status.id,
-        label: (
-          <Flex gap={8} align="center">
-            <Badge color={getStatusColor(status.category, themeMode)} />
-            <Typography.Text>
-              {status.name}
-            </Typography.Text>
-          </Flex>
-        ),
-      }))}
-    />
+    <>
+      {status_id && (
+        <Select
+          value={status_id}
+          onChange={handleStatusChange}
+          style={{ width: 120 }}
+          dropdownStyle={{ borderRadius: 8 }}
+          options={statusList.map(status => ({
+            value: status.id,
+            label: (
+              <Flex gap={8} align="center">
+                <Badge color={getStatusColor(status.category, themeMode)} />
+                <Typography.Text>{status.name}</Typography.Text>
+              </Flex>
+            ),
+          }))}
+        />
+      )}
+    </>
   );
 };
 

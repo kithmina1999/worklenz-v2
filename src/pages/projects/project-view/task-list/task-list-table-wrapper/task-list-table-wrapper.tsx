@@ -9,6 +9,7 @@ import { MenuProps } from 'antd/lib';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { ITaskListGroup } from '@/types/tasks/taskList.types';
+import TaskListCustom from '../task-list-custom';
 
 type TaskListTableWrapperProps = {
   taskList: ITaskListGroup;
@@ -170,7 +171,7 @@ const TaskListTableWrapper = ({
             {
               key: '1',
               className: `custom-collapse-content-box relative after:content after:absolute after:h-full after:w-1 ${color} after:z-10 after:top-0 after:left-0`,
-              children: <TaskListTable taskList={taskList} tableId={groupId} key={groupId}/>,
+              children: <TaskListCustom tasks={taskList.tasks} color={color || ''} />,
             },
           ]}
         />

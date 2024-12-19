@@ -1,124 +1,290 @@
-import React, { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { Button, Checkbox, Flex, Tag, theme } from 'antd';
 import {
   useReactTable,
   getCoreRowModel,
-  getSortedRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
+  ColumnDef,
+  flexRender,
+  VisibilityState,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import './task-list-custom.css';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { DeleteOutlined, EditOutlined, HolderOutlined, RightOutlined } from '@ant-design/icons';
+import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
 
-const TanStackTable = ({ 
-  data, 
-  columns 
-}: {
-  data: any[];
-  columns: { accessorKey: string }[];
-}) => {
-  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-  const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(
-    columns.reduce((acc: Record<string, boolean>, col) => {
-      acc[col.accessorKey] = true;
-      return acc;
-    }, {})
+interface TaskListCustomProps {
+  tasks: IProjectTask[];
+  color: string;
+  onTaskSelect?: (taskId: string) => void;
+}
+
+const TaskListCustom = ({ tasks, color, onTaskSelect }: TaskListCustomProps) => {
+  const [rowSelection, setRowSelection] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const { token } = theme.useToken();
+
+  const selectedCount = Object.keys(rowSelection).length;
+
+  const handleExpandClick = (rowId: string) => {
+    setExpandedRows(prev => ({
+      ...prev,
+      [rowId]: !prev[rowId]
+    }));
+  };
+
+  const columns = useMemo<ColumnDef<IProjectTask>[]>(
+    () => [
+      {
+        id: 'handle',
+        header: () => <div></div>,
+        cell: () => (
+          <div>
+            <HolderOutlined />
+          </div>
+        ),
+        size: 5,
+        minSize: 5,
+        maxSize: 5,
+      },
+      {
+        id: 'select',
+        header: ({ table }) => (
+          <Checkbox
+            checked={table.getIsAllRowsSelected()}
+            indeterminate={table.getIsSomeRowsSelected()}
+            onChange={table.getToggleAllRowsSelectedHandler()}
+          />
+        ),
+        cell: ({ row }) => (
+          <div>
+            <Checkbox
+              checked={row.getIsSelected()}
+              disabled={!row.getCanSelect()}
+              indeterminate={row.getIsSomeSelected()}
+              onChange={row.getToggleSelectedHandler()}
+            />
+          </div>
+        ),
+        size: 10,
+        minSize: 10,
+        maxSize: 10,
+      },
+      {
+        accessorKey: 'task_key',
+        header: 'Key',        
+        size: 60,
+        align: 'center',
+        cell: ({ row }) => {
+          return <Tag>{row.original.task_key}</Tag>;
+        },
+      },
+      {
+        accessorKey: 'name',
+        header: 'Task',
+        size: 400,
+        cell: ({ row }) => (
+          <Flex align="center" gap={8}>
+            {(row.original?.sub_tasks_count || 0) > 0 ? (
+              <RightOutlined 
+                style={{ 
+                  cursor: 'pointer',
+                  transform: expandedRows[row.id] ? 'rotate(90deg)' : 'none',
+                  transition: 'transform 0.2s'
+                }}
+                onClick={() => handleExpandClick(row.id)}
+              />
+            ) : (
+              <div style={{ width: 14 }} /> 
+            )}
+            {row.original.name}
+          </Flex>
+        ),
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+        size: 150,
+        cell: ({ row }) => {
+          return <StatusDropdown status_id={row.original.status} onChange={() => {}} />;
+        },
+      },
+      {
+        accessorKey: 'assignee',
+        header: 'Assignee',
+        size: 200,
+      },
+      {
+        accessorKey: 'due_date',
+        header: 'Due Date',
+        size: 150,
+      },
+    ],
+    [expandedRows]
   );
 
   const table = useReactTable({
-    data,
+    data: tasks,
     columns,
     state: {
       rowSelection,
       columnVisibility,
     },
+    enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
 
   const { rows } = table.getRowModel();
 
-  const parentRef = React.useRef();
-
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 50, // row height
+    getScrollElement: () => tableContainerRef.current,
+    estimateSize: () => 35,
+    overscan: 10,
   });
 
   const virtualRows = rowVirtualizer.getVirtualItems();
   const totalSize = rowVirtualizer.getTotalSize();
-
-  const isAnyRowSelected = Object.keys(rowSelection).length > 0;
-
-  const toggleRowSelection = (rowId: string) => {
-    setRowSelection((prev) => ({
-      ...prev,
-      [rowId]: !prev[rowId],
-    }));
-  };
+  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualRows.length > 0 ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0) : 0;
 
   return (
-    <div className="table-container">
-      <div className="column-toggle">
-        {columns.map((col) => (
-          <label key={col.accessorKey}>
-            <input
-              type="checkbox"
-              checked={columnVisibility[col.accessorKey] || false}
-              onChange={() =>
-                setColumnVisibility((prev) => ({
-                  ...prev,
-                  [col.accessorKey]: !prev[col.accessorKey],
-                }))
-              }
-            />
-            {col.accessorKey}
-          </label>
-        ))}
+    <div
+      className="task-list-custom"
+      style={{
+        maxHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        borderLeft: `4px solid ${color}`,
+      }}
+    >
+      <div
+        ref={tableContainerRef}
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflow: 'auto',
+        }}
+      >
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header, index) => (
+                  <th
+                    key={header.id}
+                    style={{
+                      width: header.getSize(),
+                      position: index < 2 ? 'sticky' : 'relative',
+                      left: index < 1 ? `${index * header.getSize()}px` : 'auto',
+                      background: token.colorBgElevated,
+                      zIndex: 1,
+                      color: token.colorText,
+                      height: '40px',
+                      borderBottom: `1px solid ${token.colorBorderSecondary}`,
+                    }}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {paddingTop > 0 && (
+              <tr>
+                <td style={{ height: `${paddingTop}px` }} />
+              </tr>
+            )}
+            {virtualRows.map(virtualRow => {
+              const row = rows[virtualRow.index];
+              return (
+                <>
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell, index) => (
+                      <td
+                        key={cell.id}
+                        style={{
+                          position: index < 2 ? 'sticky' : 'relative',
+                          left: index < 2 ? `${index * cell.column.getSize()}px` : 'auto',
+                          background: token.colorBgContainer,
+                          color: token.colorText,
+                          height: '50px',
+                          borderBottom: `1px solid ${token.colorBorderSecondary}`,
+                          textAlign: index <= 2 ? 'center' : 'left',
+                        }}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                  {expandedRows[row.id] && row.original.sub_tasks?.map(subTask => (
+                    <tr key={`${row.id}-${subTask.task_key}`}>
+                      {columns.map((col, index) => (
+                        <td
+                          key={`${row.id}-${subTask.task_key}-${col.id}`}
+                          style={{
+                            position: index < 2 ? 'sticky' : 'relative',
+                            left: index < 2 ? `${index * (col as any).size}px` : 'auto',
+                            background: token.colorBgContainer,
+                            color: token.colorText,
+                            height: '50px',
+                            borderBottom: `1px solid ${token.colorBorderSecondary}`,
+                            textAlign: index <= 2 ? 'center' : 'left',
+                            paddingLeft: index === 3 ? '32px' : undefined,
+                          }}
+                        >
+                          {col.accessorKey ? subTask[col.accessorKey as keyof typeof subTask] : null}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </>
+              );
+            })}
+            {paddingBottom > 0 && (
+              <tr>
+                <td style={{ height: `${paddingBottom}px` }} />
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
-
-      <div className="table" ref={parentRef} style={{ overflow: 'auto', maxHeight: '400px' }}>
-        <div
+      {selectedCount > 0 && (
+        <Flex
+          justify="space-between"
+          align="center"
           style={{
-            height: `${totalSize}px`,
-            position: 'relative',
-            width: '100%',
+            padding: '8px 16px',
+            background: token.colorBgElevated,
+            borderTop: `1px solid ${token.colorBorderSecondary}`,
+            position: 'sticky',
+            bottom: 0,
+            zIndex: 2,
           }}
         >
-          {virtualRows.map((virtualRow) => {
-            const row = rows[virtualRow.index];
-            return (
-              <div
-                key={row.id}
-                className={`table-row ${
-                  rowSelection[row.id] ? 'row-selected' : ''
-                }`}
-                style={{
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-                onClick={() => toggleRowSelection(row.id)}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <div key={cell.id} className="table-cell">
-                    {cell.getValue() as React.ReactNode}
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {isAnyRowSelected && (
-        <div className="action-bar">
-          <button onClick={() => console.log('Action 1 executed')}>Action 1</button>
-          <button onClick={() => console.log('Action 2 executed')}>Action 2</button>
-        </div>
+          <span>{selectedCount} tasks selected</span>
+          <Flex gap={8}>
+            <Button icon={<EditOutlined />}>Edit</Button>
+            <Button danger icon={<DeleteOutlined />}>
+              Delete
+            </Button>
+          </Flex>
+        </Flex>
       )}
     </div>
   );
 };
 
-export default TanStackTable;
+export default TaskListCustom;

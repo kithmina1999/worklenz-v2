@@ -7,6 +7,8 @@ import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSli
 import { fetchTaskGroups } from '@/features/tasks/taskSlice';
 import { ITaskListConfigV2 } from '@/types/tasks/taskList.types';
 import TanStackTable from '../task-list/task-list-custom';
+import TaskListCustom from '../task-list/task-list-custom';
+import TaskListTableWrapper from '../task-list/task-list-table-wrapper/task-list-table-wrapper';
 
 const ProjectViewTaskList = () => {
   // sample data from task reducer
@@ -33,7 +35,7 @@ const ProjectViewTaskList = () => {
       dispatch(fetchStatusesCategories());
     }
   }, [dispatch, projectId]);
-  
+
   const columns = [
     {
       accessorKey: 'name',
@@ -61,24 +63,17 @@ const ProjectViewTaskList = () => {
     },
   ];
   return (
-    <Flex vertical gap={16} style={{overflowX: 'hidden'}}>
+    <Flex vertical gap={16} style={{ overflowX: 'hidden' }}>
       <TaskListFilters position="list" />
 
-      {taskGroups.map((group) => (
-        <TanStackTable
+      {taskGroups.map(group => (
+        <TaskListTableWrapper
           key={group.id}
-          data={group.tasks}
-          columns={columns}
+          taskList={group}
+          name={group.name || ''}
+          color={group.color_code || ''}
+          groupId={group.id || ''}
         />
-        // <TaskListTableWrapper
-        //   key={group.id}
-        //   taskList={group.tasks}
-        //   tableId={group.id || ''}
-        //   name={group.name || ''}
-        //   type="status"
-        //   statusCategory={group.id || ''}
-        //   color={group.color_code || ''}
-        // />
       ))}
     </Flex>
   );
