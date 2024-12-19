@@ -1,6 +1,6 @@
 {
-  "name": "worklenz-login-signup",
-  "version": "0.1.0",
+  "name": "worklenz",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@ant-design/colors": "^7.1.0",
