@@ -8,7 +8,8 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 
 // Redux
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { getProject, getStatuses, setProjectId } from '@/features/project/project.slice';
+import { getProject, setProjectId } from '@/features/project/project.slice';
+
 
 // Components
 import ProjectViewHeader from './project-view-header';
@@ -28,6 +29,7 @@ import { getFromLocalStorage, saveToLocalStorage } from '@utils/localStorageFunc
 
 // Styles
 import './project-view.css';
+import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
 
 const ProjectView = () => {
   const location = useLocation();
@@ -51,7 +53,7 @@ const ProjectView = () => {
       dispatch(getProject(projectId)).then((res: any) => {
         if (!res.payload) navigate('/worklenz/projects');
 
-        dispatch(getStatuses(projectId));
+        dispatch(fetchStatuses(projectId));
       });
     }
   }, [activeTab, pinnedTab, location.search, projectId]);

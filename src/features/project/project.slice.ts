@@ -8,6 +8,7 @@ import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types'
 import { ITaskPhase } from '@/types/tasks/taskPhase.types';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { projectsApiService } from '@/api/projects/projects.api.service';
+import { tasksApiService } from '@/api/tasks/tasks.api.service';
 
 interface TaskListState {
   projectId: string | null;
@@ -83,14 +84,6 @@ export const getProject = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch project');
     }
-  }
-);
-
-export const getStatuses = createAsyncThunk(
-  'project/getStatuses',
-  async (projectId: string, { rejectWithValue }) => {
-    const response = await projectsApiService.getProjectStatuses(projectId);
-    return response.body;
   }
 );
 

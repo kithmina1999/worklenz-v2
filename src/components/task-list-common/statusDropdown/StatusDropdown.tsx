@@ -4,22 +4,23 @@ import './statusDropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { getStatusColor } from '../../../utils/getStatusColor';
+import { ITaskStatus } from '@/types/status.types';
 
 type StatusDropdownProps = {
+  statusList: ITaskStatus[];
   status_id: string | undefined;
   onChange: (value: string) => void;
 };
 
-const StatusDropdown = ({ status_id, onChange }: StatusDropdownProps) => {
+const StatusDropdown = ({ statusList, status_id, onChange }: StatusDropdownProps) => {
   // localization
   const { t } = useTranslation('task-list-table');
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const statusList = useAppSelector(state => state.statusReducer.status);
 
   const handleStatusChange = (value: string) => {
     const selectedOption = statusList.find(el => el.id === value);
-    if (selectedOption) {
+    if (selectedOption && selectedOption.id) {
       onChange(selectedOption.id);
     }
   };
@@ -30,14 +31,16 @@ const StatusDropdown = ({ status_id, onChange }: StatusDropdownProps) => {
         <Select
           value={status_id}
           onChange={handleStatusChange}
-          style={{ width: 120 }}
-          dropdownStyle={{ borderRadius: 8 }}
+          dropdownStyle={{ borderRadius: 8, minWidth: 150, maxWidth: 200 }}
+          labelRender={(value) => {
+            const status = statusList.find(status => status.id === value.value);
+            return status ? <Badge color={status.color_code} text={status.name} /> : '';
+          }}
           options={statusList.map(status => ({
             value: status.id,
             label: (
               <Flex gap={8} align="center">
-                <Badge color={getStatusColor(status.category, themeMode)} />
-                <Typography.Text>{status.name}</Typography.Text>
+                <Badge color={status.color_code} text={status.name} />
               </Flex>
             ),
           }))}
