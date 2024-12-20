@@ -8,7 +8,7 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 
 // Redux
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { getProject, setProjectId } from '@/features/project/project.slice';
+import { getProject, getStatuses, setProjectId } from '@/features/project/project.slice';
 
 // Components
 import ProjectViewHeader from './project-view-header';
@@ -50,6 +50,8 @@ const ProjectView = () => {
     if (projectId) {
       dispatch(getProject(projectId)).then((res: any) => {
         if (!res.payload) navigate('/worklenz/projects');
+
+        dispatch(getStatuses(projectId));
       });
     }
   }, [activeTab, pinnedTab, location.search, projectId]);

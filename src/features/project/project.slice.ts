@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { ITaskListColumn, ITaskListGroup } from '@/types/tasks/taskList.types';
+import { IGroupByOption, ITaskListColumn, ITaskListGroup } from '@/types/tasks/taskList.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { ITaskPrioritiesGetResponse } from '@/types/apiModels/taskPrioritiesGetResponse.types';
@@ -26,13 +26,6 @@ interface TaskListState {
   error: string | null;
 }
 
-export const GROUP_BY_OPTIONS = [
-  { label: "Status", value: "status" },
-  { label: "Priority", value: "priority" },
-  { label: "Phase", value: "phase" },
-  { label: "Assignee", value: "assignee" }
-];
-
 const initialState: TaskListState = {
   projectId: null,
   project: null,
@@ -50,6 +43,36 @@ const initialState: TaskListState = {
   error: null
 };
 
+export const GROUP_BY_STATUS_VALUE = "status";
+export const GROUP_BY_PRIORITY_VALUE = "priority";
+export const GROUP_BY_PHASE_VALUE = "phase";
+
+export const GROUP_BY_OPTIONS: IGroupByOption[] = [
+  {label: "Status", value: GROUP_BY_STATUS_VALUE},
+  {label: "Priority", value: GROUP_BY_PRIORITY_VALUE},
+  {label: "Phase", value: GROUP_BY_PHASE_VALUE}
+];
+
+export const COLUMN_KEYS = {
+  KEY: "KEY",
+  NAME: "NAME",
+  DESCRIPTION: "DESCRIPTION",
+  PROGRESS: "PROGRESS",
+  ASSIGNEES: "ASSIGNEES",
+  LABELS: "LABELS",
+  STATUS: "STATUS",
+  PRIORITY: "PRIORITY",
+  TIME_TRACKING: "TIME_TRACKING",
+  ESTIMATION: "ESTIMATION",
+  START_DATE: "START_DATE",
+  DUE_DATE: "DUE_DATE",
+  COMPLETED_DATE: "COMPLETED_DATE",
+  CREATED_DATE: "CREATED_DATE",
+  LAST_UPDATED: "LAST_UPDATED",
+  REPORTER: "REPORTER",
+  PHASE: "PHASE"
+};
+
 export const getProject = createAsyncThunk(
   'project/getProject',
   async (projectId: string, { rejectWithValue, dispatch }) => {
@@ -63,8 +86,30 @@ export const getProject = createAsyncThunk(
   }
 );
 
-const taskListSlice = createSlice({
-  name: 'taskList',
+export const getStatuses = createAsyncThunk(
+  'project/getStatuses',
+  async (projectId: string, { rejectWithValue }) => {
+    const response = await projectsApiService.getProjectStatuses(projectId);
+    return response.body;
+  }
+);
+
+export const getCurrentGroup = () => {
+  const key = localStorage.getItem("worklenz.tasklist.group_by");
+  if (key) {
+    const g = GROUP_BY_OPTIONS.find(o => o.value === key);
+    if (g)
+      return g;
+  }
+  return GROUP_BY_OPTIONS[0];
+} 
+
+export const setCurrentGroup = (group: IGroupByOption) => {
+  localStorage.setItem("worklenz.tasklist.group_by", group.value);
+}
+
+const projectSlice = createSlice({
+  name: 'project',
   initialState,
   reducers: {
     setProjectId: (state, action: PayloadAction<string>) => {
@@ -178,6 +223,6 @@ export const {
   addTask,
   deleteTask,
   reset
-} = taskListSlice.actions;
+} = projectSlice.actions;
 
-export default taskListSlice.reducer;
+export default projectSlice.reducer;
