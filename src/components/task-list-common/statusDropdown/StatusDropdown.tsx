@@ -29,6 +29,7 @@ const StatusDropdown = ({ statusList, status_id, onChange }: StatusDropdownProps
     <>
       {status_id && (
         <Select
+          variant='borderless'
           value={status_id}
           onChange={handleStatusChange}
           dropdownStyle={{ borderRadius: 8, minWidth: 150, maxWidth: 200 }}

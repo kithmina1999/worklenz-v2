@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { Avatar, Button, Checkbox, Flex, Tag, theme } from 'antd';
+import { Avatar, Button, Checkbox, DatePicker, Flex, Select, Tag, theme } from 'antd';
 import {
   useReactTable,
   getCoreRowModel,
@@ -24,6 +24,9 @@ import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusD
 import { useAppSelector } from '@/hooks/useAppSelector';
 import React from 'react';
 import Avatars from '@/components/avatars/Avatars';
+import LabelsSelector from '@/components/task-list-common/labelsSelector/labels-selector';
+import CustomColorLabel from '@/components/task-list-common/labelsSelector/custom-color-label';
+import CustomNumberLabel from '@/components/task-list-common/labelsSelector/custom-number-label';
 
 interface TaskListCustomProps {
   tasks: IProjectTask[];
@@ -114,6 +117,35 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
         ),
       },
       {
+        accessorKey: 'names',
+        header: 'Assignees',
+        size: 159,
+        cell: ({ row }) => (
+          <Flex align="center" gap={8}>
+            <Avatars members={row.original.names || []} maxCount={3} />
+            <Avatar
+              size={28}
+              icon={<PlusOutlined />}
+              className="avatar-add"
+              style={{
+                backgroundColor: '#ffffff',
+                border: '1px dashed #c4c4c4',
+                color: '#000000D9',
+                cursor: 'pointer',
+              }}
+            />
+          </Flex>
+        ),
+      },
+      {
+        accessorKey: 'end_date',
+        header: 'Due Date',
+        size: 149,
+        cell: ({ row }) => (
+          <span><DatePicker placeholder="Set a due date" suffixIcon={null} variant='borderless' /></span>
+        ),
+      },
+      {
         accessorKey: 'status',
         header: 'Status',
         size: 120,
@@ -129,32 +161,41 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
         ),
       },
       {
-        accessorKey: 'names',
-        header: 'Assignee',
-        size: 160,
+        accessorKey: 'labels',
+        header: 'Labels',
         cell: ({ row }) => (
-          <Flex align="center" gap={8}>
-            <Avatars members={row.original.names || []} maxCount={3} />
-            <Avatar
-              size={28}
-              icon={<PlusOutlined />}
-              className="avatar-add"
-              style={{ 
-                backgroundColor: '#ffffff', 
-                border: '1px dashed #c4c4c4', 
-                color: '#000000D9',
-                cursor: 'pointer',
-              }}
-            />
+          <Flex>
+            {row.original.labels && row.original.labels?.length <= 2 ? (
+              row.original.labels?.map(label => <CustomColorLabel label={label} />)
+            ) : (
+              <Flex>
+                <CustomColorLabel label={row.original.labels ? row.original.labels[0] : null} />
+                <CustomColorLabel label={row.original.labels ? row.original.labels[1] : null} />
+                {/* this component show other label names  */}
+                <CustomNumberLabel
+                  // this label list get the labels without 1, 2 elements
+                  labelList={row.original.labels ? row.original.labels : null}
+                />
+              </Flex>
+            )}
+            <LabelsSelector taskId={row.original.id} />
           </Flex>
         ),
       },
       {
-        accessorKey: 'due_date',
-        header: 'Due Date',
-        size: 150,
+        accessorKey: 'start_date',
+        header: 'Start Date',
+        size: 149,
         cell: ({ row }) => (
-          <span>{row.original.due_date ? new Date(row.original.due_date).toLocaleDateString() : '-'}</span>
+          <span><DatePicker placeholder="Set a start date" suffixIcon={null} variant='borderless' /></span>
+        ),
+      },
+      {
+        accessorKey: 'priority',
+        header: 'Priority',
+        size: 149,
+        cell: ({ row }) => (
+          <span><Select variant='borderless' options={[{ value: 'high', label: 'High' }, { value: 'medium', label: 'Medium' }, { value: 'low', label: 'Low' }]} /></span>
         ),
       },
     ],
@@ -195,7 +236,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
     <div
       className="task-list-custom"
       style={{
-        maxHeight: '100%',
+        maxHeight: '80vh',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
@@ -208,6 +249,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
           flex: 1,
           minHeight: 0,
           overflow: 'auto',
+          maxHeight: '100%',
         }}
       >
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -278,7 +320,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
                   </tr>
                   {expandedRows[row.id] &&
                     row.original.sub_tasks?.map(subTask => (
-                      <tr 
+                      <tr
                         key={subTask.task_key}
                         style={{
                           '&:hover td': {

@@ -165,11 +165,11 @@ const TaskListTableWrapper = ({
           bordered={false}
           ghost={true}
           expandIcon={() => null}
-          activeKey={isExpanded ? '1' : undefined}
+          activeKey={isExpanded ? (groupId || '1') : undefined}
           onChange={handlToggleExpand}
           items={[
             {
-              key: '1',
+              key: groupId || '1',
               className: `custom-collapse-content-box relative after:content after:absolute after:h-full after:w-1 ${color} after:z-10 after:top-0 after:left-0`,
               children: <TaskListCustom tasks={taskList.tasks} color={color || ''} />,
             },
