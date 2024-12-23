@@ -55,6 +55,7 @@ import projectReportsTableColumnsReducer from '../features/reporting/projectRepo
 import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
 import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
 import roadmapReducer from '../features/roadmap/roadmap-slice';
+import teamMembersReducer from '@features/team-members/team-members.slice';
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -75,6 +76,7 @@ export const store = configureStore({
     projectReducer: projectReducer,
     projectsReducer: projectsReducer,
     projectMemberReducer: projectMemberReducer,
+    teamMembersReducer: teamMembersReducer,
     projectViewTaskListColumnsReducer: projectViewTaskListColumnsReducer,
     phaseReducer: phaseReducer,
     updatesReducer: updatesReducer,

@@ -8,11 +8,11 @@ import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types'
 import { ITaskPhase } from '@/types/tasks/taskPhase.types';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { projectsApiService } from '@/api/projects/projects.api.service';
-import { tasksApiService } from '@/api/tasks/tasks.api.service';
 
 interface TaskListState {
   projectId: string | null;
   project: IProjectViewModel | null;
+  projectLoading: boolean;
   columns: ITaskListColumn[];
   members: ITeamMemberViewModel[];
   activeMembers: [];
@@ -30,6 +30,7 @@ interface TaskListState {
 const initialState: TaskListState = {
   projectId: null,
   project: null,
+  projectLoading: false,
   activeMembers: [],
   columns: [],
   members: [],
@@ -187,14 +188,15 @@ const projectSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getProject.pending, (state) => {
-        state.isLoading = true;
+        state.projectLoading = true;
         state.error = null;
       })
-      .addCase(getProject.fulfilled, (state) => {
-        state.isLoading = false;
+      .addCase(getProject.fulfilled, (state, action) => {
+        state.projectLoading = false;
+        state.project = action.payload;
       })
       .addCase(getProject.rejected, (state, action) => {
-        state.isLoading = false;
+        state.projectLoading = false;
         state.error = action.payload as string;
       });
   }

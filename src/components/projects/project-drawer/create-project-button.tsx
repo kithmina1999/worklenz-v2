@@ -81,7 +81,9 @@ const CreateProjectButton = () => {
           </div>
         }
       >
-        <TemplateDrawer />
+        <TemplateDrawer showBothTabs={false} templateSelected={function (templateId: string): void {
+          throw new Error('Function not implemented.');
+        } } />
       </Drawer>
     </div>
   );

@@ -3,8 +3,8 @@ import TasksList from '@/pages/home/task-list/tasks-list';
 import TodoList from '@/pages/home/todo-list/todo-list';
 import { Col, Flex } from 'antd';
 import { useMediaQuery } from 'react-responsive';
-import ProjectDrawer from '@components/projects/projectDrawer/ProjectDrawer';
-import CreateProjectButton from '@components/projects/projectDrawer/CreateProjectButton';
+import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
+import CreateProjectButton from '@/components/projects/project-drawer/create-project-button';
 import RecentAndFavouriteProjectList from '@/pages/home/recent-and-favourite-project-list/recent-and-favourite-project-list';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 

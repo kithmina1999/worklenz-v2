@@ -165,19 +165,9 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
         header: 'Labels',
         cell: ({ row }) => (
           <Flex>
-            {row.original.labels && row.original.labels?.length <= 2 ? (
+            {
               row.original.labels?.map(label => <CustomColorLabel label={label} />)
-            ) : (
-              <Flex>
-                <CustomColorLabel label={row.original.labels ? row.original.labels[0] : null} />
-                <CustomColorLabel label={row.original.labels ? row.original.labels[1] : null} />
-                {/* this component show other label names  */}
-                <CustomNumberLabel
-                  // this label list get the labels without 1, 2 elements
-                  labelList={row.original.labels ? row.original.labels : null}
-                />
-              </Flex>
-            )}
+            }
             <LabelsSelector taskId={row.original.id} />
           </Flex>
         ),

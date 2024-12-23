@@ -4,7 +4,7 @@ import { TaskType } from '@/types/task.types';
 import { EditOutlined, EllipsisOutlined, RetweetOutlined, RightOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import './task-list-table-wrapper.css';
-import TaskListTable from '../task-list-table/task-list-table';
+import TaskListTable from '../task-list-table-old/task-list-table-old';
 import { MenuProps } from 'antd/lib';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';

@@ -16,11 +16,11 @@ interface ProjectState {
 const initialState: ProjectState = {
   projects: {
     data: [],
-    total: 0
+    total: 0,
   },
   loading: false,
   initialized: false,
-  isProjectDrawerOpen: false
+  isProjectDrawerOpen: false,
 };
 
 // Create async thunk for fetching teams
@@ -95,15 +95,16 @@ const projectSlice = createSlice({
         state.loading = false;
         state.projects = {
           data: action.payload?.data || [],
-          total: action.payload?.total || 0
+          total: action.payload?.total || 0,
         };
         state.initialized = true;
       })
       .addCase(fetchProjects.rejected, state => {
         state.loading = false;
-      })
+      });
   },
 });
 
-export const { toggleDrawer, createProject, deleteProject } = projectSlice.actions;
+export const { toggleDrawer, createProject, deleteProject } =
+  projectSlice.actions;
 export default projectSlice.reducer;
