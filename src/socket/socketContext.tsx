@@ -9,7 +9,7 @@ import { getSession } from '@/utils/session-helper';
 interface SocketContextType {
   socket: Socket | null;
   connected: boolean;
-  modalContextHolder: React.ReactElement;
+  modalContextHolder: React.ReactElement<any>;
 }
 
 const SocketContext = createContext<SocketContextType | null>(null);

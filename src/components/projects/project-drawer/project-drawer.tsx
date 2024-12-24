@@ -8,27 +8,27 @@ import {
   DatePicker,
   Divider,
   Drawer,
-  Dropdown,
   Flex,
   Form,
   Input,
   InputRef,
+  Popconfirm,
   Select,
   Skeleton,
+  Space,
   Spin,
-  Tag,
   Tooltip,
   Typography,
 } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { createProject, toggleDrawer } from '../../../features/projects/projectsSlice';
-import { addCategory } from '../../../features/settings/categories/categoriesSlice';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { createProject, deleteProject, toggleDrawer } from '@features/projects/projectsSlice';
+import { addCategory } from '@features/settings/categories/categoriesSlice';
 
-import { projectColors } from '../../../lib/project/projectConstants';
-import { colors } from '../../../styles/colors';
+import { projectColors } from '@/lib/project/projectConstants';
+import { colors } from '@/styles/colors';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
 
@@ -38,8 +38,6 @@ import { getStatusIcon } from '@/utils/projectUtils';
 import { IProjectHealth } from '@/types/project/projectHealth.types';
 import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { useTranslation } from 'react-i18next';
-import { getTeamMembers } from '@/features/team-members/team-members.slice';
-import Avatars from '@/components/avatars/Avatars';
 import ProjectManagerDropdown from '../project-manager-dropdown/project-manager-dropdown';
 import { setProject, setProjectId } from '@/features/project/project.slice';
 import { useNavigate } from 'react-router-dom';
@@ -60,6 +58,7 @@ const ProjectDrawer = ({
   // get categories list from categories reducer
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
   const { project, projectId, projectLoading } = useAppSelector(state => state.projectReducer);
+  const [selectedClient, setSelectedClient] = useState<string | null>(null);
 
   useEffect(() => {
     if (!clients.data?.length)
@@ -77,7 +76,6 @@ const ProjectDrawer = ({
 
   // function for handle form submit
   const handleFormSubmit = async (values: any) => {
-    console.log('values', values);
     const projectModel: IProjectViewModel = {
       name: values.name,
       color_code: values.color_code,
@@ -85,7 +83,7 @@ const ProjectDrawer = ({
       category_id: values.category_id,
       health_id: values.health_id,
       notes: values.notes,
-      client_id: values.client,
+      client_name: selectedClient,
       project_manager: values.projectManager,
       start_date: values.start_date,
       end_date: values.end_date,
@@ -97,7 +95,7 @@ const ProjectDrawer = ({
     if (response?.id) {
       form.resetFields();
       dispatch(toggleDrawer());
-      navigate(`${response.id}`);
+      navigate(`/worklenz/projects/${response.id}`);
     }
   };
 
@@ -198,6 +196,12 @@ const ProjectDrawer = ({
     dispatch(setProjectId(null));
   };
 
+  const handleDeleteProject = () => {
+    if (projectId) {
+      dispatch(deleteProject(projectId));
+    }
+  };
+
   return (
     <Drawer
       title={
@@ -211,9 +215,23 @@ const ProjectDrawer = ({
       afterOpenChange={visibleChanged}
       footer={
         <Flex justify="end">
-          <Button type="primary" onClick={() => form.submit()}>
-            {editMode ? t('update') : t('create')}
-          </Button>
+          <Space>
+            {editMode && (
+              <Popconfirm
+                title={t('deleteConfirmation')}
+                onConfirm={handleDeleteProject}
+                okText={t('yes')}
+                cancelText={t('no')}
+              >
+                <Button danger type="dashed">
+                  {t('delete')}
+                </Button>
+              </Popconfirm>
+            )}
+            <Button type="primary" onClick={() => form.submit()}>
+              {editMode ? t('update') : t('create')}
+            </Button>
+          </Space>
         </Flex>
       }
     >
@@ -246,16 +264,24 @@ const ProjectDrawer = ({
               <Input placeholder={t('enterProjectName')} />
             </Form.Item>
             <Form.Item name="color_code" label={t('projectColor')} layout="horizontal" required>
-              <ColorPicker defaultValue={'#154c9b'} value={project?.color_code || '#154c9b'} onChange={(value) => form.setFieldValue('color_code', value.toHexString())} />
+              <ColorPicker
+                defaultValue={'#154c9b'}
+                value={project?.color_code || '#154c9b'}
+                onChange={value => form.setFieldValue('color_code', value.toHexString())}
+              />
             </Form.Item>
             <Form.Item name="status_id" label={t('status')}>
               <Select
                 options={statusOptions}
-                onChange={(value) => form.setFieldValue('status_id', value)}
-                placeholder={t('selectStatus')} />
+                onChange={value => form.setFieldValue('status_id', value)}
+                placeholder={t('selectStatus')}
+              />
             </Form.Item>
             <Form.Item name="health_id" label={t('health')}>
-              <Select options={healthOptions} onChange={(value) => form.setFieldValue('health_id', value)} />
+              <Select
+                options={healthOptions}
+                onChange={value => form.setFieldValue('health_id', value)}
+              />
             </Form.Item>
             <Form.Item name="category_id" label={t('category')}>
               {!isAddCategoryInputShow ? (
@@ -284,6 +310,8 @@ const ProjectDrawer = ({
                     placeholder={t('enterCategoryName')}
                     value={categoryText}
                     onChange={e => setCategoryText(e.currentTarget.value)}
+                    allowClear
+                    onClear={() => setIsAddCategoryInputShow(false)}
                     onKeyDown={e => e.key === 'Enter' && handleAddCategoryItem(categoryText)}
                   />
                   <Typography.Text style={{ color: colors.lightGray }}>
