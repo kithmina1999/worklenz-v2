@@ -75,4 +75,10 @@ export const projectsApiService = {
     const response = await apiClient.post<IServerResponse<IProjectViewModel>>(`${url}`, project);
     return response.data;
   },
+
+  deleteProject: async (id: string): Promise<IServerResponse<IProjectViewModel>> => {
+    const url = `${rootUrl}/${id}`;
+    const response = await apiClient.delete<IServerResponse<IProjectViewModel>>(`${url}`);
+    return response.data;
+  },
 };

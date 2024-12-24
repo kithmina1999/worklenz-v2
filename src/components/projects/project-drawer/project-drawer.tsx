@@ -42,6 +42,7 @@ import { getTeamMembers } from '@/features/team-members/team-members.slice';
 import Avatars from '@/components/avatars/Avatars';
 import ProjectManagerDropdown from '../project-manager-dropdown/project-manager-dropdown';
 import { setProject, setProjectId } from '@/features/project/project.slice';
+import { useNavigate } from 'react-router-dom';
 
 const ProjectDrawer = ({
   categories = [],
@@ -54,6 +55,7 @@ const ProjectDrawer = ({
 }) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('project-drawer');
+  const navigate = useNavigate();
 
   // get categories list from categories reducer
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
@@ -74,26 +76,29 @@ const ProjectDrawer = ({
   const [form] = Form.useForm();
 
   // function for handle form submit
-  const handleFormSubmit = (values: any) => {
+  const handleFormSubmit = async (values: any) => {
     console.log('values', values);
     const projectModel: IProjectViewModel = {
       name: values.name,
       color_code: values.color_code,
-      status_id: values.status,
-      category_id: values.category,
-      health_id: values.health,
+      status_id: values.status_id,
+      category_id: values.category_id,
+      health_id: values.health_id,
       notes: values.notes,
       client_id: values.client,
       project_manager: values.projectManager,
-      start_date: values.startDate,
-      end_date: values.endDate,
-      working_days: values.estWorkingDays,
-      man_days: values.estManDays,
-      hours_per_day: values.hrsPerDay,
+      start_date: values.start_date,
+      end_date: values.end_date,
+      working_days: values.working_days,
+      man_days: values.man_days,
+      hours_per_day: values.hours_per_day,
     };
-    dispatch(createProject(projectModel));
-    form.resetFields();
-    dispatch(toggleDrawer());
+    const response = await dispatch(createProject(projectModel)).unwrap();
+    if (response?.id) {
+      form.resetFields();
+      dispatch(toggleDrawer());
+      navigate(`${response.id}`);
+    }
   };
 
   // status selection options

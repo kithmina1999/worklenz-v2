@@ -93,6 +93,14 @@ export const createProject = createAsyncThunk(
   }
 );
 
+export const deleteProject = createAsyncThunk(
+  'projects/deleteProject',
+  async (id: string, { rejectWithValue }) => {
+    const response = await projectsApiService.deleteProject(id);
+    return response.body;
+  }
+);
+
 const projectSlice = createSlice({
   name: 'projectReducer',
   initialState,
