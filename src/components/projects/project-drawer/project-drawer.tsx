@@ -20,6 +20,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
+import dayjs, { Dayjs } from 'dayjs';
 
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
@@ -40,11 +41,12 @@ import { useTranslation } from 'react-i18next';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
 import Avatars from '@/components/avatars/Avatars';
 import ProjectManagerDropdown from '../project-manager-dropdown/project-manager-dropdown';
+import { setProject, setProjectId } from '@/features/project/project.slice';
 
 const ProjectDrawer = ({
-  categories,
-  statuses,
-  healths,
+  categories = [],
+  statuses = [],
+  healths = [],
 }: {
   categories: IProjectCategory[];
   statuses: IProjectStatus[];
@@ -73,9 +75,10 @@ const ProjectDrawer = ({
 
   // function for handle form submit
   const handleFormSubmit = (values: any) => {
-    const newProject: IProjectViewModel = {
+    console.log('values', values);
+    const projectModel: IProjectViewModel = {
       name: values.name,
-      color_code: values.color,
+      color_code: values.color_code,
       status_id: values.status,
       category_id: values.category,
       health_id: values.health,
@@ -88,7 +91,7 @@ const ProjectDrawer = ({
       man_days: values.estManDays,
       hours_per_day: values.hrsPerDay,
     };
-    dispatch(createProject(newProject));
+    dispatch(createProject(projectModel));
     form.resetFields();
     dispatch(toggleDrawer());
   };
@@ -176,8 +179,18 @@ const ProjectDrawer = ({
       setEditMode(true);
       form.setFieldsValue({
         ...project,
+        start_date: project.start_date ? dayjs(project.start_date) : null,
+        end_date: project.end_date ? dayjs(project.end_date) : null,
       });
     }
+  };
+
+  const handleDrawerClose = () => {
+    form.resetFields();
+    dispatch(toggleDrawer());
+    setEditMode(false);
+    dispatch(setProject({} as IProjectViewModel));
+    dispatch(setProjectId(null));
   };
 
   return (
@@ -188,9 +201,16 @@ const ProjectDrawer = ({
         </Typography.Text>
       }
       open={isDrawerOpen}
-      onClose={() => dispatch(toggleDrawer())}
+      onClose={handleDrawerClose}
       destroyOnClose
       afterOpenChange={visibleChanged}
+      footer={
+        <Flex justify="end">
+          <Button type="primary" onClick={() => form.submit()}>
+            {editMode ? t('update') : t('create')}
+          </Button>
+        </Flex>
+      }
     >
       {
         <Skeleton active paragraph={{ rows: 12 }} loading={projectLoading}>
@@ -199,10 +219,10 @@ const ProjectDrawer = ({
             layout="vertical"
             onFinish={handleFormSubmit}
             initialValues={{
-              color: projectColors[0],
-              status: statuses.find(status => status.is_default)?.id,
-              health: healths.find(health => health.is_default)?.id,
-              client: [],
+              color_code: projectColors[0],
+              status_id: statuses.find(status => status.is_default)?.id,
+              health_id: healths.find(health => health.is_default)?.id,
+              client_id: null,
               working_days: 0,
               man_days: 0,
               hours_per_day: 8,
@@ -221,13 +241,16 @@ const ProjectDrawer = ({
               <Input placeholder={t('enterProjectName')} />
             </Form.Item>
             <Form.Item name="color_code" label={t('projectColor')} layout="horizontal" required>
-              <ColorPicker />
+              <ColorPicker defaultValue={'#154c9b'} value={project?.color_code || '#154c9b'} onChange={(value) => form.setFieldValue('color_code', value.toHexString())} />
             </Form.Item>
             <Form.Item name="status_id" label={t('status')}>
-              <Select options={statusOptions} />
+              <Select
+                options={statusOptions}
+                onChange={(value) => form.setFieldValue('status_id', value)}
+                placeholder={t('selectStatus')} />
             </Form.Item>
             <Form.Item name="health_id" label={t('health')}>
-              <Select options={healthOptions} />
+              <Select options={healthOptions} onChange={(value) => form.setFieldValue('health_id', value)} />
             </Form.Item>
             <Form.Item name="category_id" label={t('category')}>
               {!isAddCategoryInputShow ? (
@@ -312,11 +335,6 @@ const ProjectDrawer = ({
             </Form.Item>
             <Form.Item name="hours_per_day" label={t('hoursPerDay')}>
               <Input type="number" />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" style={{ width: '100%' }} htmlType="submit">
-                {editMode ? t('update') : t('create')}
-              </Button>
             </Form.Item>
           </Form>
         </Skeleton>

@@ -9,6 +9,7 @@ interface ProjectState {
     total: number;
   };
   loading: boolean;
+  creatingProject: boolean;
   initialized: boolean;
   isProjectDrawerOpen: boolean;
 }
@@ -19,6 +20,7 @@ const initialState: ProjectState = {
     total: 0,
   },
   loading: false,
+  creatingProject: false,
   initialized: false,
   isProjectDrawerOpen: false,
 };
@@ -76,6 +78,21 @@ export const toggleFavoriteProject = createAsyncThunk(
   }
 );
 
+export const createProject = createAsyncThunk(
+  'projects/createProject',
+  async (project: IProjectViewModel, { rejectWithValue }) => {
+    try {
+      const response = await projectsApiService.createProject(project);
+      return response.body;
+    } catch (error) {
+      logger.error('Create Project', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);
+
 const projectSlice = createSlice({
   name: 'projectReducer',
   initialState,
@@ -83,7 +100,9 @@ const projectSlice = createSlice({
     toggleDrawer: state => {
       state.isProjectDrawerOpen = !state.isProjectDrawerOpen;
     },
-    createProject: (state, action: PayloadAction<IProjectViewModel>) => {},
+    createProject: (state, action: PayloadAction<IProjectViewModel>) => {
+      state.creatingProject = true;
+    },
     deleteProject: (state, action: PayloadAction<string>) => {},
   },
   extraReducers: builder => {
@@ -101,10 +120,18 @@ const projectSlice = createSlice({
       })
       .addCase(fetchProjects.rejected, state => {
         state.loading = false;
+      })
+      .addCase(createProject.pending, state => {
+        state.creatingProject = true;
+      })
+      .addCase(createProject.fulfilled, state => {
+        state.creatingProject = false;
+      })
+      .addCase(createProject.rejected, state => {
+        state.creatingProject = false;
       });
   },
 });
 
-export const { toggleDrawer, createProject, deleteProject } =
-  projectSlice.actions;
+export const { toggleDrawer } = projectSlice.actions;
 export default projectSlice.reducer;

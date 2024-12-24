@@ -69,4 +69,10 @@ export const projectsApiService = {
     const response = await apiClient.get<IServerResponse<IProjectMembersViewModel>>(`${url}`);
     return response.data;
   },
+
+  createProject: async (project: IProjectViewModel): Promise<IServerResponse<IProjectViewModel>> => {
+    const url = `${rootUrl}`;
+    const response = await apiClient.post<IServerResponse<IProjectViewModel>>(`${url}`, project);
+    return response.data;
+  },
 };

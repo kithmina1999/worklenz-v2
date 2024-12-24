@@ -235,9 +235,9 @@ const ProjectList: React.FC = () => {
       </Card>
 
       <ProjectDrawer
-        categories={categories}
-        statuses={statuses}
-        healths={healths}
+        categories={categories || []}
+        statuses={statuses || []}
+        healths={healths || []}
       />
     </div>
   );

@@ -106,7 +106,7 @@ const projectSlice = createSlice({
   name: 'project',
   initialState,
   reducers: {
-    setProjectId: (state, action: PayloadAction<string>) => {
+    setProjectId: (state, action: PayloadAction<string | null>) => {
       state.projectId = action.payload;
     },
     setProject: (state, action: PayloadAction<IProjectViewModel>) => {

@@ -1,3 +1,4 @@
+import Avatars from '@/components/avatars/Avatars';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -42,23 +43,26 @@ const ProjectManagerDropdown: React.FC = () => {
 
   const projectManagerOptionsDropdownRender = (menu: any) => {
     return (
-        <div style={contentStyle}>
-          {React.cloneElement(menu as React.ReactElement, { style: menuStyle })}
-          <Divider style={{ margin: 0 }} />
-          <Space style={{ padding: 8 }}>
-            <Button type="primary">Click me!</Button>
-          </Space>
-        </div>
-    //   <Card>
-    //     <Input
-    //       ref={labelInputRef}
-    //       value={searchQuery}
-    //       onChange={e => setSearchQuery(e.currentTarget.value)}
-    //       placeholder={t('searchInputPlaceholder')}
-    //     />
-    //     <Divider style={{ margin: '8px 0' }} />
-    //     {menu}
-    //   </Card>
+      <div style={contentStyle}>
+        <Input
+          ref={labelInputRef}
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.currentTarget.value)}
+          placeholder={t('searchInputPlaceholder')}
+        />
+        <Divider style={{ margin: '8px 0' }} />
+        <Avatars members={menu}/>
+      </div>
+      //   <Card>
+      //     <Input
+      //       ref={labelInputRef}
+      //       value={searchQuery}
+      //       onChange={e => setSearchQuery(e.currentTarget.value)}
+      //       placeholder={t('searchInputPlaceholder')}
+      //     />
+      //     <Divider style={{ margin: '8px 0' }} />
+      //     {menu}
+      //   </Card>
     );
   };
 
