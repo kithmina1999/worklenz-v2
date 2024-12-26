@@ -1,4 +1,4 @@
-import { Button, Card, Col, Form, Input, Row, Tag, Typography } from 'antd';
+import { Button, Card, Col, Form, Input, notification, Row, Tag, Typography } from 'antd';
 import React, { useState } from 'react';
 import './UpgradePlans.css';
 import { CheckCircleFilled } from '@ant-design/icons';
@@ -6,8 +6,11 @@ import { RootState } from '../../../app/store';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { timeZoneCurrencyMap } from '../../../utils/timeZoneCurrencyMap';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { toggleUpgradeModal } from '../../../features/adminCenter/billing/billingSlice';
 
 const UpgradePlans: React.FC = () => {
+  const dispatch = useAppDispatch();
   const themeMode = useAppSelector(
     (state: RootState) => state.themeReducer.mode
   );
@@ -35,6 +38,16 @@ const UpgradePlans: React.FC = () => {
 
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const userCurrency = timeZoneCurrencyMap[userTimeZone] || 'USD';
+
+  const handleFormSubmit = () => {
+      notification.open({
+        message: '',
+        description:
+          'You contact information has been sent successfully',
+        placement: 'topRight',
+      });
+      dispatch(toggleUpgradeModal())
+  };
 
   return (
     <div
@@ -77,7 +90,7 @@ const UpgradePlans: React.FC = () => {
                 display: 'grid',
                 gridTemplateColumns: 'auto',
                 rowGap: '10px',
-                padding: '20px 20px 0',
+                padding: '20px 30px 0',
               }}
             >
               <Typography.Title level={1}>{userCurrency} 0.00</Typography.Title>
@@ -135,7 +148,7 @@ const UpgradePlans: React.FC = () => {
                 display: 'grid',
                 gridTemplateColumns: 'auto',
                 rowGap: '10px',
-                padding: '20px 20px 0',
+                padding: '20px 30px 0',
               }}
             >
               <Typography.Title level={1}>{userCurrency} 4990</Typography.Title>
@@ -208,7 +221,7 @@ const UpgradePlans: React.FC = () => {
                 display: 'grid',
                 gridTemplateColumns: 'auto',
                 rowGap: '10px',
-                padding: '20px 20px 0',
+                padding: '20px 30px 0',
               }}
             >
               <Typography.Title level={1}>{userCurrency} 300</Typography.Title>
@@ -281,7 +294,7 @@ const UpgradePlans: React.FC = () => {
                 display: 'grid',
                 gridTemplateColumns: 'auto',
                 rowGap: '10px',
-                padding: '20px 20px 0',
+                padding: '20px 30px 0',
               }}
             >
               <Typography.Title level={1}>{userCurrency} 250</Typography.Title>
@@ -341,7 +354,9 @@ const UpgradePlans: React.FC = () => {
       >
         <Typography.Title level={4}>{t('footerTitle')}</Typography.Title>
 
-        <Form>
+        <Form
+          onFinish={handleFormSubmit}
+        >
           <Row justify="center" style={{ height: '32px' }}>
             <Form.Item
               style={{ margin: '0 24px 0 0' }}
@@ -353,10 +368,10 @@ const UpgradePlans: React.FC = () => {
                 },
               ]}
             >
-              <Input placeholder="07xxxxxxxx" />
+              <Input type='number' placeholder="07xxxxxxxx" maxLength={10} minLength={10}/>
             </Form.Item>
             <Form.Item>
-              <Button type="primary">{t('footerButton')}</Button>
+              <Button type="primary" htmlType='submit'>{t('footerButton')}</Button>
             </Form.Item>
           </Row>
         </Form>

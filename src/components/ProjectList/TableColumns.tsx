@@ -15,6 +15,7 @@ import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 import { calculateTimeDifference } from '@/utils/calculate-time-difference';
+import { toggleDrawer, toggleUpdatedrawer } from '../../features/projects/projectSlice';
 
 // Constants
 const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {

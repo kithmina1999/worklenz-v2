@@ -8,12 +8,12 @@ import { addTask, addTaskToTop } from '../../../features/tasks/taskSlice';
 import { setTaskCardDisabled } from '../../../features/board/createCardSlice';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
-interface StatusProps {
+interface PriorityProps {
   status: string;
   position: 'top' | 'bottom';
 }
 
-const TaskCreateCard = forwardRef<InputRef, StatusProps>(
+const PriorityTaskCreateCard = forwardRef<InputRef, PriorityProps>(
   ({ status, position }, ref) => {
     const [characterLength, setCharacterLength] = useState<number>(0);
     const [dueDate, setDueDate] = useState<Dayjs | null>(null);
@@ -23,7 +23,7 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
     const [taskName, setTaskName] = useState('');
     const dispatch = useAppDispatch();
     const themeMode = useAppSelector((state) => state.themeReducer.mode);
-    const {t} = useTranslation('kanban-board')
+    const {t} = useTranslation('kanbanBoard')
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setCharacterLength(e.target.value.length);
@@ -215,7 +215,7 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
                   {/* <Avatar
                                         style={{
                                             backgroundColor:
-                                                AvatarNamesMap[
+                                                avatarNamesMap[
                                                     member?.charAt(0)
                                                 ],
                                             verticalAlign: 'middle',
@@ -265,4 +265,4 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
   }
 );
 
-export default TaskCreateCard;
+export default PriorityTaskCreateCard;

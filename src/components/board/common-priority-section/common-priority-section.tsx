@@ -16,14 +16,14 @@ import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
 import TaskCard from '../taskCard/TaskCard';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 
-import './CommonStatusSection.css';
+import '../commonStatusSection/CommonStatusSection'
 
 import { deleteStatus } from '../../../features/projects/status/StatusSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import ChangeCategoryDropdown from '../changeCategoryDropdown/ChangeCategoryDropdown';
 import { useTranslation } from 'react-i18next';
 
-interface CommonStatusSectionProps {
+interface CommonPrioritySectionProps {
   status: string;
   dataSource: TaskType[];
   category: string;
@@ -31,7 +31,7 @@ interface CommonStatusSectionProps {
 }
 
 
-const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
+const CommonPrioritySection: React.FC<CommonPrioritySectionProps> = ({
   status,
   dataSource,
   category,
@@ -60,7 +60,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
   const inputRef = useRef<InputRef>(null);
   const [isLoading, setIsLoading] = useState(false);
   const taskCardRef = useRef<HTMLDivElement>(null);
-  const {t} = useTranslation('kanban-board')
+  const {t} = useTranslation('kanbanBoard')
 
   const handleAddTaskClick = () => {
     dispatch(
@@ -179,11 +179,11 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
               display: 'flex',
               justifyContent: 'space-between',
               backgroundColor:
-                category === 'todo'
-                  ? '#d1d0d3'
-                  : category === 'doing'
-                    ? '#b9cef1'
-                    : '#c2e4d0',
+                category === 'low'
+                  ? '#c2e4d0'
+                  : category === 'medium'
+                    ? '#f9e3b1'
+                    : '#f6bfc0',
               borderRadius: '10px',
             }}
           >
@@ -310,4 +310,4 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
   );
 };
 
-export default CommonStatusSection;
+export default CommonPrioritySection;

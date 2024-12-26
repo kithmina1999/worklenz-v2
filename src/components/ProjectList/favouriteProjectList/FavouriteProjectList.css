@@ -14,14 +14,6 @@ table td {
   display: none;
 }
 
-.custom-row td:last-child {
-  visibility: hidden;
-}
-
-.custom-row:hover td:last-child {
-  visibility: visible;
-}
-
 .custom-row:hover {
   color: #1890ff;
 }
