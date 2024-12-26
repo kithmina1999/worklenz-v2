@@ -19,7 +19,7 @@ import UpgradePlanButton from './upgradePlan/UpgradePlanButton';
 import { useResponsive } from '@/hooks/useResponsive';
 import { getFromLocalStorage } from '@/utils/localStorageFunctions';
 import { navRoutes, NavRoutesType } from './navRoutes';
-import { getSession } from '@/utils/session-helper';
+import { getUserSession } from '@/utils/session-helper';
 import { useAuth } from '@/hooks/useAuth';
 
 const Navbar = () => {

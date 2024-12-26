@@ -20,7 +20,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -41,6 +41,8 @@ import { useTranslation } from 'react-i18next';
 import ProjectManagerDropdown from '../project-manager-dropdown/project-manager-dropdown';
 import { setProject, setProjectId } from '@/features/project/project.slice';
 import { useNavigate } from 'react-router-dom';
+import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
+import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 
 const ProjectDrawer = ({
   categories = [],
@@ -219,6 +221,7 @@ const ProjectDrawer = ({
             {editMode && (
               <Popconfirm
                 title={t('deleteConfirmation')}
+                description={t('deleteConfirmationDescription')}
                 onConfirm={handleDeleteProject}
                 okText={t('yes')}
                 cancelText={t('no')}
@@ -265,7 +268,6 @@ const ProjectDrawer = ({
             </Form.Item>
             <Form.Item name="color_code" label={t('projectColor')} layout="horizontal" required>
               <ColorPicker
-                defaultValue={'#154c9b'}
                 value={project?.color_code || '#154c9b'}
                 onChange={value => form.setFieldValue('color_code', value.toHexString())}
               />
@@ -370,6 +372,23 @@ const ProjectDrawer = ({
               <Input type="number" />
             </Form.Item>
           </Form>
+          {editMode && (
+            <Flex vertical gap={4}>
+              <Divider />
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {t('createdAt')}&nbsp;
+                <Tooltip title={formatDateTimeWithLocale(project?.created_at || '')}>
+                  {calculateTimeDifference(project?.created_at || '')}
+                </Tooltip> {t('by')} {project?.project_owner || ''}
+              </Typography.Text>
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {t('updatedAt')}&nbsp;
+                <Tooltip title={formatDateTimeWithLocale(project?.updated_at || '')}>
+                  {calculateTimeDifference(project?.updated_at || '')}
+                </Tooltip>
+              </Typography.Text>
+            </Flex>
+          )}
         </Skeleton>
       }
     </Drawer>

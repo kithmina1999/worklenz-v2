@@ -4,7 +4,7 @@ import { SOCKET_CONFIG } from './config';
 import logger from '@/utils/errorLogger';
 import { Modal } from 'antd';
 import { SocketEvents } from '@/shared/socket-events';
-import { getSession } from '@/utils/session-helper';
+import { getUserSession } from '@/utils/session-helper';
 
 interface SocketContextType {
   socket: Socket | null;
@@ -18,7 +18,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const socketRef = useRef<Socket | null>(null);
   const [connected, setConnected] = useState(false);
   const [modal, contextHolder] = Modal.useModal();
-  const profile = getSession(); // Adjust based on your Redux structure
+  const profile = getUserSession(); // Adjust based on your Redux structure
 
   // Initialize socket connection
   useEffect(() => {

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { RootState } from '@/app/store';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
-import { getSession } from '@/utils/session-helper';
+import { getUserSession } from '@/utils/session-helper';
 import { validateEmail } from '@/utils/validateEmail';
 import logo from '@/assets/images/logo.png';
 import logoDark from '@/assets/images/logo-dark-mode.png';
@@ -33,7 +33,7 @@ interface Email {
 
 const AccountSetup: React.FC = () => {
   const { t } = useTranslation('account-setup');
-  const userDetails = getSession();
+  const userDetails = getUserSession();
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
   useDocumentTitle(t('setupYourAccount', 'Account Setup'));
   const navigate = useNavigate();

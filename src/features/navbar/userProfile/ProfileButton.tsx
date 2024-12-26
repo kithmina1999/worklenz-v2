@@ -12,7 +12,7 @@ import { RootState } from '@/app/store';
 
 // Utils & Constants
 import { AvatarNamesMap } from '@/shared/constants';
-import { getRole, getSession } from '@/utils/session-helper';
+import { getRole, getUserSession } from '@/utils/session-helper';
 
 // Styles
 import './profileDropdown.css';
@@ -24,7 +24,7 @@ interface ProfileButtonProps {
 
 const ProfileButton = ({ isOwnerOrAdmin }: ProfileButtonProps) => {
   const { t } = useTranslation('navbar');
-  const userDetails = getSession();
+  const userDetails = getUserSession();
   const role = getRole();
   const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
 

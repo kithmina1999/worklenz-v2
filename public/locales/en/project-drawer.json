@@ -26,5 +26,11 @@
   "category": "Category",
   "projectManager": "Project Manager",
   "client": "Client",
-  "deleteConfirmation": "Are you sure you want to delete this project? This action cannot be undone."
+  "deleteConfirmation": "Are you sure you want to delete?",
+  "deleteConfirmationDescription": "This will remove all associated data and cannot be undone.",
+  "yes": "Yes",
+  "no": "No",
+  "createdAt": "Created",
+  "updatedAt": "Updated",
+  "by": "by"
 }

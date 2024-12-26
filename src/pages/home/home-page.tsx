@@ -7,11 +7,28 @@ import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 import CreateProjectButton from '@/components/projects/project-drawer/create-project-button';
 import RecentAndFavouriteProjectList from '@/pages/home/recent-and-favourite-project-list/recent-and-favourite-project-list';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
+import { useEffect } from 'react';
+import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
+import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 const HomePage = () => {
   const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
   useDocumentTitle('Home');
+  const dispatch = useAppDispatch();
 
+  const { categories } = useAppSelector(state => state.projectCategoriesReducer);
+  const { statuses } = useAppSelector(state => state.projectStatusesReducer);
+  const { healths } = useAppSelector(state => state.projectHealthReducer);
+  
+  useEffect(() => {
+    if (!healths.length) dispatch(fetchProjectHealth());
+    if (!categories.length) dispatch(fetchProjectCategories());
+    if (!statuses.length) dispatch(fetchProjectStatuses());
+  }, [dispatch]);
+  
   const createProjectButton = isDesktop ? (
     <div className="absolute right-0 top-1/2 -translate-y-1/2">
       <CreateProjectButton />
@@ -60,7 +77,7 @@ const HomePage = () => {
 
       {content}
 
-      <ProjectDrawer />
+      <ProjectDrawer categories={categories} statuses={statuses} healths={healths} />
     </div>
   );
 };

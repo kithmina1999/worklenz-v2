@@ -11,10 +11,10 @@ import './TableColumns.css';
 import { ColumnFilterItem } from 'antd/es/table/interface';
 import Avatars from '../avatars/Avatars';
 import { InlineMember } from '@/types/teamMembers/inlineMember.types';
-import { formatDateTime } from '@/utils/format-time-strings';
-import { calculateTimeAgo } from '@/utils/calculateTimeAgo';
 import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
+import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
+import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 
 // Constants
 const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
@@ -219,11 +219,11 @@ const TableColumns = (
         sorter: true,
         render: (date: Date, record) => (
           <Tooltip
-            title={record.updated_at ? formatDateTime(record.updated_at) : ''}
+            title={record.updated_at ? formatDateTimeWithLocale(record.updated_at) : ''}
             placement="topLeft"
             mouseEnterDelay={0.5}
           >
-            {record.updated_at ? calculateTimeAgo(record.updated_at) : ''}
+            {record.updated_at ? calculateTimeDifference(record.updated_at) : ''}
           </Tooltip>
         ),
       },
