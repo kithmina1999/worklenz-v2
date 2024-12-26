@@ -8,7 +8,7 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, useDroppable } from '@dnd-kit/core';
+import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 import { setTaskCardDisabled, initializeGroup } from '@features/board/createCardSlice';
@@ -195,29 +195,6 @@ const KanbanGroup: React.FC<KanbanGroupProps> = ({ title, tasks, id, color }) =>
     borderRadius: '10px',
   };
 
-  const handleDragStart = (event: DragStartEvent) => {
-    // Optional: Handle drag start
-  };
-
-  const handleDragOver = (event: DragOverEvent) => {
-    // Handle dragging over different groups
-    const { active, over } = event;
-    if (!over) return;
-
-    if (active.id !== over.id) {
-      // Update task status/position logic here
-    }
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over) return;
-    console.log(event);
-
-    // Handle the final drop
-    // Update your state/backend here
-  };
-  
   return (
     <div style={containerStyle}>
       <div
@@ -309,15 +286,13 @@ const KanbanGroup: React.FC<KanbanGroupProps> = ({ title, tasks, id, color }) =>
             <TaskCreateCard ref={createTaskInputRef} status={title} position={'top'} />
           )}
 
-          <DndContext onDragEnd={handleDragEnd} onDragOver={handleDragOver} onDragStart={handleDragStart}>
-            <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
-              <div className="App" style={{ display: 'flex', flexDirection: 'column', padding: '20px' }}>
-                {tasks.map(task => (
-                  <TaskCard key={task.id} task={task} />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
+          <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
+            <div className="App" style={{ display: 'flex', flexDirection: 'column', padding: '20px' }}>
+              {tasks.map(task => (
+                <TaskCard key={task.id} task={task} />
+              ))}
+            </div>
+          </SortableContext>
 
           {!isBottomCardDisabled && (
             <TaskCreateCard ref={createTaskInputRef} status={title} position={'bottom'} />

@@ -59,7 +59,13 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
     transform,
     transition,
     isDragging
-  } = useSortable({ id: task.id as UniqueIdentifier });
+  } = useSortable({ 
+    id: task.id as UniqueIdentifier,
+    data: {
+      type: 'task',
+      task
+    }
+  });
 
   const handleDateChange = (date: Dayjs | null) => {
     setDueDate(date);
@@ -133,6 +139,8 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    position: 'relative',
+    touchAction: 'none'
   };
 
   return (
