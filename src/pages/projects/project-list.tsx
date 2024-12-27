@@ -64,11 +64,20 @@ const ProjectList: React.FC = () => {
   const { statuses } = useAppSelector(state => state.projectStatusesReducer);
   const { healths } = useAppSelector(state => state.projectHealthReducer);
 
+  // Parallel data fetching on mount
   useEffect(() => {
-    if (!healths.length) dispatch(fetchProjectHealth());
-    if (!categories.length) dispatch(fetchProjectCategories());
-    if (!statuses.length) dispatch(fetchProjectStatuses());
-  }, [dispatch]);
+    const fetchInitialData = async () => {
+      const promises = [
+        !healths.length && dispatch(fetchProjectHealth()),
+        !categories.length && dispatch(fetchProjectCategories()),
+        !statuses.length && dispatch(fetchProjectStatuses())
+      ].filter(Boolean);
+      
+      await Promise.all(promises);
+    };
+
+    fetchInitialData();
+  }, []);
 
   // Local state
   const [searchTerm, setSearchTerm] = useState('');
@@ -76,12 +85,21 @@ const ProjectList: React.FC = () => {
     current: 1,
     pageSize: DEFAULT_PAGE_SIZE,
   });
-  const [sorter, setSorter] = useState<SorterState>({
+  const [sorter, setSorter] = useState<SorterState>(() => ({
     order: localStorage.getItem(PROJECT_SORT_ORDER) ?? 'ascend',
     columnKey: localStorage.getItem(PROJECT_SORT_FIELD) ?? 'name',
-  });
+  }));
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Debounced search term
+  const [debouncedSearchTerm] = useState(() => {
+    let timeoutId: NodeJS.Timeout;
+    return (value: string, callback: (value: string) => void) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => callback(value), 300);
+    };
+  });
 
   // Callback functions
   const getFilterIndex = useCallback(() => {
@@ -97,43 +115,42 @@ const ProjectList: React.FC = () => {
     localStorage.setItem(PROJECT_SORT_ORDER, sorter.order);
   }, []);
 
-    // Memoized values
-    const filters = useMemo(() => Object.values(IProjectFilter), []);
+  // Memoized values
+  const filters = useMemo(() => Object.values(IProjectFilter), []);
 
-    const requestParams = useMemo(() => ({
-      index: pagination.current,
-      size: pagination.pageSize,
-      field: sorter.columnKey,
-      order: sorter.order,
-      filter: getFilterIndex(),
-      search: searchTerm,
-      statuses: selectedStatus,
-      categories: selectedCategory,
-    }), [
-      pagination,
-      sorter,
-      getFilterIndex,
-      searchTerm,
-      selectedStatus,
-      selectedCategory,
-    ]);
-  
-    const paginationConfig = useMemo(() => ({
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      showSizeChanger: true,
-      defaultPageSize: DEFAULT_PAGE_SIZE,
-      pageSizeOptions: PAGE_SIZE_OPTIONS,
-      size: 'small' as const,
-      total: projects.total,
-    }), [pagination, projects.total]);
+  const requestParams = useMemo(() => ({
+    index: pagination.current,
+    size: pagination.pageSize,
+    field: sorter.columnKey,
+    order: sorter.order,
+    filter: getFilterIndex(),
+    search: searchTerm,
+    statuses: selectedStatus,
+    categories: selectedCategory,
+  }), [
+    pagination,
+    sorter,
+    getFilterIndex,
+    searchTerm,
+    selectedStatus,
+    selectedCategory,
+  ]);
+
+  const paginationConfig = useMemo(() => ({
+    current: pagination.current,
+    pageSize: pagination.pageSize,
+    showSizeChanger: true,
+    defaultPageSize: DEFAULT_PAGE_SIZE,
+    pageSizeOptions: PAGE_SIZE_OPTIONS,
+    size: 'small' as const,
+    total: projects.total,
+  }), [pagination, projects.total]);
 
   const getProjects = useCallback(async () => {
     try {
       await dispatch(fetchProjects(requestParams)).unwrap();
     } catch (error) {
       console.error('Error fetching projects:', error);
-      // Consider adding error handling/notification here
     }
   }, [dispatch, requestParams]);
 
@@ -172,8 +189,9 @@ const ProjectList: React.FC = () => {
   }, [filters, setFilterIndex, getProjects]);
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  }, []);
+    const value = e.target.value;
+    debouncedSearchTerm(value, setSearchTerm);
+  }, [debouncedSearchTerm]);
 
   // Effects
   useEffect(() => {
