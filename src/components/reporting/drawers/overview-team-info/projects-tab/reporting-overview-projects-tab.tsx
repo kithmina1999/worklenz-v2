@@ -16,6 +16,8 @@ interface OverviewReportsProjectsTabProps {
 const OverviewReportsProjectsTab = ({
   teamsId = null,
 }: OverviewReportsProjectsTabProps) => {
+  const { t } = useTranslation('reporting-projects-drawer');
+  const { includeArchivedProjects } = useAppSelector((state) => state.reportingReducer);
   const [searchQuery, setSearchQuery] = useState('');
   const [projectList, setProjectList] = useState<IRPTProject[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,8 +26,6 @@ const OverviewReportsProjectsTab = ({
     pageSize: DEFAULT_PAGE_SIZE,
     total: 0,
   });
-
-  const { includeArchivedProjects } = useAppSelector((state) => state.reportingReducer);
 
   const fetchOverviewProjects = async () => {
     setIsLoading(true);
@@ -53,15 +53,11 @@ const OverviewReportsProjectsTab = ({
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      fetchOverviewProjects();
-    }, 3000);
+    fetchOverviewProjects();
   }, [
     searchQuery,
     includeArchivedProjects,
   ]);
-
-  const { t } = useTranslation('reporting-projects-drawer');
 
   return (
     <Flex vertical gap={24}>
@@ -71,12 +67,12 @@ const OverviewReportsProjectsTab = ({
         setSearchQuery={setSearchQuery}
       />
 
-      <ProjectsReportsTable
+      {/* <ProjectsReportsTable
         projectList={projectList}
         loading={isLoading}
         pagination={pagination}
         setPagination={setPagination}
-      />
+      /> */}
     </Flex>
   );
 };

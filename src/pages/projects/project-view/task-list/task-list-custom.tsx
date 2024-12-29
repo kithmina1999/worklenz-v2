@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { Avatar, Button, Checkbox, DatePicker, Flex, Select, Tag, theme } from 'antd';
+import { Avatar, Checkbox, DatePicker, Flex, Select, Tag, theme } from 'antd';
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,11 +14,8 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import {
-  DeleteOutlined,
-  EditOutlined,
   HolderOutlined,
   PlusOutlined,
-  RightOutlined,
 } from '@ant-design/icons';
 import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -26,8 +23,9 @@ import React from 'react';
 import Avatars from '@/components/avatars/Avatars';
 import LabelsSelector from '@/components/task-list-common/labelsSelector/labels-selector';
 import CustomColorLabel from '@/components/task-list-common/labelsSelector/custom-color-label';
-import CustomNumberLabel from '@/components/task-list-common/labelsSelector/custom-number-label';
-
+import './task-list-custom.css';
+import TaskListInstantTaskInput from './task-list-instant-task-input/task-list-instant-task-input';
+import TaskRowName from '@/components/task-list-common/task-row/task-row-name/task-row-name';
 interface TaskListCustomProps {
   tasks: IProjectTask[];
   color: string;
@@ -65,6 +63,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
             checked={table.getIsAllRowsSelected()}
             indeterminate={table.getIsSomeRowsSelected()}
             onChange={table.getToggleAllRowsSelectedHandler()}
+            style={{ padding: '8px 6px 8px 0!important' }}
           />
         ),
         cell: ({ row }) => (
@@ -78,14 +77,16 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
             />
           </Flex>
         ),
-        size: 40,
-        minSize: 40,
-        maxSize: 40,
+        size: 47,
+        minSize: 47,
+        maxSize: 47,
       },
       {
         accessorKey: 'task_key',
         header: 'Key',
         size: 85,
+        minSize: 85,
+        maxSize: 85,
         cell: ({ row }) => (
           <Tag onClick={() => handleTaskSelect(row.original.id || '')} style={{ cursor: 'pointer' }}>
             {row.original.task_key}
@@ -95,25 +96,41 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
       {
         accessorKey: 'name',
         header: 'Task',
-        size: 400,
+        size: 450,
         cell: ({ row }) => (
-          <Flex align="center" gap={8} style={{ cursor: 'pointer' }}>
-            {(row.original?.sub_tasks_count || 0) > 0 ? (
-              <RightOutlined
-                style={{
-                  transform: expandedRows[row.id] ? 'rotate(90deg)' : 'none',
-                  transition: 'transform 0.2s',
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleExpandClick(row.id);
-                }}
-              />
-            ) : (
-              <div style={{ width: 14 }} />
-            )}
-            <span onClick={() => handleTaskSelect(row.original.id || '')}>{row.original.name}</span>
-          </Flex>
+          <TaskRowName
+            task={row.original}
+            isSubTask={false}
+            expandedTasks={Object.keys(expandedRows)}
+            setSelectedTaskId={() => {}}
+            toggleTaskExpansion={() => {}}
+          />
+          // <Flex align="center" gap={8} style={{ cursor: 'pointer', position: 'relative' }}>
+          //   {(row.original?.sub_tasks_count || 0) > 0 ? (
+          //     <RightOutlined
+          //       style={{
+          //         transform: expandedRows[row.id] ? 'rotate(90deg)' : 'none',
+          //         transition: 'transform 0.2s',
+          //       }}
+          //       onClick={(e) => {
+          //         e.stopPropagation();
+          //         handleExpandClick(row.id);
+          //       }}
+          //     />
+          //   ) : (
+          //     <div style={{ width: 14 }} />
+          //   )}
+          //   <span onClick={() => handleTaskSelect(row.original.id || '')}>{row.original.name}</span>
+          //   <Input
+          //     style={{ position: 'absolute', top: 0, left: 0, width: '100%', display: 'none' }}
+          //     defaultValue={row.original.name}
+          //     onBlur={(e) => {
+          //       // Handle name change
+          //       console.log('New name:', e.target.value);
+          //     }}
+          //   />
+          //   <div style={{ position: 'absolute', top: 0, right: 0, display: 'none' }}>Open</div>
+          // </Flex>
         ),
       },
       {
@@ -122,7 +139,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
         size: 159,
         cell: ({ row }) => (
           <Flex align="center" gap={8}>
-            <Avatars members={row.original.names || []} maxCount={3} />
+            <Avatars key={`${row.original.id}-assignees`} members={row.original.names || []} maxCount={3} />
             <Avatar
               size={28}
               icon={<PlusOutlined />}
@@ -142,7 +159,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
         header: 'Due Date',
         size: 149,
         cell: ({ row }) => (
-          <span><DatePicker placeholder="Set a due date" suffixIcon={null} variant='borderless' /></span>
+          <span><DatePicker key={`${row.original.id}-end-date`} placeholder="Set a due date" suffixIcon={null} variant='borderless' /></span>
         ),
       },
       {
@@ -151,6 +168,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
         size: 120,
         cell: ({ row }) => (
           <StatusDropdown
+            key={`${row.original.id}-status`}
             statusList={statuses}
             status_id={row.original.status}
             onChange={(statusId) => {
@@ -166,7 +184,9 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
         cell: ({ row }) => (
           <Flex>
             {
-              row.original.labels?.map(label => <CustomColorLabel label={label} />)
+              row.original.labels?.map(label => 
+                <CustomColorLabel key={`${row.original.id}-${label.id}`} label={label} />
+              )
             }
             <LabelsSelector taskId={row.original.id} />
           </Flex>
@@ -212,8 +232,8 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => tableContainerRef.current,
-    estimateSize: () => 35,
-    overscan: 10,
+    estimateSize: () => 50,
+    overscan: 20,
   });
 
   const virtualRows = rowVirtualizer.getVirtualItems();
@@ -238,21 +258,21 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
         style={{
           flex: 1,
           minHeight: 0,
-          overflow: 'auto',
+          overflowX: 'auto',
           maxHeight: '100%',
         }}
       >
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
+        <div style={{ width: 'fit-content', borderCollapse: 'collapse' }}>
+          <div className="table-header">
             {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
+              <div key={headerGroup.id} className="table-row">
                 {headerGroup.headers.map((header, index) => (
-                  <th
+                  <div
                     key={header.id}
                     style={{
                       width: header.getSize(),
                       position: index < 2 ? 'sticky' : 'relative',
-                      left: index < 1 ? `${index * header.getSize()}px` : 'auto',
+                      left: 'auto',
                       background: token.colorBgElevated,
                       zIndex: 1,
                       color: token.colorText,
@@ -268,65 +288,67 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
+                  </div>
                 ))}
-              </tr>
+              </div>
             ))}
-          </thead>
-          <tbody>
+          </div>
+          <div className="table-body">
             {paddingTop > 0 && (
-              <tr>
-                <td style={{ height: `${paddingTop}px` }} />
-              </tr>
+              <div style={{ height: `${paddingTop}px` }} />
             )}
             {virtualRows.map(virtualRow => {
               const row = rows[virtualRow.index];
               return (
                 <React.Fragment key={row.id}>
-                  <tr
+                  <div
+                    className="table-row"
                     style={{
-                      '&:hover td': {
+                      '&:hover div': {
                         background: `${token.colorFillAlter} !important`,
                       },
                     }}
                   >
                     {row.getVisibleCells().map((cell, index) => (
-                      <td
+                      <div
                         key={cell.id}
                         style={{
+                          width: cell.column.getSize(),
                           position: index < 2 ? 'sticky' : 'relative',
-                          left: index < 2 ? `${index * cell.column.getSize()}px` : 'auto',
+                          left: 'auto',
                           background: token.colorBgContainer,
                           color: token.colorText,
-                          height: '50px',
+                          height: '42px',
                           borderBottom: `1px solid ${token.colorBorderSecondary}`,
                           borderRight: `1px solid ${token.colorBorderSecondary}`,
                           padding: '0 8px',
                         }}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
+                      </div>
                     ))}
-                  </tr>
+                  </div>
                   {expandedRows[row.id] &&
                     row.original.sub_tasks?.map(subTask => (
-                      <tr
+                      <div
                         key={subTask.task_key}
+                        className="table-row"
                         style={{
-                          '&:hover td': {
+                          '&:hover div': {
                             background: `${token.colorFillAlter} !important`,
                           },
                         }}
                       >
                         {columns.map((col, index) => (
-                          <td
+                          <div
                             key={`${subTask.task_key}-${col.id}`}
                             style={{
+                              width: col.getSize(),
                               position: index < 2 ? 'sticky' : 'relative',
-                              left: index < 2 ? `${index * (col as any).size}px` : 'auto',
+                              left: index < 2 ? `${index * col.getSize()}px` : 'auto',
                               background: token.colorBgContainer,
                               color: token.colorText,
-                              height: '50px',
+                              height: '42px',
                               borderBottom: `1px solid ${token.colorBorderSecondary}`,
                               borderRight: `1px solid ${token.colorBorderSecondary}`,
                               paddingLeft: index === 3 ? '32px' : '8px',
@@ -339,22 +361,21 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
                               column: col as Column<IProjectTask>,
                               table,
                             })}
-                          </td>
+                          </div>
                         ))}
-                      </tr>
+                      </div>
                     ))}
                 </React.Fragment>
               );
             })}
             {paddingBottom > 0 && (
-              <tr>
-                <td style={{ height: `${paddingBottom}px` }} />
-              </tr>
+              <div style={{ height: `${paddingBottom}px` }} />
             )}
-          </tbody>
-        </table>
+          </div>
+        </div>
       </div>
-      {selectedCount > 0 && (
+      <TaskListInstantTaskInput />
+      {/* {selectedCount > 0 && (
         <Flex
           justify="space-between"
           align="center"
@@ -375,7 +396,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
             </Button>
           </Flex>
         </Flex>
-      )}
+      )} */}
     </div>
   );
 };

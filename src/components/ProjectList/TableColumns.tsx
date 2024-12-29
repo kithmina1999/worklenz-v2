@@ -86,7 +86,7 @@ const ProjectNameCell: React.FC<{ record: IProjectViewModel; navigate: NavigateF
   };
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center" onClick={() => selectProject(record)} >
       <Rate
         value={record.favorite ? 1 : 0}
         onChange={handleFavorite}
@@ -95,7 +95,7 @@ const ProjectNameCell: React.FC<{ record: IProjectViewModel; navigate: NavigateF
         tooltips={['Add to favourites']}
       />
       <Badge color="geekblue" className="mr-2" />
-      <span onClick={() => selectProject(record)} className="cursor-pointer">
+      <span className="cursor-pointer">
         {record.name}
         {(record.start_date || record.end_date) && (
           <Tooltip
