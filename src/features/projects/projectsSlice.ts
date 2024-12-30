@@ -101,6 +101,14 @@ export const deleteProject = createAsyncThunk(
   }
 );
 
+export const toggleArchiveProject = createAsyncThunk(
+  'projects/toggleArchiveProject',
+  async (id: string, { rejectWithValue }) => {
+    const response = await projectsApiService.toggleArchiveProject(id);
+    return response.body;
+  }
+);
+
 const projectSlice = createSlice({
   name: 'projectReducer',
   initialState,

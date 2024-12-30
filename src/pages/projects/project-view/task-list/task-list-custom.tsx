@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Avatar, Checkbox, DatePicker, Flex, Select, Tag, theme } from 'antd';
+import { Avatar, Button, Checkbox, DatePicker, Dropdown, Flex, Select, Tag, theme } from 'antd';
 import {
   useReactTable,
   getCoreRowModel,
@@ -17,6 +17,7 @@ import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import {
   HolderOutlined,
   PlusOutlined,
+  EyeOutlined,
 } from '@ant-design/icons';
 import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -32,6 +33,9 @@ import TaskRowProgress from '@/components/task-list-common/task-row/task-row-pro
 import TaskRowDueTime from '@/components/task-list-common/task-row/task-list-due-time-cell/task-row-due-time';
 import TaskRowTimeTracking from '@/components/task-list-common/task-row/task-row-time-tracking/task-row-time-tracking';
 import { useAuth } from '@/hooks/useAuth';
+import { COLUMN_KEYS } from '@/features/tasks/taskSlice';
+import { createColumns } from './task-list-columns/task-list-columns';
+
 interface TaskListCustomProps {
   tasks: IProjectTask[];
   color: string;
@@ -49,9 +53,6 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, groupId, 
   const { token } = theme.useToken();
   const { getCurrentSession } = useAuth();
 
-  const selectedCount = Object.keys(rowSelection).length;
-  const columnHelper = createColumnHelper<IProjectTask>();
-
   const handleExpandClick = useCallback((rowId: string) => {
     setExpandedRows(prev => ({
       ...prev,
@@ -64,198 +65,13 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, groupId, 
   }, [onTaskSelect]);
 
   const columns = useMemo(
-    () => [
-      columnHelper.display({
-        id: 'select',
-        header: ({ table }) => (
-          <Checkbox
-            checked={table.getIsAllRowsSelected()}
-            indeterminate={table.getIsSomeRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}
-            style={{ padding: '8px 6px 8px 0!important' }}
-          />
-        ),
-        cell: ({ row }) => (
-          <Flex align="center" gap={4}>
-            <HolderOutlined style={{ cursor: 'move' }} />
-            <Checkbox
-              checked={row.getIsSelected()}
-              disabled={!row.getCanSelect()}
-              indeterminate={row.getIsSomeSelected()}
-              onChange={row.getToggleSelectedHandler()}
-            />
-          </Flex>
-        ),
-        size: 47,
-        minSize: 47,
-        maxSize: 47,
-        enablePinning: true,
-        meta: {
-          style: { position: 'sticky', left: 0, zIndex: 1 }
-        }
-      }),
-
-      columnHelper.accessor('task_key', {
-        header: 'Key',
-        size: 85,
-        minSize: 85,
-        maxSize: 85,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <Tag onClick={() => handleTaskSelect(row.original.id || '')} style={{ cursor: 'pointer' }}>
-            {row.original.task_key}
-          </Tag>
-        )
-      }),
-
-      columnHelper.accessor('name', {
-        header: 'Task',
-        size: 450,
-        enablePinning: true,
-        meta: {
-          style: { position: 'sticky', left: '47px', zIndex: 1 }
-        },
-        cell: ({ row }) => (
-          <TaskRowName
-            task={row.original}
-            isSubTask={false}
-            expandedTasks={Object.keys(expandedRows)}
-            setSelectedTaskId={() => { }}
-            toggleTaskExpansion={() => { }}
-          />
-        )
-      }),
-
-      columnHelper.accessor('description', {
-        header: 'Description',
-        size: 225,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <TaskRowDescription description={row.original.description || ''} />
-        )
-      }),
-
-      columnHelper.accessor('progress', {
-        header: 'Progress',
-        size: 80,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <TaskRowProgress progress={row.original.progress || 0} numberOfSubTasks={row.original.sub_tasks_count || 0} />
-        )
-      }),
-
-      columnHelper.accessor('names', {
-        header: 'Assignees',
-        size: 159,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <Flex align="center" gap={8}>
-            <Avatars key={`${row.original.id}-assignees`} members={row.original.names || []} maxCount={3} />
-            <Avatar
-              size={28}
-              icon={<PlusOutlined />}
-              className="avatar-add"
-              style={{
-                backgroundColor: '#ffffff',
-                border: '1px dashed #c4c4c4',
-                color: '#000000D9',
-                cursor: 'pointer',
-              }}
-            />
-          </Flex>
-        )
-      }),
-
-      columnHelper.accessor('end_date', {
-        header: 'Due Date',
-        size: 149,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <span>
-            <DatePicker key={`${row.original.id}-end-date`} placeholder="Set a due date" suffixIcon={null} variant='borderless' />
-          </span>
-        )
-      }),
-
-      columnHelper.accessor('due_time', {
-        header: 'Due Time',
-        size: 120,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <TaskRowDueTime dueTime={row.original.due_time || ''} />
-        )
-      }),
-
-      columnHelper.accessor('status', {
-        header: 'Status',
-        size: 120,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <StatusDropdown
-            key={`${row.original.id}-status`}
-            statusList={statuses}
-            task={row.original}
-            teamId={getCurrentSession()?.team_id || ''}
-            onChange={(statusId) => {
-              console.log('Status changed:', statusId);
-            }}
-          />
-        )
-      }),
-
-      columnHelper.accessor('labels', {
-        header: 'Labels',
-        size: 225,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <Flex>
-            {row.original.labels?.map(label =>
-              <CustomColorLabel key={`${row.original.id}-${label.id}`} label={label} />
-            )}
-            <LabelsSelector taskId={row.original.id} />
-          </Flex>
-        )
-      }),
-
-      columnHelper.accessor('start_date', {
-        header: 'Start Date',
-        size: 149,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <span>
-            <DatePicker placeholder="Set a start date" suffixIcon={null} variant='borderless' />
-          </span>
-        )
-      }),
-
-      columnHelper.accessor('priority', {
-        header: 'Priority',
-        size: 120,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <span>
-            <Select
-              variant='borderless'
-              options={[
-                { value: 'high', label: 'High' },
-                { value: 'medium', label: 'Medium' },
-                { value: 'low', label: 'Low' }
-              ]}
-            />
-          </span>
-        )
-      }),
-
-      // columnHelper.accessor('time_tracking', {
-      //   header: 'Time Tracking',
-      //   size: 120,
-      //   enablePinning: false,
-      //   cell: ({ row }) => (
-      //     <TaskRowTimeTracking taskId={row.original.id || null} />
-      //   )
-      // })
-    ],
-    [expandedRows, statuses, token.colorPrimary]
+    () => createColumns({
+      expandedRows,
+      statuses,
+      handleTaskSelect,
+      getCurrentSession,
+    }),
+    [expandedRows, statuses, handleTaskSelect, getCurrentSession]
   );
 
   const table = useReactTable({
@@ -287,6 +103,23 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, groupId, 
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
   const paddingBottom =
     virtualRows.length > 0 ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0) : 0;
+
+  const columnToggleItems = columns.map(column => ({
+    key: column.id as string,
+    label: (
+      <span>
+        <Checkbox checked={table.getColumn(column.id as string)?.getIsVisible()}>
+          {typeof column.header === 'string' ? column.header : column.id}
+        </Checkbox>
+      </span>
+    ),
+    onClick: () => {
+      const columnData = table.getColumn(column.id as string);
+      if (columnData) {
+        columnData.toggleVisibility();
+      }
+    },
+  }));
 
   return (
     <div

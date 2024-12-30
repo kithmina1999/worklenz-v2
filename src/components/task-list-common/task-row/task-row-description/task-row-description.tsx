@@ -2,12 +2,18 @@ import { Typography } from 'antd';
 
 const TaskRowDescription = ({ description }: { description: string }) => {
   return (
-    <Typography.Paragraph
-      ellipsis={{ expandable: false }}
-      style={{ width: 260, marginBlockEnd: 0 }}
-    >
-      {description}
-    </Typography.Paragraph>
+    <div
+      style={{
+        whiteSpace: 'nowrap',
+        overflow: 'hidden', 
+        textOverflow: 'ellipsis',
+        display: 'block',
+        maxHeight: '24px', // Enforce single line height
+        lineHeight: '24px'
+      }}
+      dangerouslySetInnerHTML={{ __html: description }}
+    />
+    
   );
 };
 

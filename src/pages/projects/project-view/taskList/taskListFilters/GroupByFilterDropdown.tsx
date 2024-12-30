@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setGroupBy } from '@features/group-by-filter-dropdown/group-by-filter-dropdown-slice';
 
-const GroupByFilterDropdown = ({position}: {position: 'list' | 'table'}) => {
+const GroupByFilterDropdown = ({position}: {position: 'list' | 'board'}) => {
   const dispatch = useAppDispatch()
 
   type GroupTypes = 'status' | 'priority' | 'phase' | 'members' | 'list';

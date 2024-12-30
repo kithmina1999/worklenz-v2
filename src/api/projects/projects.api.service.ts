@@ -81,4 +81,10 @@ export const projectsApiService = {
     const response = await apiClient.delete<IServerResponse<IProjectViewModel>>(`${url}`);
     return response.data;
   },
+
+  toggleArchiveProject: async (id: string): Promise<IServerResponse<IProjectViewModel>> => {
+    const url = `${rootUrl}/archive/${id}`;
+    const response = await apiClient.get<IServerResponse<IProjectViewModel>>(`${url}`);
+    return response.data;
+  },
 };

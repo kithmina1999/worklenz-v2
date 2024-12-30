@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { TaskType } from '@/types/task.types';
 import { MemberType } from '@/types/member.types';
-import { IGroupByOption, ITaskListConfigV2, ITaskListGroup } from '@/types/tasks/taskList.types';
+import { IGroupByOption, ITaskListColumn, ITaskListConfigV2, ITaskListGroup } from '@/types/tasks/taskList.types';
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import logger from '@/utils/errorLogger';
 import { ITaskLabel } from '@/types/label.type';
@@ -13,6 +13,7 @@ type TaskState = {
   isSubtasksInclude: boolean;
   tasks: TaskType[];
   taskGroups: ITaskListGroup[];
+  columns: ITaskListColumn[];
   isCreateTaskDrawerOpen: boolean;
   isUpdateTaskDrawerOpen: boolean;
   loadingGroups: boolean;
@@ -25,6 +26,7 @@ const initialState: TaskState = {
   group: 'phase',
   isSubtasksInclude: false,
   tasks: [],
+  columns: [],
   isCreateTaskDrawerOpen: false,
   isUpdateTaskDrawerOpen: false,
   taskGroups: [],
@@ -55,12 +57,18 @@ export const COLUMN_KEYS = {
   ESTIMATION: "ESTIMATION",
   START_DATE: "START_DATE",
   DUE_DATE: "DUE_DATE",
+  DUE_TIME: "DUE_TIME",
   COMPLETED_DATE: "COMPLETED_DATE",
   CREATED_DATE: "CREATED_DATE",
   LAST_UPDATED: "LAST_UPDATED",
   REPORTER: "REPORTER",
   PHASE: "PHASE"
 };
+
+export const COLUMN_KEYS_LIST = Object.values(COLUMN_KEYS).map(key => ({
+  key,
+  show: true
+}));
 
 export const getCurrentGroup = () => {
   const key = localStorage.getItem("worklenz.tasklist.group_by");
