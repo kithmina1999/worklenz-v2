@@ -82,6 +82,7 @@ const TaskListInstantTaskInput = ({ session, groupId = null, parentTask = null }
     task.groupId = groupId;
     if (groupId && task.id) {
       dispatch(addTask(task));
+      reset(false);
       // if (this.map.has(task.id)) return;
 
       // this.service.addTask(task, this.groupId);
