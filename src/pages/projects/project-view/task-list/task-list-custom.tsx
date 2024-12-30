@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Avatar, Checkbox, DatePicker, Flex, Select, Tag, theme } from 'antd';
 import {
   useReactTable,
@@ -10,6 +10,7 @@ import {
   VisibilityState,
   Row,
   Column,
+  createColumnHelper,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
@@ -26,13 +27,19 @@ import CustomColorLabel from '@/components/task-list-common/labelsSelector/custo
 import './task-list-custom.css';
 import TaskListInstantTaskInput from './task-list-instant-task-input/task-list-instant-task-input';
 import TaskRowName from '@/components/task-list-common/task-row/task-row-name/task-row-name';
+import TaskRowDescription from '@/components/task-list-common/task-row/task-row-description/task-row-description';
+import TaskRowProgress from '@/components/task-list-common/task-row/task-row-progress/task-row-progress';
+import TaskRowDueTime from '@/components/task-list-common/task-row/task-list-due-time-cell/task-row-due-time';
+import TaskRowTimeTracking from '@/components/task-list-common/task-row/task-row-time-tracking/task-row-time-tracking';
+import { useAuth } from '@/hooks/useAuth';
 interface TaskListCustomProps {
   tasks: IProjectTask[];
   color: string;
+  groupId?: string | null;
   onTaskSelect?: (taskId: string) => void;
 }
 
-const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSelect }) => {
+const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, groupId, onTaskSelect }) => {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
@@ -40,23 +47,25 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
   const statuses = useAppSelector(state => state.taskStatusReducer.status);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const { token } = theme.useToken();
+  const { getCurrentSession } = useAuth();
 
   const selectedCount = Object.keys(rowSelection).length;
+  const columnHelper = createColumnHelper<IProjectTask>();
 
-  const handleExpandClick = (rowId: string) => {
+  const handleExpandClick = useCallback((rowId: string) => {
     setExpandedRows(prev => ({
       ...prev,
       [rowId]: !prev[rowId],
     }));
-  };
+  }, []);
 
-  const handleTaskSelect = (taskId: string) => {
+  const handleTaskSelect = useCallback((taskId: string) => {
     onTaskSelect?.(taskId);
-  };
+  }, [onTaskSelect]);
 
-  const columns = useMemo<ColumnDef<IProjectTask>[]>(
+  const columns = useMemo(
     () => [
-      {
+      columnHelper.display({
         id: 'select',
         header: ({ table }) => (
           <Checkbox
@@ -80,63 +89,65 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
         size: 47,
         minSize: 47,
         maxSize: 47,
-      },
-      {
-        accessorKey: 'task_key',
+        enablePinning: true,
+        meta: {
+          style: { position: 'sticky', left: 0, zIndex: 1 }
+        }
+      }),
+
+      columnHelper.accessor('task_key', {
         header: 'Key',
         size: 85,
         minSize: 85,
         maxSize: 85,
+        enablePinning: false,
         cell: ({ row }) => (
           <Tag onClick={() => handleTaskSelect(row.original.id || '')} style={{ cursor: 'pointer' }}>
             {row.original.task_key}
           </Tag>
-        ),
-      },
-      {
-        accessorKey: 'name',
+        )
+      }),
+
+      columnHelper.accessor('name', {
         header: 'Task',
         size: 450,
+        enablePinning: true,
+        meta: {
+          style: { position: 'sticky', left: '47px', zIndex: 1 }
+        },
         cell: ({ row }) => (
           <TaskRowName
             task={row.original}
             isSubTask={false}
             expandedTasks={Object.keys(expandedRows)}
-            setSelectedTaskId={() => {}}
-            toggleTaskExpansion={() => {}}
+            setSelectedTaskId={() => { }}
+            toggleTaskExpansion={() => { }}
           />
-          // <Flex align="center" gap={8} style={{ cursor: 'pointer', position: 'relative' }}>
-          //   {(row.original?.sub_tasks_count || 0) > 0 ? (
-          //     <RightOutlined
-          //       style={{
-          //         transform: expandedRows[row.id] ? 'rotate(90deg)' : 'none',
-          //         transition: 'transform 0.2s',
-          //       }}
-          //       onClick={(e) => {
-          //         e.stopPropagation();
-          //         handleExpandClick(row.id);
-          //       }}
-          //     />
-          //   ) : (
-          //     <div style={{ width: 14 }} />
-          //   )}
-          //   <span onClick={() => handleTaskSelect(row.original.id || '')}>{row.original.name}</span>
-          //   <Input
-          //     style={{ position: 'absolute', top: 0, left: 0, width: '100%', display: 'none' }}
-          //     defaultValue={row.original.name}
-          //     onBlur={(e) => {
-          //       // Handle name change
-          //       console.log('New name:', e.target.value);
-          //     }}
-          //   />
-          //   <div style={{ position: 'absolute', top: 0, right: 0, display: 'none' }}>Open</div>
-          // </Flex>
-        ),
-      },
-      {
-        accessorKey: 'names',
+        )
+      }),
+
+      columnHelper.accessor('description', {
+        header: 'Description',
+        size: 225,
+        enablePinning: false,
+        cell: ({ row }) => (
+          <TaskRowDescription description={row.original.description || ''} />
+        )
+      }),
+
+      columnHelper.accessor('progress', {
+        header: 'Progress',
+        size: 80,
+        enablePinning: false,
+        cell: ({ row }) => (
+          <TaskRowProgress progress={row.original.progress || 0} numberOfSubTasks={row.original.sub_tasks_count || 0} />
+        )
+      }),
+
+      columnHelper.accessor('names', {
         header: 'Assignees',
         size: 159,
+        enablePinning: false,
         cell: ({ row }) => (
           <Flex align="center" gap={8}>
             <Avatars key={`${row.original.id}-assignees`} members={row.original.names || []} maxCount={3} />
@@ -152,62 +163,97 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
               }}
             />
           </Flex>
-        ),
-      },
-      {
-        accessorKey: 'end_date',
+        )
+      }),
+
+      columnHelper.accessor('end_date', {
         header: 'Due Date',
         size: 149,
+        enablePinning: false,
         cell: ({ row }) => (
-          <span><DatePicker key={`${row.original.id}-end-date`} placeholder="Set a due date" suffixIcon={null} variant='borderless' /></span>
-        ),
-      },
-      {
-        accessorKey: 'status',
+          <span>
+            <DatePicker key={`${row.original.id}-end-date`} placeholder="Set a due date" suffixIcon={null} variant='borderless' />
+          </span>
+        )
+      }),
+
+      columnHelper.accessor('due_time', {
+        header: 'Due Time',
+        size: 120,
+        enablePinning: false,
+        cell: ({ row }) => (
+          <TaskRowDueTime dueTime={row.original.due_time || ''} />
+        )
+      }),
+
+      columnHelper.accessor('status', {
         header: 'Status',
         size: 120,
+        enablePinning: false,
         cell: ({ row }) => (
           <StatusDropdown
             key={`${row.original.id}-status`}
             statusList={statuses}
-            status_id={row.original.status}
+            task={row.original}
+            teamId={getCurrentSession()?.team_id || ''}
             onChange={(statusId) => {
-              // Handle status change
               console.log('Status changed:', statusId);
             }}
           />
-        ),
-      },
-      {
-        accessorKey: 'labels',
+        )
+      }),
+
+      columnHelper.accessor('labels', {
         header: 'Labels',
+        size: 225,
+        enablePinning: false,
         cell: ({ row }) => (
           <Flex>
-            {
-              row.original.labels?.map(label => 
-                <CustomColorLabel key={`${row.original.id}-${label.id}`} label={label} />
-              )
-            }
+            {row.original.labels?.map(label =>
+              <CustomColorLabel key={`${row.original.id}-${label.id}`} label={label} />
+            )}
             <LabelsSelector taskId={row.original.id} />
           </Flex>
-        ),
-      },
-      {
-        accessorKey: 'start_date',
+        )
+      }),
+
+      columnHelper.accessor('start_date', {
         header: 'Start Date',
         size: 149,
+        enablePinning: false,
         cell: ({ row }) => (
-          <span><DatePicker placeholder="Set a start date" suffixIcon={null} variant='borderless' /></span>
-        ),
-      },
-      {
-        accessorKey: 'priority',
+          <span>
+            <DatePicker placeholder="Set a start date" suffixIcon={null} variant='borderless' />
+          </span>
+        )
+      }),
+
+      columnHelper.accessor('priority', {
         header: 'Priority',
-        size: 149,
+        size: 120,
+        enablePinning: false,
         cell: ({ row }) => (
-          <span><Select variant='borderless' options={[{ value: 'high', label: 'High' }, { value: 'medium', label: 'Medium' }, { value: 'low', label: 'Low' }]} /></span>
-        ),
-      },
+          <span>
+            <Select
+              variant='borderless'
+              options={[
+                { value: 'high', label: 'High' },
+                { value: 'medium', label: 'Medium' },
+                { value: 'low', label: 'Low' }
+              ]}
+            />
+          </span>
+        )
+      }),
+
+      // columnHelper.accessor('time_tracking', {
+      //   header: 'Time Tracking',
+      //   size: 120,
+      //   enablePinning: false,
+      //   cell: ({ row }) => (
+      //     <TaskRowTimeTracking taskId={row.original.id || null} />
+      //   )
+      // })
     ],
     [expandedRows, statuses, token.colorPrimary]
   );
@@ -269,10 +315,11 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
                 {headerGroup.headers.map((header, index) => (
                   <div
                     key={header.id}
+                    className={`${header.column.getIsPinned() === 'left' ? 'sticky left-0 z-10' : ''}`}
                     style={{
                       width: header.getSize(),
                       position: index < 2 ? 'sticky' : 'relative',
-                      left: 'auto',
+                      left: index === 0 ? 0 : index === 1 ? '47px' : 'auto',
                       background: token.colorBgElevated,
                       zIndex: 1,
                       color: token.colorText,
@@ -282,7 +329,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
                       borderRight: `1px solid ${token.colorBorderSecondary}`,
                       textAlign: index === 0 ? 'right' : 'left',
                       fontWeight: 'normal',
-                      padding: '0 8px',
+                      padding: '8px 0px 8px 8px',
                     }}
                   >
                     {header.isPlaceholder
@@ -312,6 +359,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
                     {row.getVisibleCells().map((cell, index) => (
                       <div
                         key={cell.id}
+                        className={`${cell.column.getIsPinned() === 'left' ? 'sticky left-0 z-10' : ''}`}
                         style={{
                           width: cell.column.getSize(),
                           position: index < 2 ? 'sticky' : 'relative',
@@ -321,7 +369,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
                           height: '42px',
                           borderBottom: `1px solid ${token.colorBorderSecondary}`,
                           borderRight: `1px solid ${token.colorBorderSecondary}`,
-                          padding: '0 8px',
+                          padding: '8px 0px 8px 8px',
                         }}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -374,7 +422,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, onTaskSel
           </div>
         </div>
       </div>
-      <TaskListInstantTaskInput />
+      <TaskListInstantTaskInput session={getCurrentSession() || null} groupId={groupId} parentTask={null} />
       {/* {selectedCount > 0 && (
         <Flex
           justify="space-between"

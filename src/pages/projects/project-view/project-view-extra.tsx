@@ -24,7 +24,6 @@ const ProjectViewExtra = () => {
 
   const handleMemberView = (res: any) => {
     // dispatch(setActiveMembers(res));
-
   };
 
   const handleProjectUpdates = (res: any) => {

@@ -154,3 +154,4 @@ export const PROJECT_STATUS_ICON_MAP = {
   'close-circle': CloseCircleOutlined, 
   'stop': StopOutlined,
 }
+export const DRAWER_ANIMATION_INTERVAL = 200;
