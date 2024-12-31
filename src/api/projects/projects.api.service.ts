@@ -70,9 +70,21 @@ export const projectsApiService = {
     return response.data;
   },
 
-  createProject: async (project: IProjectViewModel): Promise<IServerResponse<IProjectViewModel>> => {
+  createProject: async (
+    project: IProjectViewModel
+  ): Promise<IServerResponse<IProjectViewModel>> => {
     const url = `${rootUrl}`;
     const response = await apiClient.post<IServerResponse<IProjectViewModel>>(`${url}`, project);
+    return response.data;
+  },
+
+  updateProject: async (
+    id: string,
+    project: IProjectViewModel
+  ): Promise<IServerResponse<IProjectViewModel>> => {
+    const q = toQueryString({current_project_id: id})
+    const url = `${rootUrl}/${id}${q}`;
+    const response = await apiClient.put<IServerResponse<IProjectViewModel>>(`${url}`, project);
     return response.data;
   },
 

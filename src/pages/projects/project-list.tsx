@@ -1,22 +1,31 @@
-// React and core dependencies
+// Core dependencies
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-// Ant Design components and types
+// Ant Design components
 import { Button, Card, Flex, Input, Segmented, Table, TablePaginationConfig, Tooltip } from 'antd';
 import { PageHeader } from '@ant-design/pro-components';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 
-// Local components
+// Components
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 import CreateProjectButton from '@/components/projects/project-drawer/create-project-button';
+import TableColumns from '@/components/project-list/TableColumns';
 
-// Redux hooks and actions
+// Redux
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchProjects, toggleArchiveProject, toggleDrawer } from '@/features/projects/projectsSlice';
+import {
+  fetchProjects,
+  toggleArchiveProject,
+  toggleDrawer,
+} from '@/features/projects/projectsSlice';
+import { getProject, setProjectId } from '@/features/project/project.slice';
+import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
+import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
+import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 
 // Constants and types
 import {
@@ -32,12 +41,7 @@ import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 // Hooks and styles
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import './project-list.css';
-import { fetchClients } from '@/features/settings/client/clientSlice';
-import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
-import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
-import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
-import { getProject, setProjectId } from '@/features/project/project.slice';
-import TableColumns from '@/components/project-list/TableColumns';
+import { IProjectCategory } from '@/types/project/projectCategory.types';
 
 // Interfaces
 interface PaginationState {
@@ -59,25 +63,9 @@ const ProjectList: React.FC = () => {
 
   // Redux state
   const { loading, projects } = useAppSelector(state => state.projectsReducer);
-  const { project } = useAppSelector(state => state.projectReducer);
-  const { categories } = useAppSelector(state => state.projectCategoriesReducer);
   const { statuses } = useAppSelector(state => state.projectStatusesReducer);
   const { healths } = useAppSelector(state => state.projectHealthReducer);
-
-  // Parallel data fetching on mount
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      const promises = [
-        !healths.length && dispatch(fetchProjectHealth()),
-        !categories.length && dispatch(fetchProjectCategories()),
-        !statuses.length && dispatch(fetchProjectStatuses())
-      ].filter(Boolean);
-      
-      await Promise.all(promises);
-    };
-
-    fetchInitialData();
-  }, []);
+  const { categories } = useAppSelector(state => state.projectCategoriesReducer);
 
   // Local state
   const [searchTerm, setSearchTerm] = useState('');
@@ -101,6 +89,21 @@ const ProjectList: React.FC = () => {
     };
   });
 
+  // Parallel data fetching on mount
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      const promises = [
+        dispatch(fetchProjectCategories()),
+        !healths.length && dispatch(fetchProjectHealth()),
+        !statuses.length && dispatch(fetchProjectStatuses()),
+      ].filter(Boolean);
+
+      await Promise.all(promises);
+    };
+
+    fetchInitialData();
+  }, []);
+
   // Callback functions
   const getFilterIndex = useCallback(() => {
     return +(localStorage.getItem(FILTER_INDEX_KEY) || 0);
@@ -118,33 +121,32 @@ const ProjectList: React.FC = () => {
   // Memoized values
   const filters = useMemo(() => Object.values(IProjectFilter), []);
 
-  const requestParams = useMemo(() => ({
-    index: pagination.current,
-    size: pagination.pageSize,
-    field: sorter.columnKey,
-    order: sorter.order,
-    filter: getFilterIndex(),
-    search: searchTerm,
-    statuses: selectedStatus,
-    categories: selectedCategory,
-  }), [
-    pagination,
-    sorter,
-    getFilterIndex,
-    searchTerm,
-    selectedStatus,
-    selectedCategory,
-  ]);
+  const requestParams = useMemo(
+    () => ({
+      index: pagination.current,
+      size: pagination.pageSize,
+      field: sorter.columnKey,
+      order: sorter.order,
+      filter: getFilterIndex(),
+      search: searchTerm,
+      statuses: selectedStatus,
+      categories: selectedCategory,
+    }),
+    [pagination, sorter, getFilterIndex, searchTerm, selectedStatus, selectedCategory]
+  );
 
-  const paginationConfig = useMemo(() => ({
-    current: pagination.current,
-    pageSize: pagination.pageSize,
-    showSizeChanger: true,
-    defaultPageSize: DEFAULT_PAGE_SIZE,
-    pageSizeOptions: PAGE_SIZE_OPTIONS,
-    size: 'small' as const,
-    total: projects.total,
-  }), [pagination, projects.total]);
+  const paginationConfig = useMemo(
+    () => ({
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      showSizeChanger: true,
+      defaultPageSize: DEFAULT_PAGE_SIZE,
+      pageSizeOptions: PAGE_SIZE_OPTIONS,
+      size: 'small' as const,
+      total: projects.total,
+    }),
+    [pagination, projects.total]
+  );
 
   const getProjects = useCallback(async () => {
     try {
@@ -154,64 +156,85 @@ const ProjectList: React.FC = () => {
     }
   }, [dispatch, requestParams]);
 
-  const handleTableChange = useCallback((
-    newPagination: TablePaginationConfig,
-    filters: Record<string, FilterValue | null>,
-    sorter: SorterResult<IProjectViewModel> | SorterResult<IProjectViewModel>[]
-  ) => {
-    if (filters?.status_id) {
-      setSelectedStatus(filters.status_id.join('+'));
-    }
-    if (filters?.category_id) {
-      setSelectedCategory(filters.category_id.join('+'));
-    }
+  const handleTableChange = useCallback(
+    (
+      newPagination: TablePaginationConfig,
+      filters: Record<string, FilterValue | null>,
+      sorter: SorterResult<IProjectViewModel> | SorterResult<IProjectViewModel>[]
+    ) => {
+      if (filters?.status_id) {
+        setSelectedStatus(filters.status_id.join('+'));
+      }
+      if (filters?.category_id) {
+        setSelectedCategory(filters.category_id.join('+'));
+      }
 
-    const newSorter = {
-      order: (Array.isArray(sorter) ? sorter[0].order : sorter.order) ?? 'ascend',
-      columnKey: ((Array.isArray(sorter) ? sorter[0].columnKey : sorter.columnKey) as string) ?? 'name',
-    };
+      const newSorter = {
+        order: (Array.isArray(sorter) ? sorter[0].order : sorter.order) ?? 'ascend',
+        columnKey:
+          ((Array.isArray(sorter) ? sorter[0].columnKey : sorter.columnKey) as string) ?? 'name',
+      };
 
-    setPagination({
-      current: newPagination.current || 1,
-      pageSize: newPagination.pageSize || DEFAULT_PAGE_SIZE,
-    });
+      setPagination({
+        current: newPagination.current || 1,
+        pageSize: newPagination.pageSize || DEFAULT_PAGE_SIZE,
+      });
 
-    setSorter(newSorter);
-  }, []);
+      setSorter(newSorter);
+    },
+    []
+  );
 
   const handleRefresh = useCallback(() => {
     getProjects();
   }, [getProjects]);
 
-  const handleSegmentChange = useCallback((value: IProjectFilter) => {
-    setFilterIndex(filters.indexOf(value));
-    getProjects();
-  }, [filters, setFilterIndex, getProjects]);
+  const handleSegmentChange = useCallback(
+    (value: IProjectFilter) => {
+      setFilterIndex(filters.indexOf(value));
+      const newFilterIndex = filters.indexOf(value);
+      dispatch(
+        fetchProjects({
+          ...requestParams,
+          filter: newFilterIndex,
+        })
+      );
+    },
+    [filters, setFilterIndex, dispatch, requestParams]
+  );
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    debouncedSearchTerm(value, setSearchTerm);
-  }, [debouncedSearchTerm]);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      debouncedSearchTerm(value, setSearchTerm);
+    },
+    [debouncedSearchTerm]
+  );
+
+  const setSelectedProjectId = useCallback(
+    (id: string) => {
+      if (id) {
+        dispatch(setProjectId(id));
+        dispatch(getProject(id));
+        dispatch(toggleDrawer());
+      }
+    },
+    [dispatch]
+  );
 
   // Effects
   useEffect(() => {
     setSortingValues(sorter);
     getProjects();
-  }, [searchTerm, selectedStatus, selectedCategory, pagination, sorter, setSortingValues, getProjects]);
-
-  const setSelectedProjectId = useCallback((id: string) => {
-    if (id) {
-      dispatch(setProjectId(id));
-      dispatch(getProject(id));
-      dispatch(toggleDrawer());
-    }
-  }, [dispatch]);
-
-  const handleArchive = useCallback((id: string) => {
-    if (id) {
-      dispatch(toggleArchiveProject(id));
-    }
-  }, [dispatch]);
+  }, [
+    searchTerm,
+    selectedStatus,
+    selectedCategory,
+    pagination,
+    sorter,
+    setSortingValues,
+    getProjects,
+  ]);
 
   return (
     <div style={{ marginBlock: 65, minHeight: '90vh' }}>

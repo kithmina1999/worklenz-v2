@@ -1,59 +1,72 @@
 import { Button, Drawer, Dropdown } from 'antd';
 import { startTransition, useEffect, useState } from 'react';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleDrawer } from '../../../features/projects/projectsSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { toggleDrawer } from '@/features/projects/projectsSlice';
 import { DownOutlined, EditOutlined, ImportOutlined } from '@ant-design/icons';
 import TemplateDrawer from '@components/account-setup/template-drawer/template-drawer';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
+import { setProject, setProjectId } from '@/features/project/project.slice';
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
-const CreateProjectButton = () => {
+interface CreateProjectButtonProps {
+  className?: string;
+}
+
+const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) => {
   const dispatch = useAppDispatch();
-  const [open, setOpen] = useState(false);
-  const [current, setCurrent] = useState<string>('');
+  const [isTemplateDrawerOpen, setIsTemplateDrawerOpen] = useState(false);
+  const [currentPath, setCurrentPath] = useState<string>('');
   const location = useLocation();
-
   const { t } = useTranslation('create-first-project-form');
-
-  const openTemplateSelector = () => {
-    startTransition(() => {
-      setOpen(true);
-    });
-  };
-
-  const closeTemplateSelector = () => {
-    setOpen(false);
-  };
 
   useEffect(() => {
     const pathKey = location.pathname.split('/').pop();
-    setCurrent(pathKey ?? 'home');
+    setCurrentPath(pathKey ?? 'home');
   }, [location]);
 
-  const items = [
+  const handleTemplateDrawerOpen = () => {
+    startTransition(() => {
+      setIsTemplateDrawerOpen(true);
+    });
+  };
+
+  const handleTemplateDrawerClose = () => {
+    setIsTemplateDrawerOpen(false);
+  };
+
+  const handleTemplateSelect = (templateId: string) => {
+    // TODO: Implement template selection logic
+    console.log('Selected template:', templateId);
+    handleTemplateDrawerClose();
+  };
+
+  const dropdownItems = [
     {
-      key: '1',
+      key: 'template',
       label: (
-        <div
-          style={{ width: '100%', margin: 0, padding: 0 }}
-          onClick={openTemplateSelector}
-        >
-          <ImportOutlined style={{ marginRight: '8px' }} />{' '}
-          {current === 'home'
-            ? ' Import from template '
-            : ' Create from template'}
+        <div className="w-full m-0 p-0" onClick={handleTemplateDrawerOpen}>
+          <ImportOutlined className="mr-2" />
+          {currentPath === 'home' ? 'Import from template' : 'Create from template'}
         </div>
       ),
     },
   ];
 
+  const handleCreateProject = () => {
+    dispatch(setProjectId(null));
+    dispatch(setProject({} as IProjectViewModel));
+    dispatch(toggleDrawer());
+  };
+
+
   return (
-    <div>
+    <div className={className}>
       <Dropdown.Button
         type="primary"
         icon={<DownOutlined />}
-        onClick={() => dispatch(toggleDrawer())}
-        menu={{ items }}
+        onClick={handleCreateProject}
+        menu={{ items: dropdownItems }}
       >
         <EditOutlined /> Create Project
       </Dropdown.Button>
@@ -61,29 +74,21 @@ const CreateProjectButton = () => {
       <Drawer
         title={t('templateDrawerTitle')}
         width={1000}
-        onClose={closeTemplateSelector}
-        open={open}
+        onClose={handleTemplateDrawerClose}
+        open={isTemplateDrawerOpen}
         footer={
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'right',
-              padding: '10px 16px',
-            }}
-          >
-            <Button
-              style={{ marginRight: '8px' }}
-              onClick={closeTemplateSelector}
-            >
+          <div className="flex justify-end px-4 py-2.5">
+            <Button className="mr-2" onClick={handleTemplateDrawerClose}>
               {t('cancel')}
             </Button>
             <Button type="primary">{t('create')}</Button>
           </div>
         }
       >
-        <TemplateDrawer showBothTabs={false} templateSelected={function (templateId: string): void {
-          throw new Error('Function not implemented.');
-        } } />
+        <TemplateDrawer 
+          showBothTabs={false} 
+          templateSelected={handleTemplateSelect}
+        />
       </Drawer>
     </div>
   );

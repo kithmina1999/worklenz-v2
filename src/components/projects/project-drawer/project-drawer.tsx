@@ -24,7 +24,7 @@ import dayjs from 'dayjs';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { createProject, deleteProject, toggleDrawer } from '@features/projects/projectsSlice';
+import { createProject, deleteProject, toggleDrawer, updateProject } from '@features/projects/projectsSlice';
 import { addCategory } from '@features/settings/categories/categoriesSlice';
 
 import { projectColors } from '@/lib/project/projectConstants';
@@ -85,6 +85,7 @@ const ProjectDrawer = ({
       category_id: values.category_id,
       health_id: values.health_id,
       notes: values.notes,
+      key: values.key,
       client_name: selectedClient,
       project_manager: values.projectManager,
       start_date: values.start_date,
@@ -93,11 +94,19 @@ const ProjectDrawer = ({
       man_days: values.man_days,
       hours_per_day: values.hours_per_day,
     };
-    const response = await dispatch(createProject(projectModel)).unwrap();
-    if (response?.id) {
-      form.resetFields();
-      dispatch(toggleDrawer());
-      navigate(`/worklenz/projects/${response.id}`);
+    if (editMode && projectId) {
+      const response = await dispatch(updateProject({ id: projectId, project: projectModel })).unwrap();
+      if (response?.id) {
+        form.resetFields();
+        dispatch(toggleDrawer());
+      }
+    } else {
+      const response = await dispatch(createProject(projectModel)).unwrap();
+      if (response?.id) {
+        form.resetFields();
+        dispatch(toggleDrawer());
+        navigate(`/worklenz/projects/${response.id}`);
+      }
     }
   };
 
@@ -216,7 +225,7 @@ const ProjectDrawer = ({
       destroyOnClose
       afterOpenChange={visibleChanged}
       footer={
-        <Flex justify="end">
+        <Flex justify='space-between'>
           <Space>
             {editMode && (
               <Popconfirm
@@ -231,6 +240,8 @@ const ProjectDrawer = ({
                 </Button>
               </Popconfirm>
             )}
+          </Space>
+          <Space>
             <Button type="primary" onClick={() => form.submit()}>
               {editMode ? t('update') : t('create')}
             </Button>
@@ -266,6 +277,13 @@ const ProjectDrawer = ({
             >
               <Input placeholder={t('enterProjectName')} />
             </Form.Item>
+            {
+              editMode && (
+                <Form.Item name="key" label={t('key')}>
+                  <Input placeholder={t('enterProjectKey')} value={project?.key} />
+                </Form.Item>
+              )
+            }
             <Form.Item name="color_code" label={t('projectColor')} layout="horizontal" required>
               <ColorPicker
                 value={project?.color_code || '#154c9b'}
@@ -341,6 +359,7 @@ const ProjectDrawer = ({
                 allowClear
                 onSearch={handleClientSearch}
                 placeholder={t('typeToSearchClients')}
+                value={project?.client_name}
                 dropdownRender={menu => (
                   <>
                     {loadingClients && <Spin />}

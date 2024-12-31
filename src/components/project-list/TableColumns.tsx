@@ -1,170 +1,21 @@
 import { ColumnsType } from 'antd/es/table';
-import { Badge, Button, Popconfirm, Progress, Rate, Tag, Tooltip } from 'antd';
-import { CalendarOutlined, InboxOutlined, SettingOutlined } from '@ant-design/icons';
+import { ColumnFilterItem } from 'antd/es/table/interface';
 import { useTranslation } from 'react-i18next';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
-import { useMemo, useCallback } from 'react';
+import { NavigateFunction } from 'react-router-dom';
+import { useMemo } from 'react';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleFavoriteProject, toggleArchiveProject, toggleArchiveProjectForAll } from '@/features/projects/projectsSlice';
-import './TableColumns.css';
-import { ColumnFilterItem } from 'antd/es/table/interface';
-import Avatars from '../avatars/Avatars';
+import { useAuth } from '@/hooks/useAuth';
 import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
-import { calculateTimeDifference } from '@/utils/calculate-time-difference';
-import { AppDispatch } from '@/app/store';
-import { useAuth } from '@/hooks/useAuth';
-import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
-
-// Constants
-const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-};
-
-// Types
-interface DateRange {
-  startDate: string | null;
-  endDate: string | null;
-}
-
-// Utility functions
-const formatDateRange = ({ startDate, endDate }: DateRange): string => {
-  const formattedStart = startDate
-    ? new Date(startDate).toLocaleDateString('en-US', DATE_FORMAT_OPTIONS)
-    : 'N/A';
-  const formattedEnd = endDate
-    ? new Date(endDate).toLocaleDateString('en-US', DATE_FORMAT_OPTIONS)
-    : 'N/A';
-
-  return `Start date: ${formattedStart}\nEnd date: ${formattedEnd}`;
-};
-
-const getTaskProgressTitle = (data: IProjectViewModel): string => {
-  if (!data.all_tasks_count) return 'No tasks available.';
-  if (data.all_tasks_count === data.completed_tasks_count) return 'All tasks completed.';
-  return `${data.completed_tasks_count || 0}/${data.all_tasks_count || 0} tasks completed.`;
-};
-
-// Reusable column components
-const ProjectNameCell: React.FC<{ record: IProjectViewModel; navigate: NavigateFunction }> = ({
-  record,
-  navigate,
-}) => {
-  const dispatch = useAppDispatch();
-
-  const handleFavorite = useCallback(async () => {
-    if (record.id) await dispatch(toggleFavoriteProject(record.id));
-  }, [dispatch, record.id]);
-
-  const selectProject = (record: IProjectViewModel) => {
-    if (!record.id) return;
-
-    let viewTab = 'tasks-list';
-    switch (record.team_member_default_view) {
-      case 'TASK_LIST':
-        viewTab = 'tasks-list';
-        break;
-      case 'BOARD':
-        viewTab = 'board';
-        break;
-      default:
-        viewTab = 'tasks-list';
-    }
-
-    const searchParams = new URLSearchParams({
-      tab: viewTab,
-      pinned_tab: viewTab,
-    });
-
-    navigate({
-      pathname: `/worklenz/projects/${record.id}`,
-      search: searchParams.toString(),
-    });
-  };
-
-  return (
-    <div className="flex items-center" onClick={() => selectProject(record)} >
-      <Rate
-        value={record.favorite ? 1 : 0}
-        onChange={handleFavorite}
-        count={1}
-        className="mr-2"
-        tooltips={['Add to favourites']}
-      />
-      <Badge color="geekblue" className="mr-2" />
-      <span className="cursor-pointer">
-        {record.name}
-        {(record.start_date || record.end_date) && (
-          <Tooltip
-            title={formatDateRange({
-              startDate: record.start_date || null,
-              endDate: record.end_date || null,
-            })}
-            overlayStyle={{ width: '200px' }}
-          >
-            <CalendarOutlined className="ml-2" />
-          </Tooltip>
-        )}
-      </span>
-    </div>
-  );
-};
-
-const CategoryCell: React.FC<{ record: IProjectViewModel }> = ({ record }) => {
-  if (!record.category_name) return '-';
-
-  return (
-    <Tooltip title={`Click to filter by "${record.category_name}"`}>
-      <Tag color="#ff9c3c" className="rounded-full table-tag">
-        {record.category_name}
-      </Tag>
-    </Tooltip>
-  );
-};
-
-const ActionButtons: React.FC<{ t: (key: string) => string; record: IProjectViewModel; setProjectId: (id: string) => void; dispatch: AppDispatch; isOwnerOrAdmin: boolean }> = ({
-  t,
-  record,
-  setProjectId,
-  dispatch,
-  isOwnerOrAdmin,
-}) => (
-  <div>
-    <Tooltip title={t('setting')}>
-      <Button className="mr-2" size="small" onClick={() => setProjectId(record.id || '')}>
-        <SettingOutlined />
-      </Button>
-    </Tooltip>
-    <Tooltip title={t('archive')}>
-      <Popconfirm
-        title={t('archive')}
-        description={t('archiveConfirm')}
-        onConfirm={() => handleArchive(record.id, dispatch, isOwnerOrAdmin)}
-      >
-        <Button size="small">
-          <InboxOutlined />
-        </Button>
-      </Popconfirm>
-    </Tooltip>
-  </div>
-);
-
-const handleArchive = (recordId: string | undefined, dispatch: AppDispatch, isOwnerOrAdmin: boolean) => {
-  if (!recordId) return;
-  try {
-    if (isOwnerOrAdmin) {
-      dispatch(toggleArchiveProjectForAll(recordId));
-    } else {
-      dispatch(toggleArchiveProject(recordId));
-    }
-  } catch (error) {
-    console.error('Failed to archive project:', error);
-  }
-};
+import { ProjectNameCell } from './project-list-table/project-name/project-name-cell';
+import { ProgressListProgress } from './project-list-table/project-list-progress/progress-list-progress';
+import { ProjectListUpdatedAt } from './project-list-table/project-list-updated-at/project-list-updated';
+import { ActionButtons } from './project-list-table/project-list-actions/project-list-actions';
+import Avatars from '../avatars/Avatars';
+import './TableColumns.css';
+import { CategoryCell } from './project-list-table/project-list-category/project-list-category';
 
 const TableColumns = (
   navigate: NavigateFunction,
@@ -205,7 +56,7 @@ const TableColumns = (
         title: t('category'),
         dataIndex: 'category',
         key: 'category_id',
-        render: (_, record) => <CategoryCell record={record} />,
+        render: (_, record) => <CategoryCell key={record.id} t={t} record={record} />,
         sorter: true,
         showSorterTooltip: false,
         filters: categories.map(category => ({
@@ -230,11 +81,7 @@ const TableColumns = (
         title: t('tasksProgress'),
         key: 'tasksProgress',
         dataIndex: 'tasksProgress',
-        render: (_, record) => (
-          <Tooltip title={getTaskProgressTitle(record)}>
-            <Progress percent={record.progress} className="project-progress" />
-          </Tooltip>
-        ),
+        render: (_, record) => <ProgressListProgress record={record} />,
       },
       {
         title: t('updated_at'),
@@ -242,15 +89,7 @@ const TableColumns = (
         dataIndex: 'updated_at',
         showSorterTooltip: false,
         sorter: true,
-        render: (date: Date, record) => (
-          <Tooltip
-            title={record.updated_at ? formatDateTimeWithLocale(record.updated_at) : ''}
-            placement="topLeft"
-            mouseEnterDelay={0.5}
-          >
-            {record.updated_at ? calculateTimeDifference(record.updated_at) : ''}
-          </Tooltip>
-        ),
+        render: (_, record) => <ProjectListUpdatedAt record={record} />,
       },
       {
         title: t('members'),
@@ -262,7 +101,15 @@ const TableColumns = (
         title: '',
         key: 'button',
         dataIndex: '',
-        render: (record: IProjectViewModel) => <ActionButtons t={t} record={record} setProjectId={setProjectId} dispatch={dispatch} isOwnerOrAdmin={isOwnerOrAdmin} />,
+        render: (record: IProjectViewModel) => (
+          <ActionButtons
+            t={t}
+            record={record}
+            setProjectId={setProjectId}
+            dispatch={dispatch}
+            isOwnerOrAdmin={isOwnerOrAdmin}
+          />
+        ),
       },
     ],
     [categories, statuses, t]

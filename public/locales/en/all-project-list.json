@@ -14,5 +14,8 @@
   "archived": "Archived",
   "placeholder": "Search by name",
   "archive": "Archive",
-  "archiveConfirm": "Are you sure you want to archive this project?"
+  "unarchive": "Unarchive",
+  "archiveConfirm": "Are you sure you want to archive this project?",
+  "unarchiveConfirm": "Are you sure you want to unarchive this project?",
+  "clickToFilter": "Click to filter by"
 }

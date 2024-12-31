@@ -25,20 +25,3 @@ export const getTaskProgressTitle = (data: IProjectViewModel): string => {
   if (data.all_tasks_count === data.completed_tasks_count) return 'All tasks completed.';
   return `${data.completed_tasks_count || 0}/${data.all_tasks_count || 0} tasks completed.`;
 };
-
-export const handleArchive = async (
-  recordId: string | undefined,
-  dispatch: AppDispatch,
-  isOwnerOrAdmin: boolean
-) => {
-  if (!recordId) return;
-  try {
-    if (isOwnerOrAdmin) {
-      await dispatch(toggleArchiveProjectForAll(recordId));
-    } else {
-      await dispatch(toggleArchiveProject(recordId));
-    }
-  } catch (error) {
-    console.error('Failed to archive project:', error);
-  }
-};

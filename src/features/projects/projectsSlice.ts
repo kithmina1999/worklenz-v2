@@ -2,12 +2,14 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { projectsApiService } from '@/api/projects/projects.api.service';
 import logger from '@/utils/errorLogger';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
+import { IProjectCategory } from '@/types/project/projectCategory.types';
 
 interface ProjectState {
   projects: {
     data: IProjectViewModel[];
     total: number;
   };
+  categories: IProjectCategory[];
   loading: boolean;
   creatingProject: boolean;
   initialized: boolean;
@@ -19,6 +21,7 @@ const initialState: ProjectState = {
     data: [],
     total: 0,
   },
+  categories: [],
   loading: false,
   creatingProject: false,
   initialized: false,
@@ -93,6 +96,14 @@ export const createProject = createAsyncThunk(
   }
 );
 
+export const updateProject = createAsyncThunk(
+  'projects/updateProject',
+  async ({ id, project }: { id: string; project: IProjectViewModel }, { rejectWithValue }) => {
+    const response = await projectsApiService.updateProject(id, project);
+    return response.body;
+  }
+);
+
 export const deleteProject = createAsyncThunk(
   'projects/deleteProject',
   async (id: string, { rejectWithValue }) => {
@@ -128,6 +139,9 @@ const projectSlice = createSlice({
       state.creatingProject = true;
     },
     deleteProject: (state, action: PayloadAction<string>) => {},
+    setCategories: (state, action: PayloadAction<IProjectCategory[]>) => {
+      state.categories = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
@@ -163,5 +177,5 @@ const projectSlice = createSlice({
   },
 });
 
-export const { toggleDrawer } = projectSlice.actions;
+export const { toggleDrawer, setCategories } = projectSlice.actions;
 export default projectSlice.reducer;

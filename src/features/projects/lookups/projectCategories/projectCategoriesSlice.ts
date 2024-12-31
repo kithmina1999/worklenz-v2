@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import logger from '@/utils/errorLogger';
 import { categoriesApiService } from '@api/settings/categories/categories.api.service';
 import { IProjectCategoryViewModel } from '@/types/project/projectCategory.types';
+import { setCategories } from '../../projectsSlice';
 
 type ProjectCategoryState = {
   initialized: boolean;
