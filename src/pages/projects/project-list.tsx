@@ -11,13 +11,12 @@ import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 
 // Local components
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
-import TableColumns from '@/components/ProjectList/TableColumns';
 import CreateProjectButton from '@/components/projects/project-drawer/create-project-button';
 
 // Redux hooks and actions
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchProjects, toggleDrawer } from '@/features/projects/projectsSlice';
+import { fetchProjects, toggleArchiveProject, toggleDrawer } from '@/features/projects/projectsSlice';
 
 // Constants and types
 import {
@@ -38,6 +37,7 @@ import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/pr
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 import { getProject, setProjectId } from '@/features/project/project.slice';
+import TableColumns from '@/components/project-list/TableColumns';
 
 // Interfaces
 interface PaginationState {
@@ -204,6 +204,12 @@ const ProjectList: React.FC = () => {
       dispatch(setProjectId(id));
       dispatch(getProject(id));
       dispatch(toggleDrawer());
+    }
+  }, [dispatch]);
+
+  const handleArchive = useCallback((id: string) => {
+    if (id) {
+      dispatch(toggleArchiveProject(id));
     }
   }, [dispatch]);
 

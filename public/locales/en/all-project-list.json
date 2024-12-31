@@ -7,11 +7,12 @@
   "updated_at": "Last Updated",
   "members": "Members",
   "setting": "Setting",
-  "archive": "Archive",
   "projects": "Projects",
   "refreshProjects": "Refresh projects",
   "all": "All",
   "favorites": "Favorites",
   "archived": "Archived",
-  "placeholder": "Search by name"
+  "placeholder": "Search by name",
+  "archive": "Archive",
+  "archiveConfirm": "Are you sure you want to archive this project?"
 }

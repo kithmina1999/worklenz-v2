@@ -155,3 +155,9 @@ export const PROJECT_STATUS_ICON_MAP = {
   'stop': StopOutlined,
 }
 export const DRAWER_ANIMATION_INTERVAL = 200;
+
+export const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+};

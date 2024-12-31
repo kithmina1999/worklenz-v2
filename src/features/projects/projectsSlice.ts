@@ -109,6 +109,14 @@ export const toggleArchiveProject = createAsyncThunk(
   }
 );
 
+export const toggleArchiveProjectForAll = createAsyncThunk(
+  'projects/toggleArchiveProjectForAll',
+  async (id: string, { rejectWithValue }) => {
+    const response = await projectsApiService.toggleArchiveProjectForAll(id);
+    return response.body;
+  }
+);
+
 const projectSlice = createSlice({
   name: 'projectReducer',
   initialState,
@@ -145,7 +153,13 @@ const projectSlice = createSlice({
       })
       .addCase(createProject.rejected, state => {
         state.creatingProject = false;
-      });
+      })
+      .addCase(toggleArchiveProject.fulfilled, state => {
+        state.loading = false;
+      })
+      .addCase(toggleArchiveProjectForAll.fulfilled, state => {
+        state.loading = false;
+      })
   },
 });
 

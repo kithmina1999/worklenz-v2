@@ -82,8 +82,14 @@ export const projectsApiService = {
     return response.data;
   },
 
-  toggleArchiveProject: async (id: string): Promise<IServerResponse<IProjectViewModel>> => {
+  toggleArchiveProject: async (id: string): Promise<IServerResponse<any>> => {
     const url = `${rootUrl}/archive/${id}`;
+    const response = await apiClient.get<IServerResponse<IProjectViewModel>>(`${url}`);
+    return response.data;
+  },
+
+  toggleArchiveProjectForAll: async (id: string): Promise<IServerResponse<any>> => {
+    const url = `${rootUrl}/archive-all/${id}`;
     const response = await apiClient.get<IServerResponse<IProjectViewModel>>(`${url}`);
     return response.data;
   },

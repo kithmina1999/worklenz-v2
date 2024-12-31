@@ -1,21 +1,22 @@
 import { ColumnsType } from 'antd/es/table';
-import { Badge, Button, Progress, Rate, Tag, Tooltip } from 'antd';
+import { Badge, Button, Popconfirm, Progress, Rate, Tag, Tooltip } from 'antd';
 import { CalendarOutlined, InboxOutlined, SettingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { useMemo, useCallback } from 'react';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleFavoriteProject } from '@/features/projects/projectsSlice';
+import { toggleFavoriteProject, toggleArchiveProject, toggleArchiveProjectForAll } from '@/features/projects/projectsSlice';
 import './TableColumns.css';
 import { ColumnFilterItem } from 'antd/es/table/interface';
 import Avatars from '../avatars/Avatars';
 import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
-import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 import { calculateTimeDifference } from '@/utils/calculate-time-difference';
-import { toggleDrawer, toggleUpdatedrawer } from '../../features/projects/projectSlice';
+import { AppDispatch } from '@/app/store';
+import { useAuth } from '@/hooks/useAuth';
+import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 
 // Constants
 const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
@@ -125,10 +126,12 @@ const CategoryCell: React.FC<{ record: IProjectViewModel }> = ({ record }) => {
   );
 };
 
-const ActionButtons: React.FC<{ t: (key: string) => string; record: IProjectViewModel; setProjectId: (id: string) => void }> = ({
+const ActionButtons: React.FC<{ t: (key: string) => string; record: IProjectViewModel; setProjectId: (id: string) => void; dispatch: AppDispatch; isOwnerOrAdmin: boolean }> = ({
   t,
   record,
   setProjectId,
+  dispatch,
+  isOwnerOrAdmin,
 }) => (
   <div>
     <Tooltip title={t('setting')}>
@@ -137,12 +140,31 @@ const ActionButtons: React.FC<{ t: (key: string) => string; record: IProjectView
       </Button>
     </Tooltip>
     <Tooltip title={t('archive')}>
-      <Button size="small">
-        <InboxOutlined />
-      </Button>
+      <Popconfirm
+        title={t('archive')}
+        description={t('archiveConfirm')}
+        onConfirm={() => handleArchive(record.id, dispatch, isOwnerOrAdmin)}
+      >
+        <Button size="small">
+          <InboxOutlined />
+        </Button>
+      </Popconfirm>
     </Tooltip>
   </div>
 );
+
+const handleArchive = (recordId: string | undefined, dispatch: AppDispatch, isOwnerOrAdmin: boolean) => {
+  if (!recordId) return;
+  try {
+    if (isOwnerOrAdmin) {
+      dispatch(toggleArchiveProjectForAll(recordId));
+    } else {
+      dispatch(toggleArchiveProject(recordId));
+    }
+  } catch (error) {
+    console.error('Failed to archive project:', error);
+  }
+};
 
 const TableColumns = (
   navigate: NavigateFunction,
@@ -151,6 +173,8 @@ const TableColumns = (
   setProjectId: (id: string) => void
 ): ColumnsType<IProjectViewModel> => {
   const { t } = useTranslation('all-project-list');
+  const dispatch = useAppDispatch();
+  const isOwnerOrAdmin = useAuth().isOwnerOrAdmin();
 
   return useMemo(
     () => [
@@ -238,7 +262,7 @@ const TableColumns = (
         title: '',
         key: 'button',
         dataIndex: '',
-        render: (record: IProjectViewModel) => <ActionButtons t={t} record={record} setProjectId={setProjectId} />,
+        render: (record: IProjectViewModel) => <ActionButtons t={t} record={record} setProjectId={setProjectId} dispatch={dispatch} isOwnerOrAdmin={isOwnerOrAdmin} />,
       },
     ],
     [categories, statuses, t]
