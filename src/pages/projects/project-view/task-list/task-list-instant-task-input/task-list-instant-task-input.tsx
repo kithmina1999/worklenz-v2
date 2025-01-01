@@ -1,11 +1,18 @@
-import { Input } from 'antd';
+import { Input, InputRef, theme } from 'antd';
 import React, { useState, useMemo, useRef } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { ILocalSession } from '@/types/auth/local-session.types';
 import { ITaskCreateRequest } from '@/types/tasks/task-create-request.types';
-import { addTask, getCurrentGroup, GROUP_BY_PHASE_VALUE, GROUP_BY_PRIORITY_VALUE, GROUP_BY_STATUS_VALUE, setCurrentGroup } from '@/features/tasks/taskSlice';
+import {
+  addTask,
+  getCurrentGroup,
+  GROUP_BY_PHASE_VALUE,
+  GROUP_BY_PRIORITY_VALUE,
+  GROUP_BY_STATUS_VALUE,
+  setCurrentGroup,
+} from '@/features/tasks/taskSlice';
 import { useSocket } from '@/socket/socketContext';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { SocketEvents } from '@/shared/socket-events';
@@ -16,25 +23,30 @@ interface ITaskListInstantTaskInputProps {
   session: ILocalSession | null;
   groupId?: string | null;
   parentTask?: string | null;
-};
+}
 interface IAddNewTask extends IProjectTask {
   groupId: string;
 }
 
-const TaskListInstantTaskInput = ({ session, groupId = null, parentTask = null }: ITaskListInstantTaskInputProps) => {
+const TaskListInstantTaskInput = ({
+  session,
+  groupId = null,
+  parentTask = null,
+}: ITaskListInstantTaskInputProps) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [taskName, setTaskName] = useState<string>('');
   const [creatingTask, setCreatingTask] = useState<boolean>(false);
-  const taskInputRef = useRef<HTMLInputElement>(null);
+  const taskInputRef = useRef<InputRef>(null);
   const dispatch = useAppDispatch();
 
   const { socket } = useSocket();
+  const { token } = theme.useToken();
 
   const { t } = useTranslation('task-list-table');
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
   const customBorderColor = useMemo(() => themeMode === 'dark' && ' border-[#303030]', [themeMode]);
-  const projectId = useAppSelector((state) => state.projectReducer.projectId);
+  const projectId = useAppSelector(state => state.projectReducer.projectId);
 
   const createRequestBody = (): ITaskCreateRequest | null => {
     if (!projectId || !session) return null;
@@ -88,7 +100,7 @@ const TaskListInstantTaskInput = ({ session, groupId = null, parentTask = null }
       // this.service.addTask(task, this.groupId);
       // this.reset(false);
     }
-  }
+  };
 
   const addInstantTask = () => {
     if (creatingTask) return;
@@ -103,10 +115,10 @@ const TaskListInstantTaskInput = ({ session, groupId = null, parentTask = null }
       socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
         setCreatingTask(false);
         if (task.parent_task_id) {
-
-        };
-        onNewTaskReceived(task);
-      });    } catch (error) {
+        }
+        onNewTaskReceived(task as IAddNewTask);
+      });
+    } catch (error) {
       console.error(error);
     } finally {
       setCreatingTask(false);
@@ -119,13 +131,13 @@ const TaskListInstantTaskInput = ({ session, groupId = null, parentTask = null }
   };
 
   return (
-    <div className={`border-t ${customBorderColor}; border-b-[1px] border-r-[1px]`}>
+    <div className={`border-t border-b-[1px] border-r-[1px]`} style={{ borderColor: token.colorBorderSecondary }}>
       {isEdit ? (
         <Input
           className="w-full rounded-none"
           style={{ borderColor: colors.skyBlue, height: '40px' }}
           placeholder={t('addTaskInputPlaceholder')}
-          onChange={(e) => setTaskName(e.target.value)}
+          onChange={e => setTaskName(e.target.value)}
           onBlur={handleAddTask}
           onPressEnter={handleAddTask}
           ref={taskInputRef}
