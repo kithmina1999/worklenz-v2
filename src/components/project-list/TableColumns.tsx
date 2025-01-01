@@ -16,12 +16,14 @@ import { ActionButtons } from './project-list-table/project-list-actions/project
 import Avatars from '../avatars/Avatars';
 import './TableColumns.css';
 import { CategoryCell } from './project-list-table/project-list-category/project-list-category';
+import { setFilteredCategories } from '@/features/projects/projectsSlice';
 
 const TableColumns = (
   navigate: NavigateFunction,
   statuses: IProjectStatus[],
   categories: IProjectCategory[],
-  setProjectId: (id: string) => void
+  setProjectId: (id: string) => void,
+  filteredCategories: string[]
 ): ColumnsType<IProjectViewModel> => {
   const { t } = useTranslation('all-project-list');
   const dispatch = useAppDispatch();
@@ -63,7 +65,9 @@ const TableColumns = (
           text: category.name,
           value: category.id,
         })) as ColumnFilterItem[],
-        onFilter: (value, record) => record.category_name?.startsWith(value as string) || false,
+        filteredValue: filteredCategories,
+        onReset: () => dispatch(setFilteredCategories([])),
+        onFilter: (value, record) => record.category_id?.startsWith(value as string) || false,
       },
       {
         title: t('status'),

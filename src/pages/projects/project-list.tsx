@@ -19,6 +19,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   fetchProjects,
+  setFilteredCategories,
   toggleArchiveProject,
   toggleDrawer,
 } from '@/features/projects/projectsSlice';
@@ -62,10 +63,10 @@ const ProjectList: React.FC = () => {
   useDocumentTitle('Projects');
 
   // Redux state
-  const { loading, projects } = useAppSelector(state => state.projectsReducer);
+  const { loading, projects, filteredCategories } = useAppSelector(state => state.projectsReducer);
   const { statuses } = useAppSelector(state => state.projectStatusesReducer);
   const { healths } = useAppSelector(state => state.projectHealthReducer);
-  const { categories } = useAppSelector(state => state.projectCategoriesReducer);
+  const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
 
   // Local state
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,7 +79,6 @@ const ProjectList: React.FC = () => {
     columnKey: localStorage.getItem(PROJECT_SORT_FIELD) ?? 'name',
   }));
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // Debounced search term
   const [debouncedSearchTerm] = useState(() => {
@@ -130,9 +130,9 @@ const ProjectList: React.FC = () => {
       filter: getFilterIndex(),
       search: searchTerm,
       statuses: selectedStatus,
-      categories: selectedCategory,
+      categories: filteredCategories,
     }),
-    [pagination, sorter, getFilterIndex, searchTerm, selectedStatus, selectedCategory]
+    [pagination, sorter, getFilterIndex, searchTerm, selectedStatus, filteredCategories]
   );
 
   const paginationConfig = useMemo(
@@ -154,7 +154,7 @@ const ProjectList: React.FC = () => {
     } catch (error) {
       console.error('Error fetching projects:', error);
     }
-  }, [dispatch, requestParams]);
+  }, [dispatch, requestParams, filteredCategories]);
 
   const handleTableChange = useCallback(
     (
@@ -166,7 +166,8 @@ const ProjectList: React.FC = () => {
         setSelectedStatus(filters.status_id.join('+'));
       }
       if (filters?.category_id) {
-        setSelectedCategory(filters.category_id.join('+'));
+        console.log('filters.category_id', filters.category_id);
+        // dispatch(setFilteredCategories(filters.category_id.join('+')));
       }
 
       const newSorter = {
@@ -229,12 +230,16 @@ const ProjectList: React.FC = () => {
   }, [
     searchTerm,
     selectedStatus,
-    selectedCategory,
+    filteredCategories,
     pagination,
     sorter,
     setSortingValues,
     getProjects,
   ]);
+
+  const filterCategories = (category: string) => {
+    console.log('clicked', category);
+  };
 
   return (
     <div style={{ marginBlock: 65, minHeight: '90vh' }}>
@@ -271,7 +276,7 @@ const ProjectList: React.FC = () => {
       />
       <Card className="project-card">
         <Table<IProjectViewModel>
-          columns={TableColumns(navigate, statuses, categories, setSelectedProjectId)}
+          columns={TableColumns(navigate, statuses, projectCategories, setSelectedProjectId, filteredCategories)}
           dataSource={projects.data}
           rowKey={record => record.id || ''}
           loading={loading}
@@ -282,7 +287,7 @@ const ProjectList: React.FC = () => {
       </Card>
 
       <ProjectDrawer
-        categories={categories || []}
+        categories={projectCategories || []}
         statuses={statuses || []}
         healths={healths || []}
       />

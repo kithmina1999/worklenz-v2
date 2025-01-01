@@ -6,7 +6,7 @@ import { setCategories } from '../../projectsSlice';
 
 type ProjectCategoryState = {
   initialized: boolean;
-  categories: IProjectCategoryViewModel[];
+  projectCategories: IProjectCategoryViewModel[];
   loading: boolean;
 };
 
@@ -76,7 +76,7 @@ export const deleteProjectCategory = createAsyncThunk(
 );
 
 const initialState: ProjectCategoryState = {
-  categories: [],
+  projectCategories: [],
   initialized: false,
   loading: false,
 };
@@ -90,10 +90,10 @@ const projectCategoriesSlice = createSlice({
       // This is useful if you want to filter already loaded categories client-side
     },
     addCategory: (state, action: PayloadAction<IProjectCategoryViewModel>) => {
-      state.categories.push(action.payload);
+      state.projectCategories.push(action.payload);
     },
     deleteCategory: (state, action: PayloadAction<string>) => {
-      state.categories = state.categories.filter(cat => cat.id !== action.payload);
+      state.projectCategories = state.projectCategories.filter(cat => cat.id !== action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -103,7 +103,7 @@ const projectCategoriesSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchProjectCategories.fulfilled, (state, action) => {
-        state.categories = action.payload;
+        state.projectCategories = action.payload;
         state.loading = false;
         state.initialized = true;
       })
@@ -117,7 +117,7 @@ const projectCategoriesSlice = createSlice({
         state.loading = true;
       })
       .addCase(createProjectCategory.fulfilled, (state, action) => {
-        state.categories.push(action.payload);
+        state.projectCategories.push(action.payload);
         state.loading = false;
       })
       .addCase(createProjectCategory.rejected, (state) => {
@@ -130,9 +130,9 @@ const projectCategoriesSlice = createSlice({
         state.loading = true;
       })
       .addCase(updateProjectCategory.fulfilled, (state, action) => {
-        const index = state.categories.findIndex(cat => cat.id === action.payload.id);
+        const index = state.projectCategories.findIndex(cat => cat.id === action.payload.id);
         if (index !== -1) {
-          state.categories[index] = action.payload;
+          state.projectCategories[index] = action.payload;
         }
         state.loading = false;
       })
@@ -146,7 +146,7 @@ const projectCategoriesSlice = createSlice({
         state.loading = true;
       })
       .addCase(deleteProjectCategory.fulfilled, (state, action) => {
-        state.categories = state.categories.filter(cat => cat.id !== action.payload);
+        state.projectCategories = state.projectCategories.filter(cat => cat.id !== action.payload);
         state.loading = false;
       })
       .addCase(deleteProjectCategory.rejected, (state) => {

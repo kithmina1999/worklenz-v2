@@ -2,21 +2,20 @@ import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { Tooltip, Tag } from 'antd';
 import { TFunction } from 'i18next';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setFilteredCategories } from '@/features/projects/projectsSlice';
 
-export const CategoryCell: React.FC<{ record: IProjectViewModel; t: TFunction }> = ({
-  record,
-  t,
-}) => {
+export const CategoryCell: React.FC<{
+  record: IProjectViewModel;
+  t: TFunction;
+}> = ({ record, t }) => {
   if (!record.category_name) return '-';
 
-  const { categories } = useAppSelector(state => state.projectCategoriesReducer);
+  const dispatch = useAppDispatch();
 
-  const filterByCategory = (category: string | undefined) => {
-    if (!category) return;
-
-    const categoryName = categories.find(c => c.id === category)?.name;
-  
-    console.log('clicked', category);
+  const filterByCategory = (categoryId: string | undefined) => {
+    if (!categoryId) return;
+    dispatch(setFilteredCategories([categoryId]));
   };
 
   return (
@@ -24,7 +23,7 @@ export const CategoryCell: React.FC<{ record: IProjectViewModel; t: TFunction }>
       <Tag
         color="#ff9c3c"
         className="rounded-full table-tag"
-        onClick={(e) => {
+        onClick={e => {
           e.stopPropagation();
           filterByCategory(record.category_id);
         }}

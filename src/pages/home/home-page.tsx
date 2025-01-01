@@ -19,7 +19,7 @@ const HomePage = () => {
   useDocumentTitle('Home');
   const dispatch = useAppDispatch();
 
-  const { categories } = useAppSelector(state => state.projectCategoriesReducer);
+  const { projectCategories: categories } = useAppSelector(state => state.projectCategoriesReducer);
   const { statuses } = useAppSelector(state => state.projectStatusesReducer);
   const { healths } = useAppSelector(state => state.projectHealthReducer);
   

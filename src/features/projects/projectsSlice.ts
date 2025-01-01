@@ -14,6 +14,7 @@ interface ProjectState {
   creatingProject: boolean;
   initialized: boolean;
   isProjectDrawerOpen: boolean;
+  filteredCategories: string[];
 }
 
 const initialState: ProjectState = {
@@ -26,6 +27,7 @@ const initialState: ProjectState = {
   creatingProject: false,
   initialized: false,
   isProjectDrawerOpen: false,
+  filteredCategories: [],
 };
 
 // Create async thunk for fetching teams
@@ -40,7 +42,7 @@ export const fetchProjects = createAsyncThunk(
       search: string;
       filter: number;
       statuses: string | null;
-      categories: string | null;
+      categories: string[];
     },
     { rejectWithValue }
   ) => {
@@ -53,7 +55,7 @@ export const fetchProjects = createAsyncThunk(
         params.search,
         params.filter,
         params.statuses,
-        params.categories
+        params.categories.join(',')
       );
       return projectsResponse.body;
     } catch (error) {
@@ -142,6 +144,9 @@ const projectSlice = createSlice({
     setCategories: (state, action: PayloadAction<IProjectCategory[]>) => {
       state.categories = action.payload;
     },
+    setFilteredCategories: (state, action: PayloadAction<string[]>) => {
+      state.filteredCategories = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
@@ -177,5 +182,5 @@ const projectSlice = createSlice({
   },
 });
 
-export const { toggleDrawer, setCategories } = projectSlice.actions;
+export const { toggleDrawer, setCategories, setFilteredCategories } = projectSlice.actions;
 export default projectSlice.reducer;
