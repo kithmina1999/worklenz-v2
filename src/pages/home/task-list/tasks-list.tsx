@@ -159,6 +159,10 @@ const TasksList = () => {
           <Select
             defaultValue="0"
             options={taskModes}
+            onChange={(value) => {
+              setConfig({ ...config, tasks_group_by: +value });
+            }}
+            
           />
         </Flex>
       }

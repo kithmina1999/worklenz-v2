@@ -13,7 +13,7 @@ import { ProjectNameCell } from './project-list-table/project-name/project-name-
 import { ProgressListProgress } from './project-list-table/project-list-progress/progress-list-progress';
 import { ProjectListUpdatedAt } from './project-list-table/project-list-updated-at/project-list-updated';
 import { ActionButtons } from './project-list-table/project-list-actions/project-list-actions';
-import Avatars from '../avatars/Avatars';
+import Avatars from '../avatars/avatars';
 import './TableColumns.css';
 import { CategoryCell } from './project-list-table/project-list-category/project-list-category';
 import { setFilteredCategories } from '@/features/projects/projectsSlice';

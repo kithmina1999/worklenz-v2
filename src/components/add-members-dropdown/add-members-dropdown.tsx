@@ -9,7 +9,7 @@ import {
   Typography,
 } from 'antd';
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
-import './AddMembersDropdown.css';
+import './add-members-dropdown.css';
 import { AvatarNamesMap } from '../../shared/constants';
 
 const AddMembersDropdown: React.FC = () => {

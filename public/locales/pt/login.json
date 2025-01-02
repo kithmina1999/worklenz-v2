@@ -15,5 +15,13 @@
   "dontHaveAccountText": "Não tem uma conta?",
   "orText": "OU",
   "loginError": "Login falhou",
-  "googleLoginError": "Login com Google falhou"
+  "googleLoginError": "Login com Google falhou",
+  "validationMessages": {
+    "password": "A senha deve ter pelo menos 8 caracteres",
+    "email": "Por favor, insira um endereço de e-mail válido"
+  },
+  "errorMessages": {
+    "loginErrorTitle": "Login falhou",
+    "loginErrorMessage": "Por favor, verifique seu e-mail e senha e tente novamente"
+  }
 }

@@ -12,12 +12,12 @@ import googleIcon from '@assets/images/google-icon.png';
 import { login, verifyAuthentication } from '@/features/auth/authSlice';
 import logger from '@/utils/errorLogger';
 import { setUser } from '@/features/user/userSlice';
-import { useAuth } from '@/hooks/useAuth';
 import { Rule } from 'antd/es/form';
 import { setSession } from '@/utils/session-helper';
 import { evt_login_page_visit, evt_login_with_email_click, evt_login_with_google_click, evt_login_remember_me_click } from '@/shared/worklenz-analytics-events';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import alertService from '@/services/alerts/alertService';
 
 interface LoginFormValues {
   email: string;
@@ -30,7 +30,6 @@ const LoginPage: React.FC = () => {
   const { t } = useTranslation('login');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
   const dispatch = useAppDispatch();
-  const authService = useAuth();
   const { isLoading } = useAppSelector(state => state.auth);
   const { trackMixpanelEvent } = useMixpanelTracking();
   const [form] = Form.useForm<LoginFormValues>();
@@ -40,11 +39,11 @@ const LoginPage: React.FC = () => {
   const validationRules = {
     email: [
       { required: true, message: t('emailRequired') },
-      { type: 'email', message: t('invalidEmail') }
+      { type: 'email', message: t('validationMessages.email') }
     ],
     password: [
       { required: true, message: t('passwordRequired') },
-      { min: 8, message: t('passwordTooShort') }
+      { min: 8, message: t('validationMessages.password') }
     ]
   };
 
@@ -76,8 +75,8 @@ const LoginPage: React.FC = () => {
         navigate('/auth/authenticating');
       }
     } catch (error) {
-      message.error(t('loginError'));
       logger.error('Login failed', error);
+      alertService.error(t('errorMessages.loginErrorTitle'), t('errorMessages.loginErrorMessage'));
     }
   }, [dispatch, navigate, t, trackMixpanelEvent]);
 
@@ -86,7 +85,6 @@ const LoginPage: React.FC = () => {
       trackMixpanelEvent(evt_login_with_google_click);
       window.location.href = `${import.meta.env.VITE_API_URL}/secure/google`;
     } catch (error) {
-      message.error(t('googleLoginError'));
       logger.error('Google login failed', error);
     }
   }, [trackMixpanelEvent, t]);

@@ -9,11 +9,11 @@ import {
   Typography,
 } from 'antd';
 import React, { useState } from 'react';
-import './CurrentBill.css';
+import './current-bill.css';
 import { InfoCircleTwoTone } from '@ant-design/icons';
-import ChargesTable from './billingTables/ChargesTable';
-import InvoicesTable from './billingTables/InvoicesTable';
-import UpgradePlans from './UpgradePlans';
+import ChargesTable from './billing-tables/charges-table';
+import InvoicesTable from './billing-tables/invoices-table';
+import UpgradePlans from './upgrade-plans';
 import { RootState } from '../../../app/store';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useMediaQuery } from 'react-responsive';

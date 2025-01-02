@@ -15,5 +15,13 @@
   "dontHaveAccountText": "¿No tienes una cuenta?",
   "orText": "O",
   "loginError": "Iniciar sesión falló",
-  "googleLoginError": "Iniciar sesión con Google falló"
+  "googleLoginError": "Iniciar sesión con Google falló",
+  "validationMessages": {
+    "password": "La contraseña debe tener al menos 8 caracteres",
+    "email": "Por favor ingresa una dirección de correo electrónico válida"
+  },
+  "errorMessages": {
+    "loginErrorTitle": "Iniciar sesión falló",
+    "loginErrorMessage": "Por favor verifica tu correo electrónico y contraseña y vuelve a intentarlo"
+  }
 }

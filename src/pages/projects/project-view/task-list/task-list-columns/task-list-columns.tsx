@@ -4,7 +4,7 @@ import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { HolderOutlined, PlusOutlined } from '@ant-design/icons';
 import { COLUMN_KEYS } from '@/features/tasks/taskSlice';
 import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
-import Avatars from '@/components/avatars/Avatars';
+import Avatars from '@/components/avatars/avatars';
 import LabelsSelector from '@/components/task-list-common/labelsSelector/labels-selector';
 import CustomColorLabel from '@/components/task-list-common/labelsSelector/custom-color-label';
 import TaskRowName from '@/components/task-list-common/task-row/task-row-name/task-row-name';

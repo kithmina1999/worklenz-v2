@@ -1,6 +1,6 @@
 import { Button, Card, Col, Form, Input, notification, Row, Tag, Typography } from 'antd';
 import React, { useState } from 'react';
-import './UpgradePlans.css';
+import './upgrade-plans.css';
 import { CheckCircleFilled } from '@ant-design/icons';
 import { RootState } from '../../../app/store';
 import { useAppSelector } from '../../../hooks/useAppSelector';

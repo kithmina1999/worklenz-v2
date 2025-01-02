@@ -1,39 +1,22 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Avatar, Button, Checkbox, DatePicker, Dropdown, Flex, Select, Tag, theme } from 'antd';
+import { Checkbox, theme } from 'antd';
 import {
   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  ColumnDef,
   flexRender,
   VisibilityState,
   Row,
   Column,
-  createColumnHelper,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import {
-  HolderOutlined,
-  PlusOutlined,
-  EyeOutlined,
-} from '@ant-design/icons';
-import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import React from 'react';
-import Avatars from '@/components/avatars/Avatars';
-import LabelsSelector from '@/components/task-list-common/labelsSelector/labels-selector';
-import CustomColorLabel from '@/components/task-list-common/labelsSelector/custom-color-label';
 import './task-list-custom.css';
 import TaskListInstantTaskInput from './task-list-instant-task-input/task-list-instant-task-input';
-import TaskRowName from '@/components/task-list-common/task-row/task-row-name/task-row-name';
-import TaskRowDescription from '@/components/task-list-common/task-row/task-row-description/task-row-description';
-import TaskRowProgress from '@/components/task-list-common/task-row/task-row-progress/task-row-progress';
-import TaskRowDueTime from '@/components/task-list-common/task-row/task-list-due-time-cell/task-row-due-time';
-import TaskRowTimeTracking from '@/components/task-list-common/task-row/task-row-time-tracking/task-row-time-tracking';
 import { useAuth } from '@/hooks/useAuth';
-import { COLUMN_KEYS } from '@/features/tasks/taskSlice';
 import { createColumns } from './task-list-columns/task-list-columns';
 
 interface TaskListCustomProps {
