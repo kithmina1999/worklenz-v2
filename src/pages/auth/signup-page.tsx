@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Flex, Form, Input, Space, Typography, message } from 'antd';
 import googleIcon from '../../assets/images/google-icon.png';
@@ -13,6 +13,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { signUp } from '@/features/auth/authSlice';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_signup_page_visit, evt_signup_with_email_click, evt_signup_with_google_click } from '@/shared/worklenz-analytics-events';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -21,6 +22,8 @@ const SignupPage = () => {
 
   const { t } = useTranslation('signup');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
+
+  useDocumentTitle('Signup');
 
   const [loading, setLoading] = useState(false);
   const [validating, setValidating] = useState(false);

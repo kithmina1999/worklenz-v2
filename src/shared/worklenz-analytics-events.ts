@@ -10,7 +10,7 @@ export const evt_login_remember_me_click = "login_remember_me_click";
 export const evt_signup_page_visit = "signup_page_visit";
 export const evt_signup_with_email_click = "signup_with_email_click";
 export const evt_signup_with_google_click = "signup_with_google_click";
-
+export const evt_forgot_password_page_visit = "forgot_password_page_visit";
 // Account Setup & Onboarding
 export const evt_account_setup_visit = "account_setup_visit";
 export const evt_account_setup_complete = "account_setup_complete";

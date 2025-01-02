@@ -13,5 +13,7 @@
   "signInWithGoogleButton": "Iniciar sesión con Google",
   "successMessage": "¡Has iniciado sesión exitosamente!",
   "dontHaveAccountText": "¿No tienes una cuenta?",
-  "orText": "O"
+  "orText": "O",
+  "loginError": "Iniciar sesión falló",
+  "googleLoginError": "Iniciar sesión con Google falló"
 }

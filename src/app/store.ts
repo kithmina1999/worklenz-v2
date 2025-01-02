@@ -56,7 +56,8 @@ import projectReportsReducer from '../features/reporting/projectReports/projectR
 import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
 import roadmapReducer from '../features/roadmap/roadmap-slice';
 import teamMembersReducer from '@features/team-members/team-members.slice';
-import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/group-by-filter-dropdown-slice'
+import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/group-by-filter-dropdown-slice';
+import homePageReducer from '@features/home-page/home-page.slice';
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -67,6 +68,9 @@ export const store = configureStore({
     // Auth & User
     auth: authReducer,
     userReducer: userReducer,
+
+    // Home Page
+    homePageReducer: homePageReducer,
 
     // Core UI
     themeReducer: themeReducer,

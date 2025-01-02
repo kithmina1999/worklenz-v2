@@ -65,7 +65,7 @@ const ProjectList: React.FC = () => {
   // Redux state
   const { loading, projects, filteredCategories } = useAppSelector(state => state.projectsReducer);
   const { statuses } = useAppSelector(state => state.projectStatusesReducer);
-  const { healths } = useAppSelector(state => state.projectHealthReducer);
+  const { projectHealths: healths } = useAppSelector(state => state.projectHealthReducer);
   const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
 
   // Local state

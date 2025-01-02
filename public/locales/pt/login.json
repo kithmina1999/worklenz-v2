@@ -13,5 +13,7 @@
   "signInWithGoogleButton": "Entrar com Google",
   "successMessage": "Você entrou com sucesso!",
   "dontHaveAccountText": "Não tem uma conta?",
-  "orText": "OU"
+  "orText": "OU",
+  "loginError": "Login falhou",
+  "googleLoginError": "Login com Google falhou"
 }

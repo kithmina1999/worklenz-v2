@@ -11,7 +11,9 @@
   "signupButton": "Sign up",
   "forgotPasswordButton": "Forgot password?",
   "signInWithGoogleButton": "Sign in with Google",
-  "successMessage": "You have successfully logged in!",
   "dontHaveAccountText": "Don’t have an account?",
-  "orText": "OR"
+  "orText": "OR",
+  "successMessage": "You have successfully logged in!",
+  "loginError": "Login failed",
+  "googleLoginError": "Google login failed"
 }

@@ -17,6 +17,7 @@ import { Rule } from 'antd/es/form';
 import { setSession } from '@/utils/session-helper';
 import { evt_login_page_visit, evt_login_with_email_click, evt_login_with_google_click, evt_login_remember_me_click } from '@/shared/worklenz-analytics-events';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 interface LoginFormValues {
   email: string;
@@ -33,6 +34,8 @@ const LoginPage: React.FC = () => {
   const { isLoading } = useAppSelector(state => state.auth);
   const { trackMixpanelEvent } = useMixpanelTracking();
   const [form] = Form.useForm<LoginFormValues>();
+
+  useDocumentTitle('Login');
 
   const validationRules = {
     email: [
@@ -67,7 +70,7 @@ const LoginPage: React.FC = () => {
       trackMixpanelEvent(evt_login_with_email_click);
       const result = await dispatch(login(values)).unwrap();
       if (result.authenticated) {
-        message.success(t('loginSuccess'));
+        message.success(t('successMessage'));
         setSession(result.user);
         dispatch(setUser(result.user));
         navigate('/auth/authenticating');
