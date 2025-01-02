@@ -64,7 +64,7 @@ const ProjectList: React.FC = () => {
 
   // Redux state
   const { loading, projects, filteredCategories } = useAppSelector(state => state.projectsReducer);
-  const { statuses } = useAppSelector(state => state.projectStatusesReducer);
+  const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
   const { projectHealths: healths } = useAppSelector(state => state.projectHealthReducer);
   const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
 
@@ -95,7 +95,7 @@ const ProjectList: React.FC = () => {
       const promises = [
         dispatch(fetchProjectCategories()),
         !healths.length && dispatch(fetchProjectHealth()),
-        !statuses.length && dispatch(fetchProjectStatuses()),
+        !projectStatuses.length && dispatch(fetchProjectStatuses()),
       ].filter(Boolean);
 
       await Promise.all(promises);
@@ -276,7 +276,7 @@ const ProjectList: React.FC = () => {
       />
       <Card className="project-card">
         <Table<IProjectViewModel>
-          columns={TableColumns(navigate, statuses, projectCategories, setSelectedProjectId, filteredCategories)}
+          columns={TableColumns(navigate, projectStatuses, projectCategories, setSelectedProjectId, filteredCategories)}
           dataSource={projects.data}
           rowKey={record => record.id || ''}
           loading={loading}
@@ -288,7 +288,7 @@ const ProjectList: React.FC = () => {
 
       <ProjectDrawer
         categories={projectCategories || []}
-        statuses={statuses || []}
+        statuses={projectStatuses || []}
         healths={healths || []}
       />
     </div>
