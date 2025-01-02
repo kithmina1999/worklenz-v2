@@ -83,6 +83,13 @@ export const verifyAuthentication = createAsyncThunk(
   }
 );
 
+export const resetPassword = createAsyncThunk(
+  'auth/resetPassword',
+  async (email: string) => {
+    return await authApiService.resetPassword(email);
+  }
+);
+
 // Common state updates
 const setPending = (state: IAuthState) => {
   state.isLoading = true;
