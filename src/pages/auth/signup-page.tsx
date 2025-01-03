@@ -85,7 +85,9 @@ const SignupPage = () => {
       const result = await dispatch(signUp(body)).unwrap();
       if (result?.authenticated) {
         message.success('Successfully signed up!');
-        navigate('/worklenz/setup', { replace: true });
+        setTimeout(() => {
+          navigate('/auth/authenticating');
+        }, 1000);
       }
     } catch (error: any) {
       message.error(error?.response?.data?.message || 'Failed to sign up');
