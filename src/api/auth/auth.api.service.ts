@@ -31,5 +31,10 @@ export const authApiService = {
   async resetPassword(email: string): Promise<IServerResponse<string>> {
     const response = await apiClient.post<IServerResponse<string>>('/secure/reset-password', { email });
     return response.data;
+  },
+
+  async updatePassword(values: any): Promise<IServerResponse<string>> {
+    const response = await apiClient.post<IServerResponse<string>>('/secure/update-password', values);
+    return response.data;
   }
 };

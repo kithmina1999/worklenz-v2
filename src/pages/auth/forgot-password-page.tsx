@@ -27,7 +27,7 @@ const ForgotPasswordPage = () => {
   const dispatch = useAppDispatch();
 
   // Localization
-  const { t } = useTranslation('forgot-password');
+  const { t } = useTranslation('auth/forgot-password');
 
   // media queries from react-responsive package
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });

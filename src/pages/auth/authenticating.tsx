@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 const AuthenticatingPage: React.FC = () => {
-  const { t } = useTranslation('auth-common');
+  const { t } = useTranslation('auth/auth-common');
   const navigate = useNavigate();
 
   useEffect(() => {

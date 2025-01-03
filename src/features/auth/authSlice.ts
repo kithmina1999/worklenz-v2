@@ -90,6 +90,13 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+export const updatePassword = createAsyncThunk(
+  'auth/updatePassword',
+  async (values: any) => {
+    return await authApiService.updatePassword(values);
+  }
+);
+
 // Common state updates
 const setPending = (state: IAuthState) => {
   state.isLoading = true;

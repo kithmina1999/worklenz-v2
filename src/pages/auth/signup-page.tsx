@@ -20,7 +20,7 @@ const SignupPage = () => {
   const dispatch = useAppDispatch();
   const { trackMixpanelEvent } = useMixpanelTracking();
 
-  const { t } = useTranslation('signup');
+  const { t } = useTranslation('auth/signup');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
 
   useDocumentTitle('Signup');
