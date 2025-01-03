@@ -37,7 +37,7 @@ const authRoutes = [
         element: <AuthenticatingPage />,
       },
       {
-        path: 'verify-reset-email/:hash/:user',
+        path: 'verify-reset-email/:user/:hash',
         element: <VerifyResetEmailPage />,
       },
     ],
