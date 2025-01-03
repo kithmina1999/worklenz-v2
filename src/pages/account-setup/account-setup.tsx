@@ -1,7 +1,7 @@
-import React, { startTransition, useState } from 'react';
-import { Alert, Button, Drawer, Form, Input, List, Space, Steps, Typography } from 'antd';
-import { CloseCircleOutlined, MailOutlined, PlusOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { Alert, Button, Form, Input, List, Space, Steps, Typography } from 'antd';
+import { CloseCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { RootState } from '@/app/store';
@@ -10,14 +10,16 @@ import { getUserSession } from '@/utils/session-helper';
 import { validateEmail } from '@/utils/validateEmail';
 import logo from '@/assets/images/logo.png';
 import logoDark from '@/assets/images/logo-dark-mode.png';
-import TemplateDrawer from '@/components/account-setup/template-drawer/template-drawer';
-import { projectTemplatesApiService } from '@/api/project-templates/project-templates.api.service';
 
 import './account-setup.css';
 import { IAccountSetupRequest } from '@/types/project-templates/project-templates.types';
 import { profileSettingsApiService } from '@/api/settings/profile/profile-settings.api.service';
 import { useNavigate } from 'react-router-dom';
 import logger from '@/utils/errorLogger';
+import { setCurrentStep } from '@/features/account-setup/account-setup.slice';
+import { OrganizationStep } from '@/components/account-setup/organization-step';
+import { ProjectStep } from '@/components/account-setup/project-step';
+import { TasksStep } from '@/components/account-setup/tasks-step';
 
 const { Title } = Typography;
 
@@ -32,23 +34,21 @@ interface Email {
 }
 
 const AccountSetup: React.FC = () => {
+  const dispatch = useDispatch();
+  const { currentStep, organizationName, projectName, templateId } = useSelector(
+    (state: RootState) => state.accountSetupReducer
+  );
   const { t } = useTranslation('account-setup');
   const userDetails = getUserSession();
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
   useDocumentTitle(t('setupYourAccount', 'Account Setup'));
   const navigate = useNavigate();
 
-  const [current, setCurrent] = useState(0);
-  const [organizationName, setOrganizationName] = useState('');
-  const [projectName, setProjectName] = useState('');
-  const [templateId, setTemplateId] = useState('');
-  const [open, setOpen] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([{ id: 0, value: '' }]);
   const [emails, setEmails] = useState<Email[]>([{ id: 0, value: '' }]);
-  const [creatingFromTemplate, setCreatingFromTemplate] = useState(false);
 
   const isDarkMode = themeMode === 'dark';
-  const organizationNamePlaceholder = userDetails?.name ? `e.g., ${userDetails?.name}'s Team` : '';
+  const organizationNamePlaceholder = userDetails?.name ? `e.g. ${userDetails?.name}'s Team` : '';
 
   const styles = {
     form: {
@@ -116,14 +116,6 @@ const AccountSetup: React.FC = () => {
     },
   };
 
-  const handleTemplateSelected = (templateId: string) => {
-    setTemplateId(templateId);
-  };
-
-  const toggleTemplateSelector = (isOpen: boolean) => {
-    startTransition(() => setOpen(isOpen));
-  };
-
   const handleListItemChange = (
     id: number,
     value: string,
@@ -157,26 +149,6 @@ const AccountSetup: React.FC = () => {
     }
   };
 
-  const createFromTemplate = async () => {
-    toggleTemplateSelector(false);
-    setCreatingFromTemplate(true);
-    try {
-      const model: IAccountSetupRequest = {
-        team_name: organizationName,
-        project_name: projectName,
-        template_id: templateId || null,
-        tasks: tasks.map(task => task.value),
-        team_members: emails.map(email => email.value),
-      };
-      const res = await projectTemplatesApiService.setupAccount(model);
-      if (res.done) {
-        navigate('/worklenz/home');
-      }
-    } catch (error) {
-      logger.error('createFromTemplate', error);
-    }
-  };
-
   const completeAccountSetup = async (skip = false) => {
     try {
       const model: IAccountSetupRequest = {
@@ -194,133 +166,34 @@ const AccountSetup: React.FC = () => {
     }
   };
 
-  const renderFormStep = (
-    title: string,
-    inputLabel: string,
-    value: string,
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
-    placeholder: string,
-    onEnter?: () => void
-  ) => (
-    <Form className="step-form" style={styles.form}>
-      <Form.Item>
-        <Title level={2} style={{ marginBottom: '1rem' }}>
-          {title}
-        </Title>
-      </Form.Item>
-      <Form.Item
-        layout="vertical"
-        rules={[{ required: true }]}
-        label={<span style={styles.label}>{inputLabel}</span>}
-      >
-        <Input placeholder={placeholder} value={value} onChange={onChange} onPressEnter={onEnter} />
-      </Form.Item>
-    </Form>
-  );
-
   const steps = [
     {
       title: '',
-      content: renderFormStep(
-        t('nameYourOrganization'),
-        t('worklenzAccountTitle'),
-        organizationName,
-        e => setOrganizationName(e.target.value),
-        organizationNamePlaceholder,
-        () => setCurrent(prev => prev + 1)
+      content: (
+        <OrganizationStep
+          onEnter={() => dispatch(setCurrentStep(currentStep + 1))}
+          styles={styles}
+          organizationNamePlaceholder={organizationNamePlaceholder}
+        />
       ),
     },
     {
       title: '',
       content: (
-        <>
-          {renderFormStep(
-            t('step1Title'),
-            t('inputLabel'),
-            projectName,
-            e => setProjectName(e.target.value),
-            'e.g. Worklenz marketing plan',
-            () => setCurrent(prev => prev + 1)
-          )}
-          <div style={{ position: 'relative' }}>
-            <Title level={4} className={isDarkMode ? 'vert-text-dark' : 'vert-text'}>
-              {t('or')}
-            </Title>
-            <div className={isDarkMode ? 'vert-line-dark' : 'vert-line'} />
-          </div>
-
-          <div className="flex justify-center">
-            <Button onClick={() => toggleTemplateSelector(true)} type="primary">
-              {t('templateButton')}
-            </Button>
-          </div>
-          <Drawer
-            title={t('templateDrawerTitle')}
-            width={1000}
-            onClose={() => toggleTemplateSelector(false)}
-            open={open}
-            footer={
-              <div style={styles.drawerFooter}>
-                <Button
-                  style={{ marginRight: '8px' }}
-                  onClick={() => toggleTemplateSelector(false)}
-                >
-                  {t('cancel')}
-                </Button>
-                <Button type="primary" onClick={() => createFromTemplate()}>
-                  {t('create')}
-                </Button>
-              </div>
-            }
-          >
-            <TemplateDrawer showBothTabs={false} templateSelected={handleTemplateSelected} />
-          </Drawer>
-        </>
+        <ProjectStep
+          onEnter={() => dispatch(setCurrentStep(currentStep + 1))}
+          styles={styles}
+          isDarkMode={isDarkMode}
+        />
       ),
     },
     {
       title: '',
       content: (
-        <Form className="create-first-task-form" style={{ ...styles.form, minHeight: '300px' }}>
-          <Form.Item>
-            <Title level={2}>{t('step2Title')}</Title>
-          </Form.Item>
-          <List
-            dataSource={tasks}
-            renderItem={(task, index) => (
-              <List.Item>
-                <div style={{ display: 'flex', width: '600px' }}>
-                  <Input
-                    placeholder="Your Task"
-                    value={task.value}
-                    id={`task-input-${index}`}
-                    onChange={e => handleListItemChange(task.id, e.target.value, setTasks, tasks)}
-                    onPressEnter={() => handleAddItem(tasks, setTasks)}
-                  />
-                  <Button
-                    className="custom-close-button"
-                    style={{ marginLeft: '48px' }}
-                    type="text"
-                    icon={
-                      <CloseCircleOutlined
-                        style={{ fontSize: '20px', color: isDarkMode ? '' : '#00000073' }}
-                      />
-                    }
-                    onClick={() => handleRemoveItem(task.id, tasks, setTasks)}
-                  />
-                </div>
-              </List.Item>
-            )}
-          />
-          <Button
-            type="dashed"
-            icon={<PlusOutlined />}
-            onClick={() => handleAddItem(tasks, setTasks)}
-            style={{ marginTop: '16px' }}
-          >
-            {t('addAnother')}
-          </Button>
-        </Form>
+        <TasksStep
+          onEnter={() => dispatch(setCurrentStep(currentStep + 1))}
+          styles={styles}
+        />
       ),
     },
     {
@@ -371,18 +244,18 @@ const AccountSetup: React.FC = () => {
   ];
 
   const isValid = () => {
-    if (current === 0) return organizationName.trim() === '';
-    if (current === 1) return projectName.trim() === '';
-    if (current === 2) return !tasks.some(task => task.value.trim() !== '');
-    if (current === 3) return !emails.some(email => validateEmail(email.value));
+    if (currentStep === 0) return organizationName.trim() === '';
+    if (currentStep === 1) return projectName.trim() === '';
+    if (currentStep === 2) return !tasks.some(task => task.value.trim() !== '');
+    if (currentStep === 3) return !emails.some(email => validateEmail(email.value));
     return false;
   };
 
   const nextStep = () => {
-    if (current === 3) {
+    if (currentStep === 3) {
       completeAccountSetup();
     } else {
-      setCurrent(prev => prev + 1);
+      dispatch(setCurrentStep(currentStep + 1));
     }
   };
 
@@ -398,31 +271,31 @@ const AccountSetup: React.FC = () => {
         <Space className={isDarkMode ? 'dark-mode' : ''} direction="vertical" style={styles.space}>
           <Steps
             className={isValid() ? 'step' : 'progress-steps'}
-            current={current}
+            current={currentStep}
             items={steps}
             style={styles.steps}
           />
           <div className="step-content" style={styles.stepContent}>
-            {steps[current].content}
+            {steps[currentStep].content}
           </div>
           <div style={styles.actionButtons}>
             <div
               style={{
                 display: 'flex',
-                justifyContent: current !== 0 ? 'space-between' : 'flex-end',
+                justifyContent: currentStep !== 0 ? 'space-between' : 'flex-end',
               }}
             >
-              {current !== 0 && (
+              {currentStep !== 0 && (
                 <div>
                   <Button
                     style={{ padding: 0 }}
                     type="link"
                     className="my-7"
-                    onClick={() => setCurrent(prev => prev - 1)}
+                    onClick={() => dispatch(setCurrentStep(currentStep - 1))}
                   >
                     {t('goBack')}
                   </Button>
-                  {current === 3 && (
+                  {currentStep === 3 && (
                     <Button
                       style={{ color: isDarkMode ? '' : '#00000073', fontWeight: 500 }}
                       type="link"

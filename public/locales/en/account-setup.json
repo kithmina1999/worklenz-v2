@@ -1,15 +1,18 @@
 {
-  "setupYourAccount": "Setup Your Account.",
-  "nameYourOrganization": "Name Your Organization",
-  "worklenzAccountTitle": "Pick a name for your Worklenz account.",
   "continue": "Continue",
-  "step1Title": "Create your first project",
+
+  "setupYourAccount": "Setup Your Account.",
+  "organizationStepTitle": "Name Your Organization",
+  "organizationStepLabel": "Pick a name for your Worklenz account.",
+  
+  "projectStepTitle": "Create your first project",
+  "projectStepLabel": "What project are you working on right now?",
+  "projectStepPlaceholder": "e.g. Marketing Plan",
 
   "step2Title": "Create your first tasks",
   "step2InputLabel": "Type a few tasks that you are going to do in",
   "step2AddAnother": "Add another",
 
-  "inputLabel": "What project are you working on right now?",
   "or": "or",
   "templateButton": "Import from template",
   "goBack": "Go Back",

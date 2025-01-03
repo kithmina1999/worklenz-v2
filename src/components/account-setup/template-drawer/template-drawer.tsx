@@ -1,5 +1,5 @@
-import type { DescriptionsProps, MenuProps } from 'antd';
-import { Badge, Empty, List, Menu, Skeleton, Tabs, Tag, Typography } from 'antd';
+import type { MenuProps } from 'antd';
+import { Empty, List, Menu, Skeleton, Tabs, Tag, Typography, Image } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -227,7 +227,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         <Title level={4}>Details</Title>
         <Skeleton loading={loadingSelectedTemplate} active>
           {selectedTemplate?.image_url && (
-            <img src={selectedTemplate.image_url} alt="template preview" />
+            <Image preview={false} src={selectedTemplate.image_url} alt={selectedTemplate.name} />
           )}
           {renderTemplateDetails()}
         </Skeleton>
