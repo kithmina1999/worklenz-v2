@@ -1,10 +1,10 @@
-import React, { startTransition, useState } from 'react';
-import { Button, Drawer, Form, Input, Select, Typography } from 'antd';
+import React, { startTransition, useEffect, useRef, useState } from 'react';
+import { Button, Drawer, Form, Input, InputRef, Select, Typography } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { RootState } from '@/app/store';
 import { setProjectName, setTemplateId } from '@/features/account-setup/account-setup.slice';
-import TemplateDrawer from './template-drawer/template-drawer';
+import TemplateDrawer from '../common/template-drawer/template-drawer';
 import logger from '@/utils/errorLogger';
 import { projectTemplatesApiService } from '@/api/project-templates/project-templates.api.service';
 import { IAccountSetupRequest } from '@/types/project-templates/project-templates.types';
@@ -23,6 +23,12 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const inputRef = useRef<InputRef>(null);
+
+  useEffect(() => {
+    setTimeout(() => inputRef.current?.focus(), 200);
+  }, []);
+  
   const { projectName, templateId, organizationName } = useSelector(
     (state: RootState) => state.accountSetupReducer
   );
@@ -43,7 +49,7 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
     try {
       const model: IAccountSetupRequest = {
         team_name: organizationName,
-        project_name: projectName,
+        project_name: null,
         template_id: templateId || null,
         tasks: [],
         team_members: [],
@@ -75,6 +81,7 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
             value={projectName}
             onChange={e => dispatch(setProjectName(e.target.value))}
             onPressEnter={onEnter}
+            ref={inputRef}
           />
         </Form.Item>
       </Form>

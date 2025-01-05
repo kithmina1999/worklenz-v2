@@ -1,6 +1,6 @@
-import React from 'react';
-import { Form, Input, Button, Typography } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import React, { useEffect, useRef } from 'react';
+import { Form, Input, Button, Typography, List, InputRef } from 'antd';
+import { PlusOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { RootState } from '@/app/store';
@@ -11,20 +11,27 @@ const { Title } = Typography;
 interface Props {
   onEnter: () => void;
   styles: any;
+  isDarkMode: boolean;
 }
 
-export const TasksStep: React.FC<Props> = ({ onEnter, styles }) => {
+export const TasksStep: React.FC<Props> = ({ onEnter, styles, isDarkMode }) => {
   const { t } = useTranslation('account-setup');
   const dispatch = useDispatch();
-  const { tasks } = useSelector((state: RootState) => state.accountSetupReducer);
+  const { tasks, projectName } = useSelector((state: RootState) => state.accountSetupReducer);
+  const inputRefs = useRef<(InputRef | null)[]>([]);
 
   const addTask = () => {
     const newId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 0;
     dispatch(setTasks([...tasks, { id: newId, value: '' }]));
+    setTimeout(() => {
+      inputRefs.current[newId]?.focus();
+    }, 0);
   };
 
   const removeTask = (id: number) => {
-    dispatch(setTasks(tasks.filter(task => task.id !== id)));
+    if (tasks.length > 1) {
+      dispatch(setTasks(tasks.filter(task => task.id !== id)));
+    }
   };
 
   const updateTask = (id: number, value: string) => {
@@ -38,52 +45,76 @@ export const TasksStep: React.FC<Props> = ({ onEnter, styles }) => {
     }
   };
 
+  useEffect(() => {
+    setTimeout(() => inputRefs.current[0]?.focus(), 200);
+  }, []);
+
   return (
-    <Form className="step-form" style={styles.form}>
+    <Form
+      className="create-first-task-form"
+      style={{
+        minHeight: '300px',
+        width: '600px',
+        paddingBottom: '1rem',
+        marginBottom: '3rem',
+        marginTop: '3rem',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <Form.Item>
         <Title level={2} style={{ marginBottom: '1rem' }}>
-          {t('addInitialTasks')}
+          {t('tasksStepTitle')}
         </Title>
       </Form.Item>
-
-      {tasks.map((task, index) => (
-        <Form.Item key={task.id} style={{ marginBottom: '8px' }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <Input
-              placeholder={t('step2InputLabel')}
-              value={task.value}
-              onChange={e => updateTask(task.id, e.target.value)}
-              onPressEnter={e => handleKeyPress(e, index === tasks.length - 1)}
-              style={{ flex: 1 }}
-            />
-            {tasks.length > 1 && (
-              <Button
-                type="text"
-                icon={<DeleteOutlined />}
-                onClick={() => removeTask(task.id)}
-                style={{ color: 'red' }}
-              />
-            )}
-          </div>
-        </Form.Item>
-      ))}
-
-      <Form.Item>
+      <Form.Item
+        layout="vertical"
+        rules={[{ required: true }]}
+        label={
+          <span className="font-medium">
+            {t('tasksStepLabel')} "<mark>{projectName}</mark>".
+          </span>
+        }
+      >
+        <List
+          dataSource={tasks}
+          renderItem={(task, index) => (
+            <List.Item>
+              <div style={{ display: 'flex', width: '600px' }}>
+                <Input
+                  placeholder="Your Task"
+                  value={task.value}
+                  onChange={e => updateTask(task.id, e.target.value)}
+                  onPressEnter={e => handleKeyPress(e, task.id === tasks.length - 1)}
+                  ref={el => (inputRefs.current[index] = el)}
+                />
+                <Button
+                  className="custom-close-button"
+                  style={{ marginLeft: '48px' }}
+                  type="text"
+                  icon={<CloseCircleOutlined />}
+                  disabled={tasks.length === 1}
+                  onClick={() => removeTask(task.id)}
+                />
+              </div>
+            </List.Item>
+          )}
+        />
         <Button
           type="dashed"
-          onClick={addTask}
-          block
           icon={<PlusOutlined />}
-          style={{ marginTop: '12px' }}
+          onClick={addTask}
+          style={{ marginTop: '16px' }}
         >
-          {t('addTask')}
+          {t('tasksStepAddAnother')}
         </Button>
-      </Form.Item>
-
-      <Form.Item style={{ marginTop: '24px' }}>
-        <Button type="primary" onClick={onEnter} block>
-          {t('continue')}
-        </Button>
+        <div
+          style={{
+            marginTop: '24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        ></div>
       </Form.Item>
     </Form>
   );

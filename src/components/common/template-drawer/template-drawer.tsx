@@ -208,7 +208,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
   };
 
   const menuContent = (
-    <div style={{ display: 'flex', height: 'calc(100vh - 200px)' }}>
+    <div style={{ display: 'flex'}}>
       {/* Menu Area */}
       <div style={{ minWidth: '250px', overflowY: 'auto', height: '100%' }}>
         <Skeleton loading={loadingTemplates} active>
@@ -239,6 +239,11 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
     {
       key: '1',
       label: 'Worklenz Templates',
+      children: menuContent,
+    },
+    {
+      key: '2',
+      label: 'Custom Templates',
       children: menuContent,
     },
   ];

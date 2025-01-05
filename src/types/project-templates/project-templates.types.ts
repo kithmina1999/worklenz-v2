@@ -48,7 +48,7 @@ export interface ICustomTemplate {
 
 export interface IAccountSetupRequest {
   team_name?: string;
-  project_name?: string;
+  project_name?: string | null;
   tasks: string[];
   team_members: string[];
   template_id?: string | null;

@@ -4,7 +4,7 @@
   "setupYourAccount": "Configura tu cuenta.",
   "organizationStepTitle": "Nombra tu organización",
   "organizationStepLabel": "Elige un nombre para tu cuenta de Worklenz.",
-  
+
   "projectStepTitle": "Crea tu primer proyecto",
   "projectStepLabel": "¿En qué proyecto estás trabajando ahora?",
   "projectStepPlaceholder": "e.g. Plan de Marketing",
@@ -13,6 +13,8 @@
   "step2InputLabel": "Escribe algunas tareas que vas a hacer en",
   "step2AddAnother": "Agregar otro",
 
+  "emailPlaceholder": "Dirección de correo electrónico",
+  "invalidEmail": "Por favor, introduce una dirección de correo electrónico válida",
   "or": "o",
   "templateButton": "Importar desde plantilla",
   "goBack": "Volver",

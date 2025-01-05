@@ -1,5 +1,5 @@
-import React from 'react';
-import { Form, Input, Typography } from 'antd';
+import React, { useEffect, useRef } from 'react';
+import { Form, Input, InputRef, Typography } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { setOrganizationName } from '@/features/account-setup/account-setup.slice';
@@ -21,6 +21,11 @@ export const OrganizationStep: React.FC<Props> = ({
   const { t } = useTranslation('account-setup');
   const dispatch = useDispatch();
   const { organizationName } = useSelector((state: RootState) => state.accountSetupReducer);
+  const inputRef = useRef<InputRef>(null);
+
+  useEffect(() => {
+    setTimeout(() => inputRef.current?.focus(), 300);
+  }, []);
 
   return (
     <Form className="step-form" style={styles.form}>
@@ -39,6 +44,7 @@ export const OrganizationStep: React.FC<Props> = ({
           value={organizationName}
           onChange={e => dispatch(setOrganizationName(e.target.value))}
           onPressEnter={onEnter}
+          ref={inputRef}
         />
       </Form.Item>
     </Form>

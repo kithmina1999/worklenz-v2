@@ -16,10 +16,14 @@ import { IAccountSetupRequest } from '@/types/project-templates/project-template
 import { profileSettingsApiService } from '@/api/settings/profile/profile-settings.api.service';
 import { useNavigate } from 'react-router-dom';
 import logger from '@/utils/errorLogger';
-import { setCurrentStep } from '@/features/account-setup/account-setup.slice';
+import { setCurrentStep, setEmails } from '@/features/account-setup/account-setup.slice';
 import { OrganizationStep } from '@/components/account-setup/organization-step';
 import { ProjectStep } from '@/components/account-setup/project-step';
 import { TasksStep } from '@/components/account-setup/tasks-step';
+import MembersStep from '@/components/account-setup/members-step';
+import { evt_account_setup_complete } from '@/shared/worklenz-analytics-events';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
+import { verifyAuthentication } from '@/features/auth/authSlice';
 
 const { Title } = Typography;
 
@@ -35,17 +39,16 @@ interface Email {
 
 const AccountSetup: React.FC = () => {
   const dispatch = useDispatch();
-  const { currentStep, organizationName, projectName, templateId } = useSelector(
-    (state: RootState) => state.accountSetupReducer
-  );
   const { t } = useTranslation('account-setup');
-  const userDetails = getUserSession();
-  const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
   useDocumentTitle(t('setupYourAccount', 'Account Setup'));
   const navigate = useNavigate();
+  const { trackMixpanelEvent } = useMixpanelTracking();
 
-  const [tasks, setTasks] = useState<Task[]>([{ id: 0, value: '' }]);
-  const [emails, setEmails] = useState<Email[]>([{ id: 0, value: '' }]);
+  const { currentStep, organizationName, projectName, templateId, tasks, emails } = useSelector(
+    (state: RootState) => state.accountSetupReducer
+  );
+  const userDetails = getUserSession();
+  const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
 
   const isDarkMode = themeMode === 'dark';
   const organizationNamePlaceholder = userDetails?.name ? `e.g. ${userDetails?.name}'s Team` : '';
@@ -116,39 +119,6 @@ const AccountSetup: React.FC = () => {
     },
   };
 
-  const handleListItemChange = (
-    id: number,
-    value: string,
-    setter: React.Dispatch<React.SetStateAction<Task[] | Email[]>>,
-    items: Task[] | Email[]
-  ) => {
-    setter(items.map(item => (item.id === id ? { ...item, value } : item)));
-  };
-
-  // TODO: automatically focus on the next input field
-  const handleAddItem = (
-    items: Task[] | Email[],
-    setter: React.Dispatch<React.SetStateAction<Task[] | Email[]>>,
-    validateFn?: (value: string) => boolean
-  ) => {
-    const lastItem = items[items.length - 1];
-    if (lastItem.value.trim() && (!validateFn || validateFn(lastItem.value))) {
-      setter([...items, { id: items.length + 1, value: '' }]);
-    } else {
-      <Alert message="Please fill the field correctly before adding a new one" type="error" />;
-    }
-  };
-
-  const handleRemoveItem = (
-    id: number,
-    items: Task[] | Email[],
-    setter: React.Dispatch<React.SetStateAction<Task[] | Email[]>>
-  ) => {
-    if (items.length > 1) {
-      setter(items.filter(item => item.id !== id));
-    }
-  };
-
   const completeAccountSetup = async (skip = false) => {
     try {
       const model: IAccountSetupRequest = {
@@ -158,7 +128,8 @@ const AccountSetup: React.FC = () => {
         team_members: skip ? [] : emails.map(email => email.value),
       };
       const res = await profileSettingsApiService.setupAccount(model);
-      if (res.done) {
+      if (res.done && res.body.id) {
+        trackMixpanelEvent(evt_account_setup_complete);
         navigate('/worklenz/home');
       }
     } catch (error) {
@@ -193,62 +164,34 @@ const AccountSetup: React.FC = () => {
         <TasksStep
           onEnter={() => dispatch(setCurrentStep(currentStep + 1))}
           styles={styles}
+          isDarkMode={isDarkMode}
         />
       ),
     },
     {
       title: '',
       content: (
-        <Form className="invite-members-form" style={{ ...styles.form, minHeight: '300px' }}>
-          <Form.Item>
-            <Title level={2}>{t('step3Title')}</Title>
-          </Form.Item>
-          <List
-            dataSource={emails}
-            renderItem={email => (
-              <List.Item>
-                <div style={{ display: 'flex', width: '600px' }}>
-                  <Input
-                    placeholder="Email address"
-                    value={email.value}
-                    onChange={e =>
-                      handleListItemChange(email.id, e.target.value, setEmails, emails)
-                    }
-                  />
-                  <Button
-                    className="custom-close-button"
-                    style={{ marginLeft: '48px' }}
-                    type="text"
-                    icon={
-                      <CloseCircleOutlined
-                        style={{ fontSize: '20px', color: isDarkMode ? '' : '#00000073' }}
-                      />
-                    }
-                    onClick={() => handleRemoveItem(email.id, emails, setEmails)}
-                  />
-                </div>
-              </List.Item>
-            )}
-          />
-          <Button
-            type="dashed"
-            icon={<PlusOutlined />}
-            onClick={() => handleAddItem(emails, setEmails, validateEmail)}
-            style={{ marginTop: '16px' }}
-          >
-            {t('addAnother')}
-          </Button>
-        </Form>
+        <MembersStep
+          isDarkMode={isDarkMode}
+          styles={styles}
+        />
       ),
     },
   ];
 
   const isValid = () => {
-    if (currentStep === 0) return organizationName.trim() === '';
-    if (currentStep === 1) return projectName.trim() === '';
-    if (currentStep === 2) return !tasks.some(task => task.value.trim() !== '');
-    if (currentStep === 3) return !emails.some(email => validateEmail(email.value));
-    return false;
+    switch (currentStep) {
+      case 0:
+        return organizationName.trim() === '';
+      case 1:
+        return projectName.trim() === '';
+      case 2:
+        return tasks.length !== 0 && tasks[0].value.trim() === '';
+      case 3:
+        return emails.length === 0 && emails[0].value.trim() !== '';
+      default:
+        return false;
+    }
   };
 
   const nextStep = () => {
@@ -311,8 +254,8 @@ const AccountSetup: React.FC = () => {
                 type="primary"
                 htmlType="submit"
                 disabled={isValid()}
-                className="my-7"
-                onClick={() => nextStep()}
+                className="mt-7 mb-7"
+                onClick={nextStep}
               >
                 {t('continue')}
               </Button>

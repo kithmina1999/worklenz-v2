@@ -23,5 +23,7 @@
   "signInWithGoogleButton": "Iniciar sesión con Google",
   "alreadyHaveAccountText": "¿Ya tienes una cuenta?",
   "loginButton": "Iniciar sesión",
-  "orText": "O"
+  "orText": "O",
+  "reCAPTCHAVerificationError": "Error de verificación de reCAPTCHA",
+  "reCAPTCHAVerificationErrorMessage": "No pudimos verificar tu reCAPTCHA. Por favor, inténtalo de nuevo."
 }

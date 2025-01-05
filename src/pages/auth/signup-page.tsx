@@ -14,6 +14,8 @@ import { signUp } from '@/features/auth/authSlice';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_signup_page_visit, evt_signup_with_email_click, evt_signup_with_google_click } from '@/shared/worklenz-analytics-events';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import logger from '@/utils/errorLogger';
+import alertService from '@/services/alerts/alertService';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -47,6 +49,18 @@ const SignupPage = () => {
     });
   }, [trackMixpanelEvent]);
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = `https://www.google.com/recaptcha/api.js?render=${import.meta.env.VITE_RECAPTCHA_SITE_KEY}`;
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   const getInvitationQueryParams = () => {
     const { teamId, teamMemberId, projectId } = urlParams;
     return Object.entries({ team: teamId, teamMember: teamMemberId, project: projectId })
@@ -55,9 +69,35 @@ const SignupPage = () => {
       .join('&');
   };
 
+  const getRecaptchaToken = async () => {
+    return new Promise<string>((resolve) => {
+      window.grecaptcha.ready(() => {
+        window.grecaptcha.execute(import.meta.env.VITE_RECAPTCHA_SITE_KEY, { action: 'signup' })
+          .then((token: string) => {
+            resolve(token);
+          });
+      });
+    });
+  };
+
   const onFinish = async (values: IUserSignUpRequest) => {
     try {
       setValidating(true);
+      const token = await getRecaptchaToken(); 
+
+      if (!token) {
+        logger.error('Failed to get reCAPTCHA token');
+        alertService.error(t('reCAPTCHAVerificationError'), t('reCAPTCHAVerificationErrorMessage'));
+        return;
+      }
+
+      const veriftToken = await authApiService.verifyRecaptchaToken(token);
+
+      if (!veriftToken.done) {
+        logger.error('Failed to verify reCAPTCHA token');
+        return;
+      }      
+      
       const body = {
         name: values.name,
         email: values.email,

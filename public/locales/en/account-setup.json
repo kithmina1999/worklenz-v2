@@ -1,7 +1,7 @@
 {
   "continue": "Continue",
 
-  "setupYourAccount": "Setup Your Account.",
+  "setupYourAccount": "Setup Your Worklenz Account.",
   "organizationStepTitle": "Name Your Organization",
   "organizationStepLabel": "Pick a name for your Worklenz account.",
   
@@ -9,10 +9,12 @@
   "projectStepLabel": "What project are you working on right now?",
   "projectStepPlaceholder": "e.g. Marketing Plan",
 
-  "step2Title": "Create your first tasks",
-  "step2InputLabel": "Type a few tasks that you are going to do in",
-  "step2AddAnother": "Add another",
+  "tasksStepTitle": "Create your first tasks",
+  "tasksStepLabel": "Type a few tasks that you are going to do in",
+  "tasksStepAddAnother": "Add another",
 
+  "emailPlaceholder": "Email address",
+  "invalidEmail": "Please enter a valid email address",
   "or": "or",
   "templateButton": "Import from template",
   "goBack": "Go Back",

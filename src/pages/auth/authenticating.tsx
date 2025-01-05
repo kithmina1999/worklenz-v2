@@ -19,7 +19,6 @@ const AuthenticatingPage: React.FC = () => {
     const handleAuthentication = async () => {
       try {
         const session = await dispatch(verifyAuthentication()).unwrap();
-        logger.info('Authentication session:', session);
 
         if (!session.authenticated) {
           return navigate('/auth/login');
