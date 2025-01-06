@@ -5,7 +5,7 @@ import { NavigateFunction } from 'react-router-dom';
 import { useMemo } from 'react';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthService } from '@/hooks/useAuth';
 import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
@@ -27,7 +27,7 @@ const TableColumns = (
 ): ColumnsType<IProjectViewModel> => {
   const { t } = useTranslation('all-project-list');
   const dispatch = useAppDispatch();
-  const isOwnerOrAdmin = useAuth().isOwnerOrAdmin();
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
   return useMemo(
     () => [

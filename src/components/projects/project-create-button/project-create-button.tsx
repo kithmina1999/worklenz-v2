@@ -36,7 +36,6 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
   };
 
   const handleTemplateSelect = (templateId: string) => {
-    // TODO: Implement template selection logic
     console.log('Selected template:', templateId);
     handleTemplateDrawerClose();
   };
@@ -68,7 +67,7 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
         onClick={handleCreateProject}
         menu={{ items: dropdownItems }}
       >
-        <EditOutlined /> Create Project
+        <EditOutlined /> {t('createProject')}
       </Dropdown.Button>
 
       <Drawer
@@ -86,7 +85,7 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
         }
       >
         <TemplateDrawer 
-          showBothTabs={false} 
+          showBothTabs={true} 
           templateSelected={handleTemplateSelect}
         />
       </Drawer>

@@ -16,7 +16,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import React from 'react';
 import './task-list-custom.css';
 import TaskListInstantTaskInput from './task-list-instant-task-input/task-list-instant-task-input';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthService } from '@/hooks/useAuth';
 import { createColumns } from './task-list-columns/task-list-columns';
 
 interface TaskListCustomProps {
@@ -34,7 +34,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, groupId, 
   const statuses = useAppSelector(state => state.taskStatusReducer.status);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const { token } = theme.useToken();
-  const { getCurrentSession } = useAuth();
+  const { getCurrentSession } = useAuthService();
 
   const handleExpandClick = useCallback((rowId: string) => {
     setExpandedRows(prev => ({

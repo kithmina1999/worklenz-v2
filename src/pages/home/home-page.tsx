@@ -6,7 +6,7 @@ import GreetingWithTime from './greeting-with-time';
 import TasksList from '@/pages/home/task-list/tasks-list';
 import TodoList from '@/pages/home/todo-list/todo-list';
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
-import CreateProjectButton from '@/components/projects/project-drawer/create-project-button';
+import CreateProjectButton from '@/components/projects/project-create-button/project-create-button';
 import RecentAndFavouriteProjectList from '@/pages/home/recent-and-favourite-project-list/recent-and-favourite-project-list';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
@@ -15,6 +15,7 @@ import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/pr
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { fetchProjects } from '@/features/home-page/home-page.slice';
+import { useAuthService } from '@/hooks/useAuth';
 
 const DESKTOP_MIN_WIDTH = 1024;
 const TASK_LIST_MIN_WIDTH = 500;
@@ -23,6 +24,7 @@ const SIDEBAR_MAX_WIDTH = 400;
 const HomePage = () => {
   const isDesktop = useMediaQuery({ query: `(min-width: ${DESKTOP_MIN_WIDTH}px)` });
   const dispatch = useAppDispatch();
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
   
   useDocumentTitle('Home');
 
@@ -48,10 +50,10 @@ const HomePage = () => {
   const CreateProjectButtonComponent = () => (
     isDesktop ? (
       <div className="absolute right-0 top-1/2 -translate-y-1/2">
-        <CreateProjectButton />
+        {isOwnerOrAdmin && <CreateProjectButton />}
       </div>
     ) : (
-      <CreateProjectButton />
+      isOwnerOrAdmin && <CreateProjectButton />
     )
   );
 

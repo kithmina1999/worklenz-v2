@@ -11,7 +11,7 @@ import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 
 // Components
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
-import CreateProjectButton from '@/components/projects/project-drawer/create-project-button';
+import CreateProjectButton from '@/components/projects/project-create-button/project-create-button';
 import TableColumns from '@/components/project-list/TableColumns';
 
 // Redux
@@ -43,6 +43,7 @@ import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import './project-list.css';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
+import { useAuthService } from '@/hooks/useAuth';
 
 // Interfaces
 interface PaginationState {
@@ -61,6 +62,7 @@ const ProjectList: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   useDocumentTitle('Projects');
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
   // Redux state
   const { loading, projects, filteredCategories } = useAppSelector(state => state.projectsReducer);
@@ -270,7 +272,7 @@ const ProjectList: React.FC = () => {
               onChange={handleSearchChange}
               aria-label="Search projects"
             />
-            <CreateProjectButton />
+            {isOwnerOrAdmin && <CreateProjectButton />} 
           </Flex>
         }
       />
