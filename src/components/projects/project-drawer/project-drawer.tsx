@@ -43,15 +43,18 @@ import { setProject, setProjectId } from '@/features/project/project.slice';
 import { useNavigate } from 'react-router-dom';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 import { calculateTimeDifference } from '@/utils/calculate-time-difference';
+import logger from '@/utils/errorLogger';
 
 const ProjectDrawer = ({
   categories = [],
   statuses = [],
   healths = [],
+  onDelete,
 }: {
   categories: IProjectCategory[];
   statuses: IProjectStatus[];
   healths: IProjectHealth[];
+  onDelete: (id: string) => void;
 }) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('project-drawer');
@@ -61,6 +64,8 @@ const ProjectDrawer = ({
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
   const { project, projectId, projectLoading } = useAppSelector(state => state.projectReducer);
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
+  const [creatingProject, setCreatingProject] = useState<boolean>(false);
+  const [deletingProject, setDeletingProject] = useState<boolean>(false);
 
   useEffect(() => {
     if (!clients.data?.length)
@@ -78,35 +83,42 @@ const ProjectDrawer = ({
 
   // function for handle form submit
   const handleFormSubmit = async (values: any) => {
-    const projectModel: IProjectViewModel = {
-      name: values.name,
-      color_code: values.color_code,
-      status_id: values.status_id,
-      category_id: values.category_id,
-      health_id: values.health_id,
-      notes: values.notes,
-      key: values.key,
-      client_name: selectedClient,
-      project_manager: values.projectManager,
-      start_date: values.start_date,
-      end_date: values.end_date,
-      working_days: values.working_days,
-      man_days: values.man_days,
-      hours_per_day: values.hours_per_day,
-    };
-    if (editMode && projectId) {
-      const response = await dispatch(updateProject({ id: projectId, project: projectModel })).unwrap();
-      if (response?.id) {
-        form.resetFields();
-        dispatch(toggleDrawer());
+    setCreatingProject(true);
+    try {
+      const projectModel: IProjectViewModel = {
+        name: values.name,
+        color_code: values.color_code,
+        status_id: values.status_id,
+        category_id: values.category_id,
+        health_id: values.health_id,
+        notes: values.notes,
+        key: values.key,
+        client_name: selectedClient,
+        project_manager: values.projectManager,
+        start_date: values.start_date,
+        end_date: values.end_date,
+        working_days: values.working_days,
+        man_days: values.man_days,
+        hours_per_day: values.hours_per_day,
+      };
+      if (editMode && projectId) {
+        const response = await dispatch(updateProject({ id: projectId, project: projectModel })).unwrap();
+        if (response?.id) {
+          form.resetFields();
+          dispatch(toggleDrawer());
+        }
+      } else {
+        const response = await dispatch(createProject(projectModel)).unwrap();
+        if (response?.id) {
+          form.resetFields();
+          dispatch(toggleDrawer());
+          navigate(`/worklenz/projects/${response.id}`);
+        }
       }
-    } else {
-      const response = await dispatch(createProject(projectModel)).unwrap();
-      if (response?.id) {
-        form.resetFields();
-        dispatch(toggleDrawer());
-        navigate(`/worklenz/projects/${response.id}`);
-      }
+    } catch (error) {
+      logger.error('Error creating project', error);
+    } finally {
+      setCreatingProject(false);
     }
   };
 
@@ -207,10 +219,14 @@ const ProjectDrawer = ({
     dispatch(setProjectId(null));
   };
 
-  const handleDeleteProject = () => {
+  const handleDeleteProject = async () => {
+    setDeletingProject(true);
     if (projectId) {
-      dispatch(deleteProject(projectId));
+      await dispatch(deleteProject(projectId)).unwrap();
+      dispatch(toggleDrawer());
+      navigate('/worklenz/projects');
     }
+    setDeletingProject(false);
   };
 
   return (
@@ -235,14 +251,14 @@ const ProjectDrawer = ({
                 okText={t('yes')}
                 cancelText={t('no')}
               >
-                <Button danger type="dashed">
+                <Button danger type="dashed" loading={deletingProject}>
                   {t('delete')}
                 </Button>
               </Popconfirm>
             )}
           </Space>
           <Space>
-            <Button type="primary" onClick={() => form.submit()}>
+            <Button type="primary" onClick={() => form.submit()} loading={creatingProject}>
               {editMode ? t('update') : t('create')}
             </Button>
           </Space>

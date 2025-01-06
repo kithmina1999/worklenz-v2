@@ -1,5 +1,5 @@
 import type { MenuProps } from 'antd';
-import { Empty, List, Menu, Skeleton, Tabs, Tag, Typography, Image } from 'antd';
+import { Empty, List, Menu, Skeleton, Tabs, Tag, Typography, Image, Input } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import {
   IWorklenzTemplate,
 } from '@/types/project-templates/project-templates.types';
 import './template-drawer.css';
+import { SearchOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -20,7 +21,10 @@ interface TemplateDrawerProps {
 
 const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
   showBothTabs = false,
-  templateSelected = (templateId: string) => { templateId },
+  templateSelected = (templateId: string) => {
+    if (!templateId) return;
+    templateId;
+  },
 }) => {
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
   const { t } = useTranslation('template-drawer');
@@ -70,7 +74,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
   const menuItems: MenuProps['items'] = templates.map(template => ({
     key: template.id || '',
     label: template.name || t('untitled'),
-    type: 'item'
+    type: 'item',
   }));
 
   const handleMenuClick = (templateId: string) => {
@@ -208,7 +212,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
   };
 
   const menuContent = (
-    <div style={{ display: 'flex'}}>
+    <div style={{ display: 'flex' }}>
       {/* Menu Area */}
       <div style={{ minWidth: '250px', overflowY: 'auto', height: '100%' }}>
         <Skeleton loading={loadingTemplates} active>
@@ -235,16 +239,26 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
     </div>
   );
 
+  const customTemplatesContent = (
+    <div>
+      <Input placeholder={t('searchTemplates')} suffix={<SearchOutlined />} />
+      <List
+        dataSource={[]}
+        renderItem={item => <List.Item key={item.name}>{item.name}</List.Item>}
+      />
+    </div>
+  );
+
   const tabs = [
     {
       key: '1',
-      label: 'Worklenz Templates',
+      label: t('worklenzTemplates'),
       children: menuContent,
     },
     {
       key: '2',
-      label: 'Custom Templates',
-      children: menuContent,
+      label: t('yourTemplatesLibrary'),
+      children: customTemplatesContent,
     },
   ];
 
@@ -259,11 +273,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
           overflow: 'hidden',
         }}
       >
-        {showBothTabs ? (
-          <Tabs type="card" items={tabs} />
-        ) : (
-          menuContent
-        )}
+        {showBothTabs ? <Tabs type="card" items={tabs} /> : menuContent}
       </div>
     </div>
   );

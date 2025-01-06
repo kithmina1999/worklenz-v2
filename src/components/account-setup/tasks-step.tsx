@@ -72,14 +72,15 @@ export const TasksStep: React.FC<Props> = ({ onEnter, styles, isDarkMode }) => {
         rules={[{ required: true }]}
         label={
           <span className="font-medium">
-            {t('tasksStepLabel')} "<mark>{projectName}</mark>".
+            {t('tasksStepLabel')} "<mark>{projectName}</mark>"
           </span>
         }
       >
         <List
           dataSource={tasks}
+          bordered={false}
           renderItem={(task, index) => (
-            <List.Item>
+            <List.Item key={task.id}>
               <div style={{ display: 'flex', width: '600px' }}>
                 <Input
                   placeholder="Your Task"

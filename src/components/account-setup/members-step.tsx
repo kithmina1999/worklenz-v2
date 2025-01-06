@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { Form, Input, Button, List, Alert, message, InputRef } from 'antd';
-import { CloseCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, MailOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Typography } from 'antd';
-import { setEmails, setTasks } from '@/features/account-setup/account-setup.slice';
+import { setTeamMembers, setTasks } from '@/features/account-setup/account-setup.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { validateEmail } from '@/utils/validateEmail';
@@ -23,91 +23,146 @@ interface MembersStepProps {
 
 const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
   const { t } = useTranslation('account-setup');
-  const { emails } = useSelector((state: RootState) => state.accountSetupReducer);
+  const { teamMembers, organizationName } = useSelector(
+    (state: RootState) => state.accountSetupReducer
+  );
   const inputRefs = useRef<(InputRef | null)[]>([]);
   const dispatch = useDispatch();
+  const [form] = Form.useForm();
 
   const addEmail = () => {
-    const newId = emails.length > 0 ? Math.max(...emails.map(t => t.id)) + 1 : 0;
-    dispatch(setEmails([...emails, { id: newId, value: '' }]));
+    const newId = teamMembers.length > 0 ? Math.max(...teamMembers.map(t => t.id)) + 1 : 0;
+    dispatch(setTeamMembers([...teamMembers, { id: newId, value: '' }]));
     setTimeout(() => {
       inputRefs.current[newId]?.focus();
     }, 0);
   };
 
   const removeEmail = (id: number) => {
-    if (emails.length > 1) {
-      dispatch(setEmails(emails.filter(email => email.id !== id)));
+    if (teamMembers.length > 1) {
+      dispatch(setTeamMembers(teamMembers.filter(teamMember => teamMember.id !== id)));
     }
   };
 
   const updateEmail = (id: number, value: string) => {
-    dispatch(setEmails(emails.map(email => (email.id === id ? { ...email, value } : email))));
+    dispatch(
+      setTeamMembers(
+        teamMembers.map(teamMember =>
+          teamMember.id === id ? { ...teamMember, value } : teamMember
+        )
+      )
+    );
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent, isLast: boolean) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     e.preventDefault();
-    if (isLast) {
-      addEmail();
-    }
+    addEmail();
   };
 
   useEffect(() => {
-    setTimeout(() => inputRefs.current[0]?.focus(), 200);
+    setTimeout(() => {
+      inputRefs.current[teamMembers.length - 1]?.focus();
+      // Set initial form values
+      const initialValues: Record<string, string> = {};
+      teamMembers.forEach(teamMember => {
+        initialValues[`email-${teamMember.id}`] = teamMember.value;
+      });
+      form.setFieldsValue(initialValues);
+    }, 200);
   }, []);
 
   const formRules = {
     email: [
       {
-        type: 'email',
-        message: t('invalidEmail'),
+        validator: async (_: any, value: string) => {
+          if (!value) return;
+          if (!validateEmail(value)) {
+            throw new Error(t('invalidEmail'));
+          }
+        },
       },
     ],
   };
 
   return (
-    <Form className="invite-members-form" style={{ ...styles.form, minHeight: '300px' }}>
+    <Form
+      form={form}
+      className="invite-members-form"
+      style={{
+        minHeight: '300px',
+        width: '600px',
+        paddingBottom: '1rem',
+        marginBottom: '3rem',
+        marginTop: '3rem',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <Form.Item>
-        <Title level={2}>{t('step3Title')}</Title>
+        <Title level={2} style={{ marginBottom: '1rem' }}>
+          {t('step3Title')} "<mark>{organizationName}</mark>"
+        </Title>
       </Form.Item>
-      <List
-        dataSource={emails}
-        renderItem={(email, index) => (
-          <List.Item key={email.id} rules={formRules.email as Rule[]}>
-            <div style={{ display: 'flex', width: '600px' }}>
-              <Form.Item
-                name={`email-${email.id}`}
-                rules={formRules.email as Rule[]}
-                style={{ flex: 1 }}
-              >
-                <Input
-                  placeholder="Your Email"
-                  value={email.value}
-                  onChange={e => updateEmail(email.id, e.target.value)}
-                  onPressEnter={e => handleKeyPress(e, email.id === emails.length - 1)}
-                  ref={el => (inputRefs.current[index] = el)}
-                />
-              </Form.Item>
-              <Button
-                className="custom-close-button"
-                style={{ marginLeft: '48px' }}
-                type="text"
-                icon={<CloseCircleOutlined />}
-                disabled={emails.length === 1}
-                onClick={() => removeEmail(email.id)}
-              />
-            </div>
-          </List.Item>
-        )}
-      />
-      <Button
-        type="dashed"
-        icon={<PlusOutlined />}
-        onClick={() => addEmail()}
-        style={{ marginTop: '16px' }}
+      <Form.Item
+        layout="vertical"
+        rules={[{ required: true }]}
+        label={
+          <span className="font-medium">
+            {t('step3InputLabel')}&nbsp; <MailOutlined />
+          </span>
+        }
       >
-        {t('addAnother')}
-      </Button>
+        <List
+          dataSource={teamMembers}
+          bordered={false}
+          itemLayout='vertical'
+          renderItem={(teamMember, index) => (
+            <List.Item key={teamMember.id}>
+              <div style={{ display: 'flex', width: '600px' }}>
+                <Form.Item
+                  rules={formRules.email as Rule[]}
+                  className="w-full"
+                  validateTrigger={['onChange', 'onBlur']}
+                  name={`email-${teamMember.id}`}
+                >
+                  <Input
+                    placeholder={t('emailPlaceholder')}
+                    value={teamMember.value}
+                    onChange={e => updateEmail(teamMember.id, e.target.value)}
+                    onPressEnter={e => handleKeyPress(e)}
+                    ref={el => (inputRefs.current[index] = el)}
+                    status={teamMember.value && !validateEmail(teamMember.value) ? 'error' : ''}
+                    id={`member-${index}`}
+                  />
+                </Form.Item>
+                <Button
+                  className="custom-close-button"
+                  style={{ marginLeft: '48px' }}
+                  type="text"
+                  icon={<CloseCircleOutlined />}
+                  disabled={teamMembers.length === 1}
+                  onClick={() => removeEmail(teamMember.id)}
+                />
+              </div>
+            </List.Item>
+          )}
+        />
+        <Button
+          type="dashed"
+          icon={<PlusOutlined />}
+          onClick={addEmail}
+          style={{ marginTop: '16px' }}
+        >
+          {t('tasksStepAddAnother')}
+        </Button>
+        <div
+          style={{
+            marginTop: '24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        ></div>
+      </Form.Item>
     </Form>
   );
 };

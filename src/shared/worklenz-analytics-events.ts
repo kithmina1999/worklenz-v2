@@ -17,6 +17,7 @@ export const evt_verify_reset_email_page_visit = "verify_reset_email_page_visit"
 export const evt_account_setup_visit = "account_setup_visit";
 export const evt_account_setup_complete = "account_setup_complete";
 export const evt_account_setup_skip_invite = "account_setup_skip_invite";
+export const evt_account_setup_template_complete = "account_setup_template_complete";
 
 // Password Management
 export const evt_reset_password_click = "reset_password_click";

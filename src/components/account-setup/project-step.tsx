@@ -1,14 +1,21 @@
 import React, { startTransition, useEffect, useRef, useState } from 'react';
-import { Button, Drawer, Form, Input, InputRef, Select, Typography } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+
+import { Button, Drawer, Form, Input, InputRef, Select, Typography } from 'antd';
+import TemplateDrawer from '../common/template-drawer/template-drawer';
+
 import { RootState } from '@/app/store';
 import { setProjectName, setTemplateId } from '@/features/account-setup/account-setup.slice';
-import TemplateDrawer from '../common/template-drawer/template-drawer';
-import logger from '@/utils/errorLogger';
+
 import { projectTemplatesApiService } from '@/api/project-templates/project-templates.api.service';
+import logger from '@/utils/errorLogger';
+
 import { IAccountSetupRequest } from '@/types/project-templates/project-templates.types';
-import { useNavigate } from 'react-router-dom';
+
+import { evt_account_setup_template_complete } from '@/shared/worklenz-analytics-events';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 
 const { Title } = Typography;
 
@@ -22,6 +29,7 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
   const { t } = useTranslation('account-setup');
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { trackMixpanelEvent } = useMixpanelTracking();
 
   const inputRef = useRef<InputRef>(null);
 
@@ -36,7 +44,8 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
   const [creatingFromTemplate, setCreatingFromTemplate] = useState(false);
 
   const handleTemplateSelected = (templateId: string) => {
-    setTemplateId(templateId);
+    if (!templateId) return;
+    dispatch(setTemplateId(templateId));
   };
 
   const toggleTemplateSelector = (isOpen: boolean) => {
@@ -44,8 +53,8 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
   };
 
   const createFromTemplate = async () => {
-    toggleTemplateSelector(false);
     setCreatingFromTemplate(true);
+    if (!templateId) return;
     try {
       const model: IAccountSetupRequest = {
         team_name: organizationName,
@@ -55,7 +64,9 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
         team_members: [],
       };
       const res = await projectTemplatesApiService.setupAccount(model);
-      if (res.done) {
+      if (res.done && res.body.id) {
+        toggleTemplateSelector(false);
+        trackMixpanelEvent(evt_account_setup_template_complete);
         navigate(`/worklenz/projects/${res.body.id}`);
       }
     } catch (error) {
@@ -107,7 +118,7 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
             <Button style={{ marginRight: '8px' }} onClick={() => toggleTemplateSelector(false)}>
               {t('cancel')}
             </Button>
-            <Button type="primary" onClick={() => createFromTemplate()}>
+            <Button type="primary" onClick={() => createFromTemplate()} loading={creatingFromTemplate}>
               {t('create')}
             </Button>
           </div>

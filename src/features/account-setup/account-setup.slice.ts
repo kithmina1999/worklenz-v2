@@ -13,18 +13,18 @@ interface Email {
 interface AccountSetupState {
   organizationName: string;
   projectName: string;
-  templateId: string;
+  templateId: string | null;
   tasks: Task[];
-  emails: Email[];
+  teamMembers: Email[];
   currentStep: number;
 }
 
 const initialState: AccountSetupState = {
   organizationName: '',
   projectName: '',
-  templateId: '',
+  templateId: null,
   tasks: [{ id: 0, value: '' }],
-  emails: [{ id: 0, value: '' }],
+  teamMembers: [{ id: 0, value: '' }],
   currentStep: 0,
 };
 
@@ -38,14 +38,14 @@ const accountSetupSlice = createSlice({
     setProjectName: (state, action: PayloadAction<string>) => {
       state.projectName = action.payload;
     },
-    setTemplateId: (state, action: PayloadAction<string>) => {
+    setTemplateId: (state, action: PayloadAction<string | null>) => {
       state.templateId = action.payload;
     },
     setTasks: (state, action: PayloadAction<Task[]>) => {
       state.tasks = action.payload;
     },
-    setEmails: (state, action: PayloadAction<Email[]>) => {
-      state.emails = action.payload;
+    setTeamMembers: (state, action: PayloadAction<Email[]>) => {
+      state.teamMembers = action.payload;
     },
     setCurrentStep: (state, action: PayloadAction<number>) => {
       state.currentStep = action.payload;
@@ -59,7 +59,7 @@ export const {
   setProjectName,
   setTemplateId,
   setTasks,
-  setEmails,
+  setTeamMembers,
   setCurrentStep,
   resetAccountSetup,
 } = accountSetupSlice.actions;

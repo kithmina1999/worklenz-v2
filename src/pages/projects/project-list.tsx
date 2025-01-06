@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 // Ant Design components
-import { Button, Card, Flex, Input, Segmented, Table, TablePaginationConfig, Tooltip } from 'antd';
+import { Button, Card, Empty, Flex, Input, Segmented, Table, TablePaginationConfig, Tooltip } from 'antd';
 import { PageHeader } from '@ant-design/pro-components';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
@@ -18,6 +18,7 @@ import TableColumns from '@/components/project-list/TableColumns';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
+  deleteProject,
   fetchProjects,
   setFilteredCategories,
   toggleArchiveProject,
@@ -243,6 +244,11 @@ const ProjectList: React.FC = () => {
     console.log('clicked', category);
   };
 
+  const handleDeleteProject = async (id: string) => {
+    await dispatch(deleteProject(id)).unwrap();
+    handleRefresh();
+  };
+
   return (
     <div style={{ marginBlock: 65, minHeight: '90vh' }}>
       <PageHeader
@@ -285,6 +291,7 @@ const ProjectList: React.FC = () => {
           size="small"
           onChange={handleTableChange}
           pagination={paginationConfig}
+          locale={{ emptyText: <Empty description={t('noProjects')} /> }}
         />
       </Card>
 
@@ -292,6 +299,7 @@ const ProjectList: React.FC = () => {
         categories={projectCategories || []}
         statuses={projectStatuses || []}
         healths={healths || []}
+        onDelete={handleDeleteProject}
       />
     </div>
   );

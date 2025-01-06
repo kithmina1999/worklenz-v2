@@ -26,9 +26,7 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
   }, [location]);
 
   const handleTemplateDrawerOpen = () => {
-    startTransition(() => {
-      setIsTemplateDrawerOpen(true);
-    });
+    setIsTemplateDrawerOpen(true);
   };
 
   const handleTemplateDrawerClose = () => {
@@ -58,11 +56,11 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
     dispatch(toggleDrawer());
   };
 
-
   return (
     <div className={className}>
       <Dropdown.Button
         type="primary"
+        trigger={['click']}
         icon={<DownOutlined />}
         onClick={handleCreateProject}
         menu={{ items: dropdownItems }}
@@ -84,10 +82,7 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
           </div>
         }
       >
-        <TemplateDrawer 
-          showBothTabs={true} 
-          templateSelected={handleTemplateSelect}
-        />
+        <TemplateDrawer showBothTabs={true} templateSelected={handleTemplateSelect} />
       </Drawer>
     </div>
   );

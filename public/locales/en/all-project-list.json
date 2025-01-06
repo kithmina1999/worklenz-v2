@@ -17,5 +17,6 @@
   "unarchive": "Unarchive",
   "archiveConfirm": "Are you sure you want to archive this project?",
   "unarchiveConfirm": "Are you sure you want to unarchive this project?",
-  "clickToFilter": "Click to filter by"
+  "clickToFilter": "Click to filter by",
+  "noProjects": "No projects found"
 }

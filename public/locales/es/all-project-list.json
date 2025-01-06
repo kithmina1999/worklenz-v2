@@ -17,5 +17,6 @@
   "unarchive": "Desarchivar",
   "archiveConfirm": "¿Estás seguro de que deseas archivar este proyecto?",
   "unarchiveConfirm": "¿Estás seguro de que deseas desarchivar este proyecto?",
-  "clickToFilter": "Clique para filtrar por"
+  "clickToFilter": "Clique para filtrar por",
+  "noProjects": "No se encontraron proyectos"
 }
