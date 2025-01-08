@@ -6,6 +6,22 @@ import { IClient } from '@/types/client.types';
 
 const rootUrl = `${API_BASE_URL}/admin-center`;
 
+export interface IOrganizationUserRequestParams {
+    page: number;
+    pageSize: number;
+    sort: string;
+    order: string;
+    searchTerm: string;
+}
+
+export interface IOrganizationTeamRequestParams {
+    index: number;
+    size: number;
+    field: string | null;
+    order: string | null;
+    search: string | null;
+}
+
 export const adminCenterApiService = {
 
     async getOrganizationDetails(): Promise<IServerResponse<IOrganization>> {
@@ -28,27 +44,25 @@ export const adminCenterApiService = {
         return response.data;
     },
 
-    async getOrganizationUsers(index: number, size: number, field: string | null, order: string | null, search: string | null): Promise<IServerResponse<IOrganizationUsersGetRequest>> {
-        const s = encodeURIComponent(search || '');
+    async getOrganizationUsers(requestParams: IOrganizationUserRequestParams): Promise<IServerResponse<IOrganizationUsersGetRequest>> {
         const params = new URLSearchParams({
-            index: index.toString(),
-            size: size.toString(),
-            ...(field && { field }),
-            ...(order && { order }),
-            ...(s && { search: s })
+            index: requestParams.page.toString(),
+            size: requestParams.pageSize.toString(),
+            ...(requestParams.sort && { field: requestParams.sort }),
+            ...(requestParams.order && { order: requestParams.order }),
+            ...(requestParams.searchTerm && { search: requestParams.searchTerm })
         });
         const response = await apiClient.get<IServerResponse<IOrganizationUsersGetRequest>>(`${rootUrl}/organization/users?${params}`);
         return response.data;
     },
 
-    async getOrganizationTeams(index: number, size: number, field: string | null, order: string | null, search: string | null): Promise<IServerResponse<IOrganizationTeamGetRequest>> {
-        const s = encodeURIComponent(search || '');
+    async getOrganizationTeams(requestParams: IOrganizationTeamRequestParams): Promise<IServerResponse<IOrganizationTeamGetRequest>> {
         const params = new URLSearchParams({
-            index: index.toString(),
-            size: size.toString(),
-            ...(field && { field }),
-            ...(order && { order }),
-            ...(s && { search: s })
+            index: requestParams.index.toString(),
+            size: requestParams.size.toString(),
+            ...(requestParams.field && { field: requestParams.field }),
+            ...(requestParams.order && { order: requestParams.order }),
+            ...(requestParams.search && { search: requestParams.search })
         });
         const response = await apiClient.get<IServerResponse<IOrganizationTeamGetRequest>>(`${rootUrl}/organization/teams?${params}`);
         return response.data;

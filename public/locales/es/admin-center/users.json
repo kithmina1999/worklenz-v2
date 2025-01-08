@@ -4,6 +4,6 @@
     "placeholder": "Buscar por nombre",
     "user": "Usuario",
     "email": "Correo electrónico",
-    "lastActivity": "Última actividad"
-
+    "lastActivity": "Última actividad",
+    "refresh": "Actualizar usuarios"
 }

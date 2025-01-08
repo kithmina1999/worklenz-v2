@@ -1,9 +1,4 @@
-import {
-  DeleteOutlined,
-  SearchOutlined,
-  SettingOutlined,
-  SyncOutlined,
-} from '@ant-design/icons';
+import { DeleteOutlined, SearchOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
 import {
   Avatar,
@@ -18,138 +13,71 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useMemo, useState } from 'react';
-import {
-  deleteTeam,
-  toggleDrawer,
-  toggleSettingDrawer,
-} from '@features/teams/teamSlice';
+import React, { useEffect, useMemo, useState } from 'react';
+import { deleteTeam, toggleDrawer, toggleSettingDrawer } from '@features/teams/teamSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import CreateTeamDrawer from '@features/adminCenter/teams/CreateTeamDrawer';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { RootState } from '@/app/store';
-import { TeamsType } from '@/types/admin-center/team.types';
+import { IOrganizationTeam } from '@/types/admin-center/admin-center.types';
 import './teams.css';
 import SettingTeamDrawer from '@features/adminCenter/teams/SettingTeamDrawer';
 import { useMediaQuery } from 'react-responsive';
 import { useTranslation } from 'react-i18next';
+import TeamsTable from '@/components/admin-center/teams/teams-table/teams-table';
+import {
+  adminCenterApiService,
+  IOrganizationTeamRequestParams,
+} from '@/api/admin-center/admin-center.api.service';
+import { DEFAULT_PAGE_SIZE } from '@/shared/constants';
+import logger from '@/utils/errorLogger';
+import { useAuthService } from '@/hooks/useAuth';
 
 const Teams: React.FC = () => {
-  const themeMode = useAppSelector(
-    (state: RootState) => state.themeReducer.mode
-  );
+  const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
+  const [teams, setTeams] = useState<IOrganizationTeam[]>([]);
+  const [currentTeam, setCurrentTeam] = useState<IOrganizationTeam | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const teamsLists = useAppSelector(
-    (state: RootState) => state.teamReducer.teamsList
-  );
   const dispatch = useAppDispatch();
-  const [selectedTeam, setSelectedTeam] = useState<string>('');
-  const isTablet = useMediaQuery({ query: '(min-width: 1000px)' });
-
-  const filteredTeamsData = useMemo(() => {
-    return teamsLists.filter((item) =>
-      item.teamName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [teamsLists, searchTerm]);
-
+  const [requestParams, setRequestParams] = useState({
+    total: 0,
+    index: 1,
+    size: DEFAULT_PAGE_SIZE,
+    field: 'name',
+    order: 'desc',
+    search: '',
+  });
   const { t } = useTranslation('teams');
+  const currentSession = useAuthService().getCurrentSession();
 
-  const handleRefresh = () => {
+  const fetchTeams = async () => {
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 500);
+    try {
+      const res = await adminCenterApiService.getOrganizationTeams(requestParams);
+      if (res.done) {
+        setRequestParams(prev => ({ ...prev, total: res.body.total ?? 0 }));
+        const mergedTeams = [...(res.body.data ?? [])];
+        if (res.body.current_team_data) {
+          mergedTeams.unshift(res.body.current_team_data);
+        }
+        setTeams(mergedTeams);
+        setCurrentTeam(res.body.current_team_data ?? null);
+      }
+    } catch (error) {
+      logger.error('Error fetching teams', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const columns: TableProps['columns'] = [
-    {
-      title: t('team'),
-      key: 'teamName',
-      render: (record: TeamsType) => (
-        <Typography.Text style={{ fontSize: `${isTablet ? '14px' : '10px'}` }}>
-          <Badge status="success" style={{ marginRight: '8px' }} />
-          {record.teamName}
-        </Typography.Text>
-      ),
-    },
-    {
-      title: (
-        <span style={{ display: 'flex', justifyContent: 'center' }}>
-          {t('membersCount')}
-        </span>
-      ),
-      key: 'membersCount',
-      render: (record: TeamsType) => (
-        <Typography.Text
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            fontSize: `${isTablet ? '14px' : '10px'}`,
-          }}
-        >
-          {record.membersCount.toString()}
-        </Typography.Text>
-      ),
-    },
-    {
-      title: t('members'),
-      key: 'members',
-      render: (record: TeamsType) => (
-        <span>
-          <Tooltip title={record.members[0]}>
-            <Avatar
-              style={{
-                width: `${isTablet ? '28px' : '20px'}`,
-                backgroundColor: '#bf4949',
-                height: `${isTablet ? '28px' : '20px'}`,
-                marginRight: '8px',
-              }}
-            >
-              {record.members[0].charAt(0).toUpperCase()}
-            </Avatar>
-          </Tooltip>
-        </span>
-      ),
-    },
-    {
-      title: '',
-      key: 'button',
-      render: (record: TeamsType) => (
-        <div className="row-buttons">
-          <Tooltip title={t('settings')}>
-            <Button
-              style={{ marginRight: '8px' }}
-              size="small"
-              onClick={() => {
-                setSelectedTeam(record.teamId);
-                dispatch(toggleSettingDrawer());
-              }}
-            >
-              <SettingOutlined />
-            </Button>
-          </Tooltip>
-          <SettingTeamDrawer teamId={selectedTeam} />
-
-          <Tooltip title={t('delete')}>
-            <Popconfirm
-              title={t('popTitle')}
-              onConfirm={() => dispatch(deleteTeam(record.teamId))}
-            >
-              <Button size="small">
-                <DeleteOutlined />
-              </Button>
-            </Popconfirm>
-          </Tooltip>
-        </div>
-      ),
-    },
-  ];
+  useEffect(() => {
+    fetchTeams();
+  }, [requestParams.search]);
 
   return (
     <div style={{ width: '100%' }}>
-      <PageHeader
-        title={<span>{t('title')}</span>}
-        style={{ padding: '16px 0' }}
-      />
+      <PageHeader title={<span>{t('title')}</span>} style={{ padding: '16px 0' }} />
       <PageHeader
         style={{
           paddingLeft: 0,
@@ -165,7 +93,7 @@ const Teams: React.FC = () => {
               fontSize: '16px',
             }}
           >
-            {teamsLists.length} {t('subtitle')}
+            {requestParams.total} {t('subtitle')}
           </span>
         }
         extra={
@@ -174,7 +102,7 @@ const Teams: React.FC = () => {
               <Button
                 shape="circle"
                 icon={<SyncOutlined spin={isLoading} />}
-                onClick={() => handleRefresh()}
+                onClick={() => fetchTeams()}
               />
             </Tooltip>
             <Input
@@ -182,7 +110,7 @@ const Teams: React.FC = () => {
               suffix={<SearchOutlined />}
               type="text"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
             />
             <Button type="primary" onClick={() => dispatch(toggleDrawer())}>
               {t('addTeam')}
@@ -192,21 +120,7 @@ const Teams: React.FC = () => {
         }
       />
 
-      <Card>
-        <Table
-          rowClassName="team-table-row"
-          className="team-table"
-          columns={columns}
-          dataSource={filteredTeamsData}
-          rowKey={(record) => record.teamId}
-          pagination={{
-            showSizeChanger: true,
-            defaultPageSize: 20,
-            pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
-            size: 'small',
-          }}
-        />
-      </Card>
+      <TeamsTable teams={teams} currentTeam={currentTeam} t={t} loading={isLoading} />
     </div>
   );
 };

@@ -2,13 +2,13 @@ import { Flex, Typography } from 'antd';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import AdminCenterSidebar from '@/pages/admin-center/sidebar/admin-center-sidebar';
+import AdminCenterSidebar from '@/pages/admin-center/sidebar/sidebar';
 import { useTranslation } from 'react-i18next';
 
 const AdminCenterLayout: React.FC = () => {
   const isTablet = useMediaQuery({ query: '(min-width:768px)' });
   const isMarginAvailable = useMediaQuery({ query: '(min-width: 1000px)' });
-  const { t } = useTranslation('admin-center-sidebar');
+  const { t } = useTranslation('admin-center/sidebar');
 
   return (
     <div
@@ -19,7 +19,7 @@ const AdminCenterLayout: React.FC = () => {
         marginRight: `${isMarginAvailable ? '5%' : ''}`,
       }}
     >
-      <Typography.Title level={4}>{t('admin-center')}</Typography.Title>
+      <Typography.Title level={4}>{t('adminCenter')}</Typography.Title>
 
       {isTablet ? (
         <Flex

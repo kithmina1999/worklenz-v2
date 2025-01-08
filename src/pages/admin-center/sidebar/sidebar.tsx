@@ -5,18 +5,15 @@ import { Link, useLocation } from 'react-router-dom';
 import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
 import { adminCenterItems } from '../admin-center-constants';
-import './admin-center-sidebar.css';
+import './sidebar.css';
 
 const AdminCenterSidebar: React.FC = () => {
-  // localization
-  const { t } = useTranslation('admin-center-sidebar');
+  const { t } = useTranslation('admin-center/sidebar');
   const location = useLocation();
 
   type MenuItem = Required<MenuProps>['items'][number];
-  // import menu items from admin center sidebar constants
   const menuItems = adminCenterItems;
 
-  // menu items
   const items: MenuItem[] = [
     ...menuItems.map((item) => ({
       key: item.key,

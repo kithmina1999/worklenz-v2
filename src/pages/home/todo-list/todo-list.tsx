@@ -17,7 +17,6 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
-import TodoDoneButton from './todo-done-button';
 import { IMyTask } from '@/types/home/my-tasks.types';
 import { homePageApiService } from '@/api/home-page/home-page.api.service';
 import { useTranslation } from 'react-i18next';
