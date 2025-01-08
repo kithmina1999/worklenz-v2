@@ -201,3 +201,22 @@ export interface IOrganizationTeamGetRequest {
   data?: IOrganizationTeam[];
   current_team_data?: IOrganizationTeam;
 }
+
+export interface IOrganizationProject {
+  id?: string;
+  name?: string;
+  created_at?: string;
+  member_count?: number;
+  team_name?: string;
+}
+
+export interface IFreePlanSettings {
+  projects_limit?: number;
+  team_member_limit?: number;
+  free_tier_storage?: number;
+}
+
+export interface IOrganizationProjectsGetResponse {
+  total?: number;
+  data?: IOrganizationProject[];
+}

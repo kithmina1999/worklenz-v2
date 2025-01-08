@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
+import { adminCenterApiService, IOrganizationTeamRequestParams } from '@/api/admin-center/admin-center.api.service';
 
 import { IOrganizationTeam } from '@/types/admin-center/admin-center.types';
 import './teams.css';
@@ -17,7 +17,10 @@ import logger from '@/utils/errorLogger';
 import { RootState } from '@/app/store';
 import { useTranslation } from 'react-i18next';
 import AddTeamDrawer from '@/components/admin-center/teams/add-team-drawer/add-team-drawer';
-import SettingTeamDrawer from '@/components/admin-center/teams/settings-drawer/settings-drawer';
+
+export interface IRequestParams extends IOrganizationTeamRequestParams {
+  total: number;
+}
 
 const Teams: React.FC = () => {
   const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
@@ -30,7 +33,7 @@ const Teams: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const dispatch = useAppDispatch();
-  const [requestParams, setRequestParams] = useState({
+  const [requestParams, setRequestParams] = useState<IRequestParams>({
     total: 0,
     index: 1,
     size: DEFAULT_PAGE_SIZE,
