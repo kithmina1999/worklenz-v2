@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Form, Input, InputRef, Typography } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { setOrganizationName } from '@/features/account-setup/account-setup.slice';
+import { setCurrentStep, setOrganizationName } from '@/features/account-setup/account-setup.slice';
 import { RootState } from '@/app/store';
 
 const { Title } = Typography;
@@ -27,6 +27,11 @@ export const OrganizationStep: React.FC<Props> = ({
     setTimeout(() => inputRef.current?.focus(), 300);
   }, []);
 
+  const onPressEnter = () => {
+    if (!organizationName) return;
+    onEnter();
+  };
+
   return (
     <Form className="step-form" style={styles.form}>
       <Form.Item>
@@ -43,7 +48,7 @@ export const OrganizationStep: React.FC<Props> = ({
           placeholder={organizationNamePlaceholder}
           value={organizationName}
           onChange={e => dispatch(setOrganizationName(e.target.value))}
-          onPressEnter={onEnter}
+          onPressEnter={onPressEnter}
           ref={inputRef}
         />
       </Form.Item>

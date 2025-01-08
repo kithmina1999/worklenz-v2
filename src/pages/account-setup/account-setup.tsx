@@ -67,10 +67,6 @@ const AccountSetup: React.FC = () => {
     void verifyAuthStatus();
   }, [dispatch, navigate, trackMixpanelEvent]);
 
-  useEffect(() => {
-    console.log(templateId);
-  }, [templateId]);
-
   const styles = {
     form: {
       width: '600px',
