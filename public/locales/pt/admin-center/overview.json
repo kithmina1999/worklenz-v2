@@ -3,5 +3,6 @@
     "name": "Nome da Organização",
     "owner": "Proprietário da Organização",
     "admins": "Administradores da Organização",
-    "contactNumber": "Adicione o Número de Contato"
+    "contactNumber": "Adicione o Número de Contato",
+    "edit": "Editar"
 }
