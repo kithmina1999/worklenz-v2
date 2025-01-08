@@ -1,7 +1,8 @@
 import { IServerResponse } from '@/types/common.types';
 import apiClient from '../api-client';
-import { ITeamActivateResponse, ITeamGetResponse } from '@/types/teams/team.type';
+import { ITeam, ITeamActivateResponse, ITeamGetResponse } from '@/types/teams/team.type';
 import { API_BASE_URL } from '@/shared/constants';
+import { IOrganizationTeam } from '@/types/admin-center/admin-center.types';
 
 export const teamsApiService = {
   getTeams: async (): Promise<IServerResponse<ITeamGetResponse[]>> => {
@@ -17,4 +18,11 @@ export const teamsApiService = {
     );
     return response.data;
   },
+
+  createTeam: async (team: IOrganizationTeam): Promise<IServerResponse<ITeam>> => {
+    const response = await apiClient.post<IServerResponse<ITeam>>(
+      `${API_BASE_URL}/teams`, team
+    );
+    return response.data;
+  }
 };

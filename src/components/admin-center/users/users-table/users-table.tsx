@@ -1,4 +1,4 @@
-import { Avatar, Flex, Table, TableProps } from 'antd';
+import { Flex, Table, TableProps, Typography } from 'antd';
 import React from 'react';
 import './users-table.css';
 import { useMediaQuery } from 'react-responsive';
@@ -6,6 +6,7 @@ import { IOrganizationUser } from '@/types/admin-center/admin-center.types';
 import { TFunction } from 'i18next';
 import { AvatarNamesMap, DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@/shared/constants';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
+import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 
 interface UsersTableProps {
   users: IOrganizationUser[];
@@ -23,14 +24,8 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, t, loading }) => {
       key: 'user',
       render: (_, record) => (
         <Flex gap={8} align="center">
-          <Avatar
-            src={record.avatar_url}
-            size={28}
-            style={{ backgroundColor: AvatarNamesMap[record.name?.charAt(0).toUpperCase() || ''] }}
-          >
-            {record.name?.charAt(0).toUpperCase()}
-          </Avatar>
-          <span>{record.name}</span>
+          <SingleAvatar avatarUrl={record.avatar_url} name={record.name} />
+          <Typography.Text>{record.name}</Typography.Text>
         </Flex>
       ),
     },
@@ -51,6 +46,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, t, loading }) => {
   return (
     <Table
       rowClassName="users-table-row"
+      size="small"
       columns={columns}
       dataSource={users}
       pagination={{

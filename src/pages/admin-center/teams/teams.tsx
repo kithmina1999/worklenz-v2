@@ -1,40 +1,30 @@
-import { DeleteOutlined, SearchOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons';
+import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
-import {
-  Avatar,
-  Badge,
-  Button,
-  Card,
-  Flex,
-  Input,
-  Popconfirm,
-  Table,
-  TableProps,
-  Tooltip,
-  Typography,
-} from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
-import { deleteTeam, toggleDrawer, toggleSettingDrawer } from '@features/teams/teamSlice';
+import { Button, Flex, Input, Tooltip } from 'antd';
+
+import React, { useEffect, useState } from 'react';
+
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import CreateTeamDrawer from '@features/adminCenter/teams/CreateTeamDrawer';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { RootState } from '@/app/store';
+import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
+
 import { IOrganizationTeam } from '@/types/admin-center/admin-center.types';
 import './teams.css';
-import SettingTeamDrawer from '@features/adminCenter/teams/SettingTeamDrawer';
-import { useMediaQuery } from 'react-responsive';
-import { useTranslation } from 'react-i18next';
 import TeamsTable from '@/components/admin-center/teams/teams-table/teams-table';
-import {
-  adminCenterApiService,
-  IOrganizationTeamRequestParams,
-} from '@/api/admin-center/admin-center.api.service';
+
 import { DEFAULT_PAGE_SIZE } from '@/shared/constants';
 import logger from '@/utils/errorLogger';
-import { useAuthService } from '@/hooks/useAuth';
+import { RootState } from '@/app/store';
+import { useTranslation } from 'react-i18next';
+import AddTeamDrawer from '@/components/admin-center/teams/add-team-drawer/add-team-drawer';
+import SettingTeamDrawer from '@/components/admin-center/teams/settings-drawer/settings-drawer';
 
 const Teams: React.FC = () => {
   const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
+  const { t } = useTranslation('admin-center/teams');
+
+  const [showAddTeamDrawer, setShowAddTeamDrawer] = useState(false);
+
   const [teams, setTeams] = useState<IOrganizationTeam[]>([]);
   const [currentTeam, setCurrentTeam] = useState<IOrganizationTeam | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,8 +38,6 @@ const Teams: React.FC = () => {
     order: 'desc',
     search: '',
   });
-  const { t } = useTranslation('teams');
-  const currentSession = useAuthService().getCurrentSession();
 
   const fetchTeams = async () => {
     setIsLoading(true);
@@ -112,15 +100,26 @@ const Teams: React.FC = () => {
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
-            <Button type="primary" onClick={() => dispatch(toggleDrawer())}>
+            <Button type="primary" onClick={() => setShowAddTeamDrawer(true)}>
               {t('addTeam')}
             </Button>
-            <CreateTeamDrawer />
           </Flex>
         }
       />
 
-      <TeamsTable teams={teams} currentTeam={currentTeam} t={t} loading={isLoading} />
+      <TeamsTable
+        teams={teams}
+        currentTeam={currentTeam}
+        t={t}
+        loading={isLoading}
+        reloadTeams={fetchTeams}
+      />
+
+      <AddTeamDrawer
+        isDrawerOpen={showAddTeamDrawer}
+        onClose={() => setShowAddTeamDrawer(false)}
+        reloadTeams={fetchTeams}
+      />
     </div>
   );
 };

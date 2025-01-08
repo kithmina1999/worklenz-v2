@@ -1,8 +1,10 @@
+import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import Avatars from '@/components/avatars/avatars';
-import SettingTeamDrawer from '@/features/adminCenter/teams/SettingTeamDrawer';
-import { toggleSettingDrawer, deleteTeam } from '@/features/teams/teamSlice';
+import SettingTeamDrawer from '@/components/admin-center/teams/settings-drawer/settings-drawer';
+import { toggleSettingDrawer, deleteTeam, fetchTeams } from '@/features/teams/teamSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { IOrganizationTeam } from '@/types/admin-center/admin-center.types';
+import logger from '@/utils/errorLogger';
 import { SettingOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Badge, Button, Card, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd';
 import { TFunction } from 'i18next';
@@ -14,13 +16,37 @@ interface TeamsTableProps {
   currentTeam: IOrganizationTeam | null;
   t: TFunction;
   loading: boolean;
+  reloadTeams: () => void;
 }
 
-const TeamsTable: React.FC<TeamsTableProps> = ({ teams, currentTeam = null, t, loading }) => {
+const TeamsTable: React.FC<TeamsTableProps> = ({
+  teams,
+  currentTeam = null,
+  t,
+  loading,
+  reloadTeams,
+}) => {
   const dispatch = useAppDispatch();
   const isTablet = useMediaQuery({ query: '(min-width: 1000px)' });
-
+  const [deleting, setDeleting] = useState(false);
+  const [isSettingDrawerOpen, setIsSettingDrawerOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<string>('');
+
+  const handleTeamDelete = async (teamId: string) => {
+    if (!teamId) return;
+    try {
+      setDeleting(true);
+      const res = await adminCenterApiService.deleteTeam(teamId);
+      if (res.done) {
+        reloadTeams();
+        dispatch(fetchTeams());
+      }
+    } catch (error) {
+      logger.error('Error deleting team', error);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const columns: TableProps['columns'] = [
     {
@@ -28,7 +54,10 @@ const TeamsTable: React.FC<TeamsTableProps> = ({ teams, currentTeam = null, t, l
       key: 'teamName',
       render: (record: IOrganizationTeam) => (
         <Typography.Text style={{ fontSize: `${isTablet ? '14px' : '10px'}` }}>
-          <Badge status={currentTeam?.id === record.id ? 'success' : 'default'} style={{ marginRight: '8px' }} />
+          <Badge
+            status={currentTeam?.id === record.id ? 'success' : 'default'}
+            style={{ marginRight: '8px' }}
+          />
           {record.name}
         </Typography.Text>
       ),
@@ -68,16 +97,15 @@ const TeamsTable: React.FC<TeamsTableProps> = ({ teams, currentTeam = null, t, l
               size="small"
               onClick={() => {
                 setSelectedTeam(record.id || '');
-                dispatch(toggleSettingDrawer());
+                setIsSettingDrawerOpen(true);
               }}
             >
               <SettingOutlined />
             </Button>
           </Tooltip>
-          <SettingTeamDrawer teamId={selectedTeam} />
 
           <Tooltip title={t('delete')}>
-            <Popconfirm title={t('popTitle')} onConfirm={() => dispatch(deleteTeam(record.id || ''))}>
+            <Popconfirm title={t('popTitle')} onConfirm={() => handleTeamDelete(record.id || '')}>
               <Button size="small">
                 <DeleteOutlined />
               </Button>
@@ -89,22 +117,29 @@ const TeamsTable: React.FC<TeamsTableProps> = ({ teams, currentTeam = null, t, l
   ];
 
   return (
-    <Card>
-      <Table
-        rowClassName="team-table-row"
-        className="team-table"
-        columns={columns}
-        dataSource={teams}
-        rowKey={record => record.id}
-        loading={loading}
-        pagination={{
-          showSizeChanger: true,
-          defaultPageSize: 20,
-          pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
-          size: 'small',
-        }}
+    <>
+      <Card>
+        <Table
+          rowClassName="team-table-row"
+          className="team-table"
+          size="small"
+          columns={columns}
+          dataSource={teams}
+          rowKey={record => record.id}
+          loading={loading}
+          pagination={{
+            showSizeChanger: true,
+            defaultPageSize: 20,
+            pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+          }}
+        />
+      </Card>
+      <SettingTeamDrawer
+        teamId={selectedTeam}
+        isSettingDrawerOpen={isSettingDrawerOpen}
+        setIsSettingDrawerOpen={setIsSettingDrawerOpen}
       />
-    </Card>
+    </>
   );
 };
 
