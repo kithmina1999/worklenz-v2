@@ -161,3 +161,7 @@ export const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   month: 'short',
   day: 'numeric',
 };
+
+export const NOTIFICATION_OPTION_UNREAD = "Unread";
+export const NOTIFICATION_OPTION_READ = "Read";
+export const NOTIFICATION_OPTIONS = [NOTIFICATION_OPTION_UNREAD, NOTIFICATION_OPTION_READ];
