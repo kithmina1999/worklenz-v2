@@ -103,9 +103,9 @@ const ProjectDrawer = ({
         project_manager: values.projectManager,
         start_date: values.start_date,
         end_date: values.end_date,
-        working_days: values.working_days,
-        man_days: values.man_days,
-        hours_per_day: values.hours_per_day,
+        working_days: parseInt(values.working_days),
+        man_days: parseInt(values.man_days),
+        hours_per_day: parseInt(values.hours_per_day),
       };
       if (editMode && projectId) {
         const response = await dispatch(
