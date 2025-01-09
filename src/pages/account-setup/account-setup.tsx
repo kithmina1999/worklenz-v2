@@ -67,6 +67,13 @@ const AccountSetup: React.FC = () => {
     void verifyAuthStatus();
   }, [dispatch, navigate, trackMixpanelEvent]);
 
+  const calculateHeight = () => {
+    if (currentStep === 2) {
+      return tasks.length * 105;
+    }
+    return teamMembers.length * 105;
+  };
+
   const styles = {
     form: {
       width: '600px',
@@ -128,6 +135,7 @@ const AccountSetup: React.FC = () => {
       width: '600px',
       minHeight: 'fit-content',
       overflow: 'visible',
+      height: calculateHeight(),
     },
     actionButtons: {
       flexGrow: 1,
@@ -220,16 +228,6 @@ const AccountSetup: React.FC = () => {
     }
   };
 
-  const handleTabKey = (event: React.KeyboardEvent, currentId: string) => {
-    if (event.key === 'Tab') {
-      const nextInput = document.getElementById(`${currentId}-${parseInt(currentId.split('-')[1]) + 1}`);
-      if (nextInput) {
-        event.preventDefault();
-        nextInput.focus();
-      }
-    }
-  };
-
   return (
     <div style={styles.container}>
       <div>
@@ -245,6 +243,7 @@ const AccountSetup: React.FC = () => {
             current={currentStep}
             items={steps}
             style={styles.steps}
+
           />
           <div className="step-content" style={styles.stepContent}>
             {steps[currentStep].content}
