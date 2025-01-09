@@ -8,7 +8,6 @@ import {
   Form,
   Input,
   InputRef,
-  Skeleton,
   Table,
   TableProps,
   Tooltip,
@@ -31,12 +30,6 @@ const TodoList = () => {
 
   // ref for todo input field
   const todoInputRef = useRef<InputRef | null>(null);
-
-  // function for handle refresh
-  const handleRefresh = () => {
-    setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 500);
-  };
 
   const getPersonalTasks = async () => {
     setIsLoading(true);
@@ -129,7 +122,7 @@ const TodoList = () => {
           <Button
             shape="circle"
             icon={<SyncOutlined spin={isLoading} />}
-            onClick={() => handleRefresh()}
+            onClick={() => getPersonalTasks()}
           />
         </Tooltip>
       }

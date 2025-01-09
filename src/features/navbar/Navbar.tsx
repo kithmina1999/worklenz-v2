@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Col, ConfigProvider, Flex, Menu, MenuProps } from 'antd';
 
-import AddMemberDrawer from '../settings/member/AddMemberDrawer';
+import InviteTeamMembers from '../../components/common/invite-team-members/invite-team-members';
 import HelpButton from './help/HelpButton';
 import InviteButton from './invite/InviteButton';
 import MobileMenuButton from './mobileMenu/MobileMenuButton';
@@ -119,7 +119,7 @@ const Navbar = () => {
         </Flex>
       </Flex>
 
-      {isOwnerOrAdmin && <AddMemberDrawer />}
+      {isOwnerOrAdmin && <InviteTeamMembers />}
       <NotficationDrawer />
     </Col>
   );

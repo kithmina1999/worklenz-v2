@@ -1,7 +1,7 @@
 import { AutoComplete, Button, Drawer, Flex, Form, message, Select, Spin, Typography } from 'antd';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleInviteMemberDrawer } from './memberSlice';
+import { toggleInviteMemberDrawer } from '../../../features/settings/member/memberSlice';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useCallback } from 'react';
 import { jobTitlesApiService } from '@/api/settings/job-titles/job-titles.api.service';
@@ -15,7 +15,7 @@ interface FormValues {
   access: 'member' | 'admin';
 }
 
-const AddMemberDrawer = () => {
+const InviteTeamMembers = () => {
   const [searching, setSearching] = useState(false);
   const [jobTitles, setJobTitles] = useState<IJobTitle[]>([]);
   const [emails, setEmails] = useState<string[]>([]);
@@ -95,6 +95,13 @@ const AddMemberDrawer = () => {
       afterOpenChange={visible => visible && handleSearch('')}
       width={400}
       loading={loading}
+      footer={
+        <Flex justify="end">
+          <Button type="primary" onClick={form.submit}>
+            {t('addToTeamButton')}
+          </Button>
+        </Flex>
+      }
     >
       <Form
         form={form}
@@ -163,15 +170,9 @@ const AddMemberDrawer = () => {
             ]}
           />
         </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" block htmlType="submit">
-            {t('addToTeamButton')}
-          </Button>
-        </Form.Item>
       </Form>
     </Drawer>
   );
 };
 
-export default AddMemberDrawer;
+export default InviteTeamMembers;
