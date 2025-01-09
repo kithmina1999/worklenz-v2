@@ -2,8 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { Form, Input, InputRef, Typography } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { setCurrentStep, setOrganizationName } from '@/features/account-setup/account-setup.slice';
+import { setOrganizationName } from '@/features/account-setup/account-setup.slice';
 import { RootState } from '@/app/store';
+import './admin-center-common.css';
 
 const { Title } = Typography;
 
