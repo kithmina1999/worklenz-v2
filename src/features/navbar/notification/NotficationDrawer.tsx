@@ -1,8 +1,13 @@
 import { Drawer, Empty, Segmented, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { fetchInvitations, fetchNotifications, setNotificationType, toggleDrawer } from './notificationSlice';
+import {
+  fetchInvitations,
+  fetchNotifications,
+  setNotificationType,
+  toggleDrawer,
+} from './notificationSlice';
 import { NOTIFICATION_OPTION_READ, NOTIFICATION_OPTION_UNREAD } from '@/shared/constants';
 import { useTranslation } from 'react-i18next';
 import { useAuthService } from '@/hooks/useAuth';
@@ -33,12 +38,17 @@ const NotficationDrawer = () => {
   };
 
   const askPushPermission = () => {
-    if (Notification.permission !== 'granted') {
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          console.log('Permission granted');
-        }
-      });
+    if ('Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window) {
+      if (Notification.permission !== 'granted') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            console.log('Permission granted');
+          }
+        });
+      }
+    } else {
+      console.log('This browser does not support notification permission.');
+      return;
     }
   };
 
@@ -49,8 +59,14 @@ const NotficationDrawer = () => {
 
     return () => {
       socket?.removeListener(SocketEvents.INVITATIONS_UPDATE.toString(), handleInvitationsUpdate);
-      socket?.removeListener(SocketEvents.NOTIFICATIONS_UPDATE.toString(), handleNotificationsUpdate);
-      socket?.removeListener(SocketEvents.TEAM_MEMBER_REMOVED.toString(), handleTeamInvitationsUpdate);
+      socket?.removeListener(
+        SocketEvents.NOTIFICATIONS_UPDATE.toString(),
+        handleNotificationsUpdate
+      );
+      socket?.removeListener(
+        SocketEvents.TEAM_MEMBER_REMOVED.toString(),
+        handleTeamInvitationsUpdate
+      );
     };
   }, [socket]);
 
@@ -74,8 +90,10 @@ const NotficationDrawer = () => {
         options={['Unread', 'Read']}
         defaultValue={NOTIFICATION_OPTION_UNREAD}
         onChange={(value: string) => {
-          if (value === NOTIFICATION_OPTION_UNREAD) dispatch(setNotificationType(NOTIFICATION_OPTION_UNREAD));
-          if (value === NOTIFICATION_OPTION_READ) dispatch(setNotificationType(NOTIFICATION_OPTION_READ));
+          if (value === NOTIFICATION_OPTION_UNREAD)
+            dispatch(setNotificationType(NOTIFICATION_OPTION_UNREAD));
+          if (value === NOTIFICATION_OPTION_READ)
+            dispatch(setNotificationType(NOTIFICATION_OPTION_READ));
         }}
       />
 
