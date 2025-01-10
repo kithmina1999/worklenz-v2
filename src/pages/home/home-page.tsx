@@ -77,14 +77,14 @@ const HomePage = () => {
         dispatch(fetchProjectHealth()),
         dispatch(fetchProjectCategories()),
         dispatch(fetchProjectStatuses()),
-        dispatch(fetchProjects())
+        dispatch(fetchProjects()),
       ].filter(Boolean);
 
       await Promise.all(fetchPromises);
     };
 
     fetchLookups();
-  }, [dispatch, projectHealths.length, projectCategories.length, projectStatuses.length]);
+  }, [dispatch]);
 
   useEffect(() => {
     getProjectsList();
