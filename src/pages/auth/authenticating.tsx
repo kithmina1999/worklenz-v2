@@ -24,7 +24,7 @@ const AuthenticatingPage: React.FC = () => {
       return;
     }
 
-    window.location.href = "/worklenz";
+    navigate('/worklenz/home');
   }
 
   useEffect(() => {

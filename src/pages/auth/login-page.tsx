@@ -19,6 +19,7 @@ import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import alertService from '@/services/alerts/alertService';
 import { useAuthService } from '@/hooks/useAuth';
+import { WORKLENZ_REDIRECT_PROJ_KEY } from '@/shared/constants';
 
 interface LoginFormValues {
   email: string;
@@ -74,15 +75,15 @@ const LoginPage: React.FC = () => {
       return;
     }
     void verifyAuthStatus();
-  }, [dispatch, navigate, trackMixpanelEvent, currentSession]);
+  }, [dispatch, navigate, trackMixpanelEvent]);
 
   const onFinish = useCallback(async (values: LoginFormValues) => {
     try {
       trackMixpanelEvent(evt_login_with_email_click);
 
-      if (teamId) {
-        localStorage.setItem(WORKLENZ_REDIRECT_PROJ_KEY, teamId);
-      }
+      // if (teamId) {
+      //   localStorage.setItem(WORKLENZ_REDIRECT_PROJ_KEY, teamId);
+      // }
 
       const result = await dispatch(login(values)).unwrap();
       if (result.authenticated) {
