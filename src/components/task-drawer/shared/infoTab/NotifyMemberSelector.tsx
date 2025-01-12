@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { PlusOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -14,9 +13,9 @@ import {
 } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import CustomAvatar from '../../../../../components/CustomAvatar';
-import { colors } from '../../../../../styles/colors';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import CustomAvatar from '@/components/CustomAvatar';
+import { colors } from '@/styles/colors';
 
 const NotifyMemberSelector = () => {
   const membersInputRef = useRef<InputRef>(null);

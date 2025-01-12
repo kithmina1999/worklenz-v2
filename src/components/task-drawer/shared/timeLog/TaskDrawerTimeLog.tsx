@@ -5,10 +5,10 @@ import {
 } from '@ant-design/icons';
 import { Button, Divider, Flex, Typography } from 'antd';
 import React, { useState } from 'react';
-import { colors } from '../../../../../styles/colors';
-import EmptyListPlaceholder from '../../../../../components/EmptyListPlaceholder';
-import { themeWiseColor } from '../../../../../utils/themeWiseColor';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { colors } from '@/styles/colors';
+import EmptyListPlaceholder from '@/components/EmptyListPlaceholder';
+import { themeWiseColor } from '@/utils/themeWiseColor';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import TimeLogForm from './TimeLogForm';
 import TimeLogList from './TimeLogList';
 

@@ -32,7 +32,7 @@ import projectStatusesReducer from '@features/projects/lookups/projectStatuses/p
 import projectHealthReducer from '@features/projects/lookups/projectHealth/projectHealthSlice';
 
 // Tasks
-import taskReducer from '@features/tasks/taskSlice';
+import taskReducer from '@features/tasks/tasks.slice';
 import createCardReducer from '@features/board/createCardSlice';
 import priorityReducer from '@features/taskAttributes/taskPrioritySlice';
 import taskLabelsReducer from '@features/taskAttributes/taskLabelSlice';

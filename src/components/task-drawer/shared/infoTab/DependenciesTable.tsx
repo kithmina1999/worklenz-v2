@@ -14,9 +14,9 @@ import {
 import React, { useState } from 'react';
 import { DeleteOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { nanoid } from '@reduxjs/toolkit';
-import { DependencyType } from '../../../../../types/dependencies.types';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { colors } from '../../../../../styles/colors';
+import { DependencyType } from '@/types/dependencies.types';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
 
 const DependenciesTable = () => {
   const [hoverRow, setHoverRow] = useState<string | null>(null);

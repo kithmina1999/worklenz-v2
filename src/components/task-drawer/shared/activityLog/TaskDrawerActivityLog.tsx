@@ -9,7 +9,7 @@ import {
 } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import React from 'react';
-import CustomAvatar from '../../../../../components/CustomAvatar';
+import CustomAvatar from '@/components/CustomAvatar';
 
 type ActivityType = {
   activityId: string;

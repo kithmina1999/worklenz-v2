@@ -1,33 +1,31 @@
 import { Drawer, InputRef } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
-import { useAppSelector } from '../../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import { toggleCreateTaskDrawer } from '../../taskSlice';
-import TaskDrawerHeader from '../shared/TaskDrawerHeader';
-import '../taskDrawer.css';
-import TaskDrawerTabs from '../shared/TaskDrawerTabs';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { toggleTaskDrawer } from '@/features/tasks/tasks.slice';
 
-const CreateTaskDrawer = () => {
+import './task-drawer.css';
+import TaskDrawerHeader from './shared/TaskDrawerHeader';
+import TaskDrawerTabs from './shared/TaskDrawerTabs';
+
+const TaskDrawer = () => {
   const [taskName, setTaskName] = useState<string>('Untitled Task');
 
-  // get create task drawer state from task slice
-  const isDrawerOpen = useAppSelector(
-    (state) => state.taskReducer.isCreateTaskDrawerOpen
-  );
+  const {isTaskDrawerOpen} = useAppSelector(    (state) => state.taskReducer  );
 
   // auto focused when open the drawer
   const taskNameInputRef = useRef<InputRef>(null);
 
   useEffect(() => {
     taskNameInputRef.current?.focus();
-  }, [isDrawerOpen]);
+  }, [isTaskDrawerOpen]);
 
   const dispatch = useAppDispatch();
 
   return (
     <Drawer
-      open={isDrawerOpen}
-      onClose={() => dispatch(toggleCreateTaskDrawer())}
+      open={isTaskDrawerOpen}
+      onClose={() => dispatch(toggleTaskDrawer())}
       width={720}
       style={{ justifyContent: 'space-between' }}
       title={
@@ -43,4 +41,4 @@ const CreateTaskDrawer = () => {
   );
 };
 
-export default CreateTaskDrawer;
+export default TaskDrawer;

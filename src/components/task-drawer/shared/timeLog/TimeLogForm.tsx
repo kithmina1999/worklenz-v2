@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, DatePicker, Form, Input, TimePicker, Flex } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { themeWiseColor } from '../../../../../utils/themeWiseColor';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { themeWiseColor } from '@/utils/themeWiseColor';
 
 const TimeLogForm = ({ onCancel }: { onCancel: () => void }) => {
   const [form] = Form.useForm();

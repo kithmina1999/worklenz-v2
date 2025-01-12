@@ -21,11 +21,11 @@ import {
   TaskPriorityType,
   TaskStatusType,
   TaskType,
-} from '../../../../../types/task.types';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { getPriorityColor } from '../../../../../utils/getPriorityColors';
-import { getStatusColor } from '../../../../../utils/getStatusColor';
-import { colors } from '../../../../../styles/colors';
+} from '@/types/task.types';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { getPriorityColor } from '@/utils/getPriorityColors';
+import { getStatusColor } from '@/utils/getStatusColor';
+import { colors } from '@/styles/colors';
 
 type SubTaskTableProps = {
   datasource: TaskType[] | null;

@@ -14,8 +14,8 @@ type TaskState = {
   tasks: TaskType[];
   taskGroups: ITaskListGroup[];
   columns: ITaskListColumn[];
-  isCreateTaskDrawerOpen: boolean;
-  isUpdateTaskDrawerOpen: boolean;
+  selectedTask: TaskType | null;
+  isTaskDrawerOpen: boolean;
   loadingGroups: boolean;
   error: string | null;
 };
@@ -27,8 +27,8 @@ const initialState: TaskState = {
   isSubtasksInclude: false,
   tasks: [],
   columns: [],
-  isCreateTaskDrawerOpen: false,
-  isUpdateTaskDrawerOpen: false,
+  selectedTask: null,
+  isTaskDrawerOpen: false,
   taskGroups: [],
   loadingGroups: false,
   error: null
@@ -104,17 +104,10 @@ const taskSlice = createSlice({
   name: 'taskReducer',
   initialState,
   reducers: {
-    // create drawer toggle
-    toggleCreateTaskDrawer: state => {
-      state.isCreateTaskDrawerOpen
-        ? (state.isCreateTaskDrawerOpen = false)
-        : (state.isCreateTaskDrawerOpen = true);
-    },
-    // update drawer toggle
-    toggleUpdateTaskDrawer: state => {
-      state.isUpdateTaskDrawerOpen
-        ? (state.isUpdateTaskDrawerOpen = false)
-        : (state.isUpdateTaskDrawerOpen = true);
+    toggleTaskDrawer: state => {
+      state.isTaskDrawerOpen
+        ? (state.isTaskDrawerOpen = false)
+        : (state.isTaskDrawerOpen = true);
     },
 
     // task crud
@@ -198,8 +191,7 @@ const taskSlice = createSlice({
 });
 
 export const {
-  toggleCreateTaskDrawer,
-  toggleUpdateTaskDrawer,
+  toggleTaskDrawer,
   addTask,
   deleteTask,
   toggleMember,

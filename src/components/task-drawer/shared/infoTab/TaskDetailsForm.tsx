@@ -18,12 +18,12 @@ import {
   MinusOutlined,
   PauseOutlined,
 } from '@ant-design/icons';
-import { colors } from '../../../../../styles/colors';
-import { getPriorityColor } from '../../../../../utils/getPriorityColors';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { colors } from '@/styles/colors';
+import { getPriorityColor } from '@/utils/getPriorityColors';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import NotifyMemberSelector from './NotifyMemberSelector';
-import { TaskType } from '../../../../../types/task.types';
-import { simpleDateFormat } from '../../../../../utils/simpleDateFormat';
+import { TaskType } from '@/types/task.types';
+import { simpleDateFormat } from '@/utils/simpleDateFormat';
 
 type TaskDetailsFormProps = {
   selectedTask?: TaskType | null;

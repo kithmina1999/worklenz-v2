@@ -1,4 +1,4 @@
-import { COLUMN_KEYS } from '@/features/tasks/taskSlice';
+import { COLUMN_KEYS } from '@/features/tasks/tasks.slice';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 

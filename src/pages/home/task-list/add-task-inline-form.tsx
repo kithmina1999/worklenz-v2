@@ -1,10 +1,10 @@
 import { Alert, Flex, Form, Input, InputRef, Select, Typography } from 'antd';
 import { useRef, useState } from 'react';
-import { useAppSelector } from '@/hooks/useAppSelector';
 import { nanoid } from '@reduxjs/toolkit';
 import { TaskType } from '@/types/task.types';
-import { addTask } from '@features/tasks/taskSlice';
+import { addTask } from '@features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const AddTaskInlineForm = () => {
   const [isAlertShowing, setIsAlertShowing] = useState(false);

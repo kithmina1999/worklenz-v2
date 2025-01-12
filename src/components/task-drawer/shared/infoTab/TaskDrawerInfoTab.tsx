@@ -16,7 +16,7 @@ import {
 import DescriptionEditor from './DescriptionEditor';
 import SubTaskTable from './SubTaskTable';
 import DependenciesTable from './DependenciesTable';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import TaskDetailsForm from './TaskDetailsForm';
 import InfoTabFooter from './InfoTabFooter';
 

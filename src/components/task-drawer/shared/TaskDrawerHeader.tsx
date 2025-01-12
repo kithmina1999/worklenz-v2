@@ -1,7 +1,7 @@
 import { Button, Card, Dropdown, Flex, Input, InputRef, MenuProps } from 'antd';
 import React, { ChangeEvent, useState } from 'react';
 import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
-import { colors } from '../../../../styles/colors';
+import { colors } from '@/styles/colors';
 import { EllipsisOutlined } from '@ant-design/icons';
 
 type TaskDrawerHeaderProps = {

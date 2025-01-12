@@ -17,7 +17,7 @@ import ProjectMemberInviteButton from '@features/projects/singleProject/members/
 import { useNavigate } from 'react-router-dom';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleCreateTaskDrawer } from '@features/tasks/taskSlice';
+import { toggleTaskDrawer } from '@features/tasks/tasks.slice';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { getStatusIcon } from '@/utils/projectUtils';
 
@@ -146,7 +146,7 @@ const ProjectViewHeader = () => {
             type="primary"
             icon={<DownOutlined />}
             menu={{ items }}
-            onClick={() => dispatch(toggleCreateTaskDrawer())}
+            onClick={() => dispatch(toggleTaskDrawer())}
           >
             <EditOutlined /> Create Task
           </Dropdown.Button>

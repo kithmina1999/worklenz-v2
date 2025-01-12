@@ -1,9 +1,9 @@
 import { Button, Flex, Form, Mentions, Space, Tooltip, Typography } from 'antd';
 import React, { useState } from 'react';
 import { PaperClipOutlined } from '@ant-design/icons';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { colors } from '../../../../../styles/colors';
-import { themeWiseColor } from '../../../../../utils/themeWiseColor';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
+import { themeWiseColor } from '@/utils/themeWiseColor';
 
 const InfoTabFooter = () => {
   const [characterLength, setCharacterLength] = useState<number>(0);

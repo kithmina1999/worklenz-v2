@@ -1,6 +1,6 @@
 import { Button, Flex, Typography } from 'antd';
-import CustomAvatar from '../../../../../components/CustomAvatar';
-import { colors } from '../../../../../styles/colors';
+import CustomAvatar from '@/components/CustomAvatar';
+import { colors } from '@/styles/colors';
 
 type TimeLogItemProps = {
   log: {
