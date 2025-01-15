@@ -211,40 +211,40 @@ const ProjectList: React.FC = () => {
   );
 
   return (
-    <div style={{ marginBlock: 65, minHeight: '90vh' }}>
-      <PageHeader
-        className="site-page-header"
-        title={`${projects.total} ${t('projects')}`}
-        style={{ padding: '16px 0' }}
-        extra={
-          <Flex gap={8} align="center">
-            <Tooltip title={t('refreshProjects')}>
-              <Button
-                shape="circle"
-                icon={<SyncOutlined spin={loading} />}
-                onClick={handleRefresh}
-                aria-label="Refresh projects"
+    <Suspense fallback={<Skeleton />}>
+      <div style={{ marginBlock: 65, minHeight: '90vh' }}>
+        <PageHeader
+          className="site-page-header"
+          title={`${projects.total} ${t('projects')}`}
+          style={{ padding: '16px 0' }}
+          extra={
+            <Flex gap={8} align="center">
+              <Tooltip title={t('refreshProjects')}>
+                <Button
+                  shape="circle"
+                  icon={<SyncOutlined spin={loading} />}
+                  onClick={handleRefresh}
+                  aria-label="Refresh projects"
+                />
+              </Tooltip>
+              <Segmented<IProjectFilter>
+                options={filters}
+                defaultValue={filters[getFilterIndex()] ?? filters[0]}
+                onChange={handleSegmentChange}
               />
-            </Tooltip>
-            <Segmented<IProjectFilter>
-              options={filters}
-              defaultValue={filters[getFilterIndex()] ?? filters[0]}
-              onChange={handleSegmentChange}
-            />
-            <Input
-              placeholder={t('placeholder')}
-              suffix={<SearchOutlined />}
-              type="text"
-              value={requestParams.search}
-              onChange={handleSearchChange}
-              aria-label="Search projects"
-            />
-            {isOwnerOrAdmin && <CreateProjectButton />}
-          </Flex>
-        }
-      />
-      <Card className="project-card">
-        <Suspense fallback={<Skeleton />}>
+              <Input
+                placeholder={t('placeholder')}
+                suffix={<SearchOutlined />}
+                type="text"
+                value={requestParams.search}
+                onChange={handleSearchChange}
+                aria-label="Search projects"
+              />
+              {isOwnerOrAdmin && <CreateProjectButton />}
+            </Flex>
+          }
+        />
+        <Card className="project-card">
           <Table<IProjectViewModel>
             columns={TableColumns(
               navigate,
@@ -261,16 +261,16 @@ const ProjectList: React.FC = () => {
             pagination={paginationConfig}
             locale={{ emptyText: <Empty description={t('noProjects')} /> }}
           />
-        </Suspense>
-      </Card>
+        </Card>
 
-      <ProjectDrawer
-        categories={projectCategories || []}
-        statuses={projectStatuses || []}
-        healths={healths || []}
-        onDelete={handleDeleteProject}
-      />
-    </div>
+        <ProjectDrawer
+          categories={projectCategories || []}
+          statuses={projectStatuses || []}
+          healths={healths || []}
+          onDelete={handleDeleteProject}
+        />
+      </div>
+    </Suspense>
   );
 };
 
