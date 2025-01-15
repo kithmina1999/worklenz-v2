@@ -8,6 +8,7 @@ import ScheduleSettingsDrawer from '@features/schedule/ScheduleSettingsDrawer';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { useDocumentTitle } from '../../hooks/useDoumentTItle';
+import { SuspenseFallback } from '@/components/suspense-fallback/suspense-fallback';
 
 const { Option } = Select;
 
