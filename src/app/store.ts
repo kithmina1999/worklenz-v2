@@ -63,12 +63,13 @@ import membersReportsReducer from '../features/reporting/membersReports/membersR
 import roadmapReducer from '../features/roadmap/roadmap-slice';
 import teamMembersReducer from '@features/team-members/team-members.slice';
 import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/group-by-filter-dropdown-slice';
+import homePageApiService from '@/api/home-page/home-page.api.service';
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }),
+    }).concat(homePageApiService.middleware),
   reducer: {
     // Auth & User
     auth: authReducer,
@@ -79,6 +80,7 @@ export const store = configureStore({
 
     // Home Page
     homePageReducer: homePageReducer,
+    [homePageApiService.reducerPath]: homePageApiService.reducer,
 
     // Core UI
     themeReducer: themeReducer,

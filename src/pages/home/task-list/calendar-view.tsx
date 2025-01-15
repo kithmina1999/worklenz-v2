@@ -6,7 +6,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import AddTaskInlineForm from './add-task-inline-form';
 
 const CalendarView = () => {
-  const date = useAppSelector((state) => state.dateReducer.date);
+  const {homeTasksConfig} = useAppSelector((state) => state.homePageReducer);
 
   return (
     <div>
@@ -23,7 +23,7 @@ const CalendarView = () => {
         }}
       >
         <Typography.Text>
-          Tasks due on: {date.format('MMM DD, YYYY')}
+          Tasks due on: {homeTasksConfig.selected_date?.format('MMM DD, YYYY')}
         </Typography.Text>
       </Tag>
 

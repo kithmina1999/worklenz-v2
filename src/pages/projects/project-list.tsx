@@ -1,8 +1,19 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Card, Empty, Flex, Input, Segmented, Table, TablePaginationConfig, Tooltip } from 'antd';
+import {
+  Button,
+  Card,
+  Empty,
+  Flex,
+  Input,
+  Segmented,
+  Skeleton,
+  Table,
+  TablePaginationConfig,
+  Tooltip,
+} from 'antd';
 import { PageHeader } from '@ant-design/pro-components';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
@@ -36,7 +47,6 @@ import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import './project-list.css';
-import { IProjectCategory } from '@/types/project/projectCategory.types';
 import { useAuthService } from '@/hooks/useAuth';
 
 interface PaginationState {
@@ -57,7 +67,9 @@ const ProjectList: React.FC = () => {
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
   // Redux state
-  const { loading, projects, filteredCategories, requestParams } = useAppSelector(state => state.projectsReducer);
+  const { loading, projects, filteredCategories, requestParams } = useAppSelector(
+    state => state.projectsReducer
+  );
   const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
   const { projectHealths: healths } = useAppSelector(state => state.projectHealthReducer);
   const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
@@ -113,7 +125,7 @@ const ProjectList: React.FC = () => {
       if (filters?.status_id) {
         newParams.statuses = filters.status_id.join('+');
       }
-      
+
       if (filters?.category_id) {
         console.log('filters.category_id', filters.category_id);
         // dispatch(setFilteredCategories(filters.category_id.join('+')));
@@ -227,21 +239,29 @@ const ProjectList: React.FC = () => {
               onChange={handleSearchChange}
               aria-label="Search projects"
             />
-            {isOwnerOrAdmin && <CreateProjectButton />} 
+            {isOwnerOrAdmin && <CreateProjectButton />}
           </Flex>
         }
       />
       <Card className="project-card">
-        <Table<IProjectViewModel>
-          columns={TableColumns(navigate, projectStatuses, projectCategories, setSelectedProjectId, filteredCategories)}
-          dataSource={projects.data}
-          rowKey={record => record.id || ''}
-          loading={loading}
-          size="small"
-          onChange={handleTableChange}
-          pagination={paginationConfig}
-          locale={{ emptyText: <Empty description={t('noProjects')} /> }}
-        />
+        <Suspense fallback={<Skeleton />}>
+          <Table<IProjectViewModel>
+            columns={TableColumns(
+              navigate,
+              projectStatuses,
+              projectCategories,
+              setSelectedProjectId,
+              filteredCategories
+            )}
+            dataSource={projects.data}
+            rowKey={record => record.id || ''}
+            loading={loading}
+            size="small"
+            onChange={handleTableChange}
+            pagination={paginationConfig}
+            locale={{ emptyText: <Empty description={t('noProjects')} /> }}
+          />
+        </Suspense>
       </Card>
 
       <ProjectDrawer
