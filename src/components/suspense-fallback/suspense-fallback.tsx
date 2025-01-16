@@ -27,7 +27,7 @@ export const SuspenseFallback = () => {
             position: 'fixed',
             width: '100vw',
             height: '100vh',
-            background: isDark ? colors.darkGray : '#fafafa',
+            background: 'transparent',
             transition: 'none',
           }}
         >
