@@ -24,7 +24,7 @@ const AuthenticatingPage: React.FC = () => {
       return;
     }
 
-    navigate('/worklenz/setup');
+    navigate('/worklenz/home');
   }
 
   useEffect(() => {
@@ -39,6 +39,10 @@ const AuthenticatingPage: React.FC = () => {
         // Set user session and state
         setSession(session.user);
         dispatch(setUser(session.user));
+
+        if (!session.user.setup_completed) {
+          return navigate('/worklenz/setup');
+        }
 
         // Redirect based on setup status
         setTimeout(() => {
