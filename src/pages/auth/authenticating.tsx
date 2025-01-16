@@ -24,7 +24,7 @@ const AuthenticatingPage: React.FC = () => {
       return;
     }
 
-    navigate('/worklenz/home');
+    navigate('/worklenz/setup');
   }
 
   useEffect(() => {
