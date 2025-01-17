@@ -64,28 +64,18 @@ const HomePage = () => {
     isDesktop ? (
       <Flex gap={24} align="flex-start" className="w-full mt-12">
         <Flex style={{ minWidth: TASK_LIST_MIN_WIDTH, width: '100%' }}>
-          <Suspense fallback={<Skeleton />}>
-            <TasksList />
-          </Suspense>
+          <TasksList />
         </Flex>
         <Flex vertical gap={24} style={{ width: '100%', maxWidth: SIDEBAR_MAX_WIDTH }}>
-          <Suspense fallback={<Skeleton />}>
-            <TodoList />
-          </Suspense>
-          <Suspense fallback={<Skeleton />}>
-            <RecentAndFavouriteProjectList />
-          </Suspense>
+          <TodoList />
+          <RecentAndFavouriteProjectList />
         </Flex>
       </Flex>
     ) : (
       <Flex vertical gap={24} className="mt-6">
         <TasksList />
-        <Suspense fallback={<Skeleton />}>
-          <TodoList />
-        </Suspense>
-        <Suspense fallback={<Skeleton />}>
-          <RecentAndFavouriteProjectList />
-        </Suspense>
+        <TodoList />
+        <RecentAndFavouriteProjectList />
       </Flex>
     );
 

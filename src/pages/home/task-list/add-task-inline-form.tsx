@@ -1,71 +1,118 @@
 import { Alert, Flex, Form, Input, InputRef, Select, Typography } from 'antd';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { nanoid } from '@reduxjs/toolkit';
 import { TaskType } from '@/types/task.types';
 import { addTask } from '@features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { TFunction } from 'i18next';
+import {
+  useGetMyTasksQuery,
+  useGetProjectsByTeamQuery,
+} from '@/api/home-page/home-page.api.service';
+import { IProject } from '@/types/project/project.types';
+import { IHomeTaskCreateRequest } from '@/types/tasks/task-create-request.types';
+import { useAuthService } from '@/hooks/useAuth';
+import { useSocketService } from '@/hooks/useSocketService';
+import { SocketEvents } from '@/shared/socket-events';
+import { IMyTask } from '@/types/home/my-tasks.types';
+import { useSocket } from '@/socket/socketContext';
+import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
 
-const AddTaskInlineForm = () => {
+interface AddTaskInlineFormProps {
+  t: TFunction;
+}
+
+const AddTaskInlineForm = ({ t }: AddTaskInlineFormProps) => {
   const [isAlertShowing, setIsAlertShowing] = useState(false);
   const [isDueDateFieldShowing, setIsDueDateFieldShowing] = useState(false);
   const [isProjectFieldShowing, setIsProjectFieldShowing] = useState(false);
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
-  const projectList = useAppSelector(state => state.projectsReducer.projects);
+  const currentSession = useAuthService().getCurrentSession();
+  const { socket } = useSocket();
 
-  // ref for task input field
+  const { data: projectListData, isFetching: projectListFetching } = useGetProjectsByTeamQuery();
+  const { homeTasksConfig } = useAppSelector(state => state.homePageReducer);
+  const { refetch } = useGetMyTasksQuery(homeTasksConfig);
+
   const taskInputRef = useRef<InputRef | null>(null);
 
-  // due date select options
   const dueDateOptions = [
     {
       value: 'Today',
-      label: 'Today',
+      label: t('home:tasks.today'),
     },
     {
       value: 'Tomorrow',
-      label: 'Tomorrow',
+      label: t('home:tasks.tomorrow'),
     },
     {
       value: 'Next Week',
-      label: 'Next Week',
+      label: t('home:tasks.nextWeek'),
     },
     {
       value: 'Next Month',
-      label: 'Next Month',
+      label: t('home:tasks.nextMonth'),
     },
     {
       value: 'No Due Date',
-      label: 'No Due Date',
+      label: t('home:tasks.noDueDate'),
     },
   ];
 
-  // project options
-  let projectOptions = [
-    ...(projectList.data?.map(project => ({
+  const calculateEndDate = (dueDate: string): Date | undefined => {
+    const today = new Date();
+    switch (dueDate) {
+      case 'Today':
+        return today;
+      case 'Tomorrow':
+        return new Date(today.setDate(today.getDate() + 1));
+      case 'Next Week':
+        return new Date(today.setDate(today.getDate() + 7));
+      case 'Next Month':
+        return new Date(today.setMonth(today.getMonth() + 1));
+      default:
+        return undefined;
+    }
+  };
+
+  const projectOptions = [
+    ...(projectListData?.body?.map((project: IProject) => ({
       key: project.id,
-      value: project.name,
+      value: project.id,
       label: project.name,
     })) || []),
   ];
 
-  // function to handle task submit
-  const handleTaskSubmit = (values: any) => {
-    const newTask: TaskType = {
-      taskId: nanoid(),
-      task: values.name,
-      dueDate: values.dueDate,
-      status: 'todo',
-      priority: 'medium',
-      project: values.project,
-      createdDate: new Date(),
+  const handleTaskSubmit = (values: { name: string; project: string; dueDate: string }) => {
+    const newTask: IHomeTaskCreateRequest = {
+      id: nanoid(),
+      name: values.name,
+      project_id: values.project,
+      reporter_id: currentSession?.id,
+      team_id: currentSession?.team_id,
+      end_date: calculateEndDate(values.dueDate),
     };
 
-    dispatch(addTask(newTask));
-    form.resetFields();
+    socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(newTask));
+    socket?.on(SocketEvents.QUICK_TASK.toString(), (task: IMyTask) => {
+      const taskBody = {
+        team_member_id: currentSession?.team_member_id,
+        project_id: task.project_id,
+        task_id: task.id,
+        reporter_id: currentSession?.id,
+        mode: 0,
+      };
+      socket?.emit(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(), JSON.stringify(taskBody));
+      socket?.once(
+        SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(),
+        (response: ITaskAssigneesUpdateResponse) => {
+          refetch();
+        }
+      );
+    });
 
-    //? there is an issue (input field focused but can't type) occurs when immediately focus the input, so this timeout fuction held to create a small delay
     setTimeout(() => {
       if (taskInputRef.current) {
         taskInputRef.current.focus({
@@ -77,6 +124,13 @@ const AddTaskInlineForm = () => {
       setIsProjectFieldShowing(false);
     }, 100);
   };
+
+  useEffect(() => {
+    return () => {
+      socket?.off(SocketEvents.QUICK_TASK.toString());
+      socket?.off(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString());
+    };
+  }, []);
 
   return (
     <Form
@@ -101,7 +155,7 @@ const AddTaskInlineForm = () => {
         <Flex vertical gap={4}>
           <Input
             ref={taskInputRef}
-            placeholder="+ Add Task"
+            placeholder={t('home:tasks.addTask')}
             style={{ width: '100%' }}
             onChange={e => {
               const inputValue = e.currentTarget.value;
@@ -109,6 +163,8 @@ const AddTaskInlineForm = () => {
               else if (inputValue === '') setIsAlertShowing(false);
             }}
             onKeyDown={e => {
+              const inputValue = e.currentTarget.value;
+              if (inputValue.trim() === '') return;
               if (e.key === 'Tab') {
                 setIsAlertShowing(false);
                 setIsDueDateFieldShowing(true);
@@ -119,8 +175,7 @@ const AddTaskInlineForm = () => {
             <Alert
               message={
                 <Typography.Text style={{ fontSize: 11 }}>
-                  Press <strong>Tab</strong> to select a <strong>'Due date'</strong> and a{' '}
-                  <strong>'Project'</strong>.
+                  {t('home:tasks.pressTabToSelectDueDateAndProject')}
                 </Typography.Text>
               }
               type="info"
@@ -155,7 +210,7 @@ const AddTaskInlineForm = () => {
         rules={[
           {
             required: true,
-            message: 'Related project is required',
+            message: t('home:tasks.projectRequired'),
           },
         ]}
       >

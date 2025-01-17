@@ -41,11 +41,11 @@ const TasksList: React.FC = React.memo(() => {
   const [viewOptions, setViewOptions] = useState<'List' | 'Calendar'>('List');
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
-  const [isRefetching, setIsRefetching] = useState(false);
   const { homeTasksConfig } = useAppSelector(state => state.homePageReducer);
   const { data, isFetching: homeTasksFetching, refetch, isLoading } = useGetMyTasksQuery(homeTasksConfig);
 
   const { t } = useTranslation('home');
+  const { model } = useAppSelector(state => state.homePageReducer);
 
   const taskModes = useMemo(
     () => [
@@ -87,9 +87,7 @@ const TasksList: React.FC = React.memo(() => {
   };
 
   const handleChangeReceived = (value: any) => {
-    setIsRefetching(true);
     refetch();
-    setIsRefetching(false);
   };
 
   useEffect(() => {
@@ -230,7 +228,7 @@ const TasksList: React.FC = React.memo(() => {
     >
       {/* toggle task view list / calendar */}
       {viewOptions === 'List' ? (
-        <ListView refetch={refetch} model={data?.body || ({} as IHomeTasksModel)} />
+        <ListView refetch={refetch} model={data?.body || (model as IHomeTasksModel)} />
       ) : (
         <CalendarView />
       )}
