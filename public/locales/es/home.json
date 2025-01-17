@@ -32,6 +32,7 @@
         "tomorrow": "Mañana",
         "nextWeek": "La semana que viene",
         "nextMonth": "El próximo mes",
-        "projectRequired": "Por favor selecciona un proyecto"   
+        "projectRequired": "Por favor selecciona un proyecto",
+        "dueOn": "Tareas vencidas el"
     }
 }
