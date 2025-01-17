@@ -49,16 +49,6 @@ import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import './project-list.css';
 import { useAuthService } from '@/hooks/useAuth';
 
-interface PaginationState {
-  current: number;
-  pageSize: number;
-}
-
-interface SorterState {
-  order: string;
-  columnKey: string;
-}
-
 const ProjectList: React.FC = () => {
   const { t } = useTranslation('all-project-list');
   const dispatch = useAppDispatch();
