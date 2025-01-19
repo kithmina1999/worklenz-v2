@@ -1,8 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
-  AutoComplete,
-  Badge,
   Button,
   DatePicker,
   Divider,
@@ -10,12 +8,9 @@ import {
   Flex,
   Form,
   Input,
-  InputRef,
   Popconfirm,
-  Select,
   Skeleton,
   Space,
-  Spin,
   Tooltip,
   Typography,
 } from 'antd';
@@ -29,16 +24,12 @@ import {
   toggleDrawer,
   updateProject,
 } from '@features/projects/projectsSlice';
-import { addCategory } from '@features/settings/categories/categoriesSlice';
 
 import { projectColors } from '@/lib/project/projectConstants';
-import { colors } from '@/styles/colors';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
 
-import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { fetchClients } from '@/features/settings/client/clientSlice';
-import { getStatusIcon } from '@/utils/projectUtils';
 import { IProjectHealth } from '@/types/project/projectHealth.types';
 import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { useTranslation } from 'react-i18next';
@@ -53,6 +44,7 @@ import ProjectHealthSection from './project-health-section/project-health-sectio
 import ProjectStatusSection from './project-status-section/project-status-section';
 import ProjectCategorySection from './project-category-section/project-category-section';
 import ProjectClientSection from './project-client-section/project-client-section';
+import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 
 const ProjectDrawer = ({
   categories = [],
@@ -71,9 +63,11 @@ const ProjectDrawer = ({
 
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
   const { project, projectId, projectLoading } = useAppSelector(state => state.projectReducer);
-  const [selectedClient, setSelectedClient] = useState<string | null>(null);
   const [creatingProject, setCreatingProject] = useState<boolean>(false);
   const [deletingProject, setDeletingProject] = useState<boolean>(false);
+  const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(
+    null
+  );
 
   useEffect(() => {
     if (!clients.data?.length)
@@ -100,12 +94,12 @@ const ProjectDrawer = ({
         key: values.key,
         client_id: values.client_id,
         client_name: values.client_name,
-        project_manager: values.projectManager,
         start_date: values.start_date,
         end_date: values.end_date,
         working_days: parseInt(values.working_days),
         man_days: parseInt(values.man_days),
         hours_per_day: parseInt(values.hours_per_day),
+        project_manager: selectedProjectManager
       };
       if (editMode && projectId) {
         const response = await dispatch(
@@ -138,6 +132,7 @@ const ProjectDrawer = ({
         start_date: project.start_date ? dayjs(project.start_date) : null,
         end_date: project.end_date ? dayjs(project.end_date) : null,
       });
+      setSelectedProjectManager(project.project_manager || null);
     }
   };
 
@@ -231,7 +226,10 @@ const ProjectDrawer = ({
             />
 
             <Form.Item name="project_manager" label={t('projectManager')} layout="horizontal">
-              <ProjectManagerDropdown />
+              <ProjectManagerDropdown
+                selectedProjectManager={selectedProjectManager}
+                setSelectedProjectManager={setSelectedProjectManager}
+              />
             </Form.Item>
             <Form.Item name="date" layout="horizontal">
               <Flex gap={8}>

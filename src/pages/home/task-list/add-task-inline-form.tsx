@@ -165,7 +165,7 @@ const AddTaskInlineForm = ({ t }: AddTaskInlineFormProps) => {
             onKeyDown={e => {
               const inputValue = e.currentTarget.value;
               if (inputValue.trim() === '') return;
-              if (e.key === 'Tab') {
+              if (e.key === 'Tab' || e.key === 'Enter') {
                 setIsAlertShowing(false);
                 setIsDueDateFieldShowing(true);
               }

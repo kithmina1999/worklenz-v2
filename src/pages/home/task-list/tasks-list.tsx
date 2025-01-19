@@ -170,6 +170,8 @@ const TasksList: React.FC = React.memo(() => {
         dataIndex: 'end_date',
         render: (_, record) => (
           <DatePicker
+            allowClear
+            disabledDate={record.start_date ? (current => current.isBefore(dayjs(record.start_date))) : undefined}
             format={'MMM DD, YYYY'}
             placeholder={t('tasks.dueDatePlaceholder')}
             defaultValue={record.end_date ? dayjs(record.end_date) : null}
