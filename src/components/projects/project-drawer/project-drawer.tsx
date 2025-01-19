@@ -142,6 +142,7 @@ const ProjectDrawer = ({
     setEditMode(false);
     dispatch(setProject({} as IProjectViewModel));
     dispatch(setProjectId(null));
+    setSelectedProjectManager(null);
   };
 
   const handleDeleteProject = async () => {

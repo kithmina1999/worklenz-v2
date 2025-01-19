@@ -24,12 +24,6 @@ const ProjectManagerDropdown: React.FC<{
     dispatch(getTeamMembers({ index: 1, size: 5, field: null, order: null, search: searchQuery }));
   }, [dispatch, searchQuery]);
 
-  useEffect(() => {
-    if (selectedProjectManager) {
-      labelInputRef.current?.focus();
-    }
-  }, [selectedProjectManager]);
-
   const projectManagerOptions = useMemo(() => {
     return (
       teamMembers?.data?.map((member, index) => ({
