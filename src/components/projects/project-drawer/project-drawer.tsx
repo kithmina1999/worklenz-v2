@@ -49,12 +49,10 @@ const ProjectDrawer = ({
   categories = [],
   statuses = [],
   healths = [],
-  onDelete,
 }: {
   categories: IProjectCategory[];
   statuses: IProjectStatus[];
   healths: IProjectHealth[];
-  onDelete: (id: string) => void;
 }) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('project-drawer');
@@ -109,6 +107,7 @@ const ProjectDrawer = ({
         if (response?.id) {
           form.resetFields();
           dispatch(toggleDrawer());
+          refetchProjects();
         }
       } else {
         const response = await dispatch(createProject(projectModel)).unwrap();
@@ -126,14 +125,16 @@ const ProjectDrawer = ({
   };
 
   const visibleChanged = (visible: boolean) => {
-    if (visible && project?.id) {
+    if (visible && projectId) {
       setEditMode(true);
-      form.setFieldsValue({
-        ...project,
-        start_date: project.start_date ? dayjs(project.start_date) : null,
-        end_date: project.end_date ? dayjs(project.end_date) : null,
-      });
-      setSelectedProjectManager(project.project_manager || null);
+      if (project) {
+        form.setFieldsValue({
+          ...project,
+          start_date: project.start_date ? dayjs(project.start_date) : null,
+          end_date: project.end_date ? dayjs(project.end_date) : null,
+        });
+        setSelectedProjectManager(project.project_manager || null);
+      }
     }
   };
 

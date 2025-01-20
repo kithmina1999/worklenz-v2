@@ -23,7 +23,6 @@ const TableColumns = (
   navigate: NavigateFunction,
   statuses: IProjectStatus[],
   categories: IProjectCategory[],
-  setProjectId: (id: string) => void,
   filteredCategories: string[],
 ): ColumnsType<IProjectViewModel> => {
   const { t } = useTranslation('all-project-list');
@@ -105,7 +104,6 @@ const TableColumns = (
           <ActionButtons
             t={t}
             record={record}
-            setProjectId={setProjectId}
             dispatch={dispatch}
             isOwnerOrAdmin={isOwnerOrAdmin}
           />

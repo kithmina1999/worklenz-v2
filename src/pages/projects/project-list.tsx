@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useMemo } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -45,6 +45,10 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setRequestParams, toggleDrawer } from '@/features/projects/projectsSlice';
 import { getProject } from '@/features/project/project.slice';
 import { setProjectId } from '@/features/projects/insights/project-insights.slice';
+import { getStatusClassNames } from 'antd/es/_util/statusUtils';
+import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
+import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
+import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
 
 const ProjectList: React.FC = () => {
   const { t } = useTranslation('all-project-list');
@@ -69,12 +73,13 @@ const ProjectList: React.FC = () => {
   const { requestParams, filteredCategories } = useAppSelector(state => state.projectsReducer);
 
   const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
-  const { projectHealths: healths } = useAppSelector(state => state.projectHealthReducer);
+  const { projectHealths } = useAppSelector(state => state.projectHealthReducer);
   const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
 
   const {
     data: projectsData,
     isLoading: loadingProjects,
+    isFetching: isFetchingProjects,
     refetch: refetchProjects,
   } = useGetProjectsQuery(requestParams);
   const [deleteProject] = useDeleteProjectMutation();
@@ -130,11 +135,6 @@ const ProjectList: React.FC = () => {
     refetchProjects();
   }, []);
 
-  const handleDeleteProject = async (id: string) => {
-    await deleteProject(id).unwrap();
-    handleRefresh();
-  };
-
   const paginationConfig = useMemo(
     () => ({
       current: requestParams.index,
@@ -148,16 +148,11 @@ const ProjectList: React.FC = () => {
     [requestParams.index, requestParams.size, projectsData?.body?.total]
   );
 
-  const setSelectedProjectId = useCallback(
-    (id: string) => {
-      if (id) {
-        dispatch(setProjectId(id));
-        dispatch(getProject(id));
-        dispatch(toggleDrawer());
-      }
-    },
-    [dispatch]
-  );
+  useEffect(() => {
+    if (projectStatuses.length === 0) dispatch(fetchProjectStatuses());
+    if (projectCategories.length === 0) dispatch(fetchProjectCategories());
+    if (projectHealths.length === 0) dispatch(fetchProjectHealth());
+  }, [requestParams]);
 
   return (
     <Suspense fallback={<Skeleton />}>
@@ -171,7 +166,7 @@ const ProjectList: React.FC = () => {
               <Tooltip title={t('refreshProjects')}>
                 <Button
                   shape="circle"
-                  icon={<SyncOutlined spin={loadingProjects} />}
+                  icon={<SyncOutlined spin={isFetchingProjects} />}
                   onClick={handleRefresh}
                   aria-label="Refresh projects"
                 />
@@ -199,7 +194,6 @@ const ProjectList: React.FC = () => {
               navigate,
               projectStatuses || [],
               projectCategories || [],
-              setSelectedProjectId,
               filteredCategories
             )}
             dataSource={projectsData?.body?.data || []}
@@ -215,8 +209,7 @@ const ProjectList: React.FC = () => {
         <ProjectDrawer
           categories={projectCategories || []}
           statuses={projectStatuses || []}
-          healths={healths || []}
-          onDelete={handleDeleteProject}
+          healths={projectHealths || []}
         />
       </div>
     </Suspense>

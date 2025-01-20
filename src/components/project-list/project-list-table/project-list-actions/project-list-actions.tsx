@@ -1,6 +1,7 @@
 import { useGetProjectsQuery } from '@/api/projects/projects.v1.api.service';
 import { AppDispatch } from '@/app/store';
-import { toggleArchiveProjectForAll, toggleArchiveProject } from '@/features/projects/projectsSlice';
+import { getProject, setProjectId } from '@/features/project/project.slice';
+import { toggleArchiveProjectForAll, toggleArchiveProject, toggleDrawer } from '@/features/projects/projectsSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import logger from '@/utils/errorLogger';
@@ -10,7 +11,6 @@ import { Tooltip, Button, Popconfirm, Space } from 'antd';
 interface ActionButtonsProps {
   t: (key: string) => string;
   record: IProjectViewModel;
-  setProjectId: (id: string) => void;
   dispatch: AppDispatch;
   isOwnerOrAdmin: boolean;
 }
@@ -18,7 +18,6 @@ interface ActionButtonsProps {
 export const ActionButtons: React.FC<ActionButtonsProps> = ({
   t,
   record,
-  setProjectId,
   dispatch,
   isOwnerOrAdmin,
 }) => {
@@ -27,7 +26,9 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 
   const handleSettingsClick = () => {
     if (record.id) {
-      setProjectId(record.id);
+      dispatch(setProjectId(record.id));
+      dispatch(getProject(record.id));
+      dispatch(toggleDrawer());
     }
   };
 
