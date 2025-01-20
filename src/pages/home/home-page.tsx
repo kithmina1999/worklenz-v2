@@ -92,7 +92,6 @@ const HomePage = () => {
         categories={projectCategories}
         statuses={projectStatuses}
         healths={projectHealths}
-        onDelete={() => {}}
       />
     </div>
   );

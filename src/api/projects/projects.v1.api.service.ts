@@ -29,7 +29,7 @@ export const projectsApi = createApi({
       search: string | null;
       filter: number | null;
       statuses: string | null;
-      categories: string[];
+      categories: string | null;
     }>({
       query: ({ index, size, field, order, search, filter, statuses, categories }) => {
         const params = new URLSearchParams({
@@ -40,7 +40,7 @@ export const projectsApi = createApi({
           search: search || '',
           filter: filter?.toString() || '',
           statuses: statuses || '',
-          categories: categories.join(',')
+          categories: categories || '',
         });
         return `${rootUrl}?${params.toString()}`;
       },

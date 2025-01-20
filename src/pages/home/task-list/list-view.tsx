@@ -22,7 +22,7 @@ const ListView = ({ model, refetch }: ListViewProps) => {
     {
       key: 'All',
       label: `${t('tasks.all')} (${model.total})`,
-      children: <AddTaskInlineForm t={t} />,
+      children: <AddTaskInlineForm t={t} calendarView={false} />,
     },
     {
       key: 'Today',

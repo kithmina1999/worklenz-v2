@@ -15,19 +15,41 @@ import { CategoryCell } from './project-list-table/project-list-category/project
 import { ProgressListProgress } from './project-list-table/project-list-progress/progress-list-progress';
 import { ProjectListUpdatedAt } from './project-list-table/project-list-updated-at/project-list-updated';
 import { ProjectNameCell } from './project-list-table/project-name/project-name-cell';
+import { setFilteredCategories, setFilteredStatuses } from '@/features/projects/projectsSlice';
 
 const createFilters = (items: { id: string; name: string }[]) =>
   items.map(item => ({ text: item.name, value: item.id })) as ColumnFilterItem[];
 
-const TableColumns = (
-  navigate: NavigateFunction,
-  statuses: IProjectStatus[],
-  categories: IProjectCategory[],
-  filteredCategories: string[],
-): ColumnsType<IProjectViewModel> => {
+interface ITableColumnsProps {
+  navigate: NavigateFunction;
+  statuses: IProjectStatus[];
+  categories: IProjectCategory[];
+  filteredCategories: string[];
+  filteredStatuses: string[];
+}
+
+const TableColumns = ({
+  navigate,
+  statuses,
+  categories,
+  filteredCategories,
+  filteredStatuses,
+}: ITableColumnsProps): ColumnsType<IProjectViewModel> => {
   const { t } = useTranslation('all-project-list');
   const dispatch = useAppDispatch();
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
+
+  const onCategoryFilterChange = (value: string, record: IProjectViewModel) => {
+    if (!filteredCategories.includes(value)) {
+      dispatch(setFilteredCategories([...filteredCategories, value]));
+    }
+  };
+
+  const onStatusFilterChange = (value: string, record: IProjectViewModel) => {
+    if (!filteredStatuses.includes(value)) {
+      dispatch(setFilteredStatuses([...filteredStatuses, value]));
+    }
+  };
 
   const columns = useMemo(
     () => [
@@ -39,7 +61,7 @@ const TableColumns = (
         showSorterTooltip: false,
         defaultSortOrder: 'ascend',
         render: (text: string, record: IProjectViewModel) => (
-          <ProjectNameCell navigate={navigate} key={record.id} t={t} record={record}/>
+          <ProjectNameCell navigate={navigate} key={record.id} t={t} record={record} />
         ),
       },
       {
@@ -57,8 +79,8 @@ const TableColumns = (
           categories.map(category => ({ id: category.id || '', name: category.name || '' }))
         ),
         filteredValue: filteredCategories,
-        onFilter: (value: string, record: IProjectViewModel) =>
-          record.category_id?.startsWith(value) || false,
+        onFilter: onCategoryFilterChange,
+        filterMultiple: true,
         render: (text: string, record: IProjectViewModel) => (
           <CategoryCell key={record.id} t={t} record={record} />
         ),
@@ -71,10 +93,10 @@ const TableColumns = (
         filters: createFilters(
           statuses.map(status => ({ id: status.id || '', name: status.name || '' }))
         ),
-        onFilter: (value: string, record: IProjectViewModel) =>
-          record.status?.startsWith(value) || false,
+        filterMultiple: true,
+        filteredValue: filteredStatuses,
+        onFilter: onStatusFilterChange,
         sorter: true,
-        showSorterTooltip: false,
       },
       {
         title: t('tasksProgress'),

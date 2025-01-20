@@ -42,7 +42,7 @@ import './project-list.css';
 import { useAuthService } from '@/hooks/useAuth';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setRequestParams, toggleDrawer } from '@/features/projects/projectsSlice';
+import { setFilteredCategories, setFilteredStatuses, setRequestParams, toggleDrawer } from '@/features/projects/projectsSlice';
 import { getProject } from '@/features/project/project.slice';
 import { setProjectId } from '@/features/projects/insights/project-insights.slice';
 import { getStatusClassNames } from 'antd/es/_util/statusUtils';
@@ -70,7 +70,7 @@ const ProjectList: React.FC = () => {
     localStorage.setItem(PROJECT_SORT_ORDER, order);
   }, []);
 
-  const { requestParams, filteredCategories } = useAppSelector(state => state.projectsReducer);
+  const { requestParams, filteredCategories, filteredStatuses } = useAppSelector(state => state.projectsReducer);
 
   const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
   const { projectHealths } = useAppSelector(state => state.projectHealthReducer);
@@ -82,7 +82,6 @@ const ProjectList: React.FC = () => {
     isFetching: isFetchingProjects,
     refetch: refetchProjects,
   } = useGetProjectsQuery(requestParams);
-  const [deleteProject] = useDeleteProjectMutation();
 
   const filters = useMemo(() => Object.values(IProjectFilter), []);
 
@@ -94,8 +93,18 @@ const ProjectList: React.FC = () => {
     ) => {
       const newParams: Partial<typeof requestParams> = {};
 
-      if (filters?.status_id) {
-        newParams.statuses = filters.status_id.join('+');
+      if (!filters?.status_id) {
+        newParams.statuses = null;
+        dispatch(setFilteredStatuses([]));
+      } else {
+        newParams.statuses = filters.status_id.join(' ');
+      }
+
+      if (!filters?.category_id) {
+        newParams.categories = null;
+        dispatch(setFilteredCategories([]));
+      } else {
+        newParams.categories = filters.category_id.join(' ');
       }
 
       const newOrder = Array.isArray(sorter) ? sorter[0].order : sorter.order;
@@ -117,7 +126,7 @@ const ProjectList: React.FC = () => {
 
   const handleRefresh = useCallback(() => {
     refetchProjects();
-  }, [refetchProjects]);
+  }, [refetchProjects, requestParams]);
 
   const handleSegmentChange = useCallback(
     (value: IProjectFilter) => {
@@ -132,7 +141,6 @@ const ProjectList: React.FC = () => {
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     dispatch(setRequestParams({ search: value }));
-    refetchProjects();
   }, []);
 
   const paginationConfig = useMemo(
@@ -190,12 +198,13 @@ const ProjectList: React.FC = () => {
         />
         <Card className="project-card">
           <Table<IProjectViewModel>
-            columns={TableColumns(
+            columns={TableColumns({
               navigate,
-              projectStatuses || [],
-              projectCategories || [],
-              filteredCategories
-            )}
+              statuses: projectStatuses || [],
+              categories: projectCategories || [],
+              filteredCategories,
+              filteredStatuses,
+            })}
             dataSource={projectsData?.body?.data || []}
             rowKey={record => record.id || ''}
             loading={loadingProjects}

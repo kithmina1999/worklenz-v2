@@ -21,14 +21,14 @@ import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update
 
 interface AddTaskInlineFormProps {
   t: TFunction;
+  calendarView: boolean;
 }
 
-const AddTaskInlineForm = ({ t }: AddTaskInlineFormProps) => {
+const AddTaskInlineForm = ({ t, calendarView = false }: AddTaskInlineFormProps) => {
   const [isAlertShowing, setIsAlertShowing] = useState(false);
   const [isDueDateFieldShowing, setIsDueDateFieldShowing] = useState(false);
   const [isProjectFieldShowing, setIsProjectFieldShowing] = useState(false);
   const [form] = Form.useForm();
-  const dispatch = useAppDispatch();
   const currentSession = useAuthService().getCurrentSession();
   const { socket } = useSocket();
 
@@ -110,6 +110,7 @@ const AddTaskInlineForm = ({ t }: AddTaskInlineFormProps) => {
           refetch();
         }
       );
+      form.resetFields();
     });
 
     setTimeout(() => {
@@ -125,6 +126,11 @@ const AddTaskInlineForm = ({ t }: AddTaskInlineFormProps) => {
   };
 
   useEffect(() => {
+    if (calendarView) {
+      form.setFieldValue('dueDate', homeTasksConfig.selected_date?.format('MMM DD, YYYY'));
+    } else {
+      form.setFieldValue('dueDate', dueDateOptions[0]?.value);
+    }
     return () => {
       socket?.off(SocketEvents.QUICK_TASK.toString());
       socket?.off(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString());
@@ -137,8 +143,8 @@ const AddTaskInlineForm = ({ t }: AddTaskInlineFormProps) => {
       onFinish={handleTaskSubmit}
       style={{ display: 'flex', gap: 8 }}
       initialValues={{
-        dueDate: 'No Due Date',
-        project: projectOptions[0]?.value,
+        dueDate: calendarView ? homeTasksConfig.selected_date?.format('MMM DD, YYYY') : dueDateOptions[0]?.value,
+        project: projectOptions[0]?.value,  
       }}
     >
       <Form.Item
@@ -196,10 +202,12 @@ const AddTaskInlineForm = ({ t }: AddTaskInlineFormProps) => {
             suffixIcon={null}
             options={dueDateOptions}
             defaultOpen
-            onKeyDown={e => {
-              if (e.key === 'Tab' || 'Enter') {
-                setIsProjectFieldShowing(true);
-              }
+            disabled={calendarView}
+            onSelect={() => {
+              setIsProjectFieldShowing(true);
+            }}
+            onChange={() => {
+              setIsProjectFieldShowing(true);
             }}
           />
         )}

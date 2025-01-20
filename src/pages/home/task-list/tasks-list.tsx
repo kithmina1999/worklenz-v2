@@ -33,6 +33,7 @@ import { IHomeTasksModel } from '@/types/home/home-page.types';
 import type { Dayjs } from 'dayjs';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
+import './tasks-list.css';
 
 const TasksList: React.FC = React.memo(() => {
   const dispatch = useAppDispatch();
@@ -112,11 +113,11 @@ const TasksList: React.FC = React.memo(() => {
         render: (_, record) => (
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Tooltip title={record.name}>
-              <Typography.Text style={{ textTransform: 'capitalize' }}>
+              <Typography.Text>
                 {record.name}
               </Typography.Text>
             </Tooltip>
-            <div className="row-button">
+            <div className="row-action-button">
               <Tooltip title={'Click open task form'}>
                 <Button
                   type="text"
