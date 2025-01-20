@@ -4,13 +4,15 @@ import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { formatDateRange } from '@/utils/project-list-utils';
 import { CalendarOutlined } from '@ant-design/icons';
 import { Rate, Badge, Tooltip } from 'antd';
+import { TFunction } from 'i18next';
 import { useCallback } from 'react';
 import { NavigateFunction } from 'react-router-dom';
 
 export const ProjectNameCell: React.FC<{
   record: IProjectViewModel;
+  t: TFunction;
   navigate: NavigateFunction;
-}> = ({ record, navigate }) => {
+}> = ({ record, t, navigate }) => {
   const dispatch = useAppDispatch();
 
   const handleFavorite = useCallback(async () => {

@@ -1,5 +1,15 @@
-import { useEffect, useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import {
+  createProject,
+  deleteProject,
+  toggleDrawer,
+  updateProject,
+} from '@features/projects/projectsSlice';
+import { fetchClients } from '@/features/settings/client/clientSlice';
+import { useGetProjectsQuery } from '@/api/projects/projects.v1.api.service';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import logger from '@/utils/errorLogger';
 import {
   Button,
   DatePicker,
@@ -15,36 +25,25 @@ import {
   Typography,
 } from 'antd';
 import dayjs from 'dayjs';
-
-import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import {
-  createProject,
-  deleteProject,
-  toggleDrawer,
-  updateProject,
-} from '@features/projects/projectsSlice';
-
-import { projectColors } from '@/lib/project/projectConstants';
-import { IProjectViewModel } from '@/types/project/projectViewModel.types';
-import { IProjectCategory } from '@/types/project/projectCategory.types';
-
-import { fetchClients } from '@/features/settings/client/clientSlice';
-import { IProjectHealth } from '@/types/project/projectHealth.types';
-import { IProjectStatus } from '@/types/project/projectStatus.types';
-import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import ProjectManagerDropdown from '../project-manager-dropdown/project-manager-dropdown';
-import { setProject, setProjectId } from '@/features/project/project.slice';
-import { useNavigate } from 'react-router-dom';
-import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
-import { calculateTimeDifference } from '@/utils/calculate-time-difference';
-import logger from '@/utils/errorLogger';
 import ProjectBasicInfo from './project-basic-info/project-basic-info';
 import ProjectHealthSection from './project-health-section/project-health-section';
 import ProjectStatusSection from './project-status-section/project-status-section';
 import ProjectCategorySection from './project-category-section/project-category-section';
 import ProjectClientSection from './project-client-section/project-client-section';
+
+import { projectColors } from '@/lib/project/projectConstants';
+import { setProject, setProjectId } from '@/features/project/project.slice';
+
+import { IProjectCategory } from '@/types/project/projectCategory.types';
+import { IProjectHealth } from '@/types/project/projectHealth.types';
+import { IProjectStatus } from '@/types/project/projectStatus.types';
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
+import { calculateTimeDifference } from '@/utils/calculate-time-difference';
+import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 
 const ProjectDrawer = ({
   categories = [],
@@ -68,6 +67,8 @@ const ProjectDrawer = ({
   const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(
     null
   );
+  const { requestParams } = useAppSelector(state => state.projectsReducer);
+  const { refetch: refetchProjects } = useGetProjectsQuery(requestParams);
 
   useEffect(() => {
     if (!clients.data?.length)
@@ -99,7 +100,7 @@ const ProjectDrawer = ({
         working_days: parseInt(values.working_days),
         man_days: parseInt(values.man_days),
         hours_per_day: parseInt(values.hours_per_day),
-        project_manager: selectedProjectManager
+        project_manager: selectedProjectManager,
       };
       if (editMode && projectId) {
         const response = await dispatch(
@@ -151,6 +152,7 @@ const ProjectDrawer = ({
       await dispatch(deleteProject(projectId)).unwrap();
       dispatch(toggleDrawer());
       navigate('/worklenz/projects');
+      refetchProjects();
     }
     setDeletingProject(false);
   };

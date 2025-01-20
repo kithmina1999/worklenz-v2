@@ -87,7 +87,6 @@ const AddTaskInlineForm = ({ t }: AddTaskInlineFormProps) => {
 
   const handleTaskSubmit = (values: { name: string; project: string; dueDate: string }) => {
     const newTask: IHomeTaskCreateRequest = {
-      id: nanoid(),
       name: values.name,
       project_id: values.project,
       reporter_id: currentSession?.id,
@@ -189,7 +188,9 @@ const AddTaskInlineForm = ({ t }: AddTaskInlineFormProps) => {
         </Flex>
       </Form.Item>
 
-      <Form.Item name="dueDate" style={{ width: '100%', maxWidth: 200 }}>
+      <Form.Item
+        style={{ width: '100%', maxWidth: 200 }}
+      >
         {isDueDateFieldShowing && (
           <Select
             suffixIcon={null}

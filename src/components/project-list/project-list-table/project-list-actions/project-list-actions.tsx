@@ -1,5 +1,7 @@
+import { useGetProjectsQuery } from '@/api/projects/projects.v1.api.service';
 import { AppDispatch } from '@/app/store';
 import { toggleArchiveProjectForAll, toggleArchiveProject } from '@/features/projects/projectsSlice';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import logger from '@/utils/errorLogger';
 import { SettingOutlined, InboxOutlined } from '@ant-design/icons';
@@ -20,6 +22,9 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   dispatch,
   isOwnerOrAdmin,
 }) => {
+  const { requestParams } = useAppSelector(state => state.projectsReducer);
+  const { refetch: refetchProjects  } = useGetProjectsQuery(requestParams);
+
   const handleSettingsClick = () => {
     if (record.id) {
       setProjectId(record.id);
@@ -34,6 +39,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
       } else {
         await dispatch(toggleArchiveProject(record.id));
       }
+      refetchProjects();
     } catch (error) {
       logger.error('Failed to archive project:', error);
     }

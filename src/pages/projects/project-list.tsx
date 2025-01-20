@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useEffect, useMemo } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -22,18 +22,10 @@ import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 import CreateProjectButton from '@/components/projects/project-create-button/project-create-button';
 import TableColumns from '@/components/project-list/TableColumns';
 
-import { useAppSelector } from '@/hooks/useAppSelector';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
-  deleteProject,
-  fetchProjects,
-  toggleDrawer,
-  setRequestParams,
-} from '@/features/projects/projectsSlice';
-import { getProject, setProjectId } from '@/features/project/project.slice';
-import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
-import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
-import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
+  useGetProjectsQuery,
+  useDeleteProjectMutation,
+} from '@/api/projects/projects.v1.api.service';
 
 import {
   DEFAULT_PAGE_SIZE,
@@ -48,38 +40,19 @@ import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import './project-list.css';
 import { useAuthService } from '@/hooks/useAuth';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setRequestParams, toggleDrawer } from '@/features/projects/projectsSlice';
+import { getProject } from '@/features/project/project.slice';
+import { setProjectId } from '@/features/projects/insights/project-insights.slice';
 
 const ProjectList: React.FC = () => {
   const { t } = useTranslation('all-project-list');
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();  
   const navigate = useNavigate();
   useDocumentTitle('Projects');
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
-  // Redux state
-  const { loading, projects, filteredCategories, requestParams } = useAppSelector(
-    state => state.projectsReducer
-  );
-  const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
-  const { projectHealths: healths } = useAppSelector(state => state.projectHealthReducer);
-  const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
-
-  // Parallel data fetching on mount
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      const promises = [
-        dispatch(fetchProjectCategories()),
-        !healths.length && dispatch(fetchProjectHealth()),
-        !projectStatuses.length && dispatch(fetchProjectStatuses()),
-      ].filter(Boolean);
-
-      await Promise.all(promises);
-    };
-
-    fetchInitialData();
-  }, []);
-
-  // Callback functions
   const getFilterIndex = useCallback(() => {
     return +(localStorage.getItem(FILTER_INDEX_KEY) || 0);
   }, []);
@@ -93,16 +66,16 @@ const ProjectList: React.FC = () => {
     localStorage.setItem(PROJECT_SORT_ORDER, order);
   }, []);
 
-  // Memoized values
-  const filters = useMemo(() => Object.values(IProjectFilter), []);
+  const { requestParams, filteredCategories } = useAppSelector(state => state.projectsReducer);
 
-  const getProjects = useCallback(async () => {
-    try {
-      await dispatch(fetchProjects(requestParams)).unwrap();
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-    }
-  }, [dispatch, requestParams, filteredCategories]);
+  const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
+  const { projectHealths: healths } = useAppSelector(state => state.projectHealthReducer);
+  const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
+
+  const { data: projectsData, isFetching: loadingProjects, refetch: refetchProjects  } = useGetProjectsQuery(requestParams);
+  const [deleteProject] = useDeleteProjectMutation();
+
+  const filters = useMemo(() => Object.values(IProjectFilter), []);
 
   const handleTableChange = useCallback(
     (
@@ -114,11 +87,6 @@ const ProjectList: React.FC = () => {
 
       if (filters?.status_id) {
         newParams.statuses = filters.status_id.join('+');
-      }
-
-      if (filters?.category_id) {
-        console.log('filters.category_id', filters.category_id);
-        // dispatch(setFilteredCategories(filters.category_id.join('+')));
       }
 
       const newOrder = Array.isArray(sorter) ? sorter[0].order : sorter.order;
@@ -135,12 +103,12 @@ const ProjectList: React.FC = () => {
 
       dispatch(setRequestParams(newParams));
     },
-    [dispatch, setSortingValues]
+    [setSortingValues]
   );
 
   const handleRefresh = useCallback(() => {
-    getProjects();
-  }, [getProjects]);
+    refetchProjects();
+  }, [refetchProjects]);
 
   const handleSegmentChange = useCallback(
     (value: IProjectFilter) => {
@@ -148,18 +116,30 @@ const ProjectList: React.FC = () => {
       setFilterIndex(newFilterIndex);
       dispatch(setRequestParams({ filter: newFilterIndex }));
     },
-    [filters, setFilterIndex, dispatch]
+    [filters, setFilterIndex]
   );
 
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      dispatch(setRequestParams({ search: value }));
-      // debouncedSearchTerm(value, (debouncedValue) => {
-      //   dispatch(setRequestParams({ search: debouncedValue }));
-      // });
-    },
-    [dispatch]
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    dispatch(setRequestParams({ search: value }));
+  }, []);
+
+  const handleDeleteProject = async (id: string) => {
+    await deleteProject(id).unwrap();
+    handleRefresh();
+  };
+
+  const paginationConfig = useMemo(
+    () => ({
+      current: requestParams.index,
+      pageSize: requestParams.size,
+      showSizeChanger: true,
+      defaultPageSize: DEFAULT_PAGE_SIZE,
+      pageSizeOptions: PAGE_SIZE_OPTIONS,
+      size: 'small' as const,
+      total: projectsData?.body?.total,
+    }),
+    [requestParams.index, requestParams.size, projectsData?.body?.total]
   );
 
   const setSelectedProjectId = useCallback(
@@ -173,46 +153,19 @@ const ProjectList: React.FC = () => {
     [dispatch]
   );
 
-  // Effects
-  useEffect(() => {
-    getProjects();
-  }, [getProjects]);
-
-  const filterCategories = (category: string) => {
-    console.log('clicked', category);
-  };
-
-  const handleDeleteProject = async (id: string) => {
-    await dispatch(deleteProject(id)).unwrap();
-    handleRefresh();
-  };
-
-  const paginationConfig = useMemo(
-    () => ({
-      current: requestParams.index,
-      pageSize: requestParams.size,
-      showSizeChanger: true,
-      defaultPageSize: DEFAULT_PAGE_SIZE,
-      pageSizeOptions: PAGE_SIZE_OPTIONS,
-      size: 'small' as const,
-      total: projects.total,
-    }),
-    [requestParams.index, requestParams.size, projects.total]
-  );
-
   return (
     <Suspense fallback={<Skeleton />}>
       <div style={{ marginBlock: 65, minHeight: '90vh' }}>
         <PageHeader
           className="site-page-header"
-          title={`${projects.total} ${t('projects')}`}
+          title={`${projectsData?.body?.total || 0} ${t('projects')}`}
           style={{ padding: '16px 0' }}
           extra={
             <Flex gap={8} align="center">
               <Tooltip title={t('refreshProjects')}>
                 <Button
                   shape="circle"
-                  icon={<SyncOutlined spin={loading} />}
+                  icon={<SyncOutlined spin={loadingProjects} />}
                   onClick={handleRefresh}
                   aria-label="Refresh projects"
                 />
@@ -238,14 +191,14 @@ const ProjectList: React.FC = () => {
           <Table<IProjectViewModel>
             columns={TableColumns(
               navigate,
-              projectStatuses,
-              projectCategories,
+              projectStatuses || [],
+              projectCategories || [],
               setSelectedProjectId,
               filteredCategories
             )}
-            dataSource={projects.data}
+            dataSource={projectsData?.body?.data || []}
             rowKey={record => record.id || ''}
-            loading={loading}
+            loading={loadingProjects}
             size="small"
             onChange={handleTableChange}
             pagination={paginationConfig}
