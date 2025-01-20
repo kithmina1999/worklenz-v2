@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -48,7 +48,7 @@ import { setProjectId } from '@/features/projects/insights/project-insights.slic
 
 const ProjectList: React.FC = () => {
   const { t } = useTranslation('all-project-list');
-  const dispatch = useAppDispatch();  
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   useDocumentTitle('Projects');
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
@@ -72,7 +72,11 @@ const ProjectList: React.FC = () => {
   const { projectHealths: healths } = useAppSelector(state => state.projectHealthReducer);
   const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
 
-  const { data: projectsData, isFetching: loadingProjects, refetch: refetchProjects  } = useGetProjectsQuery(requestParams);
+  const {
+    data: projectsData,
+    isLoading: loadingProjects,
+    refetch: refetchProjects,
+  } = useGetProjectsQuery(requestParams);
   const [deleteProject] = useDeleteProjectMutation();
 
   const filters = useMemo(() => Object.values(IProjectFilter), []);
@@ -115,13 +119,15 @@ const ProjectList: React.FC = () => {
       const newFilterIndex = filters.indexOf(value);
       setFilterIndex(newFilterIndex);
       dispatch(setRequestParams({ filter: newFilterIndex }));
+      refetchProjects();
     },
-    [filters, setFilterIndex]
+    [filters, setFilterIndex, refetchProjects]
   );
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     dispatch(setRequestParams({ search: value }));
+    refetchProjects();
   }, []);
 
   const handleDeleteProject = async (id: string) => {

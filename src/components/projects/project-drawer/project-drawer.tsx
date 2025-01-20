@@ -6,7 +6,7 @@ import {
   updateProject,
 } from '@features/projects/projectsSlice';
 import { fetchClients } from '@/features/settings/client/clientSlice';
-import { useGetProjectsQuery } from '@/api/projects/projects.v1.api.service';
+import { useDeleteProjectMutation, useGetProjectsQuery } from '@/api/projects/projects.v1.api.service';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import logger from '@/utils/errorLogger';
@@ -63,12 +63,12 @@ const ProjectDrawer = ({
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
   const { project, projectId, projectLoading } = useAppSelector(state => state.projectReducer);
   const [creatingProject, setCreatingProject] = useState<boolean>(false);
-  const [deletingProject, setDeletingProject] = useState<boolean>(false);
   const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(
     null
   );
   const { requestParams } = useAppSelector(state => state.projectsReducer);
   const { refetch: refetchProjects } = useGetProjectsQuery(requestParams);
+  const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
 
   useEffect(() => {
     if (!clients.data?.length)
@@ -147,14 +147,12 @@ const ProjectDrawer = ({
   };
 
   const handleDeleteProject = async () => {
-    setDeletingProject(true);
     if (projectId) {
-      await dispatch(deleteProject(projectId)).unwrap();
+      await deleteProject(projectId);
       dispatch(toggleDrawer());
       navigate('/worklenz/projects');
       refetchProjects();
     }
-    setDeletingProject(false);
   };
 
   return (
@@ -179,7 +177,7 @@ const ProjectDrawer = ({
                 okText={t('yes')}
                 cancelText={t('no')}
               >
-                <Button danger type="dashed" loading={deletingProject}>
+                <Button danger type="dashed" loading={isDeletingProject}>
                   {t('delete')}
                 </Button>
               </Popconfirm>

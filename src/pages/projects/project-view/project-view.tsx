@@ -8,8 +8,7 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 
 // Redux
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { getProject, setProjectId } from '@/features/project/project.slice';
-
+import { getProject, setProject, setProjectId } from '@/features/project/project.slice';
 
 // Components
 import ProjectViewHeader from './project-view-header';
@@ -30,6 +29,7 @@ import { getFromLocalStorage, saveToLocalStorage } from '@utils/localStorageFunc
 import './project-view.css';
 import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
 import TaskDrawer from '@/components/task-drawer/task-drawer';
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
 const ProjectView = () => {
   const location = useLocation();
@@ -115,6 +115,13 @@ const ProjectView = () => {
       children: item.element,
     })),
   ];
+
+  useEffect(() => {
+    return () => {
+      dispatch(setProjectId(null));
+      dispatch(setProject({} as IProjectViewModel));
+    };
+  }, [projectId]);
 
   return (
     <div style={{ marginBlock: 80, minHeight: '80vh' }}>

@@ -1,5 +1,9 @@
-import { toggleFavoriteProject } from '@/features/projects/projectsSlice';
+import {
+  useGetProjectsQuery,
+  useToggleFavoriteProjectMutation,
+} from '@/api/projects/projects.v1.api.service';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { formatDateRange } from '@/utils/project-list-utils';
 import { CalendarOutlined } from '@ant-design/icons';
@@ -14,9 +18,15 @@ export const ProjectNameCell: React.FC<{
   navigate: NavigateFunction;
 }> = ({ record, t, navigate }) => {
   const dispatch = useAppDispatch();
+  const [toggleFavoriteProject] = useToggleFavoriteProjectMutation();
+  const { requestParams } = useAppSelector(state => state.projectsReducer);
+  const { refetch: refetchProjects } = useGetProjectsQuery(requestParams);
 
   const handleFavorite = useCallback(async () => {
-    if (record.id) await dispatch(toggleFavoriteProject(record.id));
+    if (record.id) {
+      await toggleFavoriteProject(record.id);
+      refetchProjects();
+    }
   }, [dispatch, record.id]);
 
   const selectProject = (record: IProjectViewModel) => {
@@ -52,7 +62,7 @@ export const ProjectNameCell: React.FC<{
         onChange={handleFavorite}
         count={1}
         className="mr-2"
-        tooltips={['Add to favourites']}
+        tooltips={[t('addToFavourites')]}
       />
       <Badge color="geekblue" className="mr-2" />
       <span className="cursor-pointer">

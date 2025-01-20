@@ -24,7 +24,7 @@ const TableColumns = (
   statuses: IProjectStatus[],
   categories: IProjectCategory[],
   setProjectId: (id: string) => void,
-  filteredCategories: string[]
+  filteredCategories: string[],
 ): ColumnsType<IProjectViewModel> => {
   const { t } = useTranslation('all-project-list');
   const dispatch = useAppDispatch();
@@ -40,7 +40,7 @@ const TableColumns = (
         showSorterTooltip: false,
         defaultSortOrder: 'ascend',
         render: (text: string, record: IProjectViewModel) => (
-          <ProjectNameCell navigate={navigate} key={record.id} t={t} record={record} />
+          <ProjectNameCell navigate={navigate} key={record.id} t={t} record={record}/>
         ),
       },
       {
