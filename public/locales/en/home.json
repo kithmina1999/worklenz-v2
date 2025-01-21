@@ -34,6 +34,7 @@
         "nextMonth": "Next Month",
         "projectRequired": "Please select a project",
         "pressTabToSelectDueDateAndProject": "Press Tab to select a due date and a project",
-        "dueOn": "Tasks due on"
+        "dueOn": "Tasks due on",
+        "taskRequired": "Please add a task"
     }
 }

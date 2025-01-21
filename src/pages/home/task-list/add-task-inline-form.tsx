@@ -1,9 +1,5 @@
-import { Alert, Flex, Form, Input, InputRef, Select, Typography } from 'antd';
+import { Alert, DatePicker, Flex, Form, Input, InputRef, Select, Typography } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import { nanoid } from '@reduxjs/toolkit';
-import { TaskType } from '@/types/task.types';
-import { addTask } from '@features/tasks/tasks.slice';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { TFunction } from 'i18next';
 import {
@@ -13,18 +9,18 @@ import {
 import { IProject } from '@/types/project/project.types';
 import { IHomeTaskCreateRequest } from '@/types/tasks/task-create-request.types';
 import { useAuthService } from '@/hooks/useAuth';
-import { useSocketService } from '@/hooks/useSocketService';
 import { SocketEvents } from '@/shared/socket-events';
 import { IMyTask } from '@/types/home/my-tasks.types';
 import { useSocket } from '@/socket/socketContext';
 import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
+import dayjs from 'dayjs';
 
 interface AddTaskInlineFormProps {
   t: TFunction;
   calendarView: boolean;
 }
 
-const AddTaskInlineForm = ({ t, calendarView = false }: AddTaskInlineFormProps) => {
+const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
   const [isAlertShowing, setIsAlertShowing] = useState(false);
   const [isDueDateFieldShowing, setIsDueDateFieldShowing] = useState(false);
   const [isProjectFieldShowing, setIsProjectFieldShowing] = useState(false);
@@ -96,21 +92,23 @@ const AddTaskInlineForm = ({ t, calendarView = false }: AddTaskInlineFormProps) 
 
     socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(newTask));
     socket?.on(SocketEvents.QUICK_TASK.toString(), (task: IMyTask) => {
-      const taskBody = {
-        team_member_id: currentSession?.team_member_id,
-        project_id: task.project_id,
-        task_id: task.id,
-        reporter_id: currentSession?.id,
-        mode: 0,
-      };
-      socket?.emit(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(), JSON.stringify(taskBody));
-      socket?.once(
-        SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(),
-        (response: ITaskAssigneesUpdateResponse) => {
-          refetch();
-        }
-      );
-      form.resetFields();
+      if (task) {
+        form.resetFields();
+        const taskBody = {
+          team_member_id: currentSession?.team_member_id,
+          project_id: task.project_id,
+          task_id: task.id,
+          reporter_id: currentSession?.id,
+          mode: 0,
+        };
+        socket?.emit(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(), JSON.stringify(taskBody));
+        socket?.once(
+          SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(),
+          (response: ITaskAssigneesUpdateResponse) => {
+            refetch();
+          }
+        );
+      }
     });
 
     setTimeout(() => {
@@ -127,7 +125,7 @@ const AddTaskInlineForm = ({ t, calendarView = false }: AddTaskInlineFormProps) 
 
   useEffect(() => {
     if (calendarView) {
-      form.setFieldValue('dueDate', homeTasksConfig.selected_date?.format('MMM DD, YYYY'));
+      form.setFieldValue('dueDate', homeTasksConfig.selected_date || dayjs());
     } else {
       form.setFieldValue('dueDate', dueDateOptions[0]?.value);
     }
@@ -143,8 +141,8 @@ const AddTaskInlineForm = ({ t, calendarView = false }: AddTaskInlineFormProps) 
       onFinish={handleTaskSubmit}
       style={{ display: 'flex', gap: 8 }}
       initialValues={{
-        dueDate: calendarView ? homeTasksConfig.selected_date?.format('MMM DD, YYYY') : dueDateOptions[0]?.value,
-        project: projectOptions[0]?.value,  
+        dueDate: calendarView ? (homeTasksConfig.selected_date || dayjs()) : dueDateOptions[0]?.value,
+        project: projectOptions[0]?.value,
       }}
     >
       <Form.Item
@@ -153,7 +151,7 @@ const AddTaskInlineForm = ({ t, calendarView = false }: AddTaskInlineFormProps) 
         rules={[
           {
             required: true,
-            message: 'Please add a task',
+            message: t('home:tasks.taskRequired'),
           },
         ]}
       >
@@ -172,7 +170,11 @@ const AddTaskInlineForm = ({ t, calendarView = false }: AddTaskInlineFormProps) 
               if (inputValue.trim() === '') return;
               if (e.key === 'Tab' || e.key === 'Enter') {
                 setIsAlertShowing(false);
-                setIsDueDateFieldShowing(true);
+                if (!calendarView) {
+                  setIsDueDateFieldShowing(true);
+                } else {
+                  setIsProjectFieldShowing(true);
+                }
               }
             }}
           />
@@ -194,18 +196,24 @@ const AddTaskInlineForm = ({ t, calendarView = false }: AddTaskInlineFormProps) 
         </Flex>
       </Form.Item>
 
-      <Form.Item
-        style={{ width: '100%', maxWidth: 200 }}
-      >
-        {isDueDateFieldShowing && (
+      <Form.Item name="dueDate" style={{ width: '100%', maxWidth: 200 }}>
+        {isDueDateFieldShowing && !calendarView && (
           <Select
             suffixIcon={null}
             options={dueDateOptions}
             defaultOpen
-            disabled={calendarView}
             onSelect={() => {
               setIsProjectFieldShowing(true);
             }}
+            onChange={() => {
+              setIsProjectFieldShowing(true);
+            }}
+          />
+        )}
+        {calendarView && (
+          <DatePicker
+            disabled
+            value={homeTasksConfig.selected_date || dayjs()}
             onChange={() => {
               setIsProjectFieldShowing(true);
             }}
@@ -237,7 +245,7 @@ const AddTaskInlineForm = ({ t, calendarView = false }: AddTaskInlineFormProps) 
                 .toLowerCase()
                 .localeCompare((optionB?.label ?? '').toLowerCase())
             }
-            onKeyDown={e => {
+            onInputKeyDown={e => {
               if (e.key === 'Enter') {
                 form.submit();
               }

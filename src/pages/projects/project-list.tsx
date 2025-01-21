@@ -42,10 +42,7 @@ import './project-list.css';
 import { useAuthService } from '@/hooks/useAuth';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setFilteredCategories, setFilteredStatuses, setRequestParams, toggleDrawer } from '@/features/projects/projectsSlice';
-import { getProject } from '@/features/project/project.slice';
-import { setProjectId } from '@/features/projects/insights/project-insights.slice';
-import { getStatusClassNames } from 'antd/es/_util/statusUtils';
+import { setFilteredCategories, setFilteredStatuses, setRequestParams } from '@/features/projects/projectsSlice';
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
@@ -163,65 +160,63 @@ const ProjectList: React.FC = () => {
   }, [requestParams]);
 
   return (
-    <Suspense fallback={<Skeleton />}>
-      <div style={{ marginBlock: 65, minHeight: '90vh' }}>
-        <PageHeader
-          className="site-page-header"
-          title={`${projectsData?.body?.total || 0} ${t('projects')}`}
-          style={{ padding: '16px 0' }}
-          extra={
-            <Flex gap={8} align="center">
-              <Tooltip title={t('refreshProjects')}>
-                <Button
-                  shape="circle"
-                  icon={<SyncOutlined spin={isFetchingProjects} />}
-                  onClick={handleRefresh}
-                  aria-label="Refresh projects"
-                />
-              </Tooltip>
-              <Segmented<IProjectFilter>
-                options={filters}
-                defaultValue={filters[getFilterIndex()] ?? filters[0]}
-                onChange={handleSegmentChange}
+    <div style={{ marginBlock: 65, minHeight: '90vh' }}>
+      <PageHeader
+        className="site-page-header"
+        title={`${projectsData?.body?.total || 0} ${t('projects')}`}
+        style={{ padding: '16px 0' }}
+        extra={
+          <Flex gap={8} align="center">
+            <Tooltip title={t('refreshProjects')}>
+              <Button
+                shape="circle"
+                icon={<SyncOutlined spin={isFetchingProjects} />}
+                onClick={handleRefresh}
+                aria-label="Refresh projects"
               />
-              <Input
-                placeholder={t('placeholder')}
-                suffix={<SearchOutlined />}
-                type="text"
-                value={requestParams.search}
-                onChange={handleSearchChange}
-                aria-label="Search projects"
-              />
-              {isOwnerOrAdmin && <CreateProjectButton />}
-            </Flex>
-          }
+            </Tooltip>
+            <Segmented<IProjectFilter>
+              options={filters}
+              defaultValue={filters[getFilterIndex()] ?? filters[0]}
+              onChange={handleSegmentChange}
+            />
+            <Input
+              placeholder={t('placeholder')}
+              suffix={<SearchOutlined />}
+              type="text"
+              value={requestParams.search}
+              onChange={handleSearchChange}
+              aria-label="Search projects"
+            />
+            {isOwnerOrAdmin && <CreateProjectButton />}
+          </Flex>
+        }
+      />
+      <Card className="project-card">
+        <Table<IProjectViewModel>
+          columns={TableColumns({
+            navigate,
+            statuses: projectStatuses || [],
+            categories: projectCategories || [],
+            filteredCategories,
+            filteredStatuses,
+          })}
+          dataSource={projectsData?.body?.data || []}
+          rowKey={record => record.id || ''}
+          loading={loadingProjects}
+          size="small"
+          onChange={handleTableChange}
+          pagination={paginationConfig}
+          locale={{ emptyText: <Empty description={t('noProjects')} /> }}
         />
-        <Card className="project-card">
-          <Table<IProjectViewModel>
-            columns={TableColumns({
-              navigate,
-              statuses: projectStatuses || [],
-              categories: projectCategories || [],
-              filteredCategories,
-              filteredStatuses,
-            })}
-            dataSource={projectsData?.body?.data || []}
-            rowKey={record => record.id || ''}
-            loading={loadingProjects}
-            size="small"
-            onChange={handleTableChange}
-            pagination={paginationConfig}
-            locale={{ emptyText: <Empty description={t('noProjects')} /> }}
-          />
-        </Card>
+      </Card>
 
-        <ProjectDrawer
-          categories={projectCategories || []}
-          statuses={projectStatuses || []}
-          healths={projectHealths || []}
-        />
-      </div>
-    </Suspense>
+      <ProjectDrawer
+        categories={projectCategories || []}
+        statuses={projectStatuses || []}
+        healths={projectHealths || []}
+      />
+    </div>
   );
 };
 

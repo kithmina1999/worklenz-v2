@@ -20,7 +20,10 @@ import { IMyTask } from '@/types/home/my-tasks.types';
 import { useTranslation } from 'react-i18next';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { useGetPersonalTasksQuery, useMarkPersonalTaskAsDoneMutation } from '@/api/home-page/home-page.api.service';
+import {
+  useGetPersonalTasksQuery,
+  useMarkPersonalTaskAsDoneMutation,
+} from '@/api/home-page/home-page.api.service';
 import { useCreatePersonalTaskMutation } from '@/api/home-page/home-page.api.service';
 
 const TodoList = () => {
@@ -29,9 +32,11 @@ const TodoList = () => {
   const [form] = Form.useForm();
   const { t } = useTranslation('home');
 
-  const [createPersonalTask, { isLoading: isCreatingPersonalTask }] = useCreatePersonalTaskMutation();
-  const [markPersonalTaskAsDone, { isLoading: isMarkingPersonalTaskAsDone }] = useMarkPersonalTaskAsDoneMutation();
-  const {data, isFetching, refetch } = useGetPersonalTasksQuery();
+  const [createPersonalTask, { isLoading: isCreatingPersonalTask }] =
+    useCreatePersonalTaskMutation();
+  const [markPersonalTaskAsDone, { isLoading: isMarkingPersonalTaskAsDone }] =
+    useMarkPersonalTaskAsDoneMutation();
+  const { data, isFetching, refetch } = useGetPersonalTasksQuery();
 
   // ref for todo input field
   const todoInputRef = useRef<InputRef | null>(null);
@@ -106,11 +111,7 @@ const TodoList = () => {
       }
       extra={
         <Tooltip title={t('home:todoList.refreshTasks')}>
-          <Button
-            shape="circle"
-            icon={<SyncOutlined spin={isFetching} />}
-            onClick={refetch}
-          />
+          <Button shape="circle" icon={<SyncOutlined spin={isFetching} />} onClick={refetch} />
         </Tooltip>
       }
       style={{ width: '100%' }}
@@ -149,23 +150,25 @@ const TodoList = () => {
           </Form.Item>
         </Form>
 
-        {data?.body.length === 0 ? (
-          <EmptyListPlaceholder
-            imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
-            text={t('home:todoList.noTasks')}
-          />
-        ) : (
-          <Table
-            className="custom-two-colors-row-table"
-            rowKey={record => record.id || ''}
-            dataSource={data?.body}
-            columns={columns}
-            showHeader={false}
-            pagination={false}
-            size="small"
-            loading={isFetching}
-          />
-        )}
+        <div style={{ maxHeight: 420, overflow: 'auto' }}>
+          {data?.body.length === 0 ? (
+            <EmptyListPlaceholder
+              imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
+              text={t('home:todoList.noTasks')}
+            />
+          ) : (
+            <Table
+              className="custom-two-colors-row-table"
+              rowKey={record => record.id || ''}
+              dataSource={data?.body}
+              columns={columns}
+              showHeader={false}
+              pagination={false}
+              size="small"
+              loading={isFetching}
+            />
+          )}
+        </div>
       </div>
     </Card>
   );

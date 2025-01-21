@@ -55,11 +55,7 @@ const RecentAndFavouriteProjectList = () => {
         key: 'completeBtn',
         width: 32,
         render: (record: IProjectViewModel) => (
-          <AddFavouriteProjectButton
-            key={record.id}
-            record={record}
-            handleRefresh={refetch}
-          />
+          <AddFavouriteProjectButton key={record.id} record={record} handleRefresh={refetch} />
         ),
       },
       {
@@ -112,33 +108,31 @@ const RecentAndFavouriteProjectList = () => {
   );
 
   return (
-    <Card
-      title={cardTitle}
-      extra={cardExtra}
-      style={{ width: '100%' }}
-    >
-      {projectsData?.body?.length === 0 ? (
-        <Empty
-          image="https://app.worklenz.com/assets/images/empty-box.webp"
-          imageStyle={{ height: 60 }}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-          description={emptyDescription}
-        />
-      ) : (
-        <Table
-          className="custom-two-colors-row-table"
-          rowKey="id"
-          dataSource={projectsData?.body}
-          columns={columns}
-          showHeader={false}
-          pagination={false}
-          loading={projectsIsFetching}
-        />
-      )}
+    <Card title={cardTitle} extra={cardExtra} style={{ width: '100%' }}>
+      <div style={{ maxHeight: 420, overflow: 'auto' }}>
+        {projectsData?.body?.length === 0 ? (
+          <Empty
+            image="https://app.worklenz.com/assets/images/empty-box.webp"
+            imageStyle={{ height: 60 }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+            description={emptyDescription}
+          />
+        ) : (
+          <Table
+            className="custom-two-colors-row-table"
+            rowKey="id"
+            dataSource={projectsData?.body}
+            columns={columns}
+            showHeader={false}
+            pagination={false}
+            loading={projectsIsFetching}
+          />
+        )}
+      </div>
     </Card>
   );
 };
