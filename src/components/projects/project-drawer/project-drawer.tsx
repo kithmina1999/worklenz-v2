@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  createProject,
-  deleteProject,
   toggleDrawer,
-  updateProject,
 } from '@features/projects/projectsSlice';
 import { fetchClients } from '@/features/settings/client/clientSlice';
-import { useDeleteProjectMutation, useGetProjectsQuery } from '@/api/projects/projects.v1.api.service';
+import {
+  useCreateProjectMutation,
+  useDeleteProjectMutation,
+  useGetProjectsQuery,
+  useUpdateProjectMutation,
+} from '@/api/projects/projects.v1.api.service';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import logger from '@/utils/errorLogger';
@@ -60,13 +62,14 @@ const ProjectDrawer = ({
 
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
   const { project, projectId, projectLoading } = useAppSelector(state => state.projectReducer);
-  const [creatingProject, setCreatingProject] = useState<boolean>(false);
   const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(
     null
   );
   const { requestParams } = useAppSelector(state => state.projectsReducer);
   const { refetch: refetchProjects } = useGetProjectsQuery(requestParams);
   const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
+  const [updateProject, { isLoading: isUpdatingProject }] = useUpdateProjectMutation();
+  const [createProject, { isLoading: isCreatingProject }] = useCreateProjectMutation();
 
   useEffect(() => {
     if (!clients.data?.length)
@@ -81,7 +84,6 @@ const ProjectDrawer = ({
 
   // function for handle form submit
   const handleFormSubmit = async (values: any) => {
-    setCreatingProject(true);
     try {
       const projectModel: IProjectViewModel = {
         name: values.name,
@@ -101,30 +103,28 @@ const ProjectDrawer = ({
         project_manager: selectedProjectManager,
       };
       if (editMode && projectId) {
-        const response = await dispatch(
-          updateProject({ id: projectId, project: projectModel })
-        ).unwrap();
-        if (response?.id) {
+        const response = await updateProject({ id: projectId, project: projectModel });
+        if (response?.data?.body?.id) {
           form.resetFields();
           dispatch(toggleDrawer());
           refetchProjects();
         }
       } else {
-        const response = await dispatch(createProject(projectModel)).unwrap();
-        if (response?.id) {
+        const response = await createProject(projectModel);
+        if (response?.data?.body?.id) {
           form.resetFields();
           dispatch(toggleDrawer());
-          navigate(`/worklenz/projects/${response.id}`);
+          navigate(`/worklenz/projects/${response.data.body.id}`);
         }
       }
     } catch (error) {
       logger.error('Error creating project', error);
-    } finally {
-      setCreatingProject(false);
     }
   };
 
   const visibleChanged = (visible: boolean) => {
+    console.log('visible', visible, projectId);
+    console.log('projectId', project);
     if (visible && projectId) {
       setEditMode(true);
       if (project) {
@@ -136,23 +136,38 @@ const ProjectDrawer = ({
         setSelectedProjectManager(project.project_manager || null);
       }
     }
+    if (!projectId) {
+      setEditMode(false);
+      form.resetFields();
+      setSelectedProjectManager(null);
+      dispatch(setProject({} as IProjectViewModel));
+    }
   };
 
   const handleDrawerClose = () => {
     form.resetFields();
-    dispatch(toggleDrawer());
     setEditMode(false);
     dispatch(setProject({} as IProjectViewModel));
     dispatch(setProjectId(null));
     setSelectedProjectManager(null);
+    setTimeout(() => {
+      dispatch(toggleDrawer());
+    }, 300);
   };
 
   const handleDeleteProject = async () => {
-    if (projectId) {
-      await deleteProject(projectId);
-      dispatch(toggleDrawer());
-      navigate('/worklenz/projects');
-      refetchProjects();
+    if (!projectId) return;
+    try {
+      const res = await deleteProject(projectId);
+      if (res?.data?.done) {
+        dispatch(setProject({} as IProjectViewModel));
+        dispatch(setProjectId(null));
+        dispatch(toggleDrawer());
+        navigate('/worklenz/projects');
+        refetchProjects();
+      }
+    } catch (error) {
+      logger.error('Error deleting project', error);
     }
   };
 
@@ -185,7 +200,11 @@ const ProjectDrawer = ({
             )}
           </Space>
           <Space>
-            <Button type="primary" onClick={() => form.submit()} loading={creatingProject}>
+            <Button
+              type="primary"
+              onClick={() => form.submit()}
+              loading={isCreatingProject || isUpdatingProject}
+            >
               {editMode ? t('update') : t('create')}
             </Button>
           </Space>
