@@ -22,19 +22,15 @@ import { SuspenseFallback } from './components/suspense-fallback/suspense-fallba
 import { Spin } from 'antd';
 
 const App: React.FC = () => {
-  // Redux selectors
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const language = useAppSelector(state => state.localesReducer.lng);
 
-  // Initialize analytics
   initMixpanel(import.meta.env.VITE_MIXPANEL_TOKEN as string);
 
-  // Theme effect
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', themeMode);
   }, [themeMode]);
 
-  // Language effect
   useEffect(() => {
     i18next.changeLanguage(language || Language.EN, err => {
       if (err) return logger.error('Error changing language', err);
@@ -45,7 +41,7 @@ const App: React.FC = () => {
     <Suspense fallback={<SuspenseFallback />}>
       <SocketProvider>
         <ThemeWrapper>
-          <RouterProvider router={router} />
+          <RouterProvider router={router} future={{ v7_startTransition: true }} />
           <PreferenceSelector />
         </ThemeWrapper>
       </SocketProvider>
