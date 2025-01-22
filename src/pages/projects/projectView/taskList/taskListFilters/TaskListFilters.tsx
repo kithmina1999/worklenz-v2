@@ -14,7 +14,7 @@ interface TaskListFiltersProps {
 
 const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
   // localization
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   return (
     <Flex gap={8} align="center" justify="space-between">
