@@ -13,28 +13,27 @@ import {
   Space,
 } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { colors } from '../../../../../styles/colors';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
+import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 
-const LabelsFilterDropdown = () => {
+interface LabelsFilterDropdownProps {
+  labels: ITaskLabel[];
+}
+
+const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
   const labelInputRef = useRef<InputRef>(null);
   const [selectedCount, setSelectedCount] = useState<number>(0);
-  // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // localization
   const { t } = useTranslation('task-list-filters');
 
-  // get label list from label reducer
-  const labelList = useAppSelector((state) => state.labelReducer.labelList);
-
-  // used useMemo hook for re render the list when searching
   const filteredLabelData = useMemo(() => {
-    return labelList.filter((label) =>
-      label.labelName.toLowerCase().includes(searchQuery.toLowerCase())
+    return props.labels.filter((label) =>
+      label.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [labelList, searchQuery]);
+  }, [props.labels, searchQuery]);
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
@@ -63,12 +62,12 @@ const LabelsFilterDropdown = () => {
           placeholder={t('searchInputPlaceholder')}
         />
 
-        <List style={{ padding: 0 }}>
+        <List style={{ padding: 0 , maxHeight: 250, overflow: 'auto'}}>
           {filteredLabelData.length ? (
             filteredLabelData.map((label) => (
               <List.Item
                 className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
-                key={label.labelId}
+                key={label.id}
                 style={{
                   display: 'flex',
                   justifyContent: 'flex-start',
@@ -78,12 +77,12 @@ const LabelsFilterDropdown = () => {
                 }}
               >
                 <Checkbox
-                  id={label.labelId}
+                  id={label.id}
                   onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
                 >
                   <Flex gap={8}>
-                    <Badge color={label.labelColor} />
-                    {label.labelName}
+                    <Badge color={label.color_code} />
+                    {label.name}
                   </Flex>
                 </Checkbox>
               </List.Item>

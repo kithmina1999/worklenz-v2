@@ -19,19 +19,15 @@ import { useAppSelector } from '../../../../../hooks/useAppSelector';
 import { colors } from '../../../../../styles/colors';
 import CustomAvatar from '../../../../../components/CustomAvatar';
 import { useTranslation } from 'react-i18next';
+import { ITaskListMemberFilter } from '@/types/tasks/taskList.types';
+import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 
-const MembersFilterDropdown = () => {
+const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
   const membersInputRef = useRef<InputRef>(null);
 
   // localization
   const { t } = useTranslation('task-list-filters');
-
-  // get members list from members reducer
-  const membersList = [
-    ...useAppSelector((state) => state.memberReducer.membersList),
-    useAppSelector((state) => state.memberReducer.owner),
-  ];
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
@@ -40,10 +36,10 @@ const MembersFilterDropdown = () => {
 
   // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
-    return membersList.filter((member) =>
-      member.memberName.toLowerCase().includes(searchQuery.toLowerCase())
+    return props.members.filter((member) =>
+      member.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [membersList, searchQuery]);
+  }, [props.members, searchQuery]);
 
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {
@@ -61,12 +57,12 @@ const MembersFilterDropdown = () => {
           placeholder={t('searchInputPlaceholder')}
         />
 
-        <List style={{ padding: 0 }}>
+        <List style={{ padding: 0, maxHeight: 250, overflow: 'auto' }}>
           {filteredMembersData.length ? (
             filteredMembersData.map((member) => (
               <List.Item
                 className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
-                key={member.memberId}
+                key={member.id}
                 style={{
                   display: 'flex',
                   gap: 8,
@@ -75,15 +71,15 @@ const MembersFilterDropdown = () => {
                 }}
               >
                 <Checkbox
-                  id={member.memberId}
+                  id={member.id}
                   onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
                 >
                   <div style={{ display: 'flex', gap: 8 }}>
                     <div>
-                      <CustomAvatar avatarName={member.memberName} />
+                      <SingleAvatar avatarUrl={member.avatar_url} name={member.name} email={member.email}/>
                     </div>
                     <Flex vertical>
-                      {member.memberName}
+                      {member.name}
 
                       <Typography.Text
                         style={{
@@ -91,7 +87,7 @@ const MembersFilterDropdown = () => {
                           color: colors.lightGray,
                         }}
                       >
-                        {member.memberEmail}
+                        {member.email}
                       </Typography.Text>
                     </Flex>
                   </div>
