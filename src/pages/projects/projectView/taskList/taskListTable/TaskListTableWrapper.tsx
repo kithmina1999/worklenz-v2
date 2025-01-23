@@ -22,11 +22,12 @@ import TaskListTable from './TaskListTable';
 import { MenuProps } from 'antd/lib';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 type TaskListTableWrapperProps = {
-  taskList: TaskType[];
+  taskList: IProjectTask[];
   tableId: string;
-  type: string;
+  groupBy: string;
   name: string;
   color: string;
   statusCategory?: string | null;
@@ -39,7 +40,7 @@ const TaskListTableWrapper = ({
   taskList,
   tableId,
   name,
-  type,
+  groupBy,
   color,
   statusCategory = null,
   priorityCategory = null,
@@ -63,50 +64,6 @@ const TaskListTableWrapper = ({
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
-  // this is for get the color for every typed tables
-  const getBgColorClassName = (type: string) => {
-    switch (type) {
-      case 'status':
-        if (currentCategory === 'todo')
-          return themeMode === 'dark'
-            ? 'after:bg-[#989898]'
-            : 'after:bg-[#d8d7d8]';
-        else if (currentCategory === 'doing')
-          return themeMode === 'dark'
-            ? 'after:bg-[#4190ff]'
-            : 'after:bg-[#c0d5f6]';
-        else if (currentCategory === 'done')
-          return themeMode === 'dark'
-            ? 'after:bg-[#46d980]'
-            : 'after:bg-[#c2e4d0]';
-        else
-          return themeMode === 'dark'
-            ? 'after:bg-[#989898]'
-            : 'after:bg-[#d8d7d8]';
-
-      case 'priority':
-        if (priorityCategory === 'low')
-          return themeMode === 'dark'
-            ? 'after:bg-[#46d980]'
-            : 'after:bg-[#c2e4d0]';
-        else if (priorityCategory === 'medium')
-          return themeMode === 'dark'
-            ? 'after:bg-[#ffc227]'
-            : 'after:bg-[#f9e3b1]';
-        else if (priorityCategory === 'high')
-          return themeMode === 'dark'
-            ? 'after:bg-[#ff4141]'
-            : 'after:bg-[#f6bfc0]';
-        else
-          return themeMode === 'dark'
-            ? 'after:bg-[#ffc227]'
-            : 'after:bg-[#f9e3b1]';
-      default:
-        return '';
-    }
-  };
-
-  // these codes only for status type tables
   // function to handle rename this functionality only available for status type tables
   const handleRename = () => {
     if (onRename) {
@@ -115,7 +72,6 @@ const TaskListTableWrapper = ({
     setIsRenaming(false);
   };
 
-  // function to handle category change
   const handleCategoryChange = (category: string) => {
     setCurrentCategory(category);
     if (onStatusCategoryChange) {
@@ -123,7 +79,6 @@ const TaskListTableWrapper = ({
     }
   };
 
-  // find the available status for the currently active project
   const statusList = useAppSelector((state) => state.statusReducer.status);
 
   const getStatusColor = (status: string) => {
@@ -221,7 +176,7 @@ const TaskListTableWrapper = ({
               </Typography.Text>
             )}
           </Button>
-          {type === 'status' && !isRenaming && (
+          {groupBy === 'status' && !isRenaming && (
             <Dropdown menu={{ items }}>
               <Button
                 icon={<EllipsisOutlined />}
@@ -241,7 +196,7 @@ const TaskListTableWrapper = ({
           items={[
             {
               key: '1',
-              className: `custom-collapse-content-box relative after:content after:absolute after:h-full after:w-1 ${getBgColorClassName(type)} after:z-10 after:top-0 after:left-0`,
+              className: `custom-collapse-content-box relative after:content after:absolute after:h-full after:w-1 after:bg-[${color}] after:z-10 after:top-0 after:left-0`,
               children: <TaskListTable taskList={taskList} tableId={tableId} />,
             },
           ]}

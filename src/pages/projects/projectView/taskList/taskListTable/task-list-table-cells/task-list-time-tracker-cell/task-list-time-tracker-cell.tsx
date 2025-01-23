@@ -1,8 +1,8 @@
 import React from 'react';
 import { Divider, Empty, Flex, Popover, Typography } from 'antd';
 import { PlayCircleFilled } from '@ant-design/icons';
-import { colors } from '../../../../../../../styles/colors';
-import CustomAvatar from '../../../../../../../components/CustomAvatar';
+import { colors } from '@/styles/colors';
+import CustomAvatar from '@/components/CustomAvatar';
 import { mockTimeLogs } from './mockTimeLogs';
 
 type TaskListTimeTrackerCellProps = {
@@ -14,6 +14,7 @@ const TaskListTimeTrackerCell = ({
   taskId,
   initialTime = 0,
 }: TaskListTimeTrackerCellProps) => {
+  if (!taskId) return null;
   const minutes = Math.floor(initialTime / 60);
   const seconds = initialTime % 60;
   const formattedTime = `${minutes}m ${seconds}s`;

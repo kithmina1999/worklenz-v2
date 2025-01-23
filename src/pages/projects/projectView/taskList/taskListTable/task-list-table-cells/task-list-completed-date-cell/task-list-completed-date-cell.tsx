@@ -1,11 +1,11 @@
 import { Typography } from 'antd';
 import React from 'react';
-import { durationDateFormat } from '../../../../../../../utils/durationDateFormat';
+import { durationDateFormat } from '@/utils/durationDateFormat';
 
 const TaskListCompletedDateCell = ({
   completedDate,
 }: {
-  completedDate: Date | null;
+  completedDate: string | null;
 }) => {
   return (
     <Typography.Text>

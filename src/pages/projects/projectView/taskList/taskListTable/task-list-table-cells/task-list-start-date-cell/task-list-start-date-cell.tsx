@@ -1,9 +1,8 @@
 import { DatePicker } from 'antd';
-import React from 'react';
-import { colors } from '../../../../../../../styles/colors';
+import { colors } from '@/styles/colors';
 import dayjs from 'dayjs';
 
-const TaskListStartDateCell = ({ startDate }: { startDate: Date | null }) => {
+const TaskListStartDateCell = ({ startDate }: { startDate: string | null }) => {
   const startDayjs = startDate ? dayjs(startDate) : null;
   return (
     <DatePicker

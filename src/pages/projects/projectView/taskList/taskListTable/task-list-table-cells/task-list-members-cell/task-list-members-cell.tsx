@@ -1,11 +1,10 @@
-import { Avatar, Flex } from 'antd';
-import React from 'react';
-import CustomAvatar from '../../../../../../../components/CustomAvatar';
-import AssigneeSelector from '../../../../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
-import { MemberType } from '../../../../../../../types/member.types';
+import { Flex } from 'antd';
+import Avatars from '@/components/avatars/avatars';
+import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
+import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 
 type TaskListMembersCellProps = {
-  members: MemberType[];
+  members: InlineMember[];
   selectedTaskId: string | null;
 };
 
@@ -15,15 +14,7 @@ const TaskListMembersCell = ({
 }: TaskListMembersCellProps) => {
   return (
     <Flex gap={4} align="center">
-      <Avatar.Group>
-        {members?.map((member) => (
-          <CustomAvatar
-            key={member.memberId}
-            avatarName={member.memberName}
-            size={26}
-          />
-        ))}
-      </Avatar.Group>
+      <Avatars members={members} />
       <AssigneeSelector taskId={selectedTaskId || '0'} />
     </Flex>
   );

@@ -1,5 +1,4 @@
 import React from 'react';
-import { TaskType } from '@/types/task.types';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { Flex } from 'antd';
 import TaskListTableWrapper from '@/pages/projects/projectView/taskList/taskListTable/TaskListTableWrapper';
@@ -7,10 +6,14 @@ import { createPortal } from 'react-dom';
 import BulkTasksActionContainer from '@features/projects/bulkActions/BulkTasksActionContainer';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { deselectAll } from '@features/projects/bulkActions/bulkActionSlice';
-import { getStatusColor } from '@/utils/getStatusColor';
+import { ITaskListGroup } from '@/types/tasks/taskList.types';
 
-const StatusGroupTables = ({ datasource }: { datasource: TaskType[] }) => {
-  const statusList = useAppSelector((state) => state.statusReducer.status);
+interface TaskGroupWrapperProps {
+  taskGroups: ITaskListGroup[];
+  groupBy: string;
+}
+
+const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
   const dispatch = useAppDispatch();
 
@@ -23,17 +26,15 @@ const StatusGroupTables = ({ datasource }: { datasource: TaskType[] }) => {
 
   return (
     <Flex gap={24} vertical>
-      {statusList.map((status) => (
+      {taskGroups.map((taskGroup) => (
         <TaskListTableWrapper
-          key={status.id}
-          taskList={datasource.filter(
-            (task) => task.status === status.category
-          )}
-          tableId={status.id}
-          name={status.name}
-          type="status"
-          statusCategory={status.category}
-          color={getStatusColor(status.category, themeMode)}
+          key={taskGroup.id}
+          taskList={taskGroup.tasks}
+          tableId={taskGroup.id}
+          name={taskGroup.name}
+          groupBy={groupBy}
+          statusCategory={taskGroup.category_id}
+          color={themeMode === 'dark' ? taskGroup.color_code_dark : taskGroup.color_code}
         />
       ))}
 
@@ -57,4 +58,4 @@ const StatusGroupTables = ({ datasource }: { datasource: TaskType[] }) => {
   );
 };
 
-export default StatusGroupTables;
+export default TaskGroupWrapper;
