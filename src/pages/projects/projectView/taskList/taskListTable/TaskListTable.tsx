@@ -34,7 +34,6 @@ import TaskListCreatedDateCell from './task-list-table-cells/task-list-created-d
 import TaskListLastUpdatedCell from './task-list-table-cells/task-list-last-updated-cell/task-list-last-updated-cell';
 import TaskListReporterCell from './task-list-table-cells/task-list-reporter-cell/task-list-reporter-cell';
 import TaskListDueTimeCell from './task-list-table-cells/task-list-due-time-cell/task-list-due-time-cell';
-import PriorityDropdown from '@/components/taskListCommon/priorityDropdown/PriorityDropdown';
 import PhaseDropdown from '@/components/taskListCommon/phaseDropdown/PhaseDropdown';
 import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
@@ -46,6 +45,7 @@ import {
   selectTaskIds,
 } from '@/features/projects/bulkActions/bulkActionSlice';
 import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
+import PriorityDropdown from '@/components/task-list-common/priorityDropdown/PriorityDropdown';
 
 const TaskListTable = ({
   taskList,
@@ -203,9 +203,9 @@ const TaskListTable = ({
       case 'phases':
         return <PhaseDropdown projectId={selectedProject?.id || ''} />;
       case 'status':
-        return <StatusDropdown task={task} teamId={selectedProject?.team_id || ''} onChange={() => {}} />;
+        return <StatusDropdown task={task} teamId={selectedProject?.team_id || ''} />;
       case 'priority':
-        return <PriorityDropdown currentPriority={task?.priority || ''} />;
+        return <PriorityDropdown task={task} teamId={selectedProject?.team_id || ''} />;
       case 'timeTracking':
         return (
           <TaskListTimeTrackerCell

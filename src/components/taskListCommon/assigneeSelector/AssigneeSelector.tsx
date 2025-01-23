@@ -21,6 +21,9 @@ import CustomAvatar from '../../CustomAvatar';
 import { colors } from '../../../styles/colors';
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import SingleAvatar from '@/components/common/single-avatar/single-avatar';
+import { InlineMember } from '@/types/teamMembers/inlineMember.types';
+import { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 const AssigneeSelector = ({ taskId }: { taskId: string }) => {
   const membersInputRef = useRef<InputRef>(null);
@@ -33,17 +36,14 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
   const dispatch = useAppDispatch();
 
   // get members list from members reducer
-  const membersList = [
-    ...useAppSelector((state) => state.memberReducer.membersList),
-    useAppSelector((state) => state.memberReducer.owner),
-  ];
+  const members = useAppSelector(state => state.teamMembersReducer.teamMembers);
 
   // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
-    return membersList.filter((member) =>
-      member.memberName.toLowerCase().includes(searchQuery.toLowerCase())
+    return members?.data?.filter((member) =>
+      member.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [membersList, searchQuery]);
+  }, [members, searchQuery]);
 
   // function to handle invite project member drawer
   const handleInviteProjectMemberDrawer = () => {
@@ -59,10 +59,14 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
     }
   };
 
+  const handleMemberChange = (e: CheckboxChangeEvent) => {
+    console.log(e);
+  };
+
   // custom dropdown content
   const membersDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 8 } }}>
-      <Flex vertical gap={8}>
+      <Flex vertical>
         <Input
           ref={membersInputRef}
           value={searchQuery}
@@ -70,12 +74,12 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
           placeholder={t('searchInputPlaceholder')}
         />
 
-        <List style={{ padding: 0 }}>
-          {filteredMembersData.length ? (
+        <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
+          {filteredMembersData?.length ? (
             filteredMembersData.map((member) => (
               <List.Item
                 className="custom-list-item"
-                key={member.memberId}
+                key={member.id}
                 style={{
                   display: 'flex',
                   gap: 8,
@@ -85,14 +89,14 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
                 }}
               >
                 <Checkbox
-                  id={member.memberId}
-                  onChange={() => dispatch(toggleMember({ taskId, member }))}
+                  id={member.id}
+                  onChange={(e) => handleMemberChange(e)}
                 />
                 <div>
-                  <CustomAvatar avatarName={member.memberName} />
+                  <SingleAvatar avatarUrl={member.avatar_url} name={member.name} email={member.email} />
                 </div>
                 <Flex vertical>
-                  {member.memberName}
+                  {member.name}
 
                   <Typography.Text
                     style={{
@@ -100,7 +104,7 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
                       color: colors.lightGray,
                     }}
                   >
-                    {member.memberEmail}
+                    {member.email}
                   </Typography.Text>
                 </Flex>
               </List.Item>

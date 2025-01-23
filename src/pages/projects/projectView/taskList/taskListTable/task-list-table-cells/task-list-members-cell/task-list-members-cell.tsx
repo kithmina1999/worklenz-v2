@@ -15,7 +15,7 @@ const TaskListMembersCell = ({
   return (
     <Flex gap={4} align="center">
       <Avatars members={members} />
-      <AssigneeSelector taskId={selectedTaskId || '0'} />
+      <AssigneeSelector taskId={selectedTaskId || ''} />
     </Flex>
   );
 };
