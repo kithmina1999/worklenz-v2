@@ -93,7 +93,7 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
     socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(newTask));
     socket?.on(SocketEvents.QUICK_TASK.toString(), (task: IMyTask) => {
       if (task) {
-        form.resetFields();
+        
         const taskBody = {
           team_member_id: currentSession?.team_member_id,
           project_id: task.project_id,
@@ -117,7 +117,7 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
           cursor: 'start',
         });
       }
-
+      form.resetFields();
       setIsDueDateFieldShowing(false);
       setIsProjectFieldShowing(false);
     }, 100);
@@ -245,6 +245,9 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
                 .toLowerCase()
                 .localeCompare((optionB?.label ?? '').toLowerCase())
             }
+            onSelect={() => {
+              form.submit();
+            }}
             onInputKeyDown={e => {
               if (e.key === 'Enter') {
                 form.submit();
