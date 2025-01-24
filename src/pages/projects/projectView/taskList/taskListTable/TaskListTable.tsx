@@ -549,7 +549,7 @@ const TaskListTable = ({
       </div>
 
       {/* add a main task to the table  */}
-      <AddTaskListRow />
+      <AddTaskListRow groupId={tableId}/>
 
       {/* custom task context menu  */}
       <TaskContextMenu
