@@ -163,7 +163,7 @@ const TaskListTable = ({
   ) => {
     switch (columnKey) {
       case 'taskId':
-        return <TaskListTaskIdCell taskId={task.id || ''} />;
+        return <TaskListTaskIdCell taskId={task.task_key || ''} />;
       case 'task':
         return (
           <TaskListTaskCell
@@ -189,8 +189,7 @@ const TaskListTable = ({
       case 'members':
         return (
           <TaskListMembersCell
-            members={task?.assignees || []}
-            selectedTaskId={selectedTaskId}
+            task={task}
           />
         );
       case 'labels':

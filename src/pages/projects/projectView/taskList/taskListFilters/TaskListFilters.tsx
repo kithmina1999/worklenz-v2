@@ -12,6 +12,7 @@ import { fetchPriorities } from '@/features/taskAttributes/taskPrioritySlice';
 import { useEffect } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { fetchTaskAssignees } from '@/features/tasks/tasks.slice';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
 
 interface TaskListFiltersProps {
@@ -24,7 +25,8 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
   // Selectors
   const priorities = useAppSelector(state => state.priorityReducer.priorities);
   const labels = useAppSelector(state => state.taskLabelsReducer.labels);
-  const members = useAppSelector(state => state.teamMembersReducer.teamMembers);
+  const taskAssignees = useAppSelector(state => state.taskReducer.taskAssignees);
+  const projectId = useAppSelector(state => state.projectReducer.projectId);
 
   // Fetch initial data
   useEffect(() => {
@@ -35,13 +37,14 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
       if (!labels.length) {
         await dispatch(fetchLabels());
       }
-      if (!members?.data?.length) {
-        await dispatch(getTeamMembers({ index: 0, size: 100, field: null, order: null, search: null, all: true }));
+      if (!taskAssignees?.length && projectId) {
+        await dispatch(fetchTaskAssignees(projectId));
       }
+      dispatch(getTeamMembers({ index: 0, size: 100, field: null, order: null, search: null, all: true }));
     };
 
     fetchInitialData();
-  }, [dispatch, priorities.length, labels.length]);
+  }, [dispatch, priorities.length, labels.length, projectId]);
 
   return (
     <Flex gap={8} align="center" justify="space-between">
@@ -55,7 +58,7 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
         {/* labels dropdown  */}
         <LabelsFilterDropdown labels={labels} />
         {/* members dropdown  */}
-        <MembersFilterDropdown members={members?.data || []} />
+        <MembersFilterDropdown members={taskAssignees || []} />
         {/* group by dropdown */}
         <GroupByFilterDropdown />
       </Flex>

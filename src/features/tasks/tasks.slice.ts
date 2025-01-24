@@ -5,6 +5,7 @@ import { IGroupByOption, ITaskListColumn, ITaskListConfigV2, ITaskListGroup } fr
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import logger from '@/utils/errorLogger';
 import { ITaskLabel } from '@/types/label.type';
+import { ITaskListMemberFilter } from '@/types/tasks/taskListFilters.types';
 
 type TaskState = {
   search: string | null;
@@ -18,6 +19,8 @@ type TaskState = {
   isTaskDrawerOpen: boolean;
   loadingGroups: boolean;
   error: string | null;
+  taskAssignees: ITaskListMemberFilter[];
+  loadingAssignees: boolean;
 };
 
 const initialState: TaskState = {
@@ -31,7 +34,9 @@ const initialState: TaskState = {
   isTaskDrawerOpen: false,
   taskGroups: [],
   loadingGroups: false,
-  error: null
+  error: null,
+  taskAssignees: [],
+  loadingAssignees: false
 };
 
 export const GROUP_BY_STATUS_VALUE = "status";
@@ -96,6 +101,22 @@ export const fetchTaskGroups = createAsyncThunk(
         return rejectWithValue(error.message);
       }
       return rejectWithValue('Failed to fetch labels');
+    }
+  }
+);
+
+export const fetchTaskAssignees = createAsyncThunk(
+  'tasks/fetchTaskAssignees',
+  async (projectId: string, { rejectWithValue }) => {
+    try {
+      const response = await tasksApiService.fetchTaskAssignees(projectId);
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Task Assignees', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch task assignees');
     }
   }
 );
@@ -186,7 +207,20 @@ const taskSlice = createSlice({
       .addCase(fetchTaskGroups.rejected, (state, action) => {
         state.loadingGroups = false;
         state.error = action.error.message || 'Failed to fetch task groups';
+      })
+      .addCase(fetchTaskAssignees.pending, (state) => {
+        state.loadingAssignees = true;
+        state.error = null;
+      })
+      .addCase(fetchTaskAssignees.fulfilled, (state, action) => {
+        state.loadingAssignees = false;
+        state.taskAssignees = action.payload;
+      })
+      .addCase(fetchTaskAssignees.rejected, (state, action) => {
+        state.loadingAssignees = false;
+        state.error = action.error.message || 'Failed to fetch task assignees';
       });
+      
   }
 });
 

@@ -100,7 +100,6 @@ const AddTaskListRow = ({
   
   const addInstantTask = () => {
     if (creatingTask) return;
-    console.log('addInstantTask', projectId, taskName.trim());
     if (!projectId || !currentSession || taskName.trim() === '') return;
 
     try {

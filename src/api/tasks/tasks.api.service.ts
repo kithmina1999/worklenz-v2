@@ -1,9 +1,9 @@
-import { ITaskListGroup } from '@/types/tasks/taskList.types';
+import { ITaskListGroup, ITaskListMemberFilter } from '@/types/tasks/taskList.types';
 import apiClient from '@api/api-client';
 import { API_BASE_URL } from '@/shared/constants';
-import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { IServerResponse } from '@/types/common.types';
 import { toQueryString } from '@/utils/toQueryString';
+import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 
 const rootUrl = `${API_BASE_URL}/tasks`;
 
@@ -28,6 +28,11 @@ export const tasksApiService = {
   getTaskList: async (config: ITaskListConfigV2): Promise<IServerResponse<ITaskListGroup[]>> => {
     const q = toQueryString(config);
     const response = await apiClient.get(`${rootUrl}/list/v2/${config.id}${q}`);
+    return response.data;
+  },
+
+  fetchTaskAssignees: async (projectId: string): Promise<IServerResponse<ITeamMemberViewModel[]>> => {
+    const response = await apiClient.get(`${rootUrl}/assignees/${projectId}`);
     return response.data;
   }
 }
