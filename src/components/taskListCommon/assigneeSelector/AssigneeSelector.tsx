@@ -27,13 +27,16 @@ import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
+import { updateTaskAssignees } from '@/features/tasks/tasks.slice';
+import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 
 interface AssigneeSelectorProps {
   task: IProjectTask;
   showDropdown: boolean;
+  groupId: string;
 }
 
-const AssigneeSelector = ({ task, showDropdown }: AssigneeSelectorProps) => {
+const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps) => {
   const membersInputRef = useRef<InputRef>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -97,6 +100,7 @@ const AssigneeSelector = ({ task, showDropdown }: AssigneeSelectorProps) => {
     const updatedMembers = teamMembers.data?.map(member =>
       member.id === memberId ? { ...member, selected: e.target.checked } : member
     );
+    dispatch(updateTaskAssignees({ groupId: groupId, taskId: task.id, assignees: updatedMembers as ITeamMemberViewModel[] }));
     setTeamMembers({ data: updatedMembers });
   };
 

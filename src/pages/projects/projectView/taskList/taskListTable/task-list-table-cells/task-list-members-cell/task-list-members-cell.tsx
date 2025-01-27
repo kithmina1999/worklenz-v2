@@ -5,10 +5,11 @@ import { useState } from 'react';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 type TaskListMembersCellProps = {
+  groupId: string;
   task: IProjectTask;
 };
 
-const TaskListMembersCell = ({ task }: TaskListMembersCellProps) => {
+const TaskListMembersCell = ({ groupId, task }: TaskListMembersCellProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   return (
@@ -17,6 +18,7 @@ const TaskListMembersCell = ({ task }: TaskListMembersCellProps) => {
       <AssigneeSelector
         showDropdown={showDropdown}
         task={task}
+        groupId={groupId}
       />
     </Flex>
   );

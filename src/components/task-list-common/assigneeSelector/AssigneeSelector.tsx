@@ -16,7 +16,6 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { toggleProjectMemberDrawer } from '../../../features/projects/singleProject/members/projectMembersSlice';
-import { toggleMember } from '../../../features/tasks/tasks.slice';
 import CustomAvatar from '../../CustomAvatar';
 import { colors } from '../../../styles/colors';
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
@@ -86,7 +85,7 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
               >
                 <Checkbox
                   id={member.memberId}
-                  onChange={() => dispatch(toggleMember({ taskId, member }))}
+                  onChange={() => {}}
                 />
                 <div>
                   <CustomAvatar avatarName={member.memberName} />

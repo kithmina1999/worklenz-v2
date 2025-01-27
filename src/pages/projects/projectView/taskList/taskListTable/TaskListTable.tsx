@@ -189,6 +189,7 @@ const TaskListTable = ({
       case 'members':
         return (
           <TaskListMembersCell
+            groupId={tableId}
             task={task}
           />
         );

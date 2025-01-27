@@ -6,6 +6,9 @@ import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import logger from '@/utils/errorLogger';
 import { ITaskLabel } from '@/types/label.type';
 import { ITaskListMemberFilter } from '@/types/tasks/taskListFilters.types';
+import produce from 'immer';
+import { ITaskAssignee } from '@/types/tasks/task.types';
+import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 
 type TaskState = {
   search: string | null;
@@ -144,32 +147,24 @@ const taskSlice = createSlice({
       }
     },
 
-    addTaskToTop: (state, action: PayloadAction<TaskType>) => {
-      // state.tasks.unshift(action.payload);
-    },
-
     deleteTask: (state, action: PayloadAction<string>) => {
       // state.tasks = state.tasks.filter(
       //   (task) => task.taskId !== action.payload
       // );
     },
 
-    // update specific items
-    // add or remove members to the task
-    toggleMember: (state, action: PayloadAction<{ taskId: string; member: MemberType }>) => {
-      // const { taskId, member } = action.payload;
-      // const task = state.tasks.find((task) => task.taskId === taskId);
-      // if (task) {
-      //   const memberExists = task.members?.some(
-      //     (existingMember) => existingMember.memberId === member.memberId
-      //   );
-      //   task.members = memberExists
-      //     ? task.members?.filter(
-      //         (existingMember) => existingMember.memberId !== member.memberId
-      //       )
-      //     : [...(task.members || []), member];
-      // }
+    updateTaskAssignees: (state, action: PayloadAction<{ groupId: string; taskId: string; assignees: ITeamMemberViewModel[] }>) => {
+      const { groupId, taskId, assignees } = action.payload;
+      const group = state.taskGroups.find(group => group.id === groupId);
+      if (group) {
+        const task = group.tasks.find(task => task.id === taskId);
+        if (task) {
+          task.assignees = assignees as ITaskAssignee[];
+        }
+      }
     },
+
+
     // add or remove labels to the task
     toggleLabel: (state, action: PayloadAction<{ taskId: string; label: ITaskLabel }>) => {
       // const { taskId, label } = action.payload;
@@ -228,9 +223,8 @@ export const {
   toggleTaskDrawer,
   addTask,
   deleteTask,
-  toggleMember,
+  updateTaskAssignees,
   toggleLabel,
-  addTaskToTop,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;
