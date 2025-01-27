@@ -81,10 +81,10 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
     }
   };
 
-  const handleMemberChange = (e: CheckboxChangeEvent, memberId: string) => {
+  const handleMemberChange = (e: CheckboxChangeEvent | null, memberId: string) => {
     if (!memberId || !projectId || !task?.id || !currentSession?.id) return;
     const checked =
-      e.target.checked ||
+      e?.target.checked ||
       (!(task?.assignees?.some(assignee => assignee.team_member_id === memberId)) || false);
 
     const body = {
@@ -153,7 +153,7 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
                   padding: '4px 8px',
                   border: 'none',
                 }}
-                onClick={e => handleMemberChange(e, member.id || '')}
+                onClick={e => handleMemberChange(null, member.id || '')}
               >
                 <Checkbox
                   id={member.id}
