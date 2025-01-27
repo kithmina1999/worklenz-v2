@@ -64,7 +64,6 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
   const handleMembersDropdownOpen = (open: boolean) => {
     if (open) {
       const assignees = task?.assignees?.map(assignee => assignee.team_member_id);
-      console.log(task, assignees)
       const membersData = (members?.data || []).map(member => ({
         ...member,
         selected: assignees?.includes(member.id),
@@ -84,24 +83,20 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
 
   const handleMemberChange = (e: CheckboxChangeEvent, memberId: string) => {
     if (!memberId || !projectId || !task?.id || !currentSession?.id) return;
+    const checked =
+      e.target.checked ||
+      (!(task?.assignees?.some(assignee => assignee.team_member_id === memberId)) || false);
 
     const body = {
       team_member_id: memberId,
       project_id: projectId,
       task_id: task.id,
       reporter_id: currentSession?.id,
-      mode: e.target.checked ? 0 : 1,
+      mode: checked ? 0 : 1,
       parent_task: task.parent_task_id,
     };
 
-    console.log(body)
-
     socket?.emit(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(), JSON.stringify(body));
-    const updatedMembers = teamMembers.data?.map(member =>
-      member.id === memberId ? { ...member, selected: e.target.checked } : member
-    );
-    dispatch(updateTaskAssignees({ groupId: groupId, taskId: task.id, assignees: updatedMembers as ITeamMemberViewModel[] }));
-    setTeamMembers({ data: updatedMembers });
   };
 
   const handleAssignMembers = () => {
@@ -109,11 +104,11 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
   };
 
   const handleQuickAssigneesUpdate = (data: ITaskAssigneesUpdateResponse) => {
-    const assigneeIds = data?.assignees?.map(assignee => assignee.team_member_id);
-
-    const updatedMembers = teamMembers.data?.map(member => assigneeIds.includes(member.id) ? { ...member, selected: true } : member);
-    console.log(updatedMembers);
-    // setTeamMembers({ data: updatedMembers });
+    const updatedAssignees = data.assignees.map(assignee => ({
+      ...assignee,
+      selected: true,
+    }));
+    dispatch(updateTaskAssignees({ groupId: groupId, taskId: data.id, assignees: updatedAssignees }));
   };
 
   useEffect(() => {
@@ -128,6 +123,12 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
       socket?.off(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString());
     };
   }, []);
+
+  const checkMemberSelected = (memberId: string) => {
+    if (!memberId) return false;
+    const assignees = task?.assignees?.map(assignee => assignee.team_member_id);
+    return assignees?.includes(memberId);
+  };
 
   const membersDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 8 } }}>
@@ -152,10 +153,11 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
                   padding: '4px 8px',
                   border: 'none',
                 }}
+                onClick={e => handleMemberChange(e, member.id || '')}
               >
                 <Checkbox
                   id={member.id}
-                  checked={member.selected}
+                  checked={checkMemberSelected(member.id || '')}
                   onChange={e => handleMemberChange(e, member.id || '')}
                 />
                 <div>
