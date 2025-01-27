@@ -26,7 +26,7 @@
   "createdDateText": "Fecha de creación",
   "lastUpdatedText": "Última actualización",
   "reporterText": "Reportero",
-
+  "dueTimeText": "Hora de vencimiento",
   "lowText": "Baja",
   "mediumText": "Media",
   "highText": "Alta",
