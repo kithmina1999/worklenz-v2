@@ -28,6 +28,7 @@
   "createdDateText": "Created Date",
   "lastUpdatedText": "Last Updated",
   "reporterText": "Reporter",
+  "dueTimeText": "Due Time",
 
   "lowText": "Low",
   "mediumText": "Medium",
