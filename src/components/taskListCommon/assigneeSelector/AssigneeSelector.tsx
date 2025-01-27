@@ -152,6 +152,7 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
                   justifyContent: 'flex-start',
                   padding: '4px 8px',
                   border: 'none',
+                  cursor: 'pointer',
                 }}
                 onClick={e => handleMemberChange(null, member.id || '')}
               >

@@ -1,63 +1,71 @@
-import {
-  CaretDownFilled,
-  SortAscendingOutlined,
-  SortDescendingOutlined,
-} from '@ant-design/icons';
+import { CaretDownFilled, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { Badge, Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
-import React, { useState } from 'react';
 import { colors } from '../../../../../styles/colors';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { ITaskListSortableColumn } from '@/types/tasks/taskListFilters.types';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setFields } from '@/features/tasks/tasks.slice';
+
+enum SORT_ORDER {
+  ASCEND = 'ascend',
+  DESCEND = 'descend',
+}
 
 const SortFilterDropdown = () => {
-  const [selectedCount, setSelectedCount] = useState<number>(0);
-  const [sortState, setSortState] = useState<
-    Record<string, 'ascending' | 'descending'>
-  >({});
-
-  const themeMode = useAppSelector((state) => state.themeReducer.mode)
-
-  // localization
   const { t } = useTranslation('task-list-filters');
+  const dispatch = useAppDispatch();
 
-  // handle selected filters count
-  const handleSelectedFiltersCount = (checked: boolean) => {
-    setSelectedCount((prev) => (checked ? prev + 1 : prev - 1));
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { fields } = useAppSelector(state => state.taskReducer);
+
+  const handleSelectedFiltersCount = (item: ITaskListSortableColumn) => {
+    if (!item.key) return;
+    let newFields = [...fields];
+    if (newFields.some(field => field.key === item.key)) {
+      newFields.splice(newFields.indexOf(item), 1);
+    } else {
+      newFields.push(item);
+    }
+    dispatch(setFields(newFields));
   };
 
-  // fuction for handle sort
-  const handleSort = (key: string) => {
-    setSortState((prev) => ({
-      ...prev,
-      [key]: prev[key] === 'ascending' ? 'descending' : 'ascending',
-    }));
+  const handleSortChange = (key: string) => {
+    if (!key) return;
+    let newFields = [...fields];
+
+    newFields = newFields.map(item => {
+      if (item.key === key) {
+        return {
+          ...item,
+          sort_order:
+            item.sort_order === SORT_ORDER.ASCEND ? SORT_ORDER.DESCEND : SORT_ORDER.ASCEND,
+        };
+      }
+      return item;
+    });
+    dispatch(setFields(newFields));
   };
 
-  // sort dropdown items
-  type SortFieldsType = {
-    key: string;
-    label: string;
-  };
-
-  const sortFieldsList: SortFieldsType[] = [
-    { key: 'task', label: t('taskText') },
-    { key: 'status', label: t('statusText') },
-    { key: 'priority', label: t('priorityText') },
-    { key: 'startDate', label: t('startDateText') },
-    { key: 'endDate', label: t('endDateText') },
-    { key: 'completedDate', label: t('completedDateText') },
-    { key: 'createdDate', label: t('createdDateText') },
-    { key: 'lastUpdated', label: t('lastUpdatedText') },
+  const sortFieldsList: ITaskListSortableColumn[] = [
+    { label: t('taskText'), key: 'name', sort_order: SORT_ORDER.ASCEND },
+    { label: t('statusText'), key: 'status', sort_order: SORT_ORDER.ASCEND },
+    { label: t('priorityText'), key: 'priority', sort_order: SORT_ORDER.ASCEND },
+    { label: t('startDateText'), key: 'start_date', sort_order: SORT_ORDER.ASCEND },
+    { label: t('endDateText'), key: 'end_date', sort_order: SORT_ORDER.ASCEND },
+    { label: t('completedDateText'), key: 'completed_at', sort_order: SORT_ORDER.ASCEND },
+    { label: t('createdDateText'), key: 'created_at', sort_order: SORT_ORDER.ASCEND },
+    { label: t('lastUpdatedText'), key: 'updated_at', sort_order: SORT_ORDER.ASCEND },
   ];
 
   // custom dropdown content
   const sortDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 0 } }}>
       <List style={{ padding: 0 }}>
-        {sortFieldsList.map((item) => (
+        {sortFieldsList.map(sortField => (
           <List.Item
             className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
-            key={item.key}
+            key={sortField.key}
             style={{
               display: 'flex',
               gap: 8,
@@ -67,14 +75,17 @@ const SortFilterDropdown = () => {
           >
             <Space>
               <Checkbox
-                id={item.key}
-                onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
-              >{item.label}</Checkbox>
+                id={sortField.key}
+                checked={fields.some(field => field.key === sortField.key)}
+                onChange={e => handleSelectedFiltersCount(sortField)}
+              >
+                {sortField.label}
+              </Checkbox>
             </Space>
             <Button
-              onClick={() => handleSort(item.key)}
+              onClick={() => handleSortChange(sortField.key || '')}
               icon={
-                sortState[item.key] === 'ascending' ? (
+                sortField.sort_order === SORT_ORDER.ASCEND ? (
                   <SortAscendingOutlined />
                 ) : (
                   <SortDescendingOutlined />
@@ -89,7 +100,7 @@ const SortFilterDropdown = () => {
 
   return (
     <Dropdown
-      overlayClassName='custom-dropdown'
+      overlayClassName="custom-dropdown"
       trigger={['click']}
       dropdownRender={() => sortDropdownContent}
     >
@@ -98,17 +109,19 @@ const SortFilterDropdown = () => {
         iconPosition="end"
         style={{
           backgroundColor:
-            selectedCount > 0 ? themeMode === 'dark' ? '#003a5c' : colors.paleBlue : colors.transparent,
+            fields.length > 0
+              ? themeMode === 'dark'
+                ? '#003a5c'
+                : colors.paleBlue
+              : colors.transparent,
 
-          color: selectedCount > 0 ? themeMode === 'dark' ? 'white' : colors.darkGray : 'inherit',
+          color: fields.length > 0 ? (themeMode === 'dark' ? 'white' : colors.darkGray) : 'inherit',
         }}
       >
         <Space>
           <SortAscendingOutlined />
           {t('sortText')}
-          {selectedCount > 0 && (
-            <Badge size="small" count={selectedCount} color={colors.skyBlue} />
-          )}
+          {fields.length > 0 && <Badge size="small" count={fields.length} color={colors.skyBlue} />}
         </Space>
       </Button>
     </Dropdown>

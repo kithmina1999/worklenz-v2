@@ -12,34 +12,45 @@ import {
   List,
   Space,
 } from 'antd';
-import React, { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
+import { setLabels } from '@/features/tasks/tasks.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 interface LabelsFilterDropdownProps {
   labels: ITaskLabel[];
 }
 
 const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
+  const dispatch = useAppDispatch();
   const labelInputRef = useRef<InputRef>(null);
-  const [selectedCount, setSelectedCount] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const { labels } = useAppSelector(state => state.taskReducer);
 
   const { t } = useTranslation('task-list-filters');
 
   const filteredLabelData = useMemo(() => {
-    return props.labels.filter((label) =>
+    return props.labels.filter(label =>
       label.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [props.labels, searchQuery]);
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // handle selected filters count
-  const handleSelectedFiltersCount = (checked: boolean) => {
-    setSelectedCount((prev) => (checked ? prev + 1 : prev - 1));
+  const handleSelectedFiltersCount = (checked: boolean, labelId: string) => {
+    let newLabels = [...labels];
+    if (checked) {
+      newLabels.push(labelId);
+      dispatch(setLabels(newLabels));
+    } else {
+      newLabels.splice(newLabels.indexOf(labelId), 1);
+      dispatch(setLabels(newLabels));
+    }
   };
 
   // function to focus labels input
@@ -58,13 +69,13 @@ const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
         <Input
           ref={labelInputRef}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          onChange={e => setSearchQuery(e.currentTarget.value)}
           placeholder={t('searchInputPlaceholder')}
         />
 
-        <List style={{ padding: 0 , maxHeight: 250, overflow: 'auto'}}>
+        <List style={{ padding: 0, maxHeight: 250, overflow: 'auto' }}>
           {filteredLabelData.length ? (
-            filteredLabelData.map((label) => (
+            filteredLabelData.map(label => (
               <List.Item
                 className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
                 key={label.id}
@@ -78,7 +89,8 @@ const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
               >
                 <Checkbox
                   id={label.id}
-                  onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
+                  checked={labels.includes(label.id || '')}
+                  onChange={e => handleSelectedFiltersCount(e.target.checked, label.id || '')}
                 >
                   <Flex gap={8}>
                     <Badge color={label.color_code} />
@@ -107,25 +119,18 @@ const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
         iconPosition="end"
         style={{
           backgroundColor:
-            selectedCount > 0
+            labels.length > 0
               ? themeMode === 'dark'
                 ? '#003a5c'
                 : colors.paleBlue
               : colors.transparent,
 
-          color:
-            selectedCount > 0
-              ? themeMode === 'dark'
-                ? 'white'
-                : colors.darkGray
-              : 'inherit',
+          color: labels.length > 0 ? (themeMode === 'dark' ? 'white' : colors.darkGray) : 'inherit',
         }}
       >
         <Space>
           {t('labelsText')}
-          {selectedCount > 0 && (
-            <Badge size="small" count={selectedCount} color={colors.skyBlue} />
-          )}
+          {labels.length > 0 && <Badge size="small" count={labels.length} color={colors.skyBlue} />}
         </Space>
       </Button>
     </Dropdown>

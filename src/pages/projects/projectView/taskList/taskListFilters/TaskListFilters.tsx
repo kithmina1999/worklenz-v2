@@ -12,8 +12,9 @@ import { fetchPriorities } from '@/features/taskAttributes/taskPrioritySlice';
 import { useEffect } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchTaskAssignees } from '@/features/tasks/tasks.slice';
+import { fetchTaskAssignees, toggleArchived } from '@/features/tasks/tasks.slice';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
+import { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 interface TaskListFiltersProps {
   position: 'board' | 'list';
@@ -24,9 +25,15 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
   const dispatch = useAppDispatch();
   // Selectors
   const priorities = useAppSelector(state => state.priorityReducer.priorities);
+  
   const labels = useAppSelector(state => state.taskLabelsReducer.labels);
   const taskAssignees = useAppSelector(state => state.taskReducer.taskAssignees);
   const projectId = useAppSelector(state => state.projectReducer.projectId);
+  const archived = useAppSelector(state => state.taskReducer.archived);
+  
+  const handleShowArchivedChange = () => {
+    dispatch(toggleArchived());
+  }
 
   // Fetch initial data
   useEffect(() => {
@@ -65,8 +72,8 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
 
       {position === 'list' && (
         <Flex gap={12} wrap={'wrap'}>
-          <Flex gap={4} align="center">
-            <Checkbox />
+          <Flex gap={4} align="center" style={{cursor: 'pointer'}} onClick={handleShowArchivedChange}>
+            <Checkbox checked={archived} />
             <Typography.Text>{t('showArchivedText')}</Typography.Text>
           </Flex>
           {/* show fields dropdown  */}

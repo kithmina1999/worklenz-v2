@@ -10,40 +10,30 @@ import { fetchTaskGroups } from '@/features/tasks/tasks.slice';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 
 const ProjectViewTaskList = () => {
-  const dataSource: TaskType[] = useAppSelector(
-    (state) => state.tasksReducer.tasks
-  );
   const dispatch = useAppDispatch();
-  
-  const projectId = useAppSelector(state => state.projectReducer.projectId);
 
-  const { taskGroups, loadingGroups, group: groupBy  } = useAppSelector(state => state.taskReducer);
+  const { projectId } = useAppSelector(state => state.projectReducer);
+  const { taskGroups, loadingGroups, group: groupBy, archived, labels, fields, search } = useAppSelector(state => state.taskReducer);
   const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
 
   useEffect(() => {
     if (projectId) {
-      const config: ITaskListConfigV2 = {
-        id: projectId,
-        field: 'id',
-        order: 'desc',
-        search: '',
-        statuses: '',
-        members: '',
-        projects: '',
-        isSubtasksInclude: true,
-      };
-      dispatch(fetchTaskGroups(config));
+      dispatch(fetchTaskGroups(projectId));
     }
     if (!statusCategories.length) {
       dispatch(fetchStatusesCategories());
     }
-  }, [dispatch, projectId]);
+  }, [dispatch, projectId, archived, groupBy, labels, fields, search]);
 
   return (
     <Flex vertical gap={16} style={{ overflowX: 'hidden' }}>
       <TaskListFilters position="list" />
 
-      {loadingGroups ? <Skeleton /> : <TaskGroupWrapper taskGroups={taskGroups} groupBy={groupBy} />}
+      {loadingGroups ? (
+        <Skeleton />
+      ) : (
+        <TaskGroupWrapper taskGroups={taskGroups} groupBy={groupBy} />
+      )}
     </Flex>
   );
 };

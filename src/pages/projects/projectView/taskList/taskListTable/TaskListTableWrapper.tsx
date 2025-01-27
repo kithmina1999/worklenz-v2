@@ -161,18 +161,11 @@ const TaskListTableWrapper = ({
               <Typography.Text
                 style={{
                   fontSize: 14,
+                  fontWeight: 600,
                   color: colors.darkGray,
                 }}
               >
-                {/* check the default values available in the table names ==> this check for localization  */}
-                {['todo', 'doing', 'done', 'low', 'medium', 'high'].includes(
-                  tableName.replace(/\s+/g, '').toLowerCase()
-                )
-                  ? t(
-                      `${tableName.replace(/\s+/g, '').toLowerCase()}SelectorText`
-                    )
-                  : tableName}{' '}
-                ({taskList.length})
+                {t(tableName)} ({taskList.length})
               </Typography.Text>
             )}
           </Button>

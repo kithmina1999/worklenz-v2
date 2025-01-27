@@ -46,11 +46,22 @@ const TaskListTaskCell = ({
   };
 
   // show expand button on hover for tasks without subtasks
-  const renderToggleButtonForNonSubtasks = (taskId: string, isSubTask: boolean) => {
+  const renderToggleButtonForNonSubtasks = (taskId: string, isSubTask: boolean, subTasksCount: number) => {
+    if (subTasksCount > 0) {
+      return (
+        <button
+          onClick={() => toggleTaskExpansion(taskId)}
+          className="hover flex h-4 w-4 items-center justify-center rounded text-[12px] hover:border hover:border-[#5587f5] hover:bg-[#d0eefa54]"
+        >
+          {expandedTasks.includes(taskId) ? <DownOutlined /> : <RightOutlined />}
+        </button>
+      );
+    }
+
     return !isSubTask ? (
       <button
         onClick={() => toggleTaskExpansion(taskId)}
-        className="hover flex h-4 w-4 items-center justify-center rounded text-[12px] hover:border hover:border-[#5587f5] hover:bg-[#d0eefa54]"
+        className="hover flex h-4 w-4 items-center justify-center rounded text-[12px] hover:border hover:border-[#5587f5] hover:bg-[#d0eefa54] open-task-button"
       >
         {expandedTasks.includes(taskId) ? <DownOutlined /> : <RightOutlined />}
       </button>
@@ -89,18 +100,17 @@ const TaskListTaskCell = ({
         {!!task?.sub_tasks?.length ? (
           renderToggleButtonForHasSubTasks(task.id, !!task?.sub_tasks?.length)
         ) : 
-        // hoverRow === task.id ? (
-        //   renderToggleButtonForNonSubtasks(task.id, isSubTask)
-        // ) : 
         (
-          <div className="h-4 w-4"></div>
+          <div className="h-4 w-4">
+            {renderToggleButtonForNonSubtasks(task.id || '', isSubTask, task.sub_tasks_count || 0)}
+          </div>
         )}
 
         {isSubTask && <DoubleRightOutlined style={{ fontSize: 12 }} />}
 
         <Typography.Text ellipsis={{ expanded: false }}>{task.name}</Typography.Text>
 
-        {renderSubtasksCountLabel(task.id || '', isSubTask, task?.sub_tasks?.length || 0)}
+        {renderSubtasksCountLabel(task.id || '', isSubTask, task.sub_tasks_count || 0)}
       </Flex>
 
       <div className="open-task-button">
@@ -108,7 +118,7 @@ const TaskListTaskCell = ({
           type="text"
           icon={<ExpandAltOutlined />}
           onClick={() => {
-            setSelectedTaskId(task.id);
+            setSelectedTaskId(task.id || '');
             dispatch(toggleUpdateTaskDrawer());
           }}
           style={{

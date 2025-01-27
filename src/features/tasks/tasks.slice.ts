@@ -4,6 +4,7 @@ import {
   ITaskListColumn,
   ITaskListConfigV2,
   ITaskListGroup,
+  ITaskListSortableColumn,
 } from '@/types/tasks/taskList.types';
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import logger from '@/utils/errorLogger';
@@ -12,13 +13,22 @@ import { ITaskListMemberFilter } from '@/types/tasks/taskListFilters.types';
 import { ITaskAssignee } from '@/types/tasks/task.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { group } from 'console';
+import { ITaskPrioritiesGetResponse } from '@/types/tasks/taskPriority.types';
+import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
+
+export enum IGroupBy {
+  STATUS = 'status',
+  PRIORITY = 'priority',
+  PHASE = 'phase',
+  MEMBERS = 'members',
+}
 
 type TaskState = {
   search: string | null;
   archived: boolean;
-  group: 'status' | 'priority' | 'phase';
+  group: IGroupBy;
   isSubtasksInclude: boolean;
+  fields: ITaskListSortableColumn[];
   tasks: IProjectTask[];
   taskGroups: ITaskListGroup[];
   columns: ITaskListColumn[];
@@ -28,13 +38,18 @@ type TaskState = {
   error: string | null;
   taskAssignees: ITaskListMemberFilter[];
   loadingAssignees: boolean;
+  labels: string[];
+  priorities: ITaskPrioritiesGetResponse[];
+  statuses: ITaskStatusViewModel[];
+  members: ITeamMemberViewModel[];
 };
 
 const initialState: TaskState = {
   search: null,
   archived: false,
-  group: 'phase',
+  group: IGroupBy.STATUS,
   isSubtasksInclude: false,
+  fields: [],
   tasks: [],
   columns: [],
   selectedTask: null,
@@ -44,6 +59,10 @@ const initialState: TaskState = {
   error: null,
   taskAssignees: [],
   loadingAssignees: false,
+  labels: [],
+  priorities: [],
+  statuses: [],
+  members: [],
 };
 
 export const GROUP_BY_STATUS_VALUE = 'status';
@@ -97,8 +116,23 @@ export const setCurrentGroup = (group: IGroupByOption) => {
 
 export const fetchTaskGroups = createAsyncThunk(
   'tasks/fetchTaskGroups',
-  async (config: ITaskListConfigV2, { rejectWithValue }) => {
+  async (projectId: string, { rejectWithValue, getState }) => {
     try {
+      const state = getState() as { taskReducer: TaskState };
+
+      const config: ITaskListConfigV2 = {
+        id: projectId,
+        archived: state?.taskReducer.archived,
+        group: state?.taskReducer.group,
+        field: state?.taskReducer.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
+        order: '',
+        search: state?.taskReducer.search || '',
+        statuses: '',
+        members: '',
+        projects: '',
+        isSubtasksInclude: true,
+        labels: state?.taskReducer.labels.join(' '),
+      };
       const response = await tasksApiService.getTaskList(config);
       return response.body;
     } catch (error) {
@@ -135,6 +169,34 @@ const taskSlice = createSlice({
       state.isTaskDrawerOpen = !state.isTaskDrawerOpen;
     },
 
+    toggleArchived: state => {
+      state.archived = !state.archived;
+    },
+
+    setGroup: (state, action: PayloadAction<IGroupBy>) => {
+      state.group = action.payload;
+    },
+
+    setLabels: (state, action: PayloadAction<string[]>) => {
+      state.labels = action.payload;
+    },
+
+    setPriorities: (state, action: PayloadAction<ITaskPrioritiesGetResponse[]>) => {
+      state.priorities = action.payload;
+    },  
+
+    setStatuses: (state, action: PayloadAction<ITaskStatusViewModel[]>) => {
+      state.statuses = action.payload;
+    },
+
+    setFields: (state, action: PayloadAction<ITaskListSortableColumn[]>) => {
+      state.fields = action.payload;
+    },
+
+    setSearch: (state, action: PayloadAction<string>) => {
+      state.search = action.payload;
+    },
+
     // task crud
     addTask: (state, action: PayloadAction<any>) => {
       const newTask = action.payload;
@@ -169,7 +231,7 @@ const taskSlice = createSlice({
       }
     },
 
-    toggleLabel: (state, action: PayloadAction<{ taskId: string; label: ITaskLabel }>) => {
+    updateTaskLabel: (state, action: PayloadAction<{ taskId: string; label: ITaskLabel }>) => {
       const { taskId, label } = action.payload;
       state.taskGroups.forEach(group => {
         const task = group.tasks.find(task => task.id === taskId);
@@ -236,6 +298,7 @@ const taskSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchTaskGroups.fulfilled, (state, action) => {
+        console.log('action.payload', action.payload);
         state.loadingGroups = false;
         state.taskGroups = action.payload;
       })
@@ -258,7 +321,19 @@ const taskSlice = createSlice({
   },
 });
 
-export const { toggleTaskDrawer, addTask, deleteTask, updateTaskAssignees, toggleLabel } =
-  taskSlice.actions;
+export const {
+  toggleTaskDrawer,
+  setGroup,
+  addTask,
+  deleteTask,
+  updateTaskAssignees,
+  updateTaskLabel: toggleLabel,
+  toggleArchived,
+  setLabels,
+  setPriorities,
+  setStatuses,
+  setFields,
+  setSearch,
+} = taskSlice.actions;
 
 export default taskSlice.reducer;
