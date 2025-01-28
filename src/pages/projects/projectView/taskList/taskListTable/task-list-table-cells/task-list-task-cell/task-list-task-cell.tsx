@@ -8,15 +8,15 @@ import {
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
-import { toggleUpdateTaskDrawer } from '@/features/tasks/taskSlice';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import './task-list-task-cell.css';
+import { setShowTaskDrawer } from '@/features/tasks/tasks.slice';
+import { setSelectedTaskId } from '@/features/board/board-slice';
 
 type TaskListTaskCellProps = {
   task: IProjectTask;
   isSubTask?: boolean;
   expandedTasks: string[];
-  setSelectedTaskId: (taskId: string) => void;
   toggleTaskExpansion: (taskId: string) => void;
 };
 
@@ -24,7 +24,6 @@ const TaskListTaskCell = ({
   task,
   isSubTask = false,
   expandedTasks,
-  setSelectedTaskId,
   toggleTaskExpansion,
 }: TaskListTaskCellProps) => {
   // localization
@@ -118,8 +117,8 @@ const TaskListTaskCell = ({
           type="text"
           icon={<ExpandAltOutlined />}
           onClick={() => {
-            setSelectedTaskId(task.id || '');
-            dispatch(toggleUpdateTaskDrawer());
+            dispatch(setSelectedTaskId(task.id || ''));
+            dispatch(setShowTaskDrawer(true));
           }}
           style={{
             backgroundColor: colors.transparent,

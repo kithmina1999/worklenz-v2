@@ -53,6 +53,7 @@
     "@types/chart.js": "^2.9.41",
     "@types/dompurify": "^3.0.5",
     "@types/jest": "^27.5.2",
+    "@types/lodash": "^4.17.15",
     "@types/mixpanel-browser": "^2.50.2",
     "@types/node": "^20.8.4",
     "@types/react": "19.0.0",

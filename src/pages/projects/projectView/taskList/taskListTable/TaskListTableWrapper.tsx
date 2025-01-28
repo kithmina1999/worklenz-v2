@@ -54,17 +54,15 @@ const TaskListTableWrapper = ({
     statusCategory
   );
 
-  // localization
   const { t } = useTranslation('task-list-table');
 
-  // function to handle toggle expand
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const statusList = useAppSelector((state) => state.statusReducer.status);
+
   const handlToggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
-
-  // function to handle rename this functionality only available for status type tables
   const handleRename = () => {
     if (onRename) {
       onRename(tableName);
@@ -78,8 +76,6 @@ const TaskListTableWrapper = ({
       onStatusCategoryChange(category);
     }
   };
-
-  const statusList = useAppSelector((state) => state.statusReducer.status);
 
   const getStatusColor = (status: string) => {
     switch (status) {

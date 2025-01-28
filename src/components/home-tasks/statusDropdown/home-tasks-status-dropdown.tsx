@@ -1,5 +1,5 @@
 import { Badge, Flex, Select } from 'antd';
-import './statusDropdown.css';
+import './home-tasks-status-dropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { ITaskStatus } from '@/types/status.types';
@@ -9,17 +9,17 @@ import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.component';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { getCurrentGroup, GROUP_BY_STATUS_VALUE } from '@/features/tasks/tasks.slice';
 
-type StatusDropdownProps = {
+type HomeTasksStatusDropdownProps = {
   task: IProjectTask;
   teamId: string;
 };
 
-const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
+const HomeTasksStatusDropdown = ({ task, teamId }: HomeTasksStatusDropdownProps) => {
   const { t } = useTranslation('task-list-table');
   const { socket, connected } = useSocket();
 
+  const [selectedStatus, setSelectedStatus] = useState<ITaskStatus | undefined>(undefined);
   const statusList = useAppSelector(state => state.taskStatusReducer.status);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
@@ -42,25 +42,9 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
 
       task.status_color = response.color_code;
       task.complete_ratio = +response.complete_ratio || 0;
-      task.status = response.status_id;
+      task.status_id = response.status_id;
       task.status_category = response.statusCategory;
-
-      // if (isGroupByStatus()) {
-      //   if (!task.is_sub_task) {
-      //     this.service.updateTaskGroup(task, false);
-      //   }
-      //   if (this.service.isSubtasksIncluded) {
-      //     this.service.emitRefreshSubtasksIncluded();
-      //   }
-      // }
-
-      // this.service.emitUpdateGroupProgress(this.task.id);
-      // this.kanbanService.emitRefreshGroups();
     }
-  }
-
-  const isGroupByStatus = () => {
-    return getCurrentGroup().value === GROUP_BY_STATUS_VALUE;
   }
 
   const getTaskProgress = (taskId: string) => {
@@ -68,33 +52,38 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
   }
 
   useEffect(() => {
+    const foundStatus = task.project_statuses?.find(status => status.id === task.status_id);
+    setSelectedStatus(foundStatus);
+  }, [task.status_id, task.project_statuses]);
+
+  useEffect(() => {
     socket?.on(SocketEvents.TASK_STATUS_CHANGE.toString(), handleTaskStatusChange);
 
     return () => {
       socket?.removeListener(SocketEvents.TASK_STATUS_CHANGE.toString(), handleTaskStatusChange);
     };
-  }, [task.status, connected]);
+  }, [task.status_id, connected]);
 
-  const options = useMemo(() => statusList.map(status => ({
+  const options = useMemo(() => task.project_statuses?.map(status => ({
     value: status.id,
     label: (
       <Flex gap={8} align="center">
         <Badge color={status.color_code} text={status.name} />
       </Flex>
     ),
-  })), [statusList]);
+  })), [task.project_statuses]);
 
   return (
     <>
-      {task.status && (
+      {(
         <Select
           variant='borderless'
-          value={task.status}
+          value={task.status_id}
           onChange={handleStatusChange}
           dropdownStyle={{ borderRadius: 8, minWidth: 150, maxWidth: 200 }}
-          style={{ backgroundColor: task.status_color, borderRadius: 16, height: 22 }}
+          style={{ backgroundColor: selectedStatus?.color_code + ALPHA_CHANNEL, borderRadius: 16, height: 22 }}
           labelRender={(value) => {
-            const status = statusList.find(status => status.id === value.value);
+            const status = task.project_statuses?.find(status => status.id === value.value);
             return status ? <span style={{ fontSize: 13 }}>{status.name}</span> : '';
           }}
           options={options}
@@ -104,4 +93,4 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
   );
 };
 
-export default StatusDropdown;
+export default HomeTasksStatusDropdown;

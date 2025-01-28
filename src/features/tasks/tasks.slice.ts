@@ -32,8 +32,8 @@ type TaskState = {
   tasks: IProjectTask[];
   taskGroups: ITaskListGroup[];
   columns: ITaskListColumn[];
-  selectedTask: IProjectTask | null;
-  isTaskDrawerOpen: boolean;
+  selectedTaskId: string | null;
+  showTaskDrawer: boolean;
   loadingGroups: boolean;
   error: string | null;
   taskAssignees: ITaskListMemberFilter[];
@@ -52,8 +52,8 @@ const initialState: TaskState = {
   fields: [],
   tasks: [],
   columns: [],
-  selectedTask: null,
-  isTaskDrawerOpen: false,
+  selectedTaskId: null,
+  showTaskDrawer: false,
   taskGroups: [],
   loadingGroups: false,
   error: null,
@@ -166,10 +166,6 @@ const taskSlice = createSlice({
   name: 'taskReducer',
   initialState,
   reducers: {
-    toggleTaskDrawer: state => {
-      state.isTaskDrawerOpen = !state.isTaskDrawerOpen;
-    },
-
     toggleArchived: state => {
       state.archived = !state.archived;
     },
@@ -196,6 +192,14 @@ const taskSlice = createSlice({
 
     setSearch: (state, action: PayloadAction<string>) => {
       state.search = action.payload;
+    },
+
+    setShowTaskDrawer: (state, action: PayloadAction<boolean>) => {
+      state.showTaskDrawer = action.payload;
+    },
+
+    setSelectedTaskId: (state, action: PayloadAction<string>) => {
+      state.selectedTaskId = action.payload;
     },
 
     // task crud
@@ -322,7 +326,6 @@ const taskSlice = createSlice({
 });
 
 export const {
-  toggleTaskDrawer,
   setGroup,
   addTask,
   deleteTask,
@@ -334,6 +337,7 @@ export const {
   setStatuses,
   setFields,
   setSearch,
+  setShowTaskDrawer,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

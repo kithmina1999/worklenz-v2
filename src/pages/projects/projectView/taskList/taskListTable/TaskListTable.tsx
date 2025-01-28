@@ -170,7 +170,6 @@ const TaskListTable = ({
             task={task}
             isSubTask={isSubtask}
             expandedTasks={expandedTasks}
-            setSelectedTaskId={setSelectedTaskId}
             toggleTaskExpansion={toggleTaskExpansion}
           />
         );

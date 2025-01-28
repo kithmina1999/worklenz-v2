@@ -1,5 +1,4 @@
 import { setSearch } from '@/features/tasks/tasks.slice';
-import { useAppSelector } from '@/hooks/useAppSelector';
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, Card, Dropdown, Flex, Input, InputRef, Space } from 'antd';
 import React, { useRef, useState, useMemo, useCallback } from 'react';

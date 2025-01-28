@@ -34,6 +34,7 @@ import type { Dayjs } from 'dayjs';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import './tasks-list.css';
+import HomeTasksStatusDropdown from '@/components/home-tasks/statusDropdown/home-tasks-status-dropdown';
 
 const TasksList: React.FC = React.memo(() => {
   const dispatch = useAppDispatch();
@@ -156,7 +157,7 @@ const TasksList: React.FC = React.memo(() => {
         title: t('tasks.status'),
         width: '180px',
         render: (_, record) => (
-          <StatusDropdown
+          <HomeTasksStatusDropdown
             task={record}
             teamId={record.team_id || ''}
           />
