@@ -64,7 +64,7 @@ export default defineConfig(async ({ command }: { command: 'build' | 'serve' }) 
             if (['react', 'react-dom', 'react-router-dom'].includes(id)) return 'vendor';
             if (id.includes('antd')) return 'antd';
             if (id.includes('i18next')) return 'i18n';
-            if (id.includes("node_modules")) return id.toString().split("node_modules/")[1].split("/")[0].toString();
+            // Add more conditions as needed
           },
           // **File Naming Strategies**
           chunkFileNames: 'assets/js/[name]-[hash].js',
