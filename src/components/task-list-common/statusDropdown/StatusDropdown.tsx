@@ -21,7 +21,6 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
   const { socket, connected } = useSocket();
 
   const [selectedStatus, setSelectedStatus] = useState<ITaskStatus | undefined>(undefined);
-  const statusList = useAppSelector(state => state.taskStatusReducer.status);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
@@ -43,25 +42,9 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
 
       task.status_color = response.color_code;
       task.complete_ratio = +response.complete_ratio || 0;
-      task.status = response.status_id;
+      task.status_id = response.status_id;
       task.status_category = response.statusCategory;
-
-      // if (isGroupByStatus()) {
-      //   if (!task.is_sub_task) {
-      //     this.service.updateTaskGroup(task, false);
-      //   }
-      //   if (this.service.isSubtasksIncluded) {
-      //     this.service.emitRefreshSubtasksIncluded();
-      //   }
-      // }
-
-      // this.service.emitUpdateGroupProgress(this.task.id);
-      // this.kanbanService.emitRefreshGroups();
     }
-  }
-
-  const isGroupByStatus = () => {
-    return getCurrentGroup().value === GROUP_BY_STATUS_VALUE;
   }
 
   const getTaskProgress = (taskId: string) => {
@@ -69,9 +52,9 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
   }
 
   useEffect(() => {
-    const foundStatus = statusList.find(status => status.id === task.status);
+    const foundStatus = task.project_statuses?.find(status => status.id === task.status_id);
     setSelectedStatus(foundStatus);
-  }, [task.status, statusList]);
+  }, [task.status_id, task.project_statuses]);
 
   useEffect(() => {
     socket?.on(SocketEvents.TASK_STATUS_CHANGE.toString(), handleTaskStatusChange);
@@ -79,28 +62,28 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
     return () => {
       socket?.removeListener(SocketEvents.TASK_STATUS_CHANGE.toString(), handleTaskStatusChange);
     };
-  }, [task.status, connected]);
+  }, [task.status_id, connected]);
 
-  const options = useMemo(() => statusList.map(status => ({
+  const options = useMemo(() => task.project_statuses?.map(status => ({
     value: status.id,
     label: (
       <Flex gap={8} align="center">
         <Badge color={status.color_code} text={status.name} />
       </Flex>
     ),
-  })), [statusList]);
+  })), [task.project_statuses]);
 
   return (
     <>
-      {task.status && (
+      {task.project_statuses && (
         <Select
           variant='borderless'
-          value={task.status}
+          value={task.status_id}
           onChange={handleStatusChange}
           dropdownStyle={{ borderRadius: 8, minWidth: 150, maxWidth: 200 }}
           style={{ backgroundColor: selectedStatus?.color_code + ALPHA_CHANNEL, borderRadius: 16, height: 22 }}
           labelRender={(value) => {
-            const status = statusList.find(status => status.id === value.value);
+            const status = task.project_statuses?.find(status => status.id === value.value);
             return status ? <span style={{ fontSize: 13 }}>{status.name}</span> : '';
           }}
           options={options}

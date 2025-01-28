@@ -1,7 +1,6 @@
 import { UsergroupAddOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import React from 'react';
-import { useAppDispatch } from '../../../../hooks/useAppDispatch';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleProjectMemberDrawer } from './projectMembersSlice';
 
 const ProjectMemberInviteButton = () => {

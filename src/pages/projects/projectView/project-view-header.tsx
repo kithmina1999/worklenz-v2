@@ -11,21 +11,27 @@ import {
   SyncOutlined,
 } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
-import { Button, Col, Dropdown, Flex, Tag, Tooltip, Typography } from 'antd';
-import React, { useState } from 'react';
-import ProjectMemberInviteButton from '../../../features/projects/singleProject/members/ProjectMemberInviteButton';
+import { Button, Dropdown, Flex, Tag, Tooltip, Typography } from 'antd';
+import { useState } from 'react';
+import ProjectMemberInviteButton from '@features/projects/singleProject/members/ProjectMemberInviteButton';
 import { useNavigate } from 'react-router-dom';
-import { colors } from '../../../styles/colors';
+import { colors } from '@/styles/colors';
 import dayjs from 'dayjs';
-import { statusData } from '../../../lib/project/projectConstants';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleCreateTaskDrawer } from '../../../features/tasks/taskSlice';
-import { useResponsive } from '../../../hooks/useResponsive';
+import { statusData } from '@/lib/project/projectConstants';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { toggleCreateTaskDrawer } from '@features/tasks/taskSlice';
+import { useResponsive } from '@/hooks/useResponsive';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { SocketEvents } from '@/shared/socket-events';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
-import { setProject } from '@/features/project/project.slice';
+import { getProject, setProject, setProjectId } from '@features/project/project.slice';
+import { fetchTaskGroups } from '@features/tasks/tasks.slice';
+import ProjectStatusIcon from '@/components/common/project-status-icon/project-status-icon';
+import { formatDate } from '@/utils/timeUtils';
+import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
+import { toggleDrawer } from '@/features/projects/projectsSlice';
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
 const ProjectViewHeader = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -34,24 +40,15 @@ const ProjectViewHeader = () => {
   const currentSession = useAuthService().getCurrentSession();
   const { socket } = useSocket();
 
-  // useResponsive for media queries
   const { isDesktop } = useResponsive();
 
   const dispatch = useAppDispatch();
 
-  const selectedProject = useAppSelector(state => state.projectReducer.project);
+  const { project: selectedProject, projectId } = useAppSelector(state => state.projectReducer);
 
-  // get start and end dates
-  const startDate = dayjs(selectedProject?.start_date).format('MMM DD, YYYY');
-  const endDate = dayjs(selectedProject?.end_date).format('MMM DD, YYYY');
-
-  // get selected project status data
-  const selectedProjectStatus = statusData.find(status => status.value === selectedProject?.status);
-
-  // function for handle refresh
   const handleRefresh = () => {
-    setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 500);
+    if (!projectId) return;
+    dispatch(fetchTaskGroups(projectId));
   };
 
   const handleSubscribe = () => {
@@ -67,6 +64,19 @@ const ProjectViewHeader = () => {
     };
 
     socket?.emit(SocketEvents.PROJECT_SUBSCRIBERS_CHANGE.toString(), body);
+  };
+
+  const handleSettingsClick = () => {
+    if (selectedProject?.id) {
+      dispatch(setProjectId(selectedProject.id));
+      dispatch(getProject(selectedProject.id));
+      dispatch(toggleDrawer());
+    }
+  };
+
+  const handleDrawerClose = () => {
+    if (!selectedProject?.id) return;
+    dispatch(getProject(selectedProject?.id))
   };
 
   // create task button items
@@ -106,16 +116,18 @@ const ProjectViewHeader = () => {
           )}
 
           {selectedProject?.status && (
-            <Tooltip title={selectedProjectStatus?.label}>{selectedProjectStatus?.icon}</Tooltip>
+            <Tooltip title={selectedProject.status}>
+              <ProjectStatusIcon iconName={selectedProject.status_icon || ''} color={selectedProject.status_color || ''} />
+            </Tooltip>
           )}
 
-          {(startDate || endDate) && (
+          {(selectedProject?.start_date || selectedProject?.end_date) && (
             <Tooltip
               title={
                 <Typography.Text style={{ color: colors.white }}>
-                  {startDate && `Start date: ${startDate}`}
+                  {selectedProject?.start_date && `Start date: ${formatDate(new Date(selectedProject?.start_date))}`}
                   <br />
-                  {endDate && `End date: ${endDate}`}
+                  {selectedProject?.end_date && `End date: ${formatDate(new Date(selectedProject?.end_date))}`}
                 </Typography.Text>
               }
             >
@@ -148,7 +160,7 @@ const ProjectViewHeader = () => {
           </Tooltip>
 
           <Tooltip title={'Project settings'} trigger={'hover'}>
-            <Button shape="circle" icon={<SettingOutlined />} />
+            <Button shape="circle" icon={<SettingOutlined />} onClick={handleSettingsClick} />
           </Tooltip>
 
           <Tooltip title={'Receive a project summary every evening.'} trigger={'hover'}>
@@ -171,6 +183,7 @@ const ProjectViewHeader = () => {
           >
             <EditOutlined /> Create Task
           </Dropdown.Button>
+          <ProjectDrawer onClose={handleDrawerClose} />
         </Flex>
       }
     />

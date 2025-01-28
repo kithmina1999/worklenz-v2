@@ -46,6 +46,8 @@ import { setFilteredCategories, setFilteredStatuses, setRequestParams } from '@/
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
+import { setProjectId } from '@/features/project/project.slice';
+import { setProject } from '@/features/project/project.slice';
 
 const ProjectList: React.FC = () => {
   const { t } = useTranslation('all-project-list');
@@ -153,6 +155,11 @@ const ProjectList: React.FC = () => {
     [requestParams.index, requestParams.size, projectsData?.body?.total]
   );
 
+  const handleDrawerClose = () => {
+    dispatch(setProject({} as IProjectViewModel));
+    dispatch(setProjectId(null));
+  };
+
   useEffect(() => {
     if (projectStatuses.length === 0) dispatch(fetchProjectStatuses());
     if (projectCategories.length === 0) dispatch(fetchProjectCategories());
@@ -211,11 +218,7 @@ const ProjectList: React.FC = () => {
         />
       </Card>
 
-      <ProjectDrawer
-        categories={projectCategories || []}
-        statuses={projectStatuses || []}
-        healths={projectHealths || []}
-      />
+      <ProjectDrawer onClose={handleDrawerClose} />
     </div>
   );
 };

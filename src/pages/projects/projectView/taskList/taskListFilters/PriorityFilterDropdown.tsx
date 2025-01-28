@@ -1,11 +1,11 @@
 import { CaretDownFilled } from '@ant-design/icons';
 import { Badge, Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { ITaskPriority } from '@/types/tasks/taskPriority.types';
-import { setPriorities } from '@/features/tasks/tasks.slice';
+import { setLabels, setPriorities } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 interface PriorityFilterDropdownProps {
@@ -16,23 +16,20 @@ const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => 
   const dispatch = useAppDispatch();
   const { t } = useTranslation('task-list-filters');
   const { priorities: selectedPriorities } = useAppSelector(state => state.taskReducer);
-
-  const handleSelectedPriority = (priority: ITaskPriority) => {
-    const newPriorities = [...selectedPriorities];
-    const priorityIndex = newPriorities.findIndex(p => p.id === priority.id);
-    console.log(priorityIndex, newPriorities);
-    if (priorityIndex !== -1) {
-      newPriorities.splice(priorityIndex, 1);
-    } else {
-      newPriorities.push(priority);
-    }
-    console.log(newPriorities);
-    dispatch(setPriorities(newPriorities));
-  };
-
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
-  // Memoize the dropdown content to improve performance
+  const handleSelectedPriority = (priorityId: string) => {
+    let newPriorities = [...selectedPriorities];
+    console.log(newPriorities);
+    if (newPriorities.includes(priorityId)) {
+      newPriorities.splice(newPriorities.indexOf(priorityId), 1);
+      dispatch(setPriorities(newPriorities));
+    } else {
+      newPriorities.push(priorityId);
+      dispatch(setPriorities(newPriorities));
+    }
+  };
+
   const priorityDropdownContent = useMemo(
     () => (
       <Card className="custom-card" style={{ width: 120 }} styles={{ body: { padding: 0 } }}>
@@ -52,8 +49,8 @@ const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => 
               <Space>
                 <Checkbox
                   id={priority.id}
-                  checked={selectedPriorities.some(p => p.id === priority.id)}
-                  onChange={e => handleSelectedPriority(priority)}
+                  checked={selectedPriorities.includes(priority.id)}
+                  onChange={() => handleSelectedPriority(priority.id)}
                 />
                 <Badge color={priority.color_code} />
                 {priority.name}

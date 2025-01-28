@@ -157,10 +157,8 @@ const TasksList: React.FC = React.memo(() => {
         width: '180px',
         render: (_, record) => (
           <StatusDropdown
-            statusList={record.project_statuses as ITaskStatus[]}
             task={record}
             teamId={record.team_id || ''}
-            onChange={value => handleStatusChange(value || '', record.id || '')}
           />
         ),
       },

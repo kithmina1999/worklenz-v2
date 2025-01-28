@@ -39,7 +39,7 @@ type TaskState = {
   taskAssignees: ITaskListMemberFilter[];
   loadingAssignees: boolean;
   labels: string[];
-  priorities: ITaskPrioritiesGetResponse[];
+  priorities: string[];
   statuses: ITaskStatusViewModel[];
   members: ITeamMemberViewModel[];
 };
@@ -132,7 +132,7 @@ export const fetchTaskGroups = createAsyncThunk(
         projects: '',
         isSubtasksInclude: true,
         labels: state?.taskReducer.labels.join(' '),
-        priorities: state?.taskReducer.priorities.map(priority => priority.id).join(' '),
+        priorities: state?.taskReducer.priorities.join(' '),
       };
       const response = await tasksApiService.getTaskList(config);
       return response.body;
@@ -182,7 +182,7 @@ const taskSlice = createSlice({
       state.labels = action.payload;
     },
 
-    setPriorities: (state, action: PayloadAction<ITaskPrioritiesGetResponse[]>) => {
+    setPriorities: (state, action: PayloadAction<string[]>) => {
       state.priorities = action.payload;
     },  
 
@@ -299,7 +299,6 @@ const taskSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchTaskGroups.fulfilled, (state, action) => {
-        console.log('action.payload', action.payload);
         state.loadingGroups = false;
         state.taskGroups = action.payload;
       })

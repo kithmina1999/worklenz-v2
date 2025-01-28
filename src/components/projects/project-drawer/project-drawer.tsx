@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  toggleDrawer,
-} from '@features/projects/projectsSlice';
+import { toggleDrawer } from '@features/projects/projectsSlice';
 import { fetchClients } from '@/features/settings/client/clientSlice';
 import {
   useCreateProjectMutation,
@@ -39,23 +37,15 @@ import ProjectClientSection from './project-client-section/project-client-sectio
 import { projectColors } from '@/lib/project/projectConstants';
 import { setProject, setProjectId } from '@/features/project/project.slice';
 
-import { IProjectCategory } from '@/types/project/projectCategory.types';
-import { IProjectHealth } from '@/types/project/projectHealth.types';
-import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
+import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
+import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
+import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 
-const ProjectDrawer = ({
-  categories = [],
-  statuses = [],
-  healths = [],
-}: {
-  categories: IProjectCategory[];
-  statuses: IProjectStatus[];
-  healths: IProjectHealth[];
-}) => {
+const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('project-drawer');
   const navigate = useNavigate();
@@ -66,12 +56,20 @@ const ProjectDrawer = ({
     null
   );
   const { requestParams } = useAppSelector(state => state.projectsReducer);
+  const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
+  const { projectHealths } = useAppSelector(state => state.projectHealthReducer);
+  const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
+
   const { refetch: refetchProjects } = useGetProjectsQuery(requestParams);
   const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
   const [updateProject, { isLoading: isUpdatingProject }] = useUpdateProjectMutation();
   const [createProject, { isLoading: isCreatingProject }] = useCreateProjectMutation();
 
   useEffect(() => {
+    if (projectStatuses.length === 0) dispatch(fetchProjectStatuses());
+    if (projectCategories.length === 0) dispatch(fetchProjectCategories());
+    if (projectHealths.length === 0) dispatch(fetchProjectHealth());
+
     if (!clients.data?.length)
       dispatch(fetchClients({ index: 1, size: 5, field: null, order: null, search: null }));
   }, [dispatch]);
@@ -123,8 +121,6 @@ const ProjectDrawer = ({
   };
 
   const visibleChanged = (visible: boolean) => {
-    console.log('visible', visible, projectId);
-    console.log('projectId', project);
     if (visible && projectId) {
       setEditMode(true);
       if (project) {
@@ -147,12 +143,11 @@ const ProjectDrawer = ({
   const handleDrawerClose = () => {
     form.resetFields();
     setEditMode(false);
-    dispatch(setProject({} as IProjectViewModel));
-    dispatch(setProjectId(null));
     setSelectedProjectManager(null);
     setTimeout(() => {
       dispatch(toggleDrawer());
     }, 300);
+    onClose();
   };
 
   const handleDeleteProject = async () => {
@@ -219,8 +214,8 @@ const ProjectDrawer = ({
             onFinish={handleFormSubmit}
             initialValues={{
               color_code: project?.color_code || projectColors[0],
-              status_id: project?.status_id || statuses.find(status => status.is_default)?.id,
-              health_id: project?.health_id || healths.find(health => health.is_default)?.id,
+              status_id: project?.status_id || projectStatuses.find(status => status.is_default)?.id,
+              health_id: project?.health_id || projectHealths.find(health => health.is_default)?.id,
               client_id: project?.client_id || null,
               client: project?.client_name || null,
               category_id: project?.category_id || null,
@@ -230,9 +225,9 @@ const ProjectDrawer = ({
             }}
           >
             <ProjectBasicInfo editMode={editMode} project={project} form={form} />
-            <ProjectStatusSection statuses={statuses} form={form} t={t} />
-            <ProjectHealthSection healths={healths} form={form} t={t} />
-            <ProjectCategorySection categories={categories} form={form} t={t} />
+            <ProjectStatusSection statuses={projectStatuses} form={form} t={t} />
+            <ProjectHealthSection healths={projectHealths} form={form} t={t} />
+            <ProjectCategorySection categories={projectCategories} form={form} t={t} />
 
             <Form.Item name="notes" label={t('notes')}>
               <Input.TextArea placeholder={t('enterNotes')} />

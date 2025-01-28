@@ -24,6 +24,7 @@ export interface IProjectTask {
   names?: InlineMember[];
   reporter?: string;
   status?: string;
+  status_id?: string;
   status_color?: string;
   priority?: string;
   start_date?: string;
@@ -60,6 +61,7 @@ export interface IProjectTask {
   sub_tasks?: IProjectTask[];
   sub_tasks_loading?: boolean;
   statuses?: ITaskStatusViewModel[];
+  project_statuses?: ITaskStatusViewModel[];
   labels?: ITaskLabel[];
   all_labels?: ITaskLabel[];
   archived?: boolean;

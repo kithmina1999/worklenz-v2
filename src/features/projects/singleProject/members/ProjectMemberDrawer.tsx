@@ -1,28 +1,14 @@
 import { Drawer, Flex, Form, Select, Typography } from 'antd';
-import React from 'react';
-import { useAppSelector } from '../../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import {
-  addProjectMember,
-  toggleProjectMemberDrawer,
-} from './projectMembersSlice';
-import { colors } from '../../../../styles/colors';
-import CustomAvatar from '../../../../components/CustomAvatar';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { toggleProjectMemberDrawer } from './projectMembersSlice';
+import { colors } from '@/styles/colors';
+import CustomAvatar from '@/components/CustomAvatar';
 import { nanoid } from '@reduxjs/toolkit';
-// import { MemberType } from '../../../../types/member.types';
-// import { nanoid } from '@reduxjs/toolkit';
+import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 
 const ProjectMemberDrawer = () => {
-  // get member list from global members slice where which is updated with navbar invite button
-  const allMembersList = [
-    ...useAppSelector((state) => state.memberReducer.membersList),
-    useAppSelector((state) => state.memberReducer.owner),
-  ];
-
-  // get drawer state from project member reducer
-  const isDrawerOpen = useAppSelector(
-    (state) => state.projectMemberReducer.isDrawerOpen
-  );
+  const { isDrawerOpen, membersList } = useAppSelector(state => state.projectMemberReducer);
 
   const dispatch = useAppDispatch();
 
@@ -57,36 +43,31 @@ const ProjectMemberDrawer = () => {
   return (
     <Drawer
       title={
-        <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-          Project Members
-        </Typography.Text>
+        <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>Project Members</Typography.Text>
       }
       open={isDrawerOpen}
       onClose={() => dispatch(toggleProjectMemberDrawer())}
     >
       <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
-        <Form.Item
-          name="memberName"
-          label="Add members by adding their name or email"
-        >
+        <Form.Item name="memberName" label="Add members by adding their name or email">
           <Select
             placeholder="Type name or email"
             showSearch
             onSearch={onSearch}
             onChange={onChange}
-            options={allMembersList.map((member) => ({
-              key: member.memberId,
-              value: member.memberName,
+            options={membersList.map(member => ({
+              key: member.id,
+              value: member.name,
               label: (
                 <Flex gap={8} align="center">
-                  <CustomAvatar avatarName={member.memberName} />
+                  <SingleAvatar />
                   <Flex vertical>
                     <Typography.Text
                       style={{
                         textTransform: 'capitalize',
                       }}
                     >
-                      {member.memberName}
+                      {member.name}
                     </Typography.Text>
 
                     <Typography.Text
@@ -95,7 +76,7 @@ const ProjectMemberDrawer = () => {
                         color: colors.lightGray,
                       }}
                     >
-                      {member?.memberEmail}
+                      {member.email}
                     </Typography.Text>
                   </Flex>
                 </Flex>
