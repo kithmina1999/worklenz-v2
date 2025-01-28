@@ -9,10 +9,10 @@ export const useMixpanelTracking = () => {
 
   const token = useMemo(() => {
     const host = window.location.host;
-    if (host === "uat.worklenz.com" || host === "dev.worklenz.com") {
+    if (host === "uat.worklenz.com" || host === "dev.worklenz.com" || host === "api.worklenz.com") {
       return import.meta.env.VITE_MIXPANEL_TOKEN;
     }
-    if (host === "app.worklenz.com") {
+    if (host === "app.worklenz.com" || host === "v2.worklenz.com") {
       return import.meta.env.VITE_MIXPANEL_TOKEN;
     }
     return import.meta.env.VITE_MIXPANEL_TOKEN;
