@@ -132,6 +132,7 @@ export const fetchTaskGroups = createAsyncThunk(
         projects: '',
         isSubtasksInclude: true,
         labels: state?.taskReducer.labels.join(' '),
+        priorities: state?.taskReducer.priorities.map(priority => priority.id).join(' '),
       };
       const response = await tasksApiService.getTaskList(config);
       return response.body;

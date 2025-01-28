@@ -5,48 +5,66 @@ import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { ITaskPriority } from '@/types/tasks/taskPriority.types';
+import { setPriorities } from '@/features/tasks/tasks.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 interface PriorityFilterDropdownProps {
   priorities: ITaskPriority[];
 }
 
 const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => {
-  const [selectedCount, setSelectedCount] = useState<number>(0);
-
+  const dispatch = useAppDispatch();
   const { t } = useTranslation('task-list-filters');
+  const { priorities: selectedPriorities } = useAppSelector(state => state.taskReducer);
 
-  const handleSelectedFiltersCount = (checked: boolean) => {
-    setSelectedCount(prev => (checked ? prev + 1 : prev - 1));
+  const handleSelectedPriority = (priority: ITaskPriority) => {
+    const newPriorities = [...selectedPriorities];
+    const priorityIndex = newPriorities.findIndex(p => p.id === priority.id);
+    console.log(priorityIndex, newPriorities);
+    if (priorityIndex !== -1) {
+      newPriorities.splice(priorityIndex, 1);
+    } else {
+      newPriorities.push(priority);
+    }
+    console.log(newPriorities);
+    dispatch(setPriorities(newPriorities));
   };
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // Memoize the dropdown content to improve performance
-  const priorityDropdownContent = useMemo(() => (
-    <Card className="custom-card" style={{ width: 120 }} styles={{ body: { padding: 0 } }}>
-      <List style={{ padding: 0, maxHeight: 250, overflow: 'auto' }}>
-        {priorities?.map(item => (
-          <List.Item
-            className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
-            key={item.id}
-            style={{
-              display: 'flex',
-              gap: 8,
-              padding: '4px 8px',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <Space>
-              <Checkbox id={item.id} onChange={e => handleSelectedFiltersCount(e.target.checked)} />
-              <Badge color={item.color_code} />
-              {item.name}
-            </Space>
-          </List.Item>
-        ))}
-      </List>
-    </Card>
-  ), [priorities, themeMode]);
+  const priorityDropdownContent = useMemo(
+    () => (
+      <Card className="custom-card" style={{ width: 120 }} styles={{ body: { padding: 0 } }}>
+        <List style={{ padding: 0, maxHeight: 250, overflow: 'auto' }}>
+          {priorities?.map(priority => (
+            <List.Item
+              className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
+              key={priority.id}
+              style={{
+                display: 'flex',
+                gap: 8,
+                padding: '4px 8px',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <Space>
+                <Checkbox
+                  id={priority.id}
+                  checked={selectedPriorities.some(p => p.id === priority.id)}
+                  onChange={e => handleSelectedPriority(priority)}
+                />
+                <Badge color={priority.color_code} />
+                {priority.name}
+              </Space>
+            </List.Item>
+          ))}
+        </List>
+      </Card>
+    ),
+    [priorities, themeMode]
+  );
 
   return (
     <Dropdown
@@ -58,14 +76,16 @@ const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => 
         icon={<CaretDownFilled />}
         iconPosition="end"
         style={{
-          backgroundColor: selectedCount > 0 ? colors.paleBlue : colors.transparent,
+          backgroundColor: selectedPriorities.length > 0 ? colors.paleBlue : colors.transparent,
 
-          color: selectedCount > 0 ? colors.darkGray : 'inherit',
+          color: selectedPriorities.length > 0 ? colors.darkGray : 'inherit',
         }}
       >
         <Space>
           {t('priorityText')}
-          {selectedCount > 0 && <Badge size="small" count={selectedCount} color={colors.skyBlue} />}
+          {selectedPriorities.length > 0 && (
+            <Badge size="small" count={selectedPriorities.length} color={colors.skyBlue} />
+          )}
         </Space>
       </Button>
     </Dropdown>
