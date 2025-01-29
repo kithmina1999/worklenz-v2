@@ -16,6 +16,7 @@
   "createdDateColumn": "Created Date",
   "lastUpdatedColumn": "Last Updated",
   "reporterColumn": "Reporter",
+  "dueTimeColumn": "Due Time",
 
   "todoSelectorText": "To Do",
   "doingSelectorText": "Doing",

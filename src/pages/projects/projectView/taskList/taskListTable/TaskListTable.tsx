@@ -235,7 +235,7 @@ const TaskListTable = ({
           <TaskListLastUpdatedCell lastUpdated={task?.updated_at || null} />
         );
       case 'reporter':
-        return <TaskListReporterCell />;
+        return <TaskListReporterCell task={task} />;
       default:
         return null;
     }

@@ -166,6 +166,10 @@ const taskSlice = createSlice({
   name: 'taskReducer',
   initialState,
   reducers: {
+    toggleTaskDrawer: state => {
+      state.showTaskDrawer = !state.showTaskDrawer;
+    },
+
     toggleArchived: state => {
       state.archived = !state.archived;
     },
@@ -331,6 +335,7 @@ export const {
   deleteTask,
   updateTaskAssignees,
   updateTaskLabel: toggleLabel,
+  toggleTaskDrawer,
   toggleArchived,
   setLabels,
   setPriorities,

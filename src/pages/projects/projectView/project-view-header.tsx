@@ -16,8 +16,6 @@ import { useState } from 'react';
 import ProjectMemberInviteButton from '@features/projects/singleProject/members/ProjectMemberInviteButton';
 import { useNavigate } from 'react-router-dom';
 import { colors } from '@/styles/colors';
-import dayjs from 'dayjs';
-import { statusData } from '@/lib/project/projectConstants';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleCreateTaskDrawer } from '@features/tasks/taskSlice';
 import { useResponsive } from '@/hooks/useResponsive';
@@ -31,10 +29,8 @@ import ProjectStatusIcon from '@/components/common/project-status-icon/project-s
 import { formatDate } from '@/utils/timeUtils';
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 import { toggleDrawer } from '@/features/projects/projectsSlice';
-import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
 const ProjectViewHeader = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const currentSession = useAuthService().getCurrentSession();
@@ -45,6 +41,7 @@ const ProjectViewHeader = () => {
   const dispatch = useAppDispatch();
 
   const { project: selectedProject, projectId } = useAppSelector(state => state.projectReducer);
+  const { loadingGroups } = useAppSelector(state => state.taskReducer);
 
   const handleRefresh = () => {
     if (!projectId) return;
@@ -150,7 +147,7 @@ const ProjectViewHeader = () => {
           <Tooltip title={'Refresh project'} trigger={'hover'}>
             <Button
               shape="circle"
-              icon={<SyncOutlined spin={isLoading} />}
+              icon={<SyncOutlined spin={loadingGroups} />}
               onClick={() => handleRefresh()}
             />
           </Tooltip>

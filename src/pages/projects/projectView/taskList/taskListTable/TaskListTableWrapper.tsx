@@ -158,7 +158,6 @@ const TaskListTableWrapper = ({
                 style={{
                   fontSize: 14,
                   fontWeight: 600,
-                  color: colors.darkGray,
                 }}
               >
                 {t(tableName)} ({taskList.length})

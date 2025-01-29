@@ -16,7 +16,8 @@
   "createdDateColumn": "Data de Criação",
   "lastUpdatedColumn": "Última Atualização",
   "reporterColumn": "Relator",
-
+  "dueTimeColumn": "Hora de Vencimento",
+  
   "todoSelectorText": "A Fazer",
   "doingSelectorText": "Fazendo",
   "doneSelectorText": "Concluído",
