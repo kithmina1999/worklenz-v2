@@ -31,8 +31,7 @@ const TaskListTaskCell = ({
 
   const dispatch = useAppDispatch();
 
-  // render the toggle arrow icon for tasks with subtasks
-  const renderToggleButtonForHasSubTasks = (taskId: string | undefined, hasSubtasks: boolean) => {
+  const renderToggleButtonForHasSubTasks = (taskId: string | null, hasSubtasks: boolean) => {
     if (!hasSubtasks || !taskId) return null;
     return (
       <button
@@ -97,7 +96,7 @@ const TaskListTaskCell = ({
     <Flex align="center" justify="space-between">
       <Flex gap={8} align="center">
         {!!task?.sub_tasks?.length ? (
-          renderToggleButtonForHasSubTasks(task.id, !!task?.sub_tasks?.length)
+          renderToggleButtonForHasSubTasks(task.id || null, !!task?.sub_tasks?.length)
         ) : 
         (
           <div className="h-4 w-4">

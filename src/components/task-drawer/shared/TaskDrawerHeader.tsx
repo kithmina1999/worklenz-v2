@@ -66,8 +66,7 @@ const TaskDrawerHeader = ({
           >{`${characterLength}/250`}</span>
         )}
       </Flex>
-      <StatusDropdown currentStatus="todo"/>
-      {/* delete todo menu  */}
+      {/* <StatusDropdown currentStatus="todo"/> */}
       <Dropdown
         overlayClassName={'delete-task-dropdown'}
         menu={{ items: deletTaskDropdownItems }}

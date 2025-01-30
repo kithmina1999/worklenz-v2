@@ -21,7 +21,12 @@ import { colors } from '../../../styles/colors';
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
-const AssigneeSelector = ({ taskId }: { taskId: string }) => {
+interface AssigneeSelectorProps { 
+  taskId: string | null;
+  selectedMembers: string[];
+}
+
+const AssigneeSelector = ({ taskId, selectedMembers }: AssigneeSelectorProps) => {
   const membersInputRef = useRef<InputRef>(null);
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');

@@ -24,7 +24,6 @@ const ProjectViewTaskList = () => {
   const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
 
   useEffect(() => {
-    console.log(priorities);
     if (projectId) {
       dispatch(fetchTaskGroups(projectId));
     }

@@ -26,9 +26,10 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { getPriorityColor } from '@/utils/getPriorityColors';
 import { getStatusColor } from '@/utils/getStatusColor';
 import { colors } from '@/styles/colors';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 type SubTaskTableProps = {
-  datasource: TaskType[] | null;
+  datasource: IProjectTask[] | null;
 };
 
 const SubTaskTable = ({ datasource }: SubTaskTableProps) => {

@@ -26,18 +26,15 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
-  // get currently selected task if exist
   const selectedTask = useAppSelector((state) => state.taskReducer.tasks).find(
-    (task) => task.taskId === taskId
+    (task) => task.id === taskId
   );
 
-  // function for handle refresh
   const handleRefresh = () => {
     setRefreshSubTask(true);
     setTimeout(() => setRefreshSubTask(false), 500);
   };
 
-  // collapase panel styles
   const panelStyle: React.CSSProperties = {
     border: 'none',
     paddingBlock: 0,
@@ -72,7 +69,7 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
           />
         </Tooltip>
       ),
-      children: <SubTaskTable datasource={selectedTask?.subTasks || null} />,
+      children: <SubTaskTable datasource={selectedTask?.sub_tasks || null} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },

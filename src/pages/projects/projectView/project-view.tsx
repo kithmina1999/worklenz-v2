@@ -1,3 +1,4 @@
+import React from 'react';
 import { PushpinFilled, PushpinOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
 import { Badge, Button, ConfigProvider, Flex, Tabs, TabsProps, Tooltip } from 'antd';
@@ -6,21 +7,20 @@ import { useEffect, useState } from 'react';
 import { colors } from '@/styles/colors';
 import { tabItems } from '@/lib/project/projectViewConstants';
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageFunctions';
-import ProjectMemberDrawer from '@/features/projects/singleProject/members/ProjectMemberDrawer';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import ProjectViewHeader from './project-view-header';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import CreateTaskDrawer from '@/features/tasks/taskCreationAndUpdate/createTaskDrawer/CreateTaskDrawer';
-import PhaseDrawer from '@/features/projects/singleProject/phase/PhaseDrawer';
-import StatusDrawer from '@/features/projects/status/StatusDrawer';
-import UpdateTaskDrawer from '@/features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 import './project-view.css';
-import CustomAvatar from '@/components/CustomAvatar';
 import { useResponsive } from '@/hooks/useResponsive';
 import { getProject, setProjectId } from '@/features/project/project.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
+
+const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
+const StatusDrawer = React.lazy(() => import('@features/projects/status/StatusDrawer'));
+const ProjectMemberDrawer = React.lazy(() => import('@features/projects/singleProject/members/ProjectMemberDrawer'));
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 const ProjectView = () => {
   const location = useLocation();
@@ -30,7 +30,7 @@ const ProjectView = () => {
   const [searchParams] = useSearchParams();
   const { projectId } = useParams();
   if (projectId) dispatch(setProjectId(projectId));
-  
+
   // useResponsive custom hook
   const { isDesktop } = useResponsive();
 
@@ -124,7 +124,7 @@ const ProjectView = () => {
         tabBarStyle={{ paddingInline: 0 }}
         tabBarExtraContent={
           <div>
-            <CustomAvatar avatarName={'Raveesha dilanka'} size={26} />
+            {/* <CustomAvatar avatarName={'Raveesha dilanka'} size={26} /> */}
             <span style={{ position: 'relative', top: '-10px' }}>
               <Tooltip title="Members who are active on this project will be displayed here.">
                 <QuestionCircleOutlined />
@@ -143,17 +143,11 @@ const ProjectView = () => {
         }
       />
 
-      {/* drawers  */}
-      {/* add project members drawer */}
+
       <ProjectMemberDrawer />
-      {/* create task drawer  */}
-      <CreateTaskDrawer />
-      {/* phase drawer  */}
       <PhaseDrawer />
-      {/* status drawer  */}
       <StatusDrawer />
-      {/* update task drawer  */}
-      <UpdateTaskDrawer taskId={'SP-1'} />
+      <TaskDrawer />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Form,
   InputNumber,
@@ -22,11 +22,11 @@ import { colors } from '@/styles/colors';
 import { getPriorityColor } from '@/utils/getPriorityColors';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import NotifyMemberSelector from './NotifyMemberSelector';
-import { TaskType } from '@/types/task.types';
 import { simpleDateFormat } from '@/utils/simpleDateFormat';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 type TaskDetailsFormProps = {
-  selectedTask?: TaskType | null;
+  selectedTask?: IProjectTask | null;
 };
 
 const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
@@ -38,11 +38,11 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
   useEffect(() => {
     if (selectedTask) {
       form.setFieldsValue({
-        taskId: selectedTask.taskId,
-        phase: selectedTask.phase,
-        assignees: selectedTask.members,
-        dueDate: selectedTask.dueDate
-          ? simpleDateFormat(selectedTask.dueDate)
+        taskId: selectedTask.id,
+        phase: selectedTask.phase_id,
+        assignees: selectedTask.assignees,
+        dueDate: selectedTask.end_date
+          ? simpleDateFormat(selectedTask.end_date)
           : null,
         hours: 0,
         minutes: 0,
@@ -155,7 +155,7 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
         onFinish={handleSubmit}
       >
         <Form.Item name="taskId" label="Task Key">
-          <Tag>{selectedTask ? selectedTask.taskId : 'NEW-TASK'}</Tag>
+          <Tag>{selectedTask ? selectedTask.id : 'NEW-TASK'}</Tag>
         </Form.Item>
 
         <Form.Item name="phase" label="Phase">
@@ -169,7 +169,7 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
 
         <Form.Item name="assignees" label="Assignees">
           <AssigneeSelector
-            taskId={selectedTask ? selectedTask.taskId : 'NEW-TASK'}
+            taskId={selectedTask ? selectedTask.id : null}
           />
         </Form.Item>
 
@@ -236,7 +236,7 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
 
         <Form.Item name="labels" label="Labels">
           <LabelsSelector
-            taskId={selectedTask ? selectedTask.taskId : 'NEW-TASK'}
+            taskId={selectedTask ? selectedTask.id : 'NEW-TASK'}
           />
         </Form.Item>
 
