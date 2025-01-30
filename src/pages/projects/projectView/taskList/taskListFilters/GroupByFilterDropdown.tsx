@@ -1,15 +1,15 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CaretDownFilled } from '@ant-design/icons';
 import ConfigProvider from 'antd/es/config-provider';
 import Flex from 'antd/es/flex';
 import Select from 'antd/es/select';
-import { useMemo } from 'react';
 
 import { colors } from '@/styles/colors';
 import ConfigPhaseButton from '@features/projects/singleProject/phase/ConfigPhaseButton';
 import { useSelectedProject } from '@/hooks/useSelectedProject';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import CreateStatusButton from '@/components/project-task-filters/create-status-button/create-status-button';
-import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { IGroupBy } from '@features/tasks/tasks.slice';
 import { setGroup } from '@features/tasks/tasks.slice';

@@ -1,4 +1,5 @@
-import { Flex } from 'antd';
+import Flex from 'antd/es/flex';
+
 import Avatars from '@/components/avatars/avatars';
 import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
 import { useState } from 'react';

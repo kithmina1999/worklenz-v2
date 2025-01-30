@@ -1,16 +1,15 @@
-import {
-  Button,
-  Card,
-  Checkbox,
-  Divider,
-  Dropdown,
-  Empty,
-  Flex,
-  Input,
-  InputRef,
-  List,
-  Typography,
-} from 'antd';
+import { InputRef } from 'antd/es/input';
+import Card from 'antd/es/card';
+import Checkbox from 'antd/es/checkbox';
+import Divider from 'antd/es/divider';
+import Dropdown from 'antd/es/dropdown';
+import Empty from 'antd/es/empty';
+import Flex from 'antd/es/flex';
+import Input from 'antd/es/input';
+import List from 'antd/es/list';
+import Typography from 'antd/es/typography';
+import Button from 'antd/es/button';
+
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
@@ -20,15 +19,14 @@ import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
-import { IProjectTask, ITaskAssignee } from '@/types/project/projectTasksViewModel.types';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITeamMembersViewModel } from '@/types/teamMembers/teamMembersViewModel.types';
-import { sortByPending, sortBySelection } from '@/utils/sort-team-members';
+import { sortBySelection } from '@/utils/sort-team-members';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
 import { updateTaskAssignees } from '@/features/tasks/tasks.slice';
-import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 
 interface AssigneeSelectorProps {
   task: IProjectTask;
@@ -70,8 +68,6 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
       }));
       let sortedMembers = sortBySelection(membersData);
       setTeamMembers({ data: sortedMembers });
-      // let pendingMembers = sortByPending(membersData);
-      // setTeamMembers({ data: pendingMembers });
 
       setTimeout(() => {
         membersInputRef.current?.focus();

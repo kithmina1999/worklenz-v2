@@ -6,7 +6,7 @@ import TaskListFilters from './taskListFilters/TaskListFilters';
 import TaskGroupWrapper from './groupTables/task-group-wrapper/task-group-wrapper';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchTaskGroups } from '@/features/tasks/tasks.slice';
+import { fetchTaskGroups, fetTaskListColumns } from '@/features/tasks/tasks.slice';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 
 const ProjectViewTaskList = () => {
@@ -28,6 +28,7 @@ const ProjectViewTaskList = () => {
   useEffect(() => {
     if (projectId) {
       dispatch(fetchTaskGroups(projectId));
+      dispatch(fetTaskListColumns(projectId));
     }
     if (!statusCategories.length) {
       dispatch(fetchStatusesCategories());

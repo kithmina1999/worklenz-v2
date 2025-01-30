@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Button, Space, Steps, Typography } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -28,6 +27,9 @@ import logoDark from '@/assets/images/logo-dark-mode.png';
 import './account-setup.css';
 import { IAccountSetupRequest } from '@/types/project-templates/project-templates.types';
 import { profileSettingsApiService } from '@/api/settings/profile/profile-settings.api.service';
+import Space from 'antd/es/space';
+import Steps from 'antd/es/steps';
+import Button from 'antd/es/button';
 
 const { Title } = Typography;
 

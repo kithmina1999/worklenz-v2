@@ -9,6 +9,7 @@ import Input from 'antd/es/input';
 import Flex from 'antd/es/flex';
 import Button from 'antd/es/button';
 import Typography from 'antd/es/typography';
+import Result from 'antd/es/result';
 
 import PageHeader from '@components/AuthPageHeader';
 

@@ -40,10 +40,7 @@ import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { CustomFieldsTypes } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 import { SelectionType } from './custom-columns/custom-column-modal/selection-type-column/selection-type-column';
-import {
-  deselectAll,
-  selectTaskIds,
-} from '@/features/projects/bulkActions/bulkActionSlice';
+import { deselectAll, selectTaskIds } from '@/features/projects/bulkActions/bulkActionSlice';
 import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/PriorityDropdown';
 
@@ -69,18 +66,14 @@ const TaskListTable = ({
 
   const { t } = useTranslation('task-list-table');
   const dispatch = useAppDispatch();
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
   const selectedProject = useSelectedProject();
-  const columnList = useAppSelector(
-    (state) => state.projectViewTaskListColumnsReducer.columnList
-  );
-  const visibleColumns = columnList.filter((column) => column.isVisible);
+  const columnList = useAppSelector(state => state.taskReducer.columns);
+  const visibleColumns = columnList.filter(column => column.pinned);
 
   const toggleTaskExpansion = (taskId: string) => {
-    setExpandedTasks((prev) =>
-      prev.includes(taskId)
-        ? prev.filter((id) => id !== taskId)
-        : [...prev, taskId]
+    setExpandedTasks(prev =>
+      prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId]
     );
   };
 
@@ -90,7 +83,7 @@ const TaskListTable = ({
       dispatch(deselectAll());
     } else {
       const allTaskIds =
-        taskList?.flatMap((task) => [
+        taskList?.flatMap(task => [
           task.id,
           ...(task.sub_tasks?.map((subtask: IProjectTask) => subtask.id) || []),
         ]) || [];
@@ -102,9 +95,9 @@ const TaskListTable = ({
   };
 
   const toggleRowSelection = (task: IProjectTask) => {
-    setSelectedRows((prevSelectedRows) =>
+    setSelectedRows(prevSelectedRows =>
       prevSelectedRows.includes(task.id || '')
-        ? prevSelectedRows.filter((id) => id !== task.id)
+        ? prevSelectedRows.filter(id => id !== task.id)
         : [...prevSelectedRows, task.id || '']
     );
   };
@@ -133,12 +126,10 @@ const TaskListTable = ({
   };
 
   useEffect(() => {
-    const tableContainer = document.querySelector(
-      `.tasklist-container-${tableId}`
-    );
+    const tableContainer = document.querySelector(`.tasklist-container-${tableId}`);
     const handleScroll = () => {
       if (tableContainer) {
-        setScrollingTables((prev) => ({
+        setScrollingTables(prev => ({
           ...prev,
           [tableId]: tableContainer.scrollLeft > 0,
         }));
@@ -150,19 +141,24 @@ const TaskListTable = ({
 
   const customBorderColor = themeMode === 'dark' && ' border-[#303030]';
 
-  const customHeaderColumnStyles = (key: string) =>
-    `border px-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:h-[42px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-[#fafafa]'}`;
+  const customHeaderColumnStyles = (key: string | undefined) => {
+    if (!key) return '';
+    return `border px-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:h-[42px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-[#fafafa]'}`;
+  };
 
-  const customBodyColumnStyles = (key: string) =>
-    `border px-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:min-h-[40px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
+  const customBodyColumnStyles = (key: string | undefined) => {
+    if (!key) return '';
+    return `border px-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:min-h-[40px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
+  };
 
   const renderColumnContent = (
-    columnKey: string,
+    columnKey: string | undefined,
     task: IProjectTask,
     isSubtask: boolean = false
   ) => {
+    if (!columnKey) return null;
     switch (columnKey) {
-      case 'taskId':
+      case 'KEY':
         return <TaskListTaskIdCell taskId={task.task_key || ''} />;
       case 'task':
         return (
@@ -173,11 +169,9 @@ const TaskListTable = ({
             toggleTaskExpansion={toggleTaskExpansion}
           />
         );
-      case 'description':
-        return (
-          <TaskListDescriptionCell description={task?.description || ''} />
-        );
-      case 'progress': {
+      case 'DESCRIPTION':
+        return <TaskListDescriptionCell description={task?.description || ''} />;
+      case 'PROGRESS': {
         return (
           <TaskListProgressCell
             progress={task?.progress || 0}
@@ -185,56 +179,35 @@ const TaskListTable = ({
           />
         );
       }
-      case 'members':
-        return (
-          <TaskListMembersCell
-            groupId={tableId}
-            task={task}
-          />
-        );
-      case 'labels':
-        return (
-          <TaskListLabelsCell
-            labels={task?.labels || []}
-            taskId={task.id || ''}
-          />
-        );
-      case 'phases':
+      case 'ASSIGNEES':
+        return <TaskListMembersCell groupId={tableId} task={task} />;
+      case 'LABELS':
+        return <TaskListLabelsCell labels={task?.labels || []} taskId={task.id || ''} />;
+      case 'PHASES':
         return <PhaseDropdown projectId={selectedProject?.id || ''} />;
-      case 'status':
+      case 'STATUS':
         return <StatusDropdown task={task} teamId={selectedProject?.team_id || ''} />;
-      case 'priority':
+      case 'PRIORITY':
         return <PriorityDropdown task={task} teamId={selectedProject?.team_id || ''} />;
-      case 'timeTracking':
+      case 'TIME_TRACKING':
         return (
-          <TaskListTimeTrackerCell
-            taskId={task.id || ''}
-            initialTime={task?.time_spent || 0}
-          />
+          <TaskListTimeTrackerCell taskId={task.id || ''} initialTime={task?.time_spent || 0} />
         );
-      case 'estimation':
+      case 'ESTIMATION':
         return <TaskListEstimationCell />;
-      case 'startDate':
+      case 'START_DATE':
         return <TaskListStartDateCell startDate={task?.start_date || null} />;
-      case 'dueDate':
+      case 'DUE_DATE':
         return <TaskListDueDateCell dueDate={task?.end_date || null} />;
-      case 'dueTime':
+      case 'DUE_TIME':
         return <TaskListDueTimeCell />;
-      case 'completedDate':
-        return (
-          <TaskListCompletedDateCell
-            completedDate={task?.completed_at || null}
-          />
-        );
-      case 'createdDate':
-        return (
-          <TaskListCreatedDateCell createdDate={task?.created_at || null} />
-        );
-      case 'lastUpdated':
-        return (
-          <TaskListLastUpdatedCell lastUpdated={task?.updated_at || null} />
-        );
-      case 'reporter':
+      case 'COMPLETED_DATE':
+        return <TaskListCompletedDateCell completedDate={task?.completed_at || null} />;
+      case 'CREATED_DATE':
+        return <TaskListCreatedDateCell createdDate={task?.created_at || null} />;
+      case 'LAST_UPDATED':
+        return <TaskListLastUpdatedCell lastUpdated={task?.updated_at || null} />;
+      case 'REPORTER':
         return <TaskListReporterCell task={task} />;
       default:
         return null;
@@ -248,7 +221,7 @@ const TaskListTable = ({
   ) => {
     switch (columnType) {
       case 'people':
-        return <AssigneeSelector taskId={task.id || ''} />;
+        return <AssigneeSelector task={task} showDropdown={false} groupId={tableId} />;
       case 'date':
         return (
           <DatePicker
@@ -275,9 +248,7 @@ const TaskListTable = ({
           case 'formatted':
             return (
               <Input
-                defaultValue={columnObj?.previewValue.toFixed(
-                  columnObj?.decimals
-                )}
+                defaultValue={columnObj?.previewValue.toFixed(columnObj?.decimals)}
                 style={{
                   padding: 0,
                   border: 'none',
@@ -290,9 +261,7 @@ const TaskListTable = ({
               <Flex gap={4} align="center" justify="flex-start">
                 {columnObj?.labelPosition === 'left' && columnObj?.label}
                 <Input
-                  defaultValue={columnObj?.previewValue.toFixed(
-                    columnObj?.decimals
-                  )}
+                  defaultValue={columnObj?.previewValue.toFixed(columnObj?.decimals)}
                   style={{
                     padding: 0,
                     border: 'none',
@@ -317,9 +286,7 @@ const TaskListTable = ({
           case 'percentage':
             return (
               <Input
-                defaultValue={
-                  columnObj?.previewValue.toFixed(columnObj?.decimals) + '%'
-                }
+                defaultValue={columnObj?.previewValue.toFixed(columnObj?.decimals) + '%'}
                 style={{
                   padding: 0,
                   border: 'none',
@@ -349,17 +316,11 @@ const TaskListTable = ({
 
           switch (columnObj.expression) {
             case 'add':
-              return (
-                columnObj.firstNumericColumn + columnObj.secondNumericColumn
-              );
+              return columnObj.firstNumericColumn + columnObj.secondNumericColumn;
             case 'substract':
-              return (
-                columnObj.firstNumericColumn - columnObj.secondNumericColumn
-              );
+              return columnObj.firstNumericColumn - columnObj.secondNumericColumn;
             case 'multiply':
-              return (
-                columnObj.firstNumericColumn * columnObj.secondNumericColumn
-              );
+              return columnObj.firstNumericColumn * columnObj.secondNumericColumn;
             case 'divide':
               return columnObj.secondNumericColumn !== 0
                 ? columnObj.firstNumericColumn / columnObj.secondNumericColumn
@@ -368,11 +329,7 @@ const TaskListTable = ({
               return null;
           }
         };
-        return (
-          <Typography.Text>
-            {calculateResult() ?? 'Invalid Formula'}
-          </Typography.Text>
-        );
+        return <Typography.Text>{calculateResult() ?? 'Invalid Formula'}</Typography.Text>;
       }
       case 'labels': {
         const labelsList: ITaskLabel[] = columnObj?.labelsList || [];
@@ -391,9 +348,7 @@ const TaskListTable = ({
 
   return (
     <div className={`border-x border-b ${customBorderColor}`}>
-      <div
-        className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}
-      >
+      <div className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}>
         <table className={`rounded-2 w-full min-w-max border-collapse`}>
           <thead className="h-[42px]">
             <tr>
@@ -406,27 +361,25 @@ const TaskListTable = ({
                   <Checkbox checked={isSelectAll} onChange={toggleSelectAll} />
                 </Flex>
               </th>
-              {visibleColumns.map((column) => (
+              {visibleColumns.map(column => (
                 <th
                   key={column.key}
                   className={`${customHeaderColumnStyles(column.key)}`}
-                  style={{ width: column.width, fontWeight: 500 }}
+                  style={{ fontWeight: 500 }}
                 >
-                  {column.key === 'phases' ||
-                  column.key === 'customColumn' ||
-                  column.isCustomColumn
-                    ? column.columnHeader
-                    : t(`${column.columnHeader}Column`)}
+                  {column.key === 'phases' || column.key === 'customColumn' || column.isCustomColumn
+                    ? column.name
+                    : t(`${column.name?.toLowerCase()}Column`)}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {taskList?.map((task) => (
+            {taskList?.map(task => (
               <React.Fragment key={task.id}>
                 <tr
                   key={task.id}
-                  onContextMenu={(e) => handleContextMenu(e, task)}
+                  onContextMenu={e => handleContextMenu(e, task)}
                   className={`${taskList.length === 0 ? 'h-0' : 'h-[42px]'} task-row`}
                 >
                   <td
@@ -451,12 +404,11 @@ const TaskListTable = ({
                       />
                     </Flex>
                   </td>
-                  {visibleColumns.map((column) => (
+                  {visibleColumns.map(column => (
                     <td
                       key={column.key}
                       className={customBodyColumnStyles(column.key)}
                       style={{
-                        width: column.width,
                         backgroundColor: selectedRows.includes(task.id || '')
                           ? themeMode === 'dark'
                             ? '#000'
@@ -472,16 +424,16 @@ const TaskListTable = ({
                             column.customColumnObj.fieldType,
                             task
                           )
-                        : renderColumnContent(column.key, task)}
+                        : renderColumnContent(column.key || '', task)}
                     </td>
                   ))}
                 </tr>
 
                 {expandedTasks.includes(task.id || '') &&
-                  task?.sub_tasks?.map((subtask) => (
+                  task?.sub_tasks?.map(subtask => (
                     <tr
                       key={subtask.id}
-                      onContextMenu={(e) => handleContextMenu(e, subtask)}
+                      onContextMenu={e => handleContextMenu(e, subtask)}
                       className={`${taskList.length === 0 ? 'h-0' : 'h-[42px]'} task-row`}
                     >
                       <td
@@ -507,25 +459,22 @@ const TaskListTable = ({
                       </td>
 
                       {/* other sub tasks cells  */}
-                      {visibleColumns.map((column) => (
+                      {visibleColumns.map(column => (
                         <td
                           key={column.key}
                           className={customBodyColumnStyles(column.key)}
                           style={{
-                            width: column.width,
-                            backgroundColor: selectedRows.includes(
-                              subtask.id || ''
-                            )
+                            backgroundColor: selectedRows.includes(subtask.id || '')
                               ? themeMode === 'dark'
                                 ? '#000'
                                 : '#dceeff'
-                              // : hoverRow === subtask.id
-                              //   ? themeMode === 'dark'
-                              //     ? '#000'
-                              //     : '#f8f7f9'
-                                : themeMode === 'dark'
-                                  ? '#181818'
-                                  : '#fff',
+                              : // : hoverRow === subtask.id
+                                //   ? themeMode === 'dark'
+                                //     ? '#000'
+                                //     : '#f8f7f9'
+                                themeMode === 'dark'
+                                ? '#181818'
+                                : '#fff',
                           }}
                         >
                           {renderColumnContent(column.key, subtask, true)}
@@ -548,7 +497,7 @@ const TaskListTable = ({
       </div>
 
       {/* add a main task to the table  */}
-      <AddTaskListRow groupId={tableId}/>
+      <AddTaskListRow groupId={tableId} />
 
       {/* custom task context menu  */}
       <TaskContextMenu

@@ -31,6 +31,7 @@ type TaskState = {
   fields: ITaskListSortableColumn[];
   tasks: IProjectTask[];
   taskGroups: ITaskListGroup[];
+  loadingColumns: boolean;
   columns: ITaskListColumn[];
   selectedTaskId: string | null;
   showTaskDrawer: boolean;
@@ -51,6 +52,7 @@ const initialState: TaskState = {
   isSubtasksInclude: false,
   fields: [],
   tasks: [],
+  loadingColumns: false,
   columns: [],
   selectedTaskId: null,
   showTaskDrawer: false,
@@ -143,6 +145,14 @@ export const fetchTaskGroups = createAsyncThunk(
       }
       return rejectWithValue('Failed to fetch labels');
     }
+  }
+);
+
+export const fetTaskListColumns = createAsyncThunk(
+  'tasks/fetTaskListColumns',
+  async (projectId: string, { rejectWithValue }) => {
+    const response = await tasksApiService.fetchTaskListColumns(projectId);
+    return response.body;
   }
 );
 
@@ -352,6 +362,14 @@ const taskSlice = createSlice({
       .addCase(fetchTaskAssignees.rejected, (state, action) => {
         state.loadingAssignees = false;
         state.error = action.error.message || 'Failed to fetch task assignees';
+      })
+      .addCase(fetTaskListColumns.pending, state => {
+        state.loadingColumns = true;
+        state.error = null;
+      })
+      .addCase(fetTaskListColumns.fulfilled, (state, action) => {
+        state.loadingColumns = false;
+        state.columns = action.payload;
       });
   },
 });
