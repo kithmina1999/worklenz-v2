@@ -27,7 +27,7 @@ interface TaskListFiltersProps {
 const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
   const { t } = useTranslation('task-list-filters');
   const dispatch = useAppDispatch();
-  // Selectors
+
   const priorities = useAppSelector(state => state.priorityReducer.priorities);
   
   const labels = useAppSelector(state => state.taskLabelsReducer.labels);
@@ -39,7 +39,6 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
     dispatch(toggleArchived());
   }
 
-  // Fetch initial data
   useEffect(() => {
     const fetchInitialData = async () => {
       if (!priorities.length) {

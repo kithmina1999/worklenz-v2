@@ -13,23 +13,7 @@ interface StatusState {
 
 const initialState: StatusState = {
   isCreateStatusDrawerOpen: false,
-  status: [
-    {
-      id: '1',
-      name: 'To Do',
-      category: 'todo',
-    },
-    {
-      id: '2',
-      name: 'Doing',
-      category: 'doing',
-    },
-    {
-      id: '3',
-      name: 'Done',
-      category: 'done',
-    },
-  ],
+  status: [],
 };
 
 const statusSlice = createSlice({

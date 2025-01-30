@@ -206,7 +206,6 @@ const taskSlice = createSlice({
       state.selectedTaskId = action.payload;
     },
 
-    // task crud
     addTask: (
       state,
       action: PayloadAction<{ task: IProjectTask; groupId: string; insert?: boolean }>
@@ -229,11 +228,29 @@ const taskSlice = createSlice({
       }
     },
 
-    deleteTask: (state, action: PayloadAction<string>) => {
-      state.taskGroups = state.taskGroups.map(group => ({
-        ...group,
-        tasks: group.tasks.filter(task => task.id !== action.payload),
-      }));
+    deleteTask: (state, action: PayloadAction<{ taskId: string; index?: number }>) => {
+      const { taskId, index } = action.payload;
+      
+      for (const group of state.taskGroups) {
+        const taskIndex = index ?? group.tasks.findIndex(t => t.id === taskId);
+        if (taskIndex === -1) continue;
+
+        const task = group.tasks[taskIndex];
+        
+        if (task.is_sub_task) {
+          const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
+          if (parentTask?.sub_tasks) {
+            const subTaskIndex = parentTask.sub_tasks.findIndex(t => t.id === task.id);
+            if (subTaskIndex !== -1) {
+              parentTask.sub_tasks_count = Math.max((parentTask.sub_tasks_count || 0) - 1, 0);
+              parentTask.sub_tasks.splice(subTaskIndex, 1);
+            }
+          }
+        } else {
+          group.tasks.splice(taskIndex, 1);
+        }
+        break;
+      }
     },
 
     updateTaskAssignees: (

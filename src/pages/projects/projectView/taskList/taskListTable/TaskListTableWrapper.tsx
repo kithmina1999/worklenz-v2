@@ -56,17 +56,19 @@ const TaskListTableWrapper = ({
   const { t } = useTranslation('task-list-table');
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  const statusList = useAppSelector((state) => state.statusReducer.status);
+  const {statusCategories} = useAppSelector((state) => state.taskStatusReducer);
 
   const handlToggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
   const handleRename = () => {
-    if (onRename) {
-      onRename(tableName);
-    }
+    console.log(tableName);
     setIsRenaming(false);
+    // if (onRename) {
+    //   onRename(tableName);
+    // }
+    // setIsRenaming(false);
   };
 
   const handleCategoryChange = (category: string) => {
@@ -76,20 +78,6 @@ const TaskListTableWrapper = ({
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'todo':
-        return '#d8d7d8';
-      case 'doing':
-        return '#c0d5f6';
-      case 'done':
-        return '#c2e4d0';
-      default:
-        return '#d8d7d8';
-    }
-  };
-
-  // dropdown options
   const items: MenuProps['items'] = [
     {
       key: '1',
@@ -101,14 +89,15 @@ const TaskListTableWrapper = ({
       key: '2',
       icon: <RetweetOutlined />,
       label: 'Change category',
-      children: statusList?.map((status) => ({
+      children: statusCategories?.map((status) => ({
         key: status.id,
         label: (
-          <Flex gap={8} onClick={() => handleCategoryChange(status.category)}>
-            <Badge color={getStatusColor(status.category)} />
+          <Flex gap={8} onClick={() => status.id && handleCategoryChange(status.id)}>
+            <Badge color={status.color_code} />
             {status.name}
           </Flex>
         ),
+        type: 'group',
       })),
     },
   ];
@@ -173,7 +162,7 @@ const TaskListTableWrapper = ({
           )}
         </Flex>
         <Collapse
-          collapsible="header"
+          collapsible="icon"
           className="border-l-[4px]"
           bordered={false}
           ghost={true}

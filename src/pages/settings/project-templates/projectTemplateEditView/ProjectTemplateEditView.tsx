@@ -15,7 +15,7 @@ import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 import React from 'react';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
-const StatusDrawer = React.lazy(() => import('@features/projects/status/StatusDrawer'));
+const StatusDrawer = React.lazy(() => import('@/components/project-task-filters/create-status-drawer/create-status-drawer'));
 
 const ProjectTemplateEditView = () => {
   const dataSource: TaskType[] = useAppSelector(

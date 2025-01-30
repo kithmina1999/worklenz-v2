@@ -39,5 +39,13 @@
   "noLabelsFound": "No labels found",
 
   "addStatusButton": "Add Status",
-  "addPhaseButton": "Add Phase"
+  "addPhaseButton": "Add Phase",
+
+  "createStatus": "Create Status",
+  "name": "Name",
+  "category": "Category",
+  "selectCategory": "Select a category",
+  "pleaseEnterAName": "Please enter a name",
+  "pleaseSelectACategory": "Please select a category",
+  "create": "Create"
 }

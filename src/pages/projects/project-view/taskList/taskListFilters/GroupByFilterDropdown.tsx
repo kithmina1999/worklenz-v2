@@ -5,7 +5,7 @@ import { colors } from '@/styles/colors';
 import ConfigPhaseButton from '@features/projects/singleProject/phase/ConfigPhaseButton';
 import { useSelectedProject } from '@/hooks/useSelectedProject';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import CreateStatusButton from '@features/projects/status/CreateStatusButton';
+import CreateStatusButton from '@/components/project-task-filters/create-status-button/create-status-button';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setGroupBy } from '@features/group-by-filter-dropdown/group-by-filter-dropdown-slice';

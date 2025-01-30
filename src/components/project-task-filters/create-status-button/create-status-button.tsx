@@ -1,8 +1,9 @@
 import { SettingOutlined } from '@ant-design/icons';
-import { Button, Tooltip } from 'antd';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleDrawer } from './StatusSlice';
-import { colors } from '../../../styles/colors';
+import Tooltip from 'antd/es/tooltip';
+import Button from 'antd/es/button';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { toggleDrawer } from '../../../features/projects/status/StatusSlice';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 
 const CreateStatusButton = () => {
