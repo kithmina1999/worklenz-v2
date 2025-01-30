@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Card, Flex, Form, Input, Result, Typography } from 'antd';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import Form from 'antd/es/form';
+import Card from 'antd/es/card';
+import Flex from 'antd/es/flex';
+import Input from 'antd/es/input';
+import Result from 'antd/es/result';
+import Button from 'antd/es/button';
+import Typography from 'antd/es/typography';
+import { LockOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 
-import PageHeader from '../../components/AuthPageHeader';
+import PageHeader from '@components/AuthPageHeader';
 
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';

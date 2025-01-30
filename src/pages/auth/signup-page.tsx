@@ -1,14 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Card, Flex, Form, Input, Space, Typography, message } from 'antd';
-import googleIcon from '../../assets/images/google-icon.png';
+import Form, { Rule } from 'antd/es/form';
+import Card from 'antd/es/card';
+import Input from 'antd/es/input';
+import Flex from 'antd/es/flex';
+import Button from 'antd/es/button';
+import Typography from 'antd/es/typography';
+import Space from 'antd/es/space';
+import message from 'antd/es/message';
+
+import googleIcon from '@/assets/images/google-icon.png';
 import { Link, useNavigate } from 'react-router-dom';
-import PageHeader from '../../components/AuthPageHeader';
+import PageHeader from '@components/AuthPageHeader';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { authApiService } from '@/api/auth/auth.api.service';
 import { IUserSignUpRequest } from '@/types/auth/signup.types';
-import { Rule } from 'antd/es/form';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { signUp } from '@/features/auth/authSlice';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';

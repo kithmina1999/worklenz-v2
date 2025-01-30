@@ -1,6 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import Form, { Rule } from 'antd/es/form';
+import Card from 'antd/es/card';
+import Input from 'antd/es/input';
+import Flex from 'antd/es/flex';
+import Checkbox from 'antd/es/checkbox';
+import Button from 'antd/es/button';
+import Typography from 'antd/es/typography';
+import Space from 'antd/es/space';
+
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Card, Checkbox, Flex, Form, Input, message, Space, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
@@ -12,7 +20,6 @@ import googleIcon from '@assets/images/google-icon.png';
 import { login, verifyAuthentication } from '@/features/auth/authSlice';
 import logger from '@/utils/errorLogger';
 import { setUser } from '@/features/user/userSlice';
-import { Rule } from 'antd/es/form';
 import { setSession } from '@/utils/session-helper';
 import { evt_login_page_visit, evt_login_with_email_click, evt_login_with_google_click, evt_login_remember_me_click } from '@/shared/worklenz-analytics-events';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
@@ -20,6 +27,7 @@ import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import alertService from '@/services/alerts/alertService';
 import { useAuthService } from '@/hooks/useAuth';
 import { WORKLENZ_REDIRECT_PROJ_KEY } from '@/shared/constants';
+import message from 'antd/es/message';
 
 interface LoginFormValues {
   email: string;

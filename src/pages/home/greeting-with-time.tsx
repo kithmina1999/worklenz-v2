@@ -1,6 +1,8 @@
-import { Flex, Typography } from 'antd';
-import { colors } from '../../styles/colors';
-import { greetingString } from '../../utils/greetingString';
+import Flex from 'antd/es/flex';
+import Typography from 'antd/es/typography';
+
+import { colors } from '@/styles/colors';
+import { greetingString } from '@/utils/greetingString';
 import { getUserSession } from '@/utils/session-helper';
 import { currentDateString } from '@/utils/current-date-string';
 

@@ -1,8 +1,10 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { Button, ConfigProvider, Tooltip } from 'antd';
-import React, { useState } from 'react';
+import ConfigProvider from 'antd/es/config-provider';
+import Button from 'antd/es/button';
+import Tooltip from 'antd/es/tooltip';
+import { useState } from 'react';
+
 import { colors } from '@/styles/colors';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { IMyTask } from '@/types/home/my-tasks.types';
 
 type TodoDoneButtonProps = {

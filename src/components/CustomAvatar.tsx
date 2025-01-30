@@ -1,4 +1,6 @@
-import { Avatar, Tooltip } from 'antd';
+import Tooltip from 'antd/es/tooltip';
+import Avatar from 'antd/es/avatar';
+
 import { AvatarNamesMap } from '../shared/constants';
 
 const CustomAvatar = ({

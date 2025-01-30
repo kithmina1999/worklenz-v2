@@ -1,7 +1,11 @@
 import React, { useEffect } from 'react';
-import { Card, Flex, Spin, Typography } from 'antd';
+import Card from 'antd/es/card';
+import Flex from 'antd/es/flex';
+import Spin from 'antd/es/spin';
+import Typography from 'antd/es/typography';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+
 import { verifyAuthentication } from '@/features/auth/authSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setSession } from '@/utils/session-helper';
