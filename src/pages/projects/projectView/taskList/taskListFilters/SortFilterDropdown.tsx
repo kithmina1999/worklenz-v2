@@ -1,8 +1,16 @@
 import { CaretDownFilled, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
-import { Badge, Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
-import { colors } from '../../../../../styles/colors';
+
+import Badge from 'antd/es/badge';
+import Button from 'antd/es/button';
+import Card from 'antd/es/card';
+import Checkbox from 'antd/es/checkbox';
+import Dropdown from 'antd/es/dropdown';
+import List from 'antd/es/list';
+import Space from 'antd/es/space';
+
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { ITaskListSortableColumn } from '@/types/tasks/taskListFilters.types';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setFields } from '@/features/tasks/tasks.slice';

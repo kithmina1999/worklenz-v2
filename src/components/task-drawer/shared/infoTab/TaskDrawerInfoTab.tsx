@@ -116,7 +116,7 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
       <Collapse
         items={infoItems}
         bordered={false}
-        style={{ maxHeight: 600, overflow: 'auto', backgroundColor: themeMode === 'dark' ? 'black' : 'white'}}
+        style={{ maxHeight: 600, overflow: 'auto', }}
         defaultActiveKey={[
           'details',
           'description',

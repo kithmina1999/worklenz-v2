@@ -1,9 +1,17 @@
 import { CaretDownFilled } from '@ant-design/icons';
-import { Badge, Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
-import React, { useMemo } from 'react';
-import { colors } from '@/styles/colors';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import Badge from 'antd/es/badge';
+import Button from 'antd/es/button';
+import Card from 'antd/es/card';
+import Checkbox from 'antd/es/checkbox';
+import Dropdown from 'antd/es/dropdown';
+import List from 'antd/es/list';
+import Space from 'antd/es/space';
+
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
 import { ITaskPriority } from '@/types/tasks/taskPriority.types';
 import { setLabels, setPriorities } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';

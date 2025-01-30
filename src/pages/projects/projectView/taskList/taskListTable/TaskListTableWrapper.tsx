@@ -1,27 +1,26 @@
-import {
-  Badge,
-  Button,
-  Collapse,
-  ConfigProvider,
-  Dropdown,
-  Flex,
-  Input,
-  Typography,
-} from 'antd';
-import React, { useState } from 'react';
-import { TaskType } from '../../../../../types/task.types';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import Flex from 'antd/es/flex';
+import Badge from 'antd/es/badge';
+import Button from 'antd/es/button';
+import Collapse from 'antd/es/collapse';
+import ConfigProvider from 'antd/es/config-provider';
+import Dropdown from 'antd/es/dropdown';
+import Input from 'antd/es/input';
+import Typography from 'antd/es/typography';
+import { MenuProps } from 'antd/es/menu';
+
 import {
   EditOutlined,
   EllipsisOutlined,
   RetweetOutlined,
   RightOutlined,
 } from '@ant-design/icons';
-import { colors } from '../../../../../styles/colors';
+import { colors } from '@/styles/colors';
 import './taskListTableWrapper.css';
 import TaskListTable from './TaskListTable';
-import { MenuProps } from 'antd/lib';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 type TaskListTableWrapperProps = {
@@ -179,11 +178,11 @@ const TaskListTableWrapper = ({
           bordered={false}
           ghost={true}
           expandIcon={() => null}
-          activeKey={isExpanded ? '1' : undefined}
+          activeKey={isExpanded ? tableId : undefined}
           onChange={handlToggleExpand}
           items={[
             {
-              key: '1',
+              key: tableId,
               className: `custom-collapse-content-box relative after:content after:absolute after:h-full after:w-1 after:bg-[${color}] after:z-10 after:top-0 after:left-0`,
               children: <TaskListTable taskList={taskList} tableId={tableId} />,
             },

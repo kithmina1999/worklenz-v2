@@ -1,11 +1,8 @@
-import { Checkbox, Flex, Typography } from 'antd';
-import SearchDropdown from './SearchDropdown';
-import SortFilterDropdown from './SortFilterDropdown';
-import LabelsFilterDropdown from './LabelsFilterDropdown';
-import MembersFilterDropdown from './MembersFilterDropdown';
-import GroupByFilterDropdown from './GroupByFilterDropdown';
-import ShowFieldsFilterDropdown from './ShowFieldsFilterDropdown';
-import PriorityFilterDropdown from './PriorityFilterDropdown';
+import React from 'react';
+import Flex from 'antd/es/flex';
+import Checkbox from 'antd/es/checkbox';
+import Typography from 'antd/es/typography';
+
 import { useTranslation } from 'react-i18next';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 import { fetchPriorities } from '@/features/taskAttributes/taskPrioritySlice';
@@ -14,7 +11,14 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchTaskAssignees, toggleArchived } from '@/features/tasks/tasks.slice';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
+
+const SearchDropdown = React.lazy(() => import('./SearchDropdown'));
+const SortFilterDropdown = React.lazy(() => import('./SortFilterDropdown'));
+const LabelsFilterDropdown = React.lazy(() => import('./LabelsFilterDropdown'));
+const MembersFilterDropdown = React.lazy(() => import('./MembersFilterDropdown'));
+const GroupByFilterDropdown = React.lazy(() => import('./GroupByFilterDropdown'));
+const ShowFieldsFilterDropdown = React.lazy(() => import('./ShowFieldsFilterDropdown'));
+const PriorityFilterDropdown = React.lazy(() => import('./PriorityFilterDropdown'));
 
 interface TaskListFiltersProps {
   position: 'board' | 'list';
@@ -56,17 +60,11 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
   return (
     <Flex gap={8} align="center" justify="space-between">
       <Flex gap={8} wrap={'wrap'}>
-        {/* search dropdown  */}
         <SearchDropdown />
-        {/* sort dropdown  */}
         <SortFilterDropdown />
-        {/* prioriy dropdown  */}
         <PriorityFilterDropdown priorities={priorities} />
-        {/* labels dropdown  */}
         <LabelsFilterDropdown labels={labels} />
-        {/* members dropdown  */}
         <MembersFilterDropdown members={taskAssignees || []} />
-        {/* group by dropdown */}
         <GroupByFilterDropdown />
       </Flex>
 

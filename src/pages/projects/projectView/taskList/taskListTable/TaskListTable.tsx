@@ -1,18 +1,18 @@
+import React, { useEffect, useState } from 'react';
+import DatePicker from 'antd/es/date-picker';
+import Checkbox from 'antd/es/checkbox';
+import Tag from 'antd/es/tag';
+import Tooltip from 'antd/es/tooltip';
+import Input from 'antd/es/input';
+import Typography from 'antd/es/typography';
+import Flex from 'antd/es/flex';
+import { HolderOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
+
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useSelectedProject } from '@/hooks/useSelectedProject';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { useTranslation } from 'react-i18next';
-import React, { useEffect, useState } from 'react';
-import {
-  Checkbox,
-  DatePicker,
-  Flex,
-  Input,
-  Tag,
-  Tooltip,
-  Typography,
-} from 'antd';
-import { HolderOutlined } from '@ant-design/icons';
+
 import { colors } from '@/styles/colors';
 import TaskContextMenu from './context-menu/task-context-menu';
 import AddTaskListRow from './task-list-table-rows/add-task-list-row';

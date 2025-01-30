@@ -1,26 +1,22 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { CaretDownFilled } from '@ant-design/icons';
-import {
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  Dropdown,
-  Empty,
-  Flex,
-  Input,
-  InputRef,
-  List,
-  Space,
-  Typography,
-} from 'antd';
-import React, { useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { colors } from '../../../../../styles/colors';
-import CustomAvatar from '../../../../../components/CustomAvatar';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { CaretDownFilled } from '@ant-design/icons';
+import Badge from 'antd/es/badge';
+import Button from 'antd/es/button';
+import Card from 'antd/es/card';
+import Checkbox from 'antd/es/checkbox';
+import Dropdown from 'antd/es/dropdown';
+import Empty from 'antd/es/empty';
+import Flex from 'antd/es/flex';
+import Input, { InputRef } from 'antd/es/input';
+import List from 'antd/es/list';
+import Space from 'antd/es/space';
+import Typography from 'antd/es/typography';
+
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
 import { ITaskListMemberFilter } from '@/types/tasks/taskList.types';
-import SingleAvatar from '@/components/common/single-avatar/single-avatar';
+import SingleAvatar from '@components/common/single-avatar/single-avatar';
 
 const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
   const [selectedCount, setSelectedCount] = useState<number>(0);

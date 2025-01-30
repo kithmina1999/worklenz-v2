@@ -184,7 +184,7 @@ const taskSlice = createSlice({
 
     setPriorities: (state, action: PayloadAction<string[]>) => {
       state.priorities = action.payload;
-    },  
+    },
 
     setStatuses: (state, action: PayloadAction<ITaskStatusViewModel[]>) => {
       state.statuses = action.payload;
@@ -207,15 +207,25 @@ const taskSlice = createSlice({
     },
 
     // task crud
-    addTask: (state, action: PayloadAction<any>) => {
-      const newTask = action.payload;
-      console.log('addTask', newTask);
-      const group = state.taskGroups.find(group => group.id === newTask.groupId);
-      if (group) {
-        const taskExists = group.tasks.some(task => task.id === newTask.id);
-        if (!taskExists) {
-          group.tasks.push(newTask);
+    addTask: (
+      state,
+      action: PayloadAction<{ task: IProjectTask; groupId: string; insert?: boolean }>
+    ) => {
+      const { task, groupId, insert = false } = action.payload;
+      const group = state.taskGroups.find(g => g.id === groupId);
+
+      if (!group || !task.id) return;
+
+      if (task.parent_task_id) {
+        const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
+        if (parentTask) {
+          parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
+          if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
+          parentTask.sub_tasks.push(task);
         }
+      } else {
+        insert ? group.tasks.push(task) : group.tasks.unshift(task);
+        console.log('addTask', group.tasks);
       }
     },
 

@@ -1,18 +1,15 @@
-import { Input, InputRef, theme } from 'antd';
-import React, { useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import { colors } from '../../../../../../styles/colors';
+import Input, { InputRef } from 'antd/es/input';
+import { useMemo, useRef, useState } from 'react';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
-import { addTask } from '@/features/project/project.slice';
 import { SocketEvents } from '@/shared/socket-events';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { reset } from 'mixpanel-browser';
 import { DRAWER_ANIMATION_INTERVAL } from '@/shared/constants';
-import { getCurrentGroup, GROUP_BY_STATUS_VALUE, GROUP_BY_PRIORITY_VALUE, GROUP_BY_PHASE_VALUE } from '@/features/tasks/tasks.slice';
+import { getCurrentGroup, GROUP_BY_STATUS_VALUE, GROUP_BY_PRIORITY_VALUE, GROUP_BY_PHASE_VALUE, addTask } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useSocket } from '@/socket/socketContext';
 import { ITaskCreateRequest } from '@/types/tasks/task-create-request.types';
-import { ILocalSession } from '@/types/auth/local-session.types';
 import { useAuthService } from '@/hooks/useAuth';
 
 interface IAddTaskListRowProps {
@@ -36,7 +33,6 @@ const AddTaskListRow = ({
   const currentSession = useAuthService().getCurrentSession();
 
   const { socket } = useSocket();
-  const { token } = theme.useToken();
 
   const { t } = useTranslation('task-list-table');
 
@@ -65,8 +61,6 @@ const AddTaskListRow = ({
     if (parentTask) {
       body.parent_task_id = parentTask;
     }
-    console.log('createRequestBody', body);
-
     return body;
   };
 
@@ -81,20 +75,15 @@ const AddTaskListRow = ({
     setTimeout(() => {
       taskInputRef.current?.focus();
       if (scroll) window.scrollTo(0, document.body.scrollHeight);
-    }, DRAWER_ANIMATION_INTERVAL); // wait for the animation end
+    }, DRAWER_ANIMATION_INTERVAL);
   };
   
   const onNewTaskReceived = (task: IAddNewTask) => {
     if (!groupId) return;
-    console.log('onNewTaskReceived', task);
     task.groupId = groupId;
     if (groupId && task.id) {
-      dispatch(addTask(task));
+      dispatch(addTask({ task, groupId, insert: true }));
       reset(false);
-      // if (this.map.has(task.id)) return;
-
-      // this.service.addTask(task, this.groupId);
-      // this.reset(false);
     }
   };
   

@@ -1,10 +1,18 @@
-import { setSearch } from '@/features/tasks/tasks.slice';
-import { SearchOutlined } from '@ant-design/icons';
-import { Button, Card, Dropdown, Flex, Input, InputRef, Space } from 'antd';
-import React, { useRef, useState, useMemo, useCallback } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import debounce from 'lodash/debounce';
+
+import { InputRef } from 'antd/es/input';
+import Button from 'antd/es/button';
+import Card from 'antd/es/card';
+import Flex from 'antd/es/flex';
+import Input from 'antd/es/input';
+import Space from 'antd/es/space';
+import Dropdown from 'antd/es/dropdown';
+
+import { setSearch } from '@/features/tasks/tasks.slice';
+import { SearchOutlined } from '@ant-design/icons';
 
 const SearchDropdown = () => {
   const { t } = useTranslation('task-list-filters');
@@ -35,24 +43,27 @@ const SearchDropdown = () => {
   }, []);
 
   // Memoized dropdown content
-  const searchDropdownContent = useMemo(() => (
-    <Card className="custom-card" styles={{ body: { padding: 8, width: 360 } }}>
-      <Flex vertical gap={8}>
-        <Input 
-          ref={searchInputRef} 
-          value={searchValue} 
-          onChange={handleSearchChange}
-          placeholder={t('searchInputPlaceholder')} 
-        />
-        <Space>
-          <Button type="primary" onClick={handleSearch}>
-            {t('searchButton')}
-          </Button>
-          <Button onClick={handleReset}>{t('resetButton')}</Button>
-        </Space>
-      </Flex>
-    </Card>
-  ), [searchValue, handleSearch, handleReset, handleSearchChange, t]);
+  const searchDropdownContent = useMemo(
+    () => (
+      <Card className="custom-card" styles={{ body: { padding: 8, width: 360 } }}>
+        <Flex vertical gap={8}>
+          <Input
+            ref={searchInputRef}
+            value={searchValue}
+            onChange={handleSearchChange}
+            placeholder={t('searchInputPlaceholder')}
+          />
+          <Space>
+            <Button type="primary" onClick={handleSearch}>
+              {t('searchButton')}
+            </Button>
+            <Button onClick={handleReset}>{t('resetButton')}</Button>
+          </Space>
+        </Flex>
+      </Card>
+    ),
+    [searchValue, handleSearch, handleReset, handleSearchChange, t]
+  );
 
   const handleSearchDropdownOpen = useCallback((open: boolean) => {
     setIsOpen(open);

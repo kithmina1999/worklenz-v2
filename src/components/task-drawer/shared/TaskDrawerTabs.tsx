@@ -1,17 +1,15 @@
-import { Tabs } from 'antd';
-import { TabsProps } from 'antd/lib';
-import React from 'react';
+import Tabs, { TabsProps } from 'antd/es/tabs';
+
 import TaskDrawerInfoTab from './infoTab/TaskDrawerInfoTab';
 import TaskDrawerTimeLog from './timeLog/TaskDrawerTimeLog';
 import TaskDrawerActivityLog from './activityLog/TaskDrawerActivityLog';
 
-const TaskDrawerTabs = ({
-  drawerType,
-  taskId = null,
-}: {
+interface TaskDrawerTabsProps {
   drawerType: 'create' | 'update';
   taskId?: string | null;
-}) => {
+}
+
+const TaskDrawerTabs = ({ drawerType = 'create', taskId = null }: TaskDrawerTabsProps) => {
   const tabItems: TabsProps['items'] = [
     {
       key: 'info',

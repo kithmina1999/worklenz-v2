@@ -1,6 +1,5 @@
-import React from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { Flex } from 'antd';
+import Flex from 'antd/es/flex';
 import TaskListTableWrapper from '@/pages/projects/projectView/taskList/taskListTable/TaskListTableWrapper';
 import { createPortal } from 'react-dom';
 import BulkTasksActionContainer from '@features/projects/bulkActions/BulkTasksActionContainer';
@@ -14,19 +13,15 @@ interface TaskGroupWrapperProps {
 }
 
 const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
-
   const dispatch = useAppDispatch();
 
-  // get bulk action detatils
-  const selectedTaskIdsList = useAppSelector(
-    (state) => state.bulkActionReducer.selectedTaskIdsList
-  );
+  const selectedTaskIdsList = useAppSelector(state => state.bulkActionReducer.selectedTaskIdsList);
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   return (
     <Flex gap={24} vertical>
-      {taskGroups.map((taskGroup) => (
+      {taskGroups.map(taskGroup => (
         <TaskListTableWrapper
           key={taskGroup.id}
           taskList={taskGroup.tasks}

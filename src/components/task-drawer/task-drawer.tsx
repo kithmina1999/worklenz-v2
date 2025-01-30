@@ -1,8 +1,10 @@
-import { Drawer, InputRef } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import Drawer from 'antd/es/drawer';
+import { InputRef } from 'antd/es/input';
+
+import { useEffect, useRef, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setShowTaskDrawer, toggleTaskDrawer } from '@/features/tasks/tasks.slice';
+import { setShowTaskDrawer } from '@/features/tasks/tasks.slice';
 
 import './task-drawer.css';
 import TaskDrawerHeader from './shared/TaskDrawerHeader';

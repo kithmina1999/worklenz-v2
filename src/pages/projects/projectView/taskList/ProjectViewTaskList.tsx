@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
-import { Flex, Skeleton } from 'antd';
+import { useEffect } from 'react';
+import Flex from 'antd/es/flex';
+import Skeleton from 'antd/es/skeleton';
+
 import TaskListFilters from './taskListFilters/TaskListFilters';
-import { useAppSelector } from '../../../../hooks/useAppSelector';
 import TaskGroupWrapper from './groupTables/task-group-wrapper/task-group-wrapper';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchTaskGroups } from '@/features/tasks/tasks.slice';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';

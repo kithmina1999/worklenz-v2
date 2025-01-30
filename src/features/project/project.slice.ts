@@ -110,10 +110,19 @@ const projectSlice = createSlice({
           parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
           if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
           parentTask.sub_tasks.push(task);
+          
+          // Add subtask to the main tasks array if subtasks are included
+          if (state.isSubtasksIncluded) {
+            const parentIndex = group.tasks.indexOf(parentTask);
+            if (parentIndex !== -1) {
+              group.tasks.splice(parentIndex + 1, 0, task);
+            }
+          }
         }
       } else {
         insert ? group.tasks.unshift(task) : group.tasks.push(task);
       }
+      console.log('addTask', group.tasks);
     },
     deleteTask: (state, action: PayloadAction<{ taskId: string; index?: number }>) => {
       const { taskId, index } = action.payload;
