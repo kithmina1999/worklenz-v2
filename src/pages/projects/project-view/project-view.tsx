@@ -14,8 +14,6 @@ import { getProject, setProject, setProjectId } from '@/features/project/project
 import ProjectViewHeader from './project-view-header';
 import ProjectViewExtra from './project-view-extra';
 import ProjectMemberDrawer from '@features/projects/singleProject/members/ProjectMemberDrawer';
-import PhaseDrawer from '@features/projects/singleProject/phase/PhaseDrawer';
-import StatusDrawer from '@features/projects/status/StatusDrawer';
 
 // Hooks
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
@@ -27,9 +25,14 @@ import { getFromLocalStorage, saveToLocalStorage } from '@utils/localStorageFunc
 
 // Styles
 import './project-view.css';
+
 import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
+import React from 'react';
+
+const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
+const StatusDrawer = React.lazy(() => import('@features/projects/status/StatusDrawer'));
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 const ProjectView = () => {
   const location = useLocation();

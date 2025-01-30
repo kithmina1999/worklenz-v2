@@ -5,7 +5,8 @@ import { fetchData } from '@/utils/fetchData';
 import MembersReportsTasksTable from './MembersReportsTasksTable';
 import ProjectFilter from './ProjectFilter';
 import { useTranslation } from 'react-i18next';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
+
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 type MembersReportsTasksTabProps = {
   memberId: string | null;

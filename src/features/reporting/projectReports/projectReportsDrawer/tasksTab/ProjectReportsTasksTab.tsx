@@ -5,7 +5,8 @@ import GroupByFilter from './GroupByFilter';
 import ProjectReportsTasksTable from './ProjectReportsTaskTable';
 import { fetchData } from '@/utils/fetchData';
 import { useTranslation } from 'react-i18next';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
+
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 type ProjectReportsTasksTabProps = {
   projectId?: string | null;

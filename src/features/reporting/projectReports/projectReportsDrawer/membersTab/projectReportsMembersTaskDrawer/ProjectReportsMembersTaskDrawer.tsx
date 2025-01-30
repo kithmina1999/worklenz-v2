@@ -9,7 +9,8 @@ import ProjectReportsMembersTasksTable from './ProjectReportsMembersTaskTable';
 import CustomSearchbar from '@/components/CustomSearchbar';
 import { fetchData } from '@/utils/fetchData';
 import { useTranslation } from 'react-i18next';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
+
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 const ProjectReportsMembersTaskDrawer = () => {
   const [taskData, setTaskData] = useState<any[]>([]);

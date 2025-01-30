@@ -4,7 +4,8 @@ import { fetchData } from '@/utils/fetchData';
 import EmptyListPlaceholder from '@/components/EmptyListPlaceholder';
 import ActivityLogCard from './ActivityLogCard';
 import { useTranslation } from 'react-i18next';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
+
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 type MembersReportsActivityLogsTabProps = {
   memberId: string | null;
@@ -46,7 +47,7 @@ const MembersReportsActivityLogsTab = ({
       )}
 
       {/* update task drawer  */}
-      <TaskDrawer taskId={selectedTaskId || ''} />
+      <TaskDrawer />
     </>
   );
 };

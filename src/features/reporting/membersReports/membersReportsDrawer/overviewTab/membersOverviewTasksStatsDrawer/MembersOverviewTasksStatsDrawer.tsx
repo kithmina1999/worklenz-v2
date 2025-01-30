@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { toggleMembersOverviewTasksStatsDrawer } from '../../../membersReportsSlice';
 import { fetchData } from '@/utils/fetchData';
 import MembersOverviewTasksStatsTable from './MembersOverviewTasksStatsTable';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
+
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 type MembersOverviewTasksStatsDrawerProps = {
   memberId: string | null;

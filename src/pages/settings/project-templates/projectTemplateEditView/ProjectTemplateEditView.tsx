@@ -11,9 +11,11 @@ import { useSelectedProject } from '../../../../hooks/useSelectedProject';
 import { useTranslation } from 'react-i18next';
 import { toggleDrawer as togglePhaseDrawer } from '../../../../features/projects/singleProject/phase/phaseSlice';
 import { toggleDrawer } from '../../../../features/projects/status/StatusSlice';
-import PhaseDrawer from '../../../../features/projects/singleProject/phase/PhaseDrawer';
-import StatusDrawer from '../../../../features/projects/status/StatusDrawer';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
+import React from 'react';
+
+const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
+const StatusDrawer = React.lazy(() => import('@features/projects/status/StatusDrawer'));
 
 const ProjectTemplateEditView = () => {
   const dataSource: TaskType[] = useAppSelector(
@@ -23,6 +25,7 @@ const ProjectTemplateEditView = () => {
   const navigate = useNavigate();
   const { templateId, templateName } = useParams();
   type GroupTypes = 'status' | 'priority' | 'phase';
+
 
   const [activeGroup, setActiveGroup] = useState<GroupTypes>('status');
 

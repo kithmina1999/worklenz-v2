@@ -13,21 +13,18 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ListView from './list-view';
 import CalendarView from './calendar-view';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
-import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
 import { colors } from '@/styles/colors';
-import { fetchHomeTasks, setHomeTasksConfig } from '@/features/home-page/home-page.slice';
+import { setHomeTasksConfig } from '@/features/home-page/home-page.slice';
 import { IMyTask } from '@/types/home/my-tasks.types';
-import { ITaskStatus } from '@/types/tasks/taskStatus.types';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import { toggleTaskDrawer } from '@/features/tasks/tasks.slice';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
 import { useGetMyTasksQuery } from '@/api/home-page/home-page.api.service';
 import { IHomeTasksModel } from '@/types/home/home-page.types';
 import type { Dayjs } from 'dayjs';
@@ -35,6 +32,8 @@ import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import './tasks-list.css';
 import HomeTasksStatusDropdown from '@/components/home-tasks/statusDropdown/home-tasks-status-dropdown';
+
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 const TasksList: React.FC = React.memo(() => {
   const dispatch = useAppDispatch();

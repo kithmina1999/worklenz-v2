@@ -5,7 +5,8 @@ import { fetchData } from '@/utils/fetchData';
 import TimeLogCard from './TimeLogCard';
 import EmptyListPlaceholder from '../../../../../components/EmptyListPlaceholder';
 import { useTranslation } from 'react-i18next';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
+
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 type MembersReportsTimeLogsTabProps = {
   memberId: string | null;
