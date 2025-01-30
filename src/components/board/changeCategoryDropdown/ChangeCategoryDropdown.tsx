@@ -12,12 +12,10 @@ interface ChangeCategoryDropdownProps {
   id: string;
 }
 
-const ChangeCategoryDropdown: React.FC<ChangeCategoryDropdownProps> = ({
-  id,
-}) => {
+const ChangeCategoryDropdown: React.FC<ChangeCategoryDropdownProps> = ({ id }) => {
   const dispatch = useAppDispatch();
   // const [currentStatus, setCurrentStatus] = useState(category);
-  const {t} = useTranslation('kanban-board')
+  const { t } = useTranslation('kanban-board');
 
   const getStatuColor = (status: TaskStatusType) => {
     if (status === 'todo') return colors.deepLightGray;
@@ -55,7 +53,7 @@ const ChangeCategoryDropdown: React.FC<ChangeCategoryDropdownProps> = ({
     },
   ];
 
-  const onClick: MenuProps['onClick'] = (e) => {
+  const onClick: MenuProps['onClick'] = e => {
     if (e.key === 'todo') {
       dispatch(updateStatusCategory({ id: id, category: 'todo' }));
     } else if (e.key === 'doing') {

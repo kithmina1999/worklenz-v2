@@ -13,29 +13,26 @@ type HealthStatusDataType = {
 };
 
 const ProjectHealthCell = () => {
-  const [projectHealth, setProjectHealth] =
-    useState<HealthStatusDataType | null>(healthStatusData[0] || null);
+  const [projectHealth, setProjectHealth] = useState<HealthStatusDataType | null>(
+    healthStatusData[0] || null
+  );
 
   // localization
   const { t } = useTranslation('reporting-projects');
 
   // health selection options
-  const healthOptions = healthStatusData.map((status) => ({
+  const healthOptions = healthStatusData.map(status => ({
     key: status.value,
     label: (
-      <Typography.Text
-        style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-      >
+      <Typography.Text style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <Badge color={status.color} /> {t(`${status.value}Text`)}
       </Typography.Text>
     ),
   }));
 
   // handle health status select
-  const onClick: MenuProps['onClick'] = (e) => {
-    const selectedStatus = healthStatusData.find(
-      (status) => status.value === e.key
-    );
+  const onClick: MenuProps['onClick'] = e => {
+    const selectedStatus = healthStatusData.find(status => status.value === e.key);
     if (selectedStatus) {
       setProjectHealth(selectedStatus);
     }
@@ -47,11 +44,7 @@ const ProjectHealthCell = () => {
       key: '1',
       label: (
         <Card className="project-health-dropdown-card" bordered={false}>
-          <Menu
-            className="project-health-menu"
-            items={healthOptions}
-            onClick={onClick}
-          />
+          <Menu className="project-health-menu" items={healthOptions} onClick={onClick} />
         </Card>
       ),
     },

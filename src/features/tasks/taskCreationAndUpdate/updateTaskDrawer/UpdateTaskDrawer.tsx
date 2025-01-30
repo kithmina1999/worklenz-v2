@@ -11,16 +11,14 @@ const UpdateTaskDrawer = ({ taskId }: { taskId: string }) => {
   const [taskName, setTaskName] = useState<string>('Untitled Task');
 
   // get create task drawer state from task slice
-  const isDrawerOpen = useAppSelector(
-    (state) => state.taskReducer.isUpdateTaskDrawerOpen
-  );
+  const isDrawerOpen = useAppSelector(state => state.taskReducer.isUpdateTaskDrawerOpen);
 
   // auto focused when open the drawer
   const taskNameInputRef = useRef<InputRef>(null);
 
   // get currently selected task
-  const selectedTask = useAppSelector((state) => state.taskReducer.tasks).find(
-    (task) => task.taskId === taskId
+  const selectedTask = useAppSelector(state => state.taskReducer.tasks).find(
+    task => task.taskId === taskId
   );
 
   // Load task details into state when selectedTask changes

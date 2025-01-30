@@ -240,13 +240,13 @@ const taskSlice = createSlice({
 
     deleteTask: (state, action: PayloadAction<{ taskId: string; index?: number }>) => {
       const { taskId, index } = action.payload;
-      
+
       for (const group of state.taskGroups) {
         const taskIndex = index ?? group.tasks.findIndex(t => t.id === taskId);
         if (taskIndex === -1) continue;
 
         const task = group.tasks[taskIndex];
-        
+
         if (task.is_sub_task) {
           const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
           if (parentTask?.sub_tasks) {

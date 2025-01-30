@@ -13,7 +13,11 @@ import { IProjectCategory } from '@/types/project/projectCategory.types';
 import { useTranslation } from 'react-i18next';
 
 const ProjectCategoryCell = ({ id, name, color_code }: IProjectCategory) => {
-  const [projectCategory, setProjectCategory] = useState<IProjectCategory>({ id, name, color_code });
+  const [projectCategory, setProjectCategory] = useState<IProjectCategory>({
+    id,
+    name,
+    color_code,
+  });
 
   const categoryInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -22,38 +26,32 @@ const ProjectCategoryCell = ({ id, name, color_code }: IProjectCategory) => {
   const { t } = useTranslation('reporting-projects');
 
   //   get theme from theme slice
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // get categories list from the categories reducer
-  const categoriesList = useAppSelector(
-    (state) => state.categoriesReducer.categoriesList,
-  );
+  const categoriesList = useAppSelector(state => state.categoriesReducer.categoriesList);
   const dispatch = useAppDispatch();
 
   // filter categories based on search query
   const filteredCategoriesData = useMemo(() => {
-    return categoriesList.filter((category) =>
-      category.name?.toLowerCase().includes(searchQuery.toLowerCase()),
+    return categoriesList.filter(category =>
+      category.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [categoriesList, searchQuery]);
 
   // category selection options
-  const categoryOptions = filteredCategoriesData.map((category) => ({
+  const categoryOptions = filteredCategoriesData.map(category => ({
     key: category.id,
     label: (
-      <Typography.Text
-        style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-      >
+      <Typography.Text style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <Badge color={category.color_code} /> {category.name}
       </Typography.Text>
     ),
   }));
 
   // handle category select
-  const onClick: MenuProps['onClick'] = (e) => {
-    const selectedCategory = filteredCategoriesData.find(
-      (category) => category.id === e.key,
-    );
+  const onClick: MenuProps['onClick'] = e => {
+    const selectedCategory = filteredCategoriesData.find(category => category.id === e.key);
     if (selectedCategory) {
       setProjectCategory(selectedCategory);
     }
@@ -83,13 +81,11 @@ const ProjectCategoryCell = ({ id, name, color_code }: IProjectCategory) => {
             <Input
               ref={categoryInputRef}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.currentTarget.value)}
+              onChange={e => setSearchQuery(e.currentTarget.value)}
               placeholder={t('searchByNameInputPlaceholder')}
-              onKeyDown={(e) => {
+              onKeyDown={e => {
                 const isCategory = filteredCategoriesData.findIndex(
-                  (category) =>
-                    category.name?.toLowerCase() ===
-                    searchQuery.toLowerCase(),
+                  category => category.name?.toLowerCase() === searchQuery.toLowerCase()
                 );
                 if (isCategory === -1 && e.key === 'Enter') {
                   // handle category creation logic
@@ -104,11 +100,7 @@ const ProjectCategoryCell = ({ id, name, color_code }: IProjectCategory) => {
             )}
           </Flex>
 
-          <Menu
-            className="project-category-menu"
-            items={categoryOptions}
-            onClick={onClick}
-          />
+          <Menu className="project-category-menu" items={categoryOptions} onClick={onClick} />
         </Card>
       ),
     },
@@ -141,21 +133,15 @@ const ProjectCategoryCell = ({ id, name, color_code }: IProjectCategory) => {
           textTransform: 'capitalize',
           fontSize: 13,
           height: 22,
-          backgroundColor: projectCategory.id
-            ? projectCategory.color_code
-            : colors.transparent,
+          backgroundColor: projectCategory.id ? projectCategory.color_code : colors.transparent,
           color: projectCategory.id
             ? themeWiseColor(colors.white, colors.darkGray, themeMode)
             : themeWiseColor(colors.darkGray, colors.white, themeMode),
-          border: projectCategory.id
-            ? 'none'
-            : `1px solid ${colors.deepLightGray}`,
+          border: projectCategory.id ? 'none' : `1px solid ${colors.deepLightGray}`,
           cursor: 'pointer',
         }}
       >
-        {projectCategory.id
-          ? projectCategory.name
-          : t('setCategoryText')}
+        {projectCategory.id ? projectCategory.name : t('setCategoryText')}
 
         <DownOutlined />
       </Flex>

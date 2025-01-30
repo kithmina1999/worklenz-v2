@@ -1,16 +1,5 @@
 import { CaretDownFilled } from '@ant-design/icons';
-import {
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  Dropdown,
-  Empty,
-  Flex,
-  Input,
-  InputRef,
-  List,
-} from 'antd';
+import { Badge, Button, Card, Checkbox, Dropdown, Empty, Flex, Input, InputRef, List } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -51,7 +40,7 @@ const ProjectCategoriesFilterDropdown = () => {
 
   // used useMemo hook for re render the list when searching
   const filteredCategoryData = useMemo(() => {
-    return categoryList.filter((category) =>
+    return categoryList.filter(category =>
       category.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [categoryList, searchQuery]);
@@ -74,13 +63,13 @@ const ProjectCategoriesFilterDropdown = () => {
         <Input
           ref={categoryInputRef}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          onChange={e => setSearchQuery(e.currentTarget.value)}
           placeholder={t('searchByCategoryPlaceholder')}
         />
 
         <List style={{ padding: 0 }}>
           {filteredCategoryData.length ? (
-            filteredCategoryData.map((category) => (
+            filteredCategoryData.map(category => (
               <List.Item
                 className="custom-list-item"
                 key={category.categoryId}

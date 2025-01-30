@@ -42,7 +42,11 @@ import './project-list.css';
 import { useAuthService } from '@/hooks/useAuth';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setFilteredCategories, setFilteredStatuses, setRequestParams } from '@/features/projects/projectsSlice';
+import {
+  setFilteredCategories,
+  setFilteredStatuses,
+  setRequestParams,
+} from '@/features/projects/projectsSlice';
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
@@ -69,7 +73,9 @@ const ProjectList: React.FC = () => {
     localStorage.setItem(PROJECT_SORT_ORDER, order);
   }, []);
 
-  const { requestParams, filteredCategories, filteredStatuses } = useAppSelector(state => state.projectsReducer);
+  const { requestParams, filteredCategories, filteredStatuses } = useAppSelector(
+    state => state.projectsReducer
+  );
 
   const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
   const { projectHealths } = useAppSelector(state => state.projectHealthReducer);

@@ -11,12 +11,7 @@ import Input from 'antd/es/input';
 import Typography from 'antd/es/typography';
 import { MenuProps } from 'antd/es/menu';
 
-import {
-  EditOutlined,
-  EllipsisOutlined,
-  RetweetOutlined,
-  RightOutlined,
-} from '@ant-design/icons';
+import { EditOutlined, EllipsisOutlined, RetweetOutlined, RightOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import './taskListTableWrapper.css';
 import TaskListTable from './TaskListTable';
@@ -49,14 +44,12 @@ const TaskListTableWrapper = ({
   const [tableName, setTableName] = useState<string>(name);
   const [isRenaming, setIsRenaming] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
-  const [currentCategory, setCurrentCategory] = useState<string | null>(
-    statusCategory
-  );
+  const [currentCategory, setCurrentCategory] = useState<string | null>(statusCategory);
 
   const { t } = useTranslation('task-list-table');
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  const {statusCategories} = useAppSelector((state) => state.taskStatusReducer);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
 
   const handlToggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -89,7 +82,7 @@ const TaskListTableWrapper = ({
       key: '2',
       icon: <RetweetOutlined />,
       label: 'Change category',
-      children: statusCategories?.map((status) => ({
+      children: statusCategories?.map(status => ({
         key: status.id,
         label: (
           <Flex gap={8} onClick={() => status.id && handleCategoryChange(status.id)}>
@@ -136,7 +129,7 @@ const TaskListTableWrapper = ({
               <Input
                 size="small"
                 value={tableName}
-                onChange={(e) => setTableName(e.target.value)}
+                onChange={e => setTableName(e.target.value)}
                 onBlur={handleRename}
                 onPressEnter={handleRename}
                 autoFocus
@@ -154,10 +147,7 @@ const TaskListTableWrapper = ({
           </Button>
           {groupBy === 'status' && !isRenaming && (
             <Dropdown menu={{ items }}>
-              <Button
-                icon={<EllipsisOutlined />}
-                className="borderless-icon-btn"
-              />
+              <Button icon={<EllipsisOutlined />} className="borderless-icon-btn" />
             </Dropdown>
           )}
         </Flex>

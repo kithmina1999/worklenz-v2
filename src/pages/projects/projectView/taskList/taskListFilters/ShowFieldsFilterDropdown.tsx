@@ -18,19 +18,14 @@ const ShowFieldsFilterDropdown = () => {
   const dispatch = useAppDispatch();
 
   // access the updated columnList with isVisible properties
-  const columnList = useAppSelector(
-    (state) => state.projectViewTaskListColumnsReducer.columnList
-  );
+  const columnList = useAppSelector(state => state.projectViewTaskListColumnsReducer.columnList);
 
   // remove the task and selector columns as they are fixed
   const visibilityChangableColumnList = columnList.filter(
-    (column) =>
-      column.key !== 'selector' &&
-      column.key !== 'task' &&
-      column.key !== 'customColumn'
+    column => column.key !== 'selector' && column.key !== 'task' && column.key !== 'customColumn'
   );
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const showFieldsDropdownContent = (
     <Card
@@ -39,7 +34,7 @@ const ShowFieldsFilterDropdown = () => {
       styles={{ body: { padding: 0 } }}
     >
       <List style={{ padding: 0 }}>
-        {visibilityChangableColumnList.map((col) => (
+        {visibilityChangableColumnList.map(col => (
           <List.Item
             key={col.key}
             className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
@@ -57,9 +52,7 @@ const ShowFieldsFilterDropdown = () => {
               />
               {col.isCustomColumn
                 ? col.name
-                : t(
-                    `${col.key === 'phases' ? 'phasesText' : col.columnHeader + 'Text'}`
-                  )}
+                : t(`${col.key === 'phases' ? 'phasesText' : col.columnHeader + 'Text'}`)}
             </Space>
           </List.Item>
         ))}

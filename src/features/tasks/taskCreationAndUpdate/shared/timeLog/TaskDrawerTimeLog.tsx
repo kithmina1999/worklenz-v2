@@ -1,8 +1,4 @@
-import {
-  DownloadOutlined,
-  PlayCircleFilled,
-  PlusOutlined,
-} from '@ant-design/icons';
+import { DownloadOutlined, PlayCircleFilled, PlusOutlined } from '@ant-design/icons';
 import { Button, Divider, Flex, Typography } from 'antd';
 import React, { useState } from 'react';
 import { colors } from '../../../../../styles/colors';
@@ -40,24 +36,16 @@ const TaskDrawerTimeLog = () => {
   const [hoverRow, setHoverRow] = useState<string | null>(null);
 
   // get theme details from theme slice
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   return (
-    <Flex
-      vertical
-      justify="space-between"
-      style={{ width: '100%', height: '78vh' }}
-    >
+    <Flex vertical justify="space-between" style={{ width: '100%', height: '78vh' }}>
       <Flex vertical>
         <Flex align="center" justify="space-between" style={{ width: '100%' }}>
-          <Typography.Text type="secondary">
-            Total Logged: 0m 0s
-          </Typography.Text>
+          <Typography.Text type="secondary">Total Logged: 0m 0s</Typography.Text>
           <Flex gap={8} align="center">
             <Flex gap={4} align="center">
-              <PlayCircleFilled
-                style={{ color: colors.skyBlue, fontSize: 22 }}
-              />
+              <PlayCircleFilled style={{ color: colors.skyBlue, fontSize: 22 }} />
               <Typography.Text style={{ fontSize: 12 }}>0m 0s</Typography.Text>
             </Flex>
             <Button size="small" icon={<DownloadOutlined />}>
@@ -70,10 +58,7 @@ const TaskDrawerTimeLog = () => {
           <TimeLogList timeLoggedList={timeLoggedList} />
         ) : (
           <Flex vertical gap={8} align="center">
-            <EmptyListPlaceholder
-              text="No time logs found in the task."
-              imageHeight={120}
-            />
+            <EmptyListPlaceholder text="No time logs found in the task." imageHeight={120} />
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -122,9 +107,7 @@ const TaskDrawerTimeLog = () => {
         </Flex>
       )}
 
-      {isAddTimelogFormShow && (
-        <TimeLogForm onCancel={() => setIsTimeLogFormShow(false)} />
-      )}
+      {isAddTimelogFormShow && <TimeLogForm onCancel={() => setIsTimeLogFormShow(false)} />}
     </Flex>
   );
 };

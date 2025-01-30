@@ -43,7 +43,12 @@ const TasksList: React.FC = React.memo(() => {
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const { homeTasksConfig } = useAppSelector(state => state.homePageReducer);
-  const { data, isFetching: homeTasksFetching, refetch, isLoading } = useGetMyTasksQuery(homeTasksConfig);
+  const {
+    data,
+    isFetching: homeTasksFetching,
+    refetch,
+    isLoading,
+  } = useGetMyTasksQuery(homeTasksConfig);
 
   const { t } = useTranslation('home');
   const { model } = useAppSelector(state => state.homePageReducer);
@@ -113,9 +118,7 @@ const TasksList: React.FC = React.memo(() => {
         render: (_, record) => (
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Tooltip title={record.name}>
-              <Typography.Text>
-                {record.name}
-              </Typography.Text>
+              <Typography.Text>{record.name}</Typography.Text>
             </Tooltip>
             <div className="row-action-button">
               <Tooltip title={'Click open task form'}>
@@ -156,10 +159,7 @@ const TasksList: React.FC = React.memo(() => {
         title: t('tasks.status'),
         width: '180px',
         render: (_, record) => (
-          <HomeTasksStatusDropdown
-            task={record}
-            teamId={record.team_id || ''}
-          />
+          <HomeTasksStatusDropdown task={record} teamId={record.team_id || ''} />
         ),
       },
       {
@@ -170,7 +170,9 @@ const TasksList: React.FC = React.memo(() => {
         render: (_, record) => (
           <DatePicker
             allowClear
-            disabledDate={record.start_date ? (current => current.isBefore(dayjs(record.start_date))) : undefined}
+            disabledDate={
+              record.start_date ? current => current.isBefore(dayjs(record.start_date)) : undefined
+            }
             format={'MMM DD, YYYY'}
             placeholder={t('tasks.dueDatePlaceholder')}
             defaultValue={record.end_date ? dayjs(record.end_date) : null}
@@ -236,7 +238,7 @@ const TasksList: React.FC = React.memo(() => {
 
       {/* task list table --> render with different filters and views  */}
       {homeTasksFetching && !isLoading ? (
-        <Skeleton active/>
+        <Skeleton active />
       ) : data?.body.total === 0 ? (
         <EmptyListPlaceholder
           imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"

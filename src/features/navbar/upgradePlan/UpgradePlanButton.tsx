@@ -10,7 +10,7 @@ const UpgradePlanButton = () => {
   const { t } = useTranslation('navbar');
   const navigate = useNavigate();
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   return (
     <Tooltip title={t('upgradePlanTooltip')}>

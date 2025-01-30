@@ -59,13 +59,13 @@ const ProjectViewUpdates = () => {
 
   const handleAddComment = async () => {
     if (!projectId || characterLength === 0) return;
-    
+
     try {
       setIsSubmitting(true);
       const values = await form.validateFields();
       const commentContent = values.comment;
-      
-      const body = {  
+
+      const body = {
         project_id: projectId,
         team_id: getUserSession()?.team_id,
         content: commentContent.trim(),
@@ -99,10 +99,11 @@ const ProjectViewUpdates = () => {
     setSelectedMembers([]);
   }, [form]);
 
-  const mentionsOptions = members?.map(member => ({
-    value: member.id,
-    label: member.name,
-  })) ?? [];
+  const mentionsOptions =
+    members?.map(member => ({
+      value: member.id,
+      label: member.name,
+    })) ?? [];
 
   const memberSelectHandler = useCallback((member: IMentionMemberSelectOption) => {
     if (!member?.value || !member?.label) return;
@@ -117,17 +118,20 @@ const ProjectViewUpdates = () => {
     setCharacterLength(value.trim().length);
   }, []);
 
-  const handleDeleteComment = useCallback(async (commentId: string | undefined) => {
-    if (!commentId) return;
-    try {
-      const res = await projectCommentsApiService.deleteComment(commentId);
-      if (res.done) {
-        void getComments();
+  const handleDeleteComment = useCallback(
+    async (commentId: string | undefined) => {
+      if (!commentId) return;
+      try {
+        const res = await projectCommentsApiService.deleteComment(commentId);
+        if (res.done) {
+          void getComments();
+        }
+      } catch (error) {
+        console.error('Failed to delete comment:', error);
       }
-    } catch (error) {
-      console.error('Failed to delete comment:', error);
-    }
-  }, [getComments]);
+    },
+    [getComments]
+  );
 
   return (
     <Flex gap={24} vertical>
@@ -146,7 +150,9 @@ const ProjectViewUpdates = () => {
                   </Typography.Text>
                 </Tooltip>
               </Space>
-              <Typography.Paragraph style={{ margin: '8px 0' }}>{comment.content}</Typography.Paragraph>
+              <Typography.Paragraph style={{ margin: '8px 0' }}>
+                {comment.content}
+              </Typography.Paragraph>
               <ConfigProvider
                 wave={{ disabled: true }}
                 theme={{
@@ -208,10 +214,10 @@ const ProjectViewUpdates = () => {
               <Button onClick={handleCancel} disabled={isSubmitting}>
                 {t('cancelButton')}
               </Button>
-              <Button 
-                type="primary" 
+              <Button
+                type="primary"
                 loading={isSubmitting}
-                disabled={characterLength === 0} 
+                disabled={characterLength === 0}
                 htmlType="submit"
               >
                 {t('addButton')}

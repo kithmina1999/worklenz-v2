@@ -93,7 +93,6 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
     socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(newTask));
     socket?.on(SocketEvents.QUICK_TASK.toString(), (task: IMyTask) => {
       if (task) {
-        
         const taskBody = {
           team_member_id: currentSession?.team_member_id,
           project_id: task.project_id,
@@ -141,7 +140,7 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
       onFinish={handleTaskSubmit}
       style={{ display: 'flex', gap: 8 }}
       initialValues={{
-        dueDate: calendarView ? (homeTasksConfig.selected_date || dayjs()) : dueDateOptions[0]?.value,
+        dueDate: calendarView ? homeTasksConfig.selected_date || dayjs() : dueDateOptions[0]?.value,
         project: projectOptions[0]?.value,
       }}
     >

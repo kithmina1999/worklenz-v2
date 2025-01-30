@@ -7,7 +7,7 @@ import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 const NotificationsSettings = () => {
   // localization
   const { t } = useTranslation('settings-notifications');
-  const themeMode = useAppSelector((state) => state.themeReducer.mode)
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   useDocumentTitle('Notifications Settings');
 
@@ -20,7 +20,9 @@ const NotificationsSettings = () => {
             {t('emailTitle')}
           </Typography.Title>
         </Flex>
-        <Typography.Text style={{ fontSize: 14, color: themeMode === 'dark' ? '#9CA3AF' : '#00000073' }}>
+        <Typography.Text
+          style={{ fontSize: 14, color: themeMode === 'dark' ? '#9CA3AF' : '#00000073' }}
+        >
           {t('emailDescription')}
         </Typography.Text>
       </Flex>
@@ -32,7 +34,9 @@ const NotificationsSettings = () => {
             {t('dailyDigestTitle')}
           </Typography.Title>
         </Flex>
-        <Typography.Text style={{ fontSize: 14, color: themeMode === 'dark' ? '#9CA3AF' : '#00000073'  }}>
+        <Typography.Text
+          style={{ fontSize: 14, color: themeMode === 'dark' ? '#9CA3AF' : '#00000073' }}
+        >
           {t('dailyDigestDescription')}
         </Typography.Text>
       </Flex>
@@ -44,7 +48,9 @@ const NotificationsSettings = () => {
             {t('popupTitle')}
           </Typography.Title>
         </Flex>
-        <Typography.Text style={{ fontSize: 14, color: themeMode === 'dark' ? '#9CA3AF' : '#00000073'  }}>
+        <Typography.Text
+          style={{ fontSize: 14, color: themeMode === 'dark' ? '#9CA3AF' : '#00000073' }}
+        >
           {t('popupDescription')}
         </Typography.Text>
       </Flex>
@@ -56,7 +62,9 @@ const NotificationsSettings = () => {
             {t('unreadItemsTitle')}
           </Typography.Title>
         </Flex>
-        <Typography.Text style={{ fontSize: 14, color: themeMode === 'dark' ? '#9CA3AF' : '#00000073'  }}>
+        <Typography.Text
+          style={{ fontSize: 14, color: themeMode === 'dark' ? '#9CA3AF' : '#00000073' }}
+        >
           {t('unreadItemsDescription')}
         </Typography.Text>
       </Flex>

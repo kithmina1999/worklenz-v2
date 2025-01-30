@@ -9,9 +9,7 @@ type ProjectReportsMembersTableProps = {
   membersData: any[];
 };
 
-const ProjectReportsMembersTable = ({
-  membersData,
-}: ProjectReportsMembersTableProps) => {
+const ProjectReportsMembersTable = ({ membersData }: ProjectReportsMembersTableProps) => {
   // localization
   const { t } = useTranslation('reporting-projects-drawer');
 
@@ -26,7 +24,7 @@ const ProjectReportsMembersTable = ({
     {
       key: 'name',
       title: <CustomTableTitle title={t('nameColumn')} />,
-      onCell: (record) => {
+      onCell: record => {
         return {
           onClick: handleProjectReportsMembersTaskDrawer,
         };
@@ -67,7 +65,7 @@ const ProjectReportsMembersTable = ({
     {
       key: 'contribution',
       title: <CustomTableTitle title={t('contributionColumn')} />,
-      render: (record) => {
+      render: record => {
         return <Progress percent={record.contribution} />;
       },
       width: 180,
@@ -75,7 +73,7 @@ const ProjectReportsMembersTable = ({
     {
       key: 'progress',
       title: <CustomTableTitle title={t('progressColumn')} />,
-      render: (record) => {
+      render: record => {
         return <Progress percent={record.progress} />;
       },
       width: 180,
@@ -95,7 +93,7 @@ const ProjectReportsMembersTable = ({
       dataSource={membersData}
       pagination={false}
       scroll={{ x: 'max-content' }}
-      onRow={(record) => {
+      onRow={record => {
         return {
           style: { height: 38, cursor: 'pointer' },
           className: 'group even:bg-[#4e4e4e10]',

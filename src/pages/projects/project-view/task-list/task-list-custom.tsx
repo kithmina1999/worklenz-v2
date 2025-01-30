@@ -43,17 +43,21 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, groupId, 
     }));
   }, []);
 
-  const handleTaskSelect = useCallback((taskId: string) => {
-    onTaskSelect?.(taskId);
-  }, [onTaskSelect]);
+  const handleTaskSelect = useCallback(
+    (taskId: string) => {
+      onTaskSelect?.(taskId);
+    },
+    [onTaskSelect]
+  );
 
   const columns = useMemo(
-    () => createColumns({
-      expandedRows,
-      statuses,
-      handleTaskSelect,
-      getCurrentSession,
-    }),
+    () =>
+      createColumns({
+        expandedRows,
+        statuses,
+        handleTaskSelect,
+        getCurrentSession,
+      }),
     [expandedRows, statuses, handleTaskSelect, getCurrentSession]
   );
 
@@ -157,9 +161,7 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, groupId, 
             ))}
           </div>
           <div className="table-body">
-            {paddingTop > 0 && (
-              <div style={{ height: `${paddingTop}px` }} />
-            )}
+            {paddingTop > 0 && <div style={{ height: `${paddingTop}px` }} />}
             {virtualRows.map(virtualRow => {
               const row = rows[virtualRow.index];
               return (
@@ -232,13 +234,15 @@ const TaskListCustom: React.FC<TaskListCustomProps> = ({ tasks, color, groupId, 
                 </React.Fragment>
               );
             })}
-            {paddingBottom > 0 && (
-              <div style={{ height: `${paddingBottom}px` }} />
-            )}
+            {paddingBottom > 0 && <div style={{ height: `${paddingBottom}px` }} />}
           </div>
         </div>
       </div>
-      <TaskListInstantTaskInput session={getCurrentSession() || null} groupId={groupId} parentTask={null} />
+      <TaskListInstantTaskInput
+        session={getCurrentSession() || null}
+        groupId={groupId}
+        parentTask={null}
+      />
       {/* {selectedCount > 0 && (
         <Flex
           justify="space-between"

@@ -9,16 +9,11 @@ type ProjectReportsState = {
 };
 
 // async thunk for fetching project data
-export const fetchProjectData = createAsyncThunk(
-  'projectReports/fetchProjectData',
-  async () => {
-    const response = await fetch(
-      '/reportingMockData/projectReports/projects.json'
-    );
-    if (!response.ok) throw new Error(`Response error: ${response.status}`);
-    return await response.json();
-  }
-);
+export const fetchProjectData = createAsyncThunk('projectReports/fetchProjectData', async () => {
+  const response = await fetch('/reportingMockData/projectReports/projects.json');
+  if (!response.ok) throw new Error(`Response error: ${response.status}`);
+  return await response.json();
+});
 
 const initialState: ProjectReportsState = {
   isProjectReportsDrawerOpen: false,
@@ -32,17 +27,16 @@ const projectReportsSlice = createSlice({
   name: 'projectReportsReducer',
   initialState,
   reducers: {
-    toggleProjectReportsDrawer: (state) => {
+    toggleProjectReportsDrawer: state => {
       state.isProjectReportsDrawerOpen = !state.isProjectReportsDrawerOpen;
     },
-    toggleProjectReportsMembersTaskDrawer: (state) => {
-      state.isProjectReportsMembersTaskDrawerOpen =
-        !state.isProjectReportsMembersTaskDrawerOpen;
+    toggleProjectReportsMembersTaskDrawer: state => {
+      state.isProjectReportsMembersTaskDrawerOpen = !state.isProjectReportsMembersTaskDrawerOpen;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchProjectData.pending, (state) => {
+      .addCase(fetchProjectData.pending, state => {
         state.isLoading = true;
         state.error = null;
       })
@@ -57,8 +51,6 @@ const projectReportsSlice = createSlice({
   },
 });
 
-export const {
-  toggleProjectReportsDrawer,
-  toggleProjectReportsMembersTaskDrawer,
-} = projectReportsSlice.actions;
+export const { toggleProjectReportsDrawer, toggleProjectReportsMembersTaskDrawer } =
+  projectReportsSlice.actions;
 export default projectReportsSlice.reducer;

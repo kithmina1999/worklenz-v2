@@ -6,7 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { SocketEvents } from '@/shared/socket-events';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { DRAWER_ANIMATION_INTERVAL } from '@/shared/constants';
-import { getCurrentGroup, GROUP_BY_STATUS_VALUE, GROUP_BY_PRIORITY_VALUE, GROUP_BY_PHASE_VALUE, addTask } from '@/features/tasks/tasks.slice';
+import {
+  getCurrentGroup,
+  GROUP_BY_STATUS_VALUE,
+  GROUP_BY_PRIORITY_VALUE,
+  GROUP_BY_PHASE_VALUE,
+  addTask,
+} from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useSocket } from '@/socket/socketContext';
 import { ITaskCreateRequest } from '@/types/tasks/task-create-request.types';
@@ -21,10 +27,7 @@ interface IAddNewTask extends IProjectTask {
   groupId: string;
 }
 
-const AddTaskListRow = ({
-  groupId = null,
-  parentTask = null,
-}: IAddTaskListRowProps) => {
+const AddTaskListRow = ({ groupId = null, parentTask = null }: IAddTaskListRowProps) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [taskName, setTaskName] = useState<string>('');
   const [creatingTask, setCreatingTask] = useState<boolean>(false);
@@ -77,7 +80,7 @@ const AddTaskListRow = ({
       if (scroll) window.scrollTo(0, document.body.scrollHeight);
     }, DRAWER_ANIMATION_INTERVAL);
   };
-  
+
   const onNewTaskReceived = (task: IAddNewTask) => {
     if (!groupId) return;
     task.groupId = groupId;
@@ -86,7 +89,7 @@ const AddTaskListRow = ({
       reset(false);
     }
   };
-  
+
   const addInstantTask = () => {
     if (creatingTask) return;
     if (!projectId || !currentSession || taskName.trim() === '') return;

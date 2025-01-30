@@ -1,22 +1,10 @@
-import {
-  Button,
-  Card,
-  Col,
-  Divider,
-  Form,
-  Input,
-  notification,
-  Row,
-  Select,
-} from 'antd';
+import { Button, Card, Col, Divider, Form, Input, notification, Row, Select } from 'antd';
 import React from 'react';
 import { RootState } from '../../../app/store';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 
 const Configuration: React.FC = () => {
-  const themeMode = useAppSelector(
-    (state: RootState) => state.themeReducer.mode
-  );
+  const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
 
   const name = 'Raveesha Dilanka';
   const emailAddress = 'raveeshadilanka1999@gmail.com';
@@ -47,7 +35,7 @@ const Configuration: React.FC = () => {
   ];
 
   // Map countries to an array of objects with label and value
-  const countryOptions = countries.map((country) => ({
+  const countryOptions = countries.map(country => ({
     label: country,
     value: country,
   }));
@@ -122,7 +110,7 @@ const Configuration: React.FC = () => {
                 <Input
                   placeholder="Phone Number"
                   maxLength={10}
-                  onInput={(e) => {
+                  onInput={e => {
                     const input = e.target as HTMLInputElement; // Type assertion to access 'value'
                     input.value = input.value.replace(/[^0-9]/g, ''); // Restrict non-numeric input
                   }}
@@ -147,29 +135,17 @@ const Configuration: React.FC = () => {
 
           <Row>
             <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
-              <Form.Item
-                name="companyName"
-                label="Company Name"
-                layout="vertical"
-              >
+              <Form.Item name="companyName" label="Company Name" layout="vertical">
                 <Input placeholder="Company Name" />
               </Form.Item>
             </Col>
             <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
-              <Form.Item
-                name="addressLine01"
-                label="Address Line 01"
-                layout="vertical"
-              >
+              <Form.Item name="addressLine01" label="Address Line 01" layout="vertical">
                 <Input placeholder="Address Line 01" />
               </Form.Item>
             </Col>
             <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
-              <Form.Item
-                name="addressLine02"
-                label="Address Line 02"
-                layout="vertical"
-              >
+              <Form.Item name="addressLine02" label="Address Line 02" layout="vertical">
                 <Input placeholder="Address Line 02" />
               </Form.Item>
             </Col>
@@ -191,9 +167,7 @@ const Configuration: React.FC = () => {
                   placeholder="Country"
                   optionFilterProp="label"
                   filterOption={(input, option) =>
-                    (option?.label as string)
-                      .toLowerCase()
-                      .includes(input.toLowerCase())
+                    (option?.label as string).toLowerCase().includes(input.toLowerCase())
                   }
                   allowClear
                   options={countryOptions}
@@ -213,11 +187,7 @@ const Configuration: React.FC = () => {
           </Row>
           <Row>
             <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
-              <Form.Item
-                name="postalCode"
-                label="Postal Code"
-                layout="vertical"
-              >
+              <Form.Item name="postalCode" label="Postal Code" layout="vertical">
                 <Input placeholder="Postal Code" />
               </Form.Item>
             </Col>

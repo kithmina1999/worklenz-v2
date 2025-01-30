@@ -7,16 +7,13 @@ import {
   MoreOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import {
-  setTaskCardDisabled,
-  initializeStatus,
-} from '../../../features/board/createCardSlice';
+import { setTaskCardDisabled, initializeStatus } from '../../../features/board/createCardSlice';
 import { TaskType } from '../../../types/task.types';
 import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
 import TaskCard from '../taskCard/TaskCard';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 
-import '../commonStatusSection/CommonStatusSection'
+import '../commonStatusSection/CommonStatusSection';
 
 import { deleteStatus } from '../../../features/projects/status/StatusSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
@@ -30,7 +27,6 @@ interface CommonMembersSectionProps {
   id: string;
 }
 
-
 const CommonMembersSection: React.FC<CommonMembersSectionProps> = ({
   status,
   dataSource,
@@ -40,14 +36,8 @@ const CommonMembersSection: React.FC<CommonMembersSectionProps> = ({
   const dispatch = useAppDispatch();
   const createTaskInputRef = useRef<InputRef>(null);
 
-  const colorPalette = [
-    '#d1d0d3',
-    '#b9cef1',
-    '#c2e4d0',
-    '#f9e3b1',
-    '#f6bfc0',
-  ];
-  
+  const colorPalette = ['#d1d0d3', '#b9cef1', '#c2e4d0', '#f9e3b1', '#f6bfc0'];
+
   const getRandomColorFromPalette = () =>
     colorPalette[Math.floor(Math.random() * colorPalette.length)];
   // Initialize status in the Redux store if not already set
@@ -57,12 +47,12 @@ const CommonMembersSection: React.FC<CommonMembersSectionProps> = ({
 
   // Get status-specific disable controls from Redux state
   const isTopCardDisabled = useAppSelector(
-    (state) => state.createCardReducer.taskCardDisabledStatus[status]?.top
+    state => state.createCardReducer.taskCardDisabledStatus[status]?.top
   );
   const isBottomCardDisabled = useAppSelector(
-    (state) => state.createCardReducer.taskCardDisabledStatus[status]?.bottom
+    state => state.createCardReducer.taskCardDisabledStatus[status]?.bottom
   );
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const [addTaskCount, setAddTaskCount] = useState(0);
   const [name, setName] = useState(status);
@@ -70,18 +60,16 @@ const CommonMembersSection: React.FC<CommonMembersSectionProps> = ({
   const inputRef = useRef<InputRef>(null);
   const [isLoading, setIsLoading] = useState(false);
   const taskCardRef = useRef<HTMLDivElement>(null);
-  const {t} = useTranslation('kanbanBoard')
+  const { t } = useTranslation('kanbanBoard');
 
   const handleAddTaskClick = () => {
-    dispatch(
-      setTaskCardDisabled({ status, position: 'bottom', disabled: false })
-    );
-    setAddTaskCount((prev) => prev + 1);
+    dispatch(setTaskCardDisabled({ status, position: 'bottom', disabled: false }));
+    setAddTaskCount(prev => prev + 1);
   };
 
   const handleTopAddTaskClick = () => {
     dispatch(setTaskCardDisabled({ status, position: 'top', disabled: false }));
-    setAddTaskCount((prev) => prev + 1);
+    setAddTaskCount(prev => prev + 1);
   };
 
   useEffect(() => {
@@ -270,23 +258,15 @@ const CommonMembersSection: React.FC<CommonMembersSectionProps> = ({
           }}
         >
           {!isTopCardDisabled && (
-            <TaskCreateCard
-              ref={createTaskInputRef}
-              status={status}
-              position={'top'}
-            />
+            <TaskCreateCard ref={createTaskInputRef} status={status} position={'top'} />
           )}
 
-          {dataSource.map((task) => (
+          {dataSource.map(task => (
             <TaskCard key={task.taskId} task={task} />
           ))}
 
           {!isBottomCardDisabled && (
-            <TaskCreateCard
-              ref={createTaskInputRef}
-              status={status}
-              position={'bottom'}
-            />
+            <TaskCreateCard ref={createTaskInputRef} status={status} position={'bottom'} />
           )}
         </div>
 

@@ -81,7 +81,8 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
     if (!memberId || !projectId || !task?.id || !currentSession?.id) return;
     const checked =
       e?.target.checked ||
-      (!(task?.assignees?.some(assignee => assignee.team_member_id === memberId)) || false);
+      !task?.assignees?.some(assignee => assignee.team_member_id === memberId) ||
+      false;
 
     const body = {
       team_member_id: memberId,
@@ -104,7 +105,9 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
       ...assignee,
       selected: true,
     }));
-    dispatch(updateTaskAssignees({ groupId: groupId, taskId: data.id, assignees: updatedAssignees }));
+    dispatch(
+      updateTaskAssignees({ groupId: groupId, taskId: data.id, assignees: updatedAssignees })
+    );
   };
 
   useEffect(() => {

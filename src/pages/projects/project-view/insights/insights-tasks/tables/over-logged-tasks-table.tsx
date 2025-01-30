@@ -13,10 +13,13 @@ const OverLoggedTasksTable = () => {
 
   const [overLoggedTaskList, setOverLoggedTaskList] = useState<IInsightTasks[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   const getOverLoggedTasks = async () => {
-  try {
-      const res = await projectInsightsApiService.getOverloggedTasks(projectId, includeArchivedTasks);
+    try {
+      const res = await projectInsightsApiService.getOverloggedTasks(
+        projectId,
+        includeArchivedTasks
+      );
       if (res.done) {
         setOverLoggedTaskList(res.body);
       }
@@ -25,7 +28,7 @@ const OverLoggedTasksTable = () => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     getOverLoggedTasks();
@@ -36,11 +39,7 @@ const OverLoggedTasksTable = () => {
     {
       key: 'name',
       title: 'Name',
-      render: (record: IInsightTasks) => (
-        <Typography.Text>
-          {record.name}
-        </Typography.Text>
-      ),
+      render: (record: IInsightTasks) => <Typography.Text>{record.name}</Typography.Text>,
     },
     {
       key: 'status',
@@ -104,9 +103,7 @@ const OverLoggedTasksTable = () => {
       key: 'overLoggedTime',
       title: 'Over Logged Time',
       render: (record: IInsightTasks) => (
-        <Typography.Text>
-          {record.overlogged_time}
-        </Typography.Text>
+        <Typography.Text>{record.overlogged_time}</Typography.Text>
       ),
     },
   ];
@@ -116,13 +113,13 @@ const OverLoggedTasksTable = () => {
       className="custom-two-colors-row-table"
       dataSource={overLoggedTaskList}
       columns={columns}
-      rowKey={(record) => record.taskId}
+      rowKey={record => record.taskId}
       pagination={{
         showSizeChanger: false,
         defaultPageSize: 10,
       }}
       loading={loading}
-      onRow={(record) => {
+      onRow={record => {
         return {
           style: {
             cursor: 'pointer',

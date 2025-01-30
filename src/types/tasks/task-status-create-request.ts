@@ -1,4 +1,4 @@
-import { ITaskStatus } from "./taskStatus.types";
+import { ITaskStatus } from './taskStatus.types';
 
 export interface ITaskStatusCreateRequest extends ITaskStatus {
   status_order?: string[];

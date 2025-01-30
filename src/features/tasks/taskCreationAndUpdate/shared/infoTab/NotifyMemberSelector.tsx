@@ -26,8 +26,8 @@ const NotifyMemberSelector = () => {
 
   // get members list from members reducer
   const membersList = [
-    ...useAppSelector((state) => state.memberReducer.membersList),
-    useAppSelector((state) => state.memberReducer.owner),
+    ...useAppSelector(state => state.memberReducer.membersList),
+    useAppSelector(state => state.memberReducer.owner),
   ];
 
   // this is for get the current string that type on search bar
@@ -35,7 +35,7 @@ const NotifyMemberSelector = () => {
 
   // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
-    return membersList.filter((member) =>
+    return membersList.filter(member =>
       member.memberName.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [membersList, searchQuery]);
@@ -47,13 +47,13 @@ const NotifyMemberSelector = () => {
         <Input
           ref={membersInputRef}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          onChange={e => setSearchQuery(e.currentTarget.value)}
           placeholder={t('searchInputPlaceholder')}
         />
 
         <List style={{ padding: 0 }}>
           {filteredMembersData.length ? (
-            filteredMembersData.map((member) => (
+            filteredMembersData.map(member => (
               <List.Item
                 className="custom-list-item"
                 key={member.memberId}

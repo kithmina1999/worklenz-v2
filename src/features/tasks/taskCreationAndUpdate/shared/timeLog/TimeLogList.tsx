@@ -19,7 +19,7 @@ const TimeLogList = ({ timeLoggedList }: TimeLogListProps) => {
 
   return (
     <Flex vertical gap={6}>
-      {timeLoggedList.map((log) => (
+      {timeLoggedList.map(log => (
         <TimeLogItem
           key={log.logId}
           log={log}

@@ -1,23 +1,29 @@
-import { Button, Checkbox, Col, Drawer, Form, Input, Row } from "antd";
-import React, { ReactHTMLElement, useState } from "react";
-import { useAppSelector } from "../../hooks/useAppSelector";
-import { toggleSettingsDrawer, updateSettings } from "./scheduleSlice";
-import { useDispatch } from "react-redux";
-import { useTranslation } from "react-i18next";
+import { Button, Checkbox, Col, Drawer, Form, Input, Row } from 'antd';
+import React, { ReactHTMLElement, useState } from 'react';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import { toggleSettingsDrawer, updateSettings } from './scheduleSlice';
+import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const ScheduleSettingsDrawer: React.FC = () => {
-  const isDrawerOpen = useAppSelector((state) => state.scheduleReducer.isSettingsDrawerOpen);
+  const isDrawerOpen = useAppSelector(state => state.scheduleReducer.isSettingsDrawerOpen);
   const dispatch = useDispatch();
-  const {t} = useTranslation('schedule');
+  const { t } = useTranslation('schedule');
 
-  const [workingDays, setWorkingDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+  const [workingDays, setWorkingDays] = useState([
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+  ]);
   const [workingHours, setWorkingHours] = useState(8);
 
   const onChangeWorkingDays = (checkedValues: string[]) => {
     setWorkingDays(checkedValues);
   };
 
-  const onChangeWorkingHours = (e:React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeWorkingHours = (e: React.ChangeEvent<HTMLInputElement>) => {
     setWorkingHours(Number(e.target.value));
   };
 
@@ -37,31 +43,28 @@ const ScheduleSettingsDrawer: React.FC = () => {
       >
         <Form layout="vertical">
           <Form.Item label={t('workingDays')}>
-            <Checkbox.Group
-              defaultValue={workingDays}
-              onChange={onChangeWorkingDays}
-            >
+            <Checkbox.Group defaultValue={workingDays} onChange={onChangeWorkingDays}>
               <Row>
-                <Col span={8} style={{paddingBottom: '8px'}}>
-                <Checkbox value="Monday">{t('monday')}</Checkbox>
+                <Col span={8} style={{ paddingBottom: '8px' }}>
+                  <Checkbox value="Monday">{t('monday')}</Checkbox>
                 </Col>
-                <Col span={8} style={{paddingBottom: '8px'}}>
-                <Checkbox value="Tuesday">{t('tuesday')}</Checkbox>
+                <Col span={8} style={{ paddingBottom: '8px' }}>
+                  <Checkbox value="Tuesday">{t('tuesday')}</Checkbox>
                 </Col>
-                <Col span={8} style={{paddingBottom: '8px'}}>
-                <Checkbox value="Wednesday">{t('wednesday')}</Checkbox>
+                <Col span={8} style={{ paddingBottom: '8px' }}>
+                  <Checkbox value="Wednesday">{t('wednesday')}</Checkbox>
                 </Col>
-                <Col span={8} style={{paddingBottom: '8px'}}>
-                <Checkbox value="Thursday">{t('thursday')}</Checkbox>
+                <Col span={8} style={{ paddingBottom: '8px' }}>
+                  <Checkbox value="Thursday">{t('thursday')}</Checkbox>
                 </Col>
-                <Col span={8} style={{paddingBottom: '8px'}}>
-                <Checkbox value="Friday">{t('friday')}</Checkbox>
+                <Col span={8} style={{ paddingBottom: '8px' }}>
+                  <Checkbox value="Friday">{t('friday')}</Checkbox>
                 </Col>
-                <Col span={8} style={{paddingBottom: '8px'}}>
-                <Checkbox value="Saturday">{t('saturday')}</Checkbox>
+                <Col span={8} style={{ paddingBottom: '8px' }}>
+                  <Checkbox value="Saturday">{t('saturday')}</Checkbox>
                 </Col>
-                <Col span={8} style={{paddingBottom: '8px'}}>
-                <Checkbox value="Sunday">{t('sunday')}</Checkbox>
+                <Col span={8} style={{ paddingBottom: '8px' }}>
+                  <Checkbox value="Sunday">{t('sunday')}</Checkbox>
                 </Col>
               </Row>
             </Checkbox.Group>

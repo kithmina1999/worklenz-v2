@@ -82,9 +82,7 @@ const HomePage = () => {
 
       <MainContent />
 
-      <ProjectDrawer
-        onClose={() => {}}
-      />
+      <ProjectDrawer onClose={() => {}} />
     </div>
   );
 };

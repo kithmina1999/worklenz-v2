@@ -44,7 +44,11 @@ const TaskListTaskCell = ({
   };
 
   // show expand button on hover for tasks without subtasks
-  const renderToggleButtonForNonSubtasks = (taskId: string, isSubTask: boolean, subTasksCount: number) => {
+  const renderToggleButtonForNonSubtasks = (
+    taskId: string,
+    isSubTask: boolean,
+    subTasksCount: number
+  ) => {
     if (subTasksCount > 0) {
       return (
         <button
@@ -97,8 +101,7 @@ const TaskListTaskCell = ({
       <Flex gap={8} align="center">
         {!!task?.sub_tasks?.length ? (
           renderToggleButtonForHasSubTasks(task.id || null, !!task?.sub_tasks?.length)
-        ) : 
-        (
+        ) : (
           <div className="h-4 w-4">
             {renderToggleButtonForNonSubtasks(task.id || '', isSubTask, task.sub_tasks_count || 0)}
           </div>

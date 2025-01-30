@@ -18,42 +18,48 @@ const initialState: ITeamState = {
 };
 
 // Create async thunk for fetching teams
-export const fetchTeams = createAsyncThunk(`${API_BASE_URL}/teams`, async (_, { rejectWithValue }) => {
-  try {
-    const teamsResponse = await teamsApiService.getTeams();
-    return teamsResponse.body;
-  } catch (error) {
-    logger.error('Fetch Teams', error);
-    if (error instanceof Error) {
-      return rejectWithValue(error.message);
+export const fetchTeams = createAsyncThunk(
+  `${API_BASE_URL}/teams`,
+  async (_, { rejectWithValue }) => {
+    try {
+      const teamsResponse = await teamsApiService.getTeams();
+      return teamsResponse.body;
+    } catch (error) {
+      logger.error('Fetch Teams', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch teams');
     }
-    return rejectWithValue('Failed to fetch teams');
   }
-});
+);
 
 // Create async thunk for fetching teams
-export const setActiveTeam = createAsyncThunk(`${API_BASE_URL}/teams/activate`, async ( teamId: string , { rejectWithValue }) => {
-  try {
-    const teamsResponse = await teamsApiService.setActiveTeam(teamId);
-    return teamsResponse.body;
-  } catch (error) {
-    logger.error('Fetch Teams', error);
-    if (error instanceof Error) {
-      return rejectWithValue(error.message);
+export const setActiveTeam = createAsyncThunk(
+  `${API_BASE_URL}/teams/activate`,
+  async (teamId: string, { rejectWithValue }) => {
+    try {
+      const teamsResponse = await teamsApiService.setActiveTeam(teamId);
+      return teamsResponse.body;
+    } catch (error) {
+      logger.error('Fetch Teams', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch teams');
     }
-    return rejectWithValue('Failed to fetch teams');
   }
-});
+);
 
 // Initialization thunk
 export const initializeTeams = createAsyncThunk(
-    'team/initialize',
-    async (_, { dispatch, getState }) => {
-      const state = getState() as { teamReducer: ITeamState };
-      if (!state.teamReducer.initialized) {
-        await dispatch(fetchTeams());
-      }
+  'team/initialize',
+  async (_, { dispatch, getState }) => {
+    const state = getState() as { teamReducer: ITeamState };
+    if (!state.teamReducer.initialized) {
+      await dispatch(fetchTeams());
     }
+  }
 );
 
 const teamSlice = createSlice({
@@ -72,14 +78,14 @@ const teamSlice = createSlice({
         : (state.ui.settingsDrawer = true);
     },
     updateTeam: (state, action: PayloadAction<ITeam>) => {
-      const index = state.teamsList.findIndex(team => (team.id === action.payload.id));
+      const index = state.teamsList.findIndex(team => team.id === action.payload.id);
       state.teamsList[index] = action.payload;
     },
     deleteTeam: (state, action: PayloadAction<string>) => {
-      state.teamsList = state.teamsList.filter(team => (team.id !== action.payload));
+      state.teamsList = state.teamsList.filter(team => team.id !== action.payload);
     },
     editTeamName: (state, action: PayloadAction<ITeam>) => {
-      const index = state.teamsList.findIndex(team => (team.id === action.payload.id));
+      const index = state.teamsList.findIndex(team => team.id === action.payload.id);
       if (index >= 0) {
         state.teamsList[index] = action.payload;
       }
@@ -90,9 +96,9 @@ const teamSlice = createSlice({
         : (state.ui.updateTitleNameModal = true);
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchTeams.pending, (state) => {
+      .addCase(fetchTeams.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -115,6 +121,6 @@ export const {
   updateTeam,
   deleteTeam,
   editTeamName,
-  toggleUpdateTeamNameModal
+  toggleUpdateTeamNameModal,
 } = teamSlice.actions;
 export default teamSlice.reducer;

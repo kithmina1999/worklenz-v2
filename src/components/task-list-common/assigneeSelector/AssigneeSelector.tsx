@@ -21,7 +21,7 @@ import { colors } from '../../../styles/colors';
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
-interface AssigneeSelectorProps { 
+interface AssigneeSelectorProps {
   taskId: string | null;
   selectedMembers: string[];
 }
@@ -38,13 +38,13 @@ const AssigneeSelector = ({ taskId, selectedMembers }: AssigneeSelectorProps) =>
 
   // get members list from members reducer
   const membersList = [
-    ...useAppSelector((state) => state.memberReducer.membersList),
-    useAppSelector((state) => state.memberReducer.owner),
+    ...useAppSelector(state => state.memberReducer.membersList),
+    useAppSelector(state => state.memberReducer.owner),
   ];
 
   // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
-    return membersList.filter((member) =>
+    return membersList.filter(member =>
       member.memberName.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [membersList, searchQuery]);
@@ -70,13 +70,13 @@ const AssigneeSelector = ({ taskId, selectedMembers }: AssigneeSelectorProps) =>
         <Input
           ref={membersInputRef}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          onChange={e => setSearchQuery(e.currentTarget.value)}
           placeholder={t('searchInputPlaceholder')}
         />
 
         <List style={{ padding: 0 }}>
           {filteredMembersData.length ? (
-            filteredMembersData.map((member) => (
+            filteredMembersData.map(member => (
               <List.Item
                 className="custom-list-item"
                 key={member.memberId}
@@ -88,10 +88,7 @@ const AssigneeSelector = ({ taskId, selectedMembers }: AssigneeSelectorProps) =>
                   border: 'none',
                 }}
               >
-                <Checkbox
-                  id={member.memberId}
-                  onChange={() => {}}
-                />
+                <Checkbox id={member.memberId} onChange={() => {}} />
                 <div>
                   <CustomAvatar avatarName={member.memberName} />
                 </div>

@@ -8,7 +8,7 @@ import Icon, {
 const iconMap = {
   'clock-circle': ClockCircleOutlined,
   'close-circle': CloseCircleOutlined,
-  'stop': StopOutlined,
+  stop: StopOutlined,
   'check-circle': CheckCircleOutlined,
 };
 

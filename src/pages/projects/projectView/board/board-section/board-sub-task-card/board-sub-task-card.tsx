@@ -34,10 +34,7 @@ const BoardSubTaskCard = ({ subtask }: { subtask: any }) => {
       <Flex gap={8} justify="end" style={{ width: '100%' }}>
         <CustomAvatarGroup assignees={subtask?.assignees} />
 
-        <CustomDueDatePicker
-          dueDate={subtaskDueDate}
-          onDateChange={setSubtaskDueDate}
-        />
+        <CustomDueDatePicker dueDate={subtaskDueDate} onDateChange={setSubtaskDueDate} />
       </Flex>
     </List.Item>
   );

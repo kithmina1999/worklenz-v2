@@ -1,6 +1,11 @@
 import { API_BASE_URL } from '@/shared/constants';
 import { IServerResponse } from '@/types/common.types';
-import { IAccountSetupRequest, IAccountSetupResponse, IProjectTemplate, IWorklenzTemplate } from '@/types/project-templates/project-templates.types';
+import {
+  IAccountSetupRequest,
+  IAccountSetupResponse,
+  IProjectTemplate,
+  IWorklenzTemplate,
+} from '@/types/project-templates/project-templates.types';
 import { toQueryString } from '@/utils/toQueryString';
 import apiClient from '../api-client';
 
@@ -22,9 +27,10 @@ export const projectTemplatesApiService = {
     return response.data;
   },
 
-  setupAccount: async (model: IAccountSetupRequest): Promise<IServerResponse<IAccountSetupResponse>> => {
+  setupAccount: async (
+    model: IAccountSetupRequest
+  ): Promise<IServerResponse<IAccountSetupResponse>> => {
     const response = await apiClient.post(`${rootUrl}/setup`, model);
     return response.data;
   },
 };
-

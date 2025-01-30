@@ -6,7 +6,7 @@ import { useMediaQuery } from 'react-responsive';
 import { colors } from '../styles/colors';
 
 const MainLayout = () => {
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
   const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
 
   return (
@@ -14,8 +14,7 @@ const MainLayout = () => {
       theme={{
         components: {
           Layout: {
-            colorBgLayout:
-              themeMode === 'dark' ? colors.darkGray : colors.white,
+            colorBgLayout: themeMode === 'dark' ? colors.darkGray : colors.white,
             headerBg: themeMode === 'dark' ? colors.darkGray : colors.white,
           },
         },
@@ -35,7 +34,7 @@ const MainLayout = () => {
             display: 'flex',
             alignItems: 'center',
             padding: 0,
-            borderBottom: themeMode === 'dark' ? '1px solid #303030' : ''
+            borderBottom: themeMode === 'dark' ? '1px solid #303030' : '',
           }}
         >
           <Navbar />

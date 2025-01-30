@@ -1,21 +1,7 @@
-import {
-  Badge,
-  Button,
-  Collapse,
-  ConfigProvider,
-  Dropdown,
-  Flex,
-  Input,
-  Typography,
-} from 'antd';
+import { Badge, Button, Collapse, ConfigProvider, Dropdown, Flex, Input, Typography } from 'antd';
 import { useState } from 'react';
 import { TaskType } from '../../../../../types/task.types';
-import {
-  EditOutlined,
-  EllipsisOutlined,
-  RetweetOutlined,
-  RightOutlined,
-} from '@ant-design/icons';
+import { EditOutlined, EllipsisOutlined, RetweetOutlined, RightOutlined } from '@ant-design/icons';
 import { colors } from '../../../../../styles/colors';
 import './taskListTableWrapper.css';
 import TaskListTable from './TaskListTable';
@@ -50,9 +36,7 @@ const TaskListTableWrapper = ({
   const [tableName, setTableName] = useState<string>(name);
   const [isRenaming, setIsRenaming] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
-  const [currentCategory, setCurrentCategory] = useState<string | null>(
-    statusCategory
-  );
+  const [currentCategory, setCurrentCategory] = useState<string | null>(statusCategory);
 
   // localization
   const { t } = useTranslation('task-list-table');
@@ -62,21 +46,27 @@ const TaskListTableWrapper = ({
     setIsExpanded(!isExpanded);
   };
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // this is for get the color for every typed tables
   const getBgColorClassName = (type: string) => {
     switch (type) {
       case 'status':
-        if (currentCategory === 'todo') return themeMode === 'dark' ? 'after:bg-[#3a3a3a]' : 'after:bg-[#d8d7d8]';
-        else if (currentCategory === 'doing') return themeMode === 'dark' ? 'after:bg-[#3d506e]' : 'after:bg-[#c0d5f6]';
-        else if (currentCategory === 'done') return themeMode === 'dark' ? 'after:bg-[#3b6149]' : 'after:bg-[#c2e4d0]';
+        if (currentCategory === 'todo')
+          return themeMode === 'dark' ? 'after:bg-[#3a3a3a]' : 'after:bg-[#d8d7d8]';
+        else if (currentCategory === 'doing')
+          return themeMode === 'dark' ? 'after:bg-[#3d506e]' : 'after:bg-[#c0d5f6]';
+        else if (currentCategory === 'done')
+          return themeMode === 'dark' ? 'after:bg-[#3b6149]' : 'after:bg-[#c2e4d0]';
         else return themeMode === 'dark' ? 'after:bg-[#3a3a3a]' : 'after:bg-[#d8d7d8]';
 
       case 'priority':
-        if (priorityCategory === 'low') return themeMode === 'dark' ? 'after:bg-[#3b6149]' : 'after:bg-[#c2e4d0]';
-        else if (priorityCategory === 'medium') return themeMode === 'dark' ? 'after:bg-[#916c33]' : 'after:bg-[#f9e3b1]';
-        else if (priorityCategory === 'high') return themeMode === 'dark' ? 'after:bg-[#8b3a3b]' : 'after:bg-[#f6bfc0]';
+        if (priorityCategory === 'low')
+          return themeMode === 'dark' ? 'after:bg-[#3b6149]' : 'after:bg-[#c2e4d0]';
+        else if (priorityCategory === 'medium')
+          return themeMode === 'dark' ? 'after:bg-[#916c33]' : 'after:bg-[#f9e3b1]';
+        else if (priorityCategory === 'high')
+          return themeMode === 'dark' ? 'after:bg-[#8b3a3b]' : 'after:bg-[#f6bfc0]';
         else return themeMode === 'dark' ? 'after:bg-[#916c33]' : 'after:bg-[#f9e3b1]';
       default:
         return '';
@@ -101,7 +91,7 @@ const TaskListTableWrapper = ({
   };
 
   // find the available status for the currently active project
-  const statusList = useAppSelector((state) => state.statusReducer.status);
+  const statusList = useAppSelector(state => state.statusReducer.status);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -128,7 +118,7 @@ const TaskListTableWrapper = ({
       key: '2',
       icon: <RetweetOutlined />,
       label: 'Change category',
-      children: statusList?.map((status) => ({
+      children: statusList?.map(status => ({
         key: status.id,
         label: (
           <Flex gap={8} onClick={() => handleCategoryChange(status.category)}>
@@ -165,7 +155,7 @@ const TaskListTableWrapper = ({
               border: 'none',
               borderBottomLeftRadius: isExpanded ? 0 : 4,
               borderBottomRightRadius: isExpanded ? 0 : 4,
-              color: themeMode === 'dark'? '#ffffffd9' : colors.darkGray,
+              color: themeMode === 'dark' ? '#ffffffd9' : colors.darkGray,
             }}
             icon={<RightOutlined rotate={isExpanded ? 90 : 0} />}
             onClick={handlToggleExpand}
@@ -174,7 +164,7 @@ const TaskListTableWrapper = ({
               <Input
                 size="small"
                 value={tableName}
-                onChange={(e) => setTableName(e.target.value)}
+                onChange={e => setTableName(e.target.value)}
                 onBlur={handleRename}
                 onPressEnter={handleRename}
                 autoFocus
@@ -183,16 +173,14 @@ const TaskListTableWrapper = ({
               <Typography.Text
                 style={{
                   fontSize: 14,
-                  color: themeMode === 'dark'? '#ffffffd9' : colors.darkGray,
+                  color: themeMode === 'dark' ? '#ffffffd9' : colors.darkGray,
                 }}
               >
                 {/* check the default values available in the table names ==> this check for localization  */}
                 {['todo', 'doing', 'done', 'low', 'medium', 'high'].includes(
                   tableName.replace(/\s+/g, '').toLowerCase()
                 )
-                  ? t(
-                      `${tableName.replace(/\s+/g, '').toLowerCase()}SelectorText`
-                    )
+                  ? t(`${tableName.replace(/\s+/g, '').toLowerCase()}SelectorText`)
                   : tableName}{' '}
                 ({taskList.length})
               </Typography.Text>
@@ -200,10 +188,7 @@ const TaskListTableWrapper = ({
           </Button>
           {type === 'status' && !isRenaming && (
             <Dropdown menu={{ items }}>
-              <Button
-                icon={<EllipsisOutlined />}
-                className="borderless-icon-btn"
-              />
+              <Button icon={<EllipsisOutlined />} className="borderless-icon-btn" />
             </Dropdown>
           )}
         </Flex>

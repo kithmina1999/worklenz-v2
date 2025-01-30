@@ -12,9 +12,7 @@ type MembersReportsTimeLogsTabProps = {
   memberId: string | null;
 };
 
-const MembersReportsTimeLogsTab = ({
-  memberId = null,
-}: MembersReportsTimeLogsTabProps) => {
+const MembersReportsTimeLogsTab = ({ memberId = null }: MembersReportsTimeLogsTabProps) => {
   // this state for open task drawer
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
@@ -25,10 +23,7 @@ const MembersReportsTimeLogsTab = ({
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {
-    fetchData(
-      '/reportingMockData/membersReports/timeLogs.json',
-      setTimeLogsData
-    );
+    fetchData('/reportingMockData/membersReports/timeLogs.json', setTimeLogsData);
   }, []);
 
   return (
@@ -37,12 +32,8 @@ const MembersReportsTimeLogsTab = ({
 
       {timeLogsData.length > 0 ? (
         <Flex vertical gap={24}>
-          {timeLogsData.map((logs) => (
-            <TimeLogCard
-              key={logs.log_day}
-              data={logs}
-              setSelectedTaskId={setSelectedTaskId}
-            />
+          {timeLogsData.map(logs => (
+            <TimeLogCard key={logs.log_day} data={logs} setSelectedTaskId={setSelectedTaskId} />
           ))}
         </Flex>
       ) : (

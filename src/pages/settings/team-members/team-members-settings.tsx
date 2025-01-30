@@ -29,7 +29,10 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 // Features & Components
 import UpdateMemberDrawer from '@features/settings/member/UpdateMemberDrawer';
-import { toggleInviteMemberDrawer, toggleUpdateMemberDrawer } from '@features/settings/member/memberSlice';
+import {
+  toggleInviteMemberDrawer,
+  toggleUpdateMemberDrawer,
+} from '@features/settings/member/memberSlice';
 
 // Types
 import { ITeamMembersViewModel } from '@/types/teamMembers/teamMembersViewModel.types';

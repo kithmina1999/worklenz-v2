@@ -11,11 +11,11 @@ import ReportingCollapsedButton from '../pages/reporting/sidebar/reporting-colla
 const ReportingLayout = () => {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // function to handle collapse
   const handleCollapsedToggler = () => {
-    setIsCollapsed((prev) => !prev);
+    setIsCollapsed(prev => !prev);
   };
 
   return (

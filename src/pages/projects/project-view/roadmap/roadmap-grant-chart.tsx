@@ -16,7 +16,7 @@ type RoadmapGrantChartProps = {
 
 const RoadmapGrantChart = ({ view }: RoadmapGrantChartProps) => {
   // get task list from roadmap slice
-  const tasks = useAppSelector((state) => state.roadmapReducer.tasksList);
+  const tasks = useAppSelector(state => state.roadmapReducer.tasksList);
 
   const dispatch = useAppDispatch();
 
@@ -37,9 +37,7 @@ const RoadmapGrantChart = ({ view }: RoadmapGrantChartProps) => {
 
   //   function to handle date change
   const handleTaskDateChange = (task: Task) => {
-    dispatch(
-      updateTaskDate({ taskId: task.id, start: task.start, end: task.end })
-    );
+    dispatch(updateTaskDate({ taskId: task.id, start: task.start, end: task.end }));
   };
 
   //   function to handle progress change
@@ -59,15 +57,13 @@ const RoadmapGrantChart = ({ view }: RoadmapGrantChartProps) => {
 
         // recursively add subtasks if this task is expanded
         if (subTasks && isExpanded) {
-          subTasks.forEach((subTask) =>
-            addTaskAndSubTasks(subTask as NewTaskType, true)
-          );
+          subTasks.forEach(subTask => addTaskAndSubTasks(subTask as NewTaskType, true));
         }
       }
     };
 
     // top-level tasks are always visible, start with parentExpanded = true
-    tasks.forEach((task) => addTaskAndSubTasks(task, true));
+    tasks.forEach(task => addTaskAndSubTasks(task, true));
 
     return flattened;
   };

@@ -8,7 +8,7 @@ const TimeLogForm = ({ onCancel }: { onCancel: () => void }) => {
   const [form] = Form.useForm();
 
   // get theme details from theme slice
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   return (
     <Flex
@@ -52,11 +52,7 @@ const TimeLogForm = ({ onCancel }: { onCancel: () => void }) => {
           </Flex>
         </Form.Item>
 
-        <Form.Item
-          name="description"
-          label="Work Description"
-          style={{ marginBlockEnd: 12 }}
-        >
+        <Form.Item name="description" label="Work Description" style={{ marginBlockEnd: 12 }}>
           <Input.TextArea placeholder="Add a description" />
         </Form.Item>
 

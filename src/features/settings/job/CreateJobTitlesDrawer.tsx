@@ -11,9 +11,7 @@ const CreateJobTitlesDrawer = () => {
   // localization
   const { t } = useTranslation('settings-job-titles');
 
-  const isDrawerOpen = useAppSelector(
-    (state) => state.jobReducer.isCreateJobTitleDrawerOpen
-  );
+  const isDrawerOpen = useAppSelector(state => state.jobReducer.isCreateJobTitleDrawerOpen);
   const dispatch = useAppDispatch();
 
   const [form] = Form.useForm();

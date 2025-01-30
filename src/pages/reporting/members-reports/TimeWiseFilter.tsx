@@ -1,14 +1,5 @@
 import { CaretDownFilled } from '@ant-design/icons';
-import {
-  Button,
-  Card,
-  DatePicker,
-  Divider,
-  Dropdown,
-  Flex,
-  List,
-  Typography,
-} from 'antd';
+import { Button, Card, DatePicker, Divider, Dropdown, Flex, List, Typography } from 'antd';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { colors } from '../../../styles/colors';
@@ -20,8 +11,7 @@ const TimeWiseFilter = () => {
   // state to track dropdown open status
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   // state to track selected time frame
-  const [selectedTimeFrame, setSelectedTimeFrame] =
-    useState<string>('lastSevenDaysText');
+  const [selectedTimeFrame, setSelectedTimeFrame] = useState<string>('lastSevenDaysText');
   // state to track custom range
   const [customRange, setCustomRange] = useState<[string, string] | null>(null);
 
@@ -78,7 +68,7 @@ const TimeWiseFilter = () => {
       }}
     >
       <List style={{ padding: 0 }}>
-        {timeFramesList.map((item) => (
+        {timeFramesList.map(item => (
           <List.Item
             className="custom-list-item"
             key={item.key}
@@ -88,9 +78,7 @@ const TimeWiseFilter = () => {
               gap: 24,
               padding: '4px 8px',
               backgroundColor:
-                selectedTimeFrame === item.label
-                  ? colors.paleBlue
-                  : colors.transparent,
+                selectedTimeFrame === item.label ? colors.paleBlue : colors.transparent,
               border: 'none',
               cursor: 'pointer',
             }}
@@ -102,8 +90,7 @@ const TimeWiseFilter = () => {
           >
             <Typography.Text
               style={{
-                color:
-                  selectedTimeFrame === item.label ? colors.skyBlue : 'inherit',
+                color: selectedTimeFrame === item.label ? colors.skyBlue : 'inherit',
               }}
             >
               {t(item.label)}
@@ -152,7 +139,7 @@ const TimeWiseFilter = () => {
       overlayClassName="custom-dropdown"
       trigger={['click']}
       dropdownRender={() => timeWiseDropdownContent}
-      onOpenChange={(open) => setIsDropdownOpen(open)}
+      onOpenChange={open => setIsDropdownOpen(open)}
     >
       <Button
         icon={<CaretDownFilled />}
@@ -163,9 +150,7 @@ const TimeWiseFilter = () => {
             : 'hover:text-[#1890ff hover:border-[#1890ff]'
         }`}
       >
-        {customRange
-          ? `${customRange[0]} - ${customRange[1]}`
-          : t(selectedTimeFrame)}
+        {customRange ? `${customRange[0]} - ${customRange[1]}` : t(selectedTimeFrame)}
       </Button>
     </Dropdown>
   );

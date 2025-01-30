@@ -1,4 +1,9 @@
-import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  ExclamationCircleFilled,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { jobTitlesApiService } from '@/api/settings/job-titles/job-titles.api.service';
@@ -164,7 +169,11 @@ const JobTitlesSettings = () => {
             </Button>
 
             <Tooltip title={t('pinTooltip')} trigger={'hover'}>
-              <PinRouteToNavbarButton name="jobTitles" path="/worklenz/settings/job-titles" adminOnly />
+              <PinRouteToNavbarButton
+                name="jobTitles"
+                path="/worklenz/settings/job-titles"
+                adminOnly
+              />
             </Tooltip>
           </Flex>
         </Flex>

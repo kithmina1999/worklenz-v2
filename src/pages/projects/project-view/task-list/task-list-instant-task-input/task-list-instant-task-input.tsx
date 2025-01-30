@@ -130,7 +130,10 @@ const TaskListInstantTaskInput = ({
   };
 
   return (
-    <div className={`border-t border-b-[1px] border-r-[1px]`} style={{ borderColor: token.colorBorderSecondary }}>
+    <div
+      className={`border-t border-b-[1px] border-r-[1px]`}
+      style={{ borderColor: token.colorBorderSecondary }}
+    >
       {isEdit ? (
         <Input
           className="w-full rounded-none"

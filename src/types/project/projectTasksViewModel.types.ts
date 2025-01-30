@@ -1,6 +1,6 @@
-import { InlineMember } from "../teamMembers/inlineMember.types";
-import { ITaskLabel } from "../tasks/taskLabel.types";
-import { ITaskStatusViewModel } from "../tasks/taskStatusGetResponse.types";
+import { InlineMember } from '../teamMembers/inlineMember.types';
+import { ITaskLabel } from '../tasks/taskLabel.types';
+import { ITaskStatusViewModel } from '../tasks/taskStatusGetResponse.types';
 
 export interface ITaskAssignee {
   team_member_id: any;
@@ -41,7 +41,7 @@ export interface IProjectTask {
   status_name?: string;
   total_time_string?: string;
   due_in?: string;
-  time_spent?: { hours?: number, minutes?: number };
+  time_spent?: { hours?: number; minutes?: number };
   project_id?: string;
   project_name?: string;
   updated_at?: string;

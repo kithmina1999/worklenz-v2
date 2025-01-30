@@ -11,16 +11,11 @@ type MembersReportsState = {
 };
 
 // async thunk for fetching members data
-export const fetchMembersData = createAsyncThunk(
-  'membersReports/fetchMembersData',
-  async () => {
-    const response = await fetch(
-      '/reportingMockData/membersReports/members.json'
-    );
-    if (!response.ok) throw new Error(`Response error: ${response.status}`);
-    return await response.json();
-  }
-);
+export const fetchMembersData = createAsyncThunk('membersReports/fetchMembersData', async () => {
+  const response = await fetch('/reportingMockData/membersReports/members.json');
+  if (!response.ok) throw new Error(`Response error: ${response.status}`);
+  return await response.json();
+});
 
 const initialState: MembersReportsState = {
   isMembersReportsDrawerOpen: false,
@@ -36,14 +31,13 @@ const membersReportsSlice = createSlice({
   name: 'membersReportsReducer',
   initialState,
   reducers: {
-    toggleMembersReportsDrawer: (state) => {
+    toggleMembersReportsDrawer: state => {
       state.isMembersReportsDrawerOpen = !state.isMembersReportsDrawerOpen;
     },
-    toggleMembersOverviewTasksStatsDrawer: (state) => {
-      state.isMembersOverviewTasksStatsDrawerOpen =
-        !state.isMembersOverviewTasksStatsDrawerOpen;
+    toggleMembersOverviewTasksStatsDrawer: state => {
+      state.isMembersOverviewTasksStatsDrawerOpen = !state.isMembersOverviewTasksStatsDrawerOpen;
     },
-    toggleMembersOverviewProjectsStatsDrawer: (state) => {
+    toggleMembersOverviewProjectsStatsDrawer: state => {
       state.isMembersOverviewProjectsStatsDrawerOpen =
         !state.isMembersOverviewProjectsStatsDrawerOpen;
     },
@@ -54,9 +48,9 @@ const membersReportsSlice = createSlice({
       state.activeTab = action.payload;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchMembersData.pending, (state) => {
+      .addCase(fetchMembersData.pending, state => {
         state.isLoading = true;
         state.error = null;
       })

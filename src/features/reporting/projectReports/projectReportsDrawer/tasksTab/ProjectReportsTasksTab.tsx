@@ -12,13 +12,9 @@ type ProjectReportsTasksTabProps = {
   projectId?: string | null;
 };
 
-const ProjectReportsTasksTab = ({
-  projectId = null,
-}: ProjectReportsTasksTabProps) => {
+const ProjectReportsTasksTab = ({ projectId = null }: ProjectReportsTasksTabProps) => {
   const [searchQuery, setSearhQuery] = useState<string>('');
-  const [activeGroup, setActiveGroup] = useState<
-    'status' | 'priority' | 'phase'
-  >('status');
+  const [activeGroup, setActiveGroup] = useState<'status' | 'priority' | 'phase'>('status');
 
   // save each tasks list according to the groups
   const [statusTasks, setStatusTasks] = useState<any[]>([]);
@@ -35,24 +31,15 @@ const ProjectReportsTasksTab = ({
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {
-    fetchData(
-      '/reportingMockData/projectReports/tasksStatus.json',
-      setStatusTasks
-    );
+    fetchData('/reportingMockData/projectReports/tasksStatus.json', setStatusTasks);
   }, []);
 
   useMemo(() => {
-    fetchData(
-      '/reportingMockData/projectReports/tasksPriority.json',
-      setPriorityTasks
-    );
+    fetchData('/reportingMockData/projectReports/tasksPriority.json', setPriorityTasks);
   }, []);
 
   useMemo(() => {
-    fetchData(
-      '/reportingMockData/projectReports/tasksPhase.json',
-      setPhaseTasks
-    );
+    fetchData('/reportingMockData/projectReports/tasksPhase.json', setPhaseTasks);
   }, []);
 
   // update activeTasksList based on activeGroup
@@ -79,7 +66,7 @@ const ProjectReportsTasksTab = ({
 
       <Flex vertical gap={12}>
         {activeTasksList &&
-          activeTasksList.map((item) => (
+          activeTasksList.map(item => (
             <ProjectReportsTasksTable
               tasksData={item.tasks}
               title={item.name}

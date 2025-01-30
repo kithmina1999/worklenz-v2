@@ -12,12 +12,10 @@ const InfoTabFooter = () => {
   const [form] = Form.useForm();
 
   // get theme details from theme slice
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // get member list from project members slice
-  const projectMembersList = useAppSelector(
-    (state) => state.projectMemberReducer.membersList
-  );
+  const projectMembersList = useAppSelector(state => state.projectMemberReducer.membersList);
 
   // function to handle cancel
   const handleCancel = () => {
@@ -28,7 +26,7 @@ const InfoTabFooter = () => {
 
   // mentions options
   const mentionsOptions = projectMembersList
-    ? projectMembersList.map((member) => ({
+    ? projectMembersList.map(member => ({
         value: member.memberName,
         label: member.memberName,
       }))
@@ -67,7 +65,7 @@ const InfoTabFooter = () => {
             autoSize
             maxLength={5000}
             onClick={() => setIsCommentBoxExpand(true)}
-            onChange={(e) => setCharacterLength(e.length)}
+            onChange={e => setCharacterLength(e.length)}
             style={{
               minHeight: isCommentBoxExpand ? 180 : 60,
               maxHeight: 480,

@@ -1,6 +1,6 @@
 {
   "keyColumn": "Clave",
-  "taskColumn": "Tarea", 
+  "taskColumn": "Tarea",
   "descriptionColumn": "Descripción",
   "progressColumn": "Progreso",
   "membersColumn": "Miembros",
@@ -11,7 +11,7 @@
   "timeTrackingColumn": "Seguimiento de Tiempo",
   "estimationColumn": "Estimación",
   "startDateColumn": "Fecha de Inicio",
-  "dueDateColumn": "Fecha de Vencimiento", 
+  "dueDateColumn": "Fecha de Vencimiento",
   "completedDateColumn": "Fecha de Finalización",
   "createdDateColumn": "Fecha de Creación",
   "lastUpdatedColumn": "Última Actualización",
@@ -19,7 +19,7 @@
   "dueTimeColumn": "Hora de Vencimiento",
 
   "todoSelectorText": "Por Hacer",
-  "doingSelectorText": "En Proceso", 
+  "doingSelectorText": "En Proceso",
   "doneSelectorText": "Hecho",
 
   "lowSelectorText": "Baja",

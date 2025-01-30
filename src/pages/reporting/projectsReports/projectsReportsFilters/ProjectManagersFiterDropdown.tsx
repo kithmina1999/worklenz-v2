@@ -1,15 +1,5 @@
 import { CaretDownFilled } from '@ant-design/icons';
-import {
-  Button,
-  Card,
-  Checkbox,
-  Dropdown,
-  Empty,
-  Flex,
-  Input,
-  InputRef,
-  List,
-} from 'antd';
+import { Button, Card, Checkbox, Dropdown, Empty, Flex, Input, InputRef, List } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -46,10 +36,8 @@ const ProjectManagersFilterDropdown = () => {
 
   // used useMemo hook for re render the list when searching
   const filteredProjectManagerData = useMemo(() => {
-    return projectManagerList.filter((projectManager) =>
-      projectManager.projectManagerName
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
+    return projectManagerList.filter(projectManager =>
+      projectManager.projectManagerName.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [projectManagerList, searchQuery]);
 
@@ -71,13 +59,13 @@ const ProjectManagersFilterDropdown = () => {
         <Input
           ref={projectManagerInputRef}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          onChange={e => setSearchQuery(e.currentTarget.value)}
           placeholder={t('searchByNamePlaceholder')}
         />
 
         <List style={{ padding: 0 }}>
           {filteredProjectManagerData.length ? (
-            filteredProjectManagerData.map((projectManager) => (
+            filteredProjectManagerData.map(projectManager => (
               <List.Item
                 className="custom-list-item"
                 key={projectManager.projectManagerId}

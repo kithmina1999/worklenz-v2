@@ -2,7 +2,11 @@ import { Button, Drawer, Form, Input, message, Typography } from 'antd';
 import { useEffect } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { createClient, toggleClientDrawer, updateClient } from '@/features/settings/client/clientSlice';
+import {
+  createClient,
+  toggleClientDrawer,
+  updateClient,
+} from '@/features/settings/client/clientSlice';
 import { IClient } from '@/types/client.types';
 import { useTranslation } from 'react-i18next';
 

@@ -7,10 +7,7 @@ type TaskProgressProps = {
   numberOfSubTasks: number;
 };
 
-const TaskProgress = ({
-  progress = 0,
-  numberOfSubTasks = 0,
-}: TaskProgressProps) => {
+const TaskProgress = ({ progress = 0, numberOfSubTasks = 0 }: TaskProgressProps) => {
   const totalTasks = numberOfSubTasks + 1;
   const completedTasks = 0;
 
@@ -22,8 +19,8 @@ const TaskProgress = ({
         percent={progress}
         type="circle"
         size={size}
-        style={{ cursor: 'default',}}
-        className='task-progress'
+        style={{ cursor: 'default' }}
+        className="task-progress"
       />
     </Tooltip>
   );

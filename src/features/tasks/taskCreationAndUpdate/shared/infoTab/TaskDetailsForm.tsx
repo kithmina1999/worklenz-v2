@@ -13,11 +13,7 @@ import {
 } from 'antd';
 import AssigneeSelector from '../../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
 import LabelsSelector from '../../../../../components/taskListCommon/labelsSelector/LabelsSelector';
-import {
-  DoubleLeftOutlined,
-  MinusOutlined,
-  PauseOutlined,
-} from '@ant-design/icons';
+import { DoubleLeftOutlined, MinusOutlined, PauseOutlined } from '@ant-design/icons';
 import { colors } from '../../../../../styles/colors';
 import { getPriorityColor } from '../../../../../utils/getPriorityColors';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
@@ -32,7 +28,7 @@ type TaskDetailsFormProps = {
 const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
   const [isShowStartDate, setIsShowStartDate] = useState<boolean>(false);
   const [form] = Form.useForm();
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // Initialize form values
   useEffect(() => {
@@ -41,9 +37,7 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
         taskId: selectedTask.taskId,
         phase: selectedTask.phase,
         assignees: selectedTask.members,
-        dueDate: selectedTask.dueDate
-          ? simpleDateFormat(selectedTask.dueDate)
-          : null,
+        dueDate: selectedTask.dueDate ? simpleDateFormat(selectedTask.dueDate) : null,
         hours: 0,
         minutes: 0,
         priority: selectedTask.priority || 'medium',
@@ -76,9 +70,7 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
           }}
         >
           Low
-          <MinusOutlined
-            style={{ color: getPriorityColor('low', themeMode) }}
-          />
+          <MinusOutlined style={{ color: getPriorityColor('low', themeMode) }} />
         </div>
       ),
     },
@@ -128,7 +120,7 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
 
   // Handle form submission
   const handleSubmit = () => {
-    form.validateFields().then((values) => {
+    form.validateFields().then(values => {
       console.log('task details form values', values);
     });
   };
@@ -162,15 +154,13 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
           <Select
             placeholder="Select Phase"
             options={phaseMenuItems}
-            style={{ width: 'fit-content'}}
-            dropdownStyle={{width: 'fit-content'}}
+            style={{ width: 'fit-content' }}
+            dropdownStyle={{ width: 'fit-content' }}
           />
         </Form.Item>
 
         <Form.Item name="assignees" label="Assignees">
-          <AssigneeSelector
-            taskId={selectedTask ? selectedTask.taskId : 'NEW-TASK'}
-          />
+          <AssigneeSelector taskId={selectedTask ? selectedTask.taskId : 'NEW-TASK'} />
         </Form.Item>
 
         <Form.Item name="dueDate" label="Due Date">
@@ -184,7 +174,7 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
             <DatePicker placeholder="End Date" />
             <Button
               type="text"
-              onClick={() => setIsShowStartDate((prev) => !prev)}
+              onClick={() => setIsShowStartDate(prev => !prev)}
               style={{ color: isShowStartDate ? 'red' : colors.skyBlue }}
             >
               {isShowStartDate ? 'Hide Start Date' : 'Show Start Date'}
@@ -197,9 +187,7 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
             <Form.Item
               name="hours"
               label={
-                <Typography.Text
-                  style={{ color: colors.lightGray, fontSize: 12 }}
-                >
+                <Typography.Text style={{ color: colors.lightGray, fontSize: 12 }}>
                   Hours
                 </Typography.Text>
               }
@@ -212,9 +200,7 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
             <Form.Item
               name="minutes"
               label={
-                <Typography.Text
-                  style={{ color: colors.lightGray, fontSize: 12 }}
-                >
+                <Typography.Text style={{ color: colors.lightGray, fontSize: 12 }}>
                   Minutes
                 </Typography.Text>
               }
@@ -228,23 +214,18 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
         </Form.Item>
 
         <Form.Item name="priority" label="Priority">
-          <Select
-            options={priorityMenuItems}
-            style={{ width: 'fit-content' }}
-          />
+          <Select options={priorityMenuItems} style={{ width: 'fit-content' }} />
         </Form.Item>
 
         <Form.Item name="labels" label="Labels">
-          <LabelsSelector
-            taskId={selectedTask ? selectedTask.taskId : 'NEW-TASK'}
-          />
+          <LabelsSelector taskId={selectedTask ? selectedTask.taskId : 'NEW-TASK'} />
         </Form.Item>
 
         <Form.Item name="billable" label="Billable">
           <Switch defaultChecked={false} />
         </Form.Item>
 
-        <Form.Item name="notify" label={selectedTask ? "Notify" : "When done, notify"}>
+        <Form.Item name="notify" label={selectedTask ? 'Notify' : 'When done, notify'}>
           <NotifyMemberSelector />
         </Form.Item>
 

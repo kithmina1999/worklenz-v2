@@ -10,16 +10,9 @@ type TaskDrawerHeaderProps = {
   inputRef: React.RefObject<InputRef | null>;
 };
 
-const TaskDrawerHeader = ({
-  taskName,
-  setTaskName,
-  inputRef,
-}: TaskDrawerHeaderProps) => {
-  const [characterLength, setCharacterLength] = useState<number>(
-    taskName.length
-  );
-  const [isCharacterLengthShowing, setIsCharacterLengthShowing] =
-    useState<boolean>(false);
+const TaskDrawerHeader = ({ taskName, setTaskName, inputRef }: TaskDrawerHeaderProps) => {
+  const [characterLength, setCharacterLength] = useState<number>(taskName.length);
+  const [isCharacterLengthShowing, setIsCharacterLengthShowing] = useState<boolean>(false);
 
   // function to set task name
   const onTaskNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +41,7 @@ const TaskDrawerHeader = ({
           ref={inputRef}
           size="large"
           value={taskName}
-          onChange={(e) => onTaskNameChange(e)}
+          onChange={e => onTaskNameChange(e)}
           onFocus={() => setIsCharacterLengthShowing(true)}
           onBlur={() => setIsCharacterLengthShowing(false)}
           placeholder="Type your Task"
@@ -67,10 +60,7 @@ const TaskDrawerHeader = ({
         )}
       </Flex>
       {/* <StatusDropdown currentStatus="todo"/> */}
-      <Dropdown
-        overlayClassName={'delete-task-dropdown'}
-        menu={{ items: deletTaskDropdownItems }}
-      >
+      <Dropdown overlayClassName={'delete-task-dropdown'} menu={{ items: deletTaskDropdownItems }}>
         <Button icon={<EllipsisOutlined />} className="borderless-icon-btn" />
       </Dropdown>
     </Flex>

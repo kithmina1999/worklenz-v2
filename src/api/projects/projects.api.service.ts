@@ -81,7 +81,7 @@ export const projectsApiService = {
     id: string,
     project: IProjectViewModel
   ): Promise<IServerResponse<IProjectViewModel>> => {
-    const q = toQueryString({current_project_id: id})
+    const q = toQueryString({ current_project_id: id });
     const url = `${rootUrl}/${id}${q}`;
     const response = await apiClient.put<IServerResponse<IProjectViewModel>>(`${url}`, project);
     return response.data;

@@ -25,7 +25,7 @@ const BoardCreateSubtaskCard = ({
   const { t } = useTranslation('kanbanBoard');
 
   //   get theme details from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
@@ -72,7 +72,7 @@ const BoardCreateSubtaskCard = ({
       <Input
         autoFocus
         value={newSubtaskName}
-        onChange={(e) => setNewSubtaskName(e.target.value)}
+        onChange={e => setNewSubtaskName(e.target.value)}
         onPressEnter={handleAddSubtask}
         onBlur={newSubtaskName.length > 0 ? handleAddSubtask : () => null}
         placeholder={t('newSubtaskNamePlaceholder')}

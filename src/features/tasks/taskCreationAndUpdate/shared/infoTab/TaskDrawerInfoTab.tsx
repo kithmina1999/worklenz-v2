@@ -1,18 +1,6 @@
-import {
-  Button,
-  Collapse,
-  CollapseProps,
-  Flex,
-  Tooltip,
-  Typography,
-  Upload,
-} from 'antd';
+import { Button, Collapse, CollapseProps, Flex, Tooltip, Typography, Upload } from 'antd';
 import React, { useState } from 'react';
-import {
-  LoadingOutlined,
-  PlusOutlined,
-  ReloadOutlined,
-} from '@ant-design/icons';
+import { LoadingOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import DescriptionEditor from './text-editor/description-editor';
 import SubTaskTable from './SubTaskTable';
 import DependenciesTable from './DependenciesTable';
@@ -24,11 +12,11 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [refreshSubTask, setRefreshSubTask] = useState<boolean>(false);
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // get currently selected task if exist
-  const selectedTask = useAppSelector((state) => state.taskReducer.tasks).find(
-    (task) => task.taskId === taskId
+  const selectedTask = useAppSelector(state => state.taskReducer.tasks).find(
+    task => task.taskId === taskId
   );
 
   // function for handle refresh
@@ -54,9 +42,7 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
     {
       key: 'description',
       label: <Typography.Text strong>Description</Typography.Text>,
-      children: (
-        <DescriptionEditor description={selectedTask?.description || null} />
-      ),
+      children: <DescriptionEditor description={selectedTask?.description || null} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },

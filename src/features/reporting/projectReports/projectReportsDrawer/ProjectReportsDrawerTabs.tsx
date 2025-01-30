@@ -10,9 +10,7 @@ type ProjectReportsDrawerProps = {
   projectId?: string | null;
 };
 
-const ProjectReportsDrawerTabs = ({
-  projectId = null,
-}: ProjectReportsDrawerProps) => {
+const ProjectReportsDrawerTabs = ({ projectId = null }: ProjectReportsDrawerProps) => {
   // localization
   const { t } = useTranslation('reporting-projects-drawer');
 

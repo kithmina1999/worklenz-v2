@@ -17,17 +17,10 @@ const CustomAvatarGroup = ({ assignees }: { assignees: any[] | null }) => {
         {assignees.map((assignee: any) =>
           assignee?.avatar_url ? (
             <Tooltip key={assignee.id} title={assignee?.name}>
-              <Avatar
-                src={assignee.avatar_url}
-                style={{ width: 26, height: 26 }}
-              />
+              <Avatar src={assignee.avatar_url} style={{ width: 26, height: 26 }} />
             </Tooltip>
           ) : (
-            <CustomAvatar
-              key={assignee.id}
-              avatarName={assignee?.name}
-              size={26}
-            />
+            <CustomAvatar key={assignee.id} avatarName={assignee?.name} size={26} />
           )
         )}
       </Avatar.Group>
@@ -41,7 +34,7 @@ const CustomAvatarGroup = ({ assignees }: { assignees: any[] | null }) => {
           width: 26,
           height: 26,
         }}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         <AddMembersDropdown />
       </Button>
@@ -57,7 +50,7 @@ const CustomAvatarGroup = ({ assignees }: { assignees: any[] | null }) => {
         width: 26,
         height: 26,
       }}
-      onClick={(e) => e.stopPropagation()}
+      onClick={e => e.stopPropagation()}
     >
       <AddMembersDropdown />
     </Button>

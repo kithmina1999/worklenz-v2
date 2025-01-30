@@ -39,11 +39,7 @@ const ProjectViewFiles = () => {
       title: t('nameColumn'),
       render: (record: FilesDataType) => (
         <Flex gap={4} align="center">
-          <img
-            src={fileIcon}
-            alt={t('fileIconAlt')}
-            style={{ width: '100%', maxWidth: 25 }}
-          />
+          <img src={fileIcon} alt={t('fileIconAlt')} style={{ width: '100%', maxWidth: 25 }} />
           <Typography.Text
             style={{
               color: hoverRow === record.fileId ? colors.skyBlue : 'inherit',
@@ -102,7 +98,7 @@ const ProjectViewFiles = () => {
             color: hoverRow === record.fileId ? colors.skyBlue : 'inherit',
           }}
         >
-          <Tooltip title='Nov 25,2024,10.45.54 AM'>
+          <Tooltip title="Nov 25,2024,10.45.54 AM">
             {durationDateFormat(record.uploadedDate)}
           </Tooltip>
         </Typography.Text>
@@ -116,21 +112,17 @@ const ProjectViewFiles = () => {
           <Flex gap={8} style={{ padding: 0 }}>
             <Popconfirm
               title={t('deleteConfirmationTitle')}
-              icon={
-                <ExclamationCircleFilled
-                  style={{ color: colors.vibrantOrange }}
-                />
-              }
+              icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
               okText={t('deleteConfirmationOk')}
               cancelText={t('deleteConfirmationCancel')}
               onConfirm={() => console.log('File deleted')}
             >
-              <Tooltip title='Delete'>
+              <Tooltip title="Delete">
                 <Button shape="default" icon={<DeleteOutlined />} size="small" />
               </Tooltip>
             </Popconfirm>
 
-            <Tooltip title='Download'>
+            <Tooltip title="Download">
               <Button size="small" icon={<CloudDownloadOutlined />} />
             </Tooltip>
           </Flex>
@@ -181,12 +173,12 @@ const ProjectViewFiles = () => {
           className="custom-two-colors-row-table"
           dataSource={filesData}
           columns={columns}
-          rowKey={(record) => record.fileId}
+          rowKey={record => record.fileId}
           pagination={{
             showSizeChanger: true,
             defaultPageSize: 20,
           }}
-          onRow={(record) => {
+          onRow={record => {
             return {
               onMouseEnter: () => setHoverRow(record.fileId),
               onMouseLeave: () => setHoverRow(null),

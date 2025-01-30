@@ -54,178 +54,186 @@ export const createColumns = ({
       maxSize: 47,
       enablePinning: true,
       meta: {
-        style: { position: 'sticky', left: 0, zIndex: 1 }
-      }
+        style: { position: 'sticky', left: 0, zIndex: 1 },
+      },
     }),
     columnHelper.accessor('task_key', {
-        header: 'Key',
-        id: COLUMN_KEYS.KEY,
-        size: 85,
-        minSize: 85,
-        maxSize: 85,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <Tag onClick={() => handleTaskSelect(row.original.id || '')} style={{ cursor: 'pointer' }}>
-            {row.original.task_key}
-          </Tag>
-        )
-      }),
+      header: 'Key',
+      id: COLUMN_KEYS.KEY,
+      size: 85,
+      minSize: 85,
+      maxSize: 85,
+      enablePinning: false,
+      cell: ({ row }) => (
+        <Tag onClick={() => handleTaskSelect(row.original.id || '')} style={{ cursor: 'pointer' }}>
+          {row.original.task_key}
+        </Tag>
+      ),
+    }),
 
-      columnHelper.accessor('name', {
-        header: 'Task',
-        id: COLUMN_KEYS.NAME,
-        size: 450,
-        enablePinning: true,
-        meta: {
-          style: { position: 'sticky', left: '47px', zIndex: 1 }
-        },
-        cell: ({ row }) => (
-          <TaskRowName
-            task={row.original}
-            isSubTask={false}
-            expandedTasks={Object.keys(expandedRows)}
-            setSelectedTaskId={() => { }}
-            toggleTaskExpansion={() => { }}
+    columnHelper.accessor('name', {
+      header: 'Task',
+      id: COLUMN_KEYS.NAME,
+      size: 450,
+      enablePinning: true,
+      meta: {
+        style: { position: 'sticky', left: '47px', zIndex: 1 },
+      },
+      cell: ({ row }) => (
+        <TaskRowName
+          task={row.original}
+          isSubTask={false}
+          expandedTasks={Object.keys(expandedRows)}
+          setSelectedTaskId={() => {}}
+          toggleTaskExpansion={() => {}}
+        />
+      ),
+    }),
+
+    columnHelper.accessor('description', {
+      header: 'Description',
+      id: COLUMN_KEYS.DESCRIPTION,
+      size: 225,
+      enablePinning: false,
+      cell: ({ row }) => <TaskRowDescription description={row.original.description || ''} />,
+    }),
+
+    columnHelper.accessor('progress', {
+      header: 'Progress',
+      id: COLUMN_KEYS.PROGRESS,
+      size: 80,
+      enablePinning: false,
+      cell: ({ row }) => (
+        <TaskRowProgress
+          progress={row.original.progress || 0}
+          numberOfSubTasks={row.original.sub_tasks_count || 0}
+        />
+      ),
+    }),
+
+    columnHelper.accessor('names', {
+      header: 'Assignees',
+      id: COLUMN_KEYS.ASSIGNEES,
+      size: 159,
+      enablePinning: false,
+      cell: ({ row }) => (
+        <Flex align="center" gap={8}>
+          <Avatars
+            key={`${row.original.id}-assignees`}
+            members={row.original.names || []}
+            maxCount={3}
           />
-        )
-      }),
-
-      columnHelper.accessor('description', {
-        header: 'Description',
-        id: COLUMN_KEYS.DESCRIPTION,
-        size: 225,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <TaskRowDescription description={row.original.description || ''} />
-        )
-      }),
-
-      columnHelper.accessor('progress', {
-        header: 'Progress',
-        id: COLUMN_KEYS.PROGRESS,
-        size: 80,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <TaskRowProgress progress={row.original.progress || 0} numberOfSubTasks={row.original.sub_tasks_count || 0} />
-        )
-      }),
-
-      columnHelper.accessor('names', {
-        header: 'Assignees',
-        id: COLUMN_KEYS.ASSIGNEES,
-        size: 159,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <Flex align="center" gap={8}>
-            <Avatars key={`${row.original.id}-assignees`} members={row.original.names || []} maxCount={3} />
-            <Avatar
-              size={28}
-              icon={<PlusOutlined />}
-              className="avatar-add"
-              style={{
-                backgroundColor: '#ffffff',
-                border: '1px dashed #c4c4c4',
-                color: '#000000D9',
-                cursor: 'pointer',
-              }}
-            />
-          </Flex>
-        )
-      }),
-
-      columnHelper.accessor('end_date', {
-        header: 'Due Date',
-        id: COLUMN_KEYS.DUE_DATE,
-        size: 149,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <span>
-            <DatePicker key={`${row.original.id}-end-date`} placeholder="Set a due date" suffixIcon={null} variant='borderless' />
-          </span>
-        )
-      }),
-
-      columnHelper.accessor('due_time', {
-        header: 'Due Time',
-        id: COLUMN_KEYS.DUE_TIME,
-        size: 120,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <TaskRowDueTime dueTime={row.original.due_time || ''} />
-        )
-      }),
-
-      columnHelper.accessor('status', {
-        header: 'Status',
-        id: COLUMN_KEYS.STATUS,
-        size: 120,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <StatusDropdown
-            key={`${row.original.id}-status`}
-            statusList={statuses}
-            task={row.original}
-            teamId={getCurrentSession()?.team_id || ''}
-            onChange={(statusId) => {
-              console.log('Status changed:', statusId);
+          <Avatar
+            size={28}
+            icon={<PlusOutlined />}
+            className="avatar-add"
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px dashed #c4c4c4',
+              color: '#000000D9',
+              cursor: 'pointer',
             }}
           />
-        )
-      }),
+        </Flex>
+      ),
+    }),
 
-      columnHelper.accessor('labels', {
-        header: 'Labels',
-        id: COLUMN_KEYS.LABELS,
-        size: 225,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <Flex>
-            {row.original.labels?.map(label =>
-              <CustomColorLabel key={`${row.original.id}-${label.id}`} label={label} />
-            )}
-            <LabelsSelector taskId={row.original.id} />
-          </Flex>
-        )
-      }),
+    columnHelper.accessor('end_date', {
+      header: 'Due Date',
+      id: COLUMN_KEYS.DUE_DATE,
+      size: 149,
+      enablePinning: false,
+      cell: ({ row }) => (
+        <span>
+          <DatePicker
+            key={`${row.original.id}-end-date`}
+            placeholder="Set a due date"
+            suffixIcon={null}
+            variant="borderless"
+          />
+        </span>
+      ),
+    }),
 
-      columnHelper.accessor('start_date', {
-        header: 'Start Date',
-        id: COLUMN_KEYS.START_DATE,
-        size: 149,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <span>
-            <DatePicker placeholder="Set a start date" suffixIcon={null} variant='borderless' />
-          </span>
-        )
-      }),
+    columnHelper.accessor('due_time', {
+      header: 'Due Time',
+      id: COLUMN_KEYS.DUE_TIME,
+      size: 120,
+      enablePinning: false,
+      cell: ({ row }) => <TaskRowDueTime dueTime={row.original.due_time || ''} />,
+    }),
 
-      columnHelper.accessor('priority', {
-        header: 'Priority',
-        id: COLUMN_KEYS.PRIORITY,
-        size: 120,
-        enablePinning: false,
-        cell: ({ row }) => (
-          <span>
-            <Select
-              variant='borderless'
-              options={[
-                { value: 'high', label: 'High' },
-                { value: 'medium', label: 'Medium' },
-                { value: 'low', label: 'Low' }
-              ]}
-            />
-          </span>
-        )
-      }),
+    columnHelper.accessor('status', {
+      header: 'Status',
+      id: COLUMN_KEYS.STATUS,
+      size: 120,
+      enablePinning: false,
+      cell: ({ row }) => (
+        <StatusDropdown
+          key={`${row.original.id}-status`}
+          statusList={statuses}
+          task={row.original}
+          teamId={getCurrentSession()?.team_id || ''}
+          onChange={statusId => {
+            console.log('Status changed:', statusId);
+          }}
+        />
+      ),
+    }),
 
-      // columnHelper.accessor('time_tracking', {
-      //   header: 'Time Tracking',
-      //   size: 120,
-      //   enablePinning: false,
-      //   cell: ({ row }) => (
-      //     <TaskRowTimeTracking taskId={row.original.id || null} />
-      //   )
-      // })
+    columnHelper.accessor('labels', {
+      header: 'Labels',
+      id: COLUMN_KEYS.LABELS,
+      size: 225,
+      enablePinning: false,
+      cell: ({ row }) => (
+        <Flex>
+          {row.original.labels?.map(label => (
+            <CustomColorLabel key={`${row.original.id}-${label.id}`} label={label} />
+          ))}
+          <LabelsSelector taskId={row.original.id} />
+        </Flex>
+      ),
+    }),
+
+    columnHelper.accessor('start_date', {
+      header: 'Start Date',
+      id: COLUMN_KEYS.START_DATE,
+      size: 149,
+      enablePinning: false,
+      cell: ({ row }) => (
+        <span>
+          <DatePicker placeholder="Set a start date" suffixIcon={null} variant="borderless" />
+        </span>
+      ),
+    }),
+
+    columnHelper.accessor('priority', {
+      header: 'Priority',
+      id: COLUMN_KEYS.PRIORITY,
+      size: 120,
+      enablePinning: false,
+      cell: ({ row }) => (
+        <span>
+          <Select
+            variant="borderless"
+            options={[
+              { value: 'high', label: 'High' },
+              { value: 'medium', label: 'Medium' },
+              { value: 'low', label: 'Low' },
+            ]}
+          />
+        </span>
+      ),
+    }),
+
+    // columnHelper.accessor('time_tracking', {
+    //   header: 'Time Tracking',
+    //   size: 120,
+    //   enablePinning: false,
+    //   cell: ({ row }) => (
+    //     <TaskRowTimeTracking taskId={row.original.id || null} />
+    //   )
+    // })
   ];
 };

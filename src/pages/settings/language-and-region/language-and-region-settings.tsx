@@ -6,7 +6,10 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { ILanguageType, Language, setLanguage } from '@/features/i18n/localesSlice';
-import { evt_settings_language_and_region_visit, evt_settings_language_changed } from '@/shared/worklenz-analytics-events';
+import {
+  evt_settings_language_and_region_visit,
+  evt_settings_language_changed,
+} from '@/shared/worklenz-analytics-events';
 
 const LanguageAndRegionSettings = () => {
   const dispatch = useAppDispatch();
@@ -67,7 +70,7 @@ const LanguageAndRegionSettings = () => {
             },
           ]}
         >
-          <Select options={languageOptions}/>
+          <Select options={languageOptions} />
         </Form.Item>
         <Form.Item
           name="timeZone"
@@ -82,7 +85,9 @@ const LanguageAndRegionSettings = () => {
           <Select showSearch />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">{t('save_changes')}</Button>
+          <Button type="primary" htmlType="submit">
+            {t('save_changes')}
+          </Button>
         </Form.Item>
       </Form>
     </Card>

@@ -28,17 +28,13 @@ const ChargesTable: React.FC = () => {
     {
       title: t('billingPeriod'),
       key: 'billingPeriod',
-      render: (record) => {
-        const formattedStartingDate = new Date(
-          record.startingDate
-        ).toLocaleDateString('en-US', {
+      render: record => {
+        const formattedStartingDate = new Date(record.startingDate).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
         });
-        const formattedEndingDate = new Date(
-          record.endingDate
-        ).toLocaleDateString('en-US', {
+        const formattedEndingDate = new Date(record.endingDate).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
@@ -56,7 +52,7 @@ const ChargesTable: React.FC = () => {
       title: t('perUserValue'),
       key: 'perUserValue',
       dataIndex: 'perUserValue',
-      render: (text) => <span>USD {text}</span>,
+      render: text => <span>USD {text}</span>,
     },
     {
       title: t('users'),
@@ -67,7 +63,7 @@ const ChargesTable: React.FC = () => {
       title: t('amount'),
       key: 'amount',
       dataIndex: 'amount',
-      render: (text) => <span>USD {text}</span>,
+      render: text => <span>USD {text}</span>,
     },
   ];
 

@@ -30,17 +30,17 @@ const MembersReportsTable = ({ membersList }: MembersReportsTableProps) => {
     {
       key: 'member',
       title: <CustomTableTitle title={t('memberColumn')} />,
-      onCell: (record) => {
+      onCell: record => {
         return {
           onClick: () => handleDrawerOpen(record.id),
         };
       },
-      render: (record) => <MemberCell member={record} />,
+      render: record => <MemberCell member={record} />,
     },
     {
       key: 'tasksProgress',
       title: <CustomTableTitle title={t('tasksProgressColumn')} />,
-      render: (record) => <TasksProgressCell tasksStat={record.tasks_stat} />,
+      render: record => <TasksProgressCell tasksStat={record.tasks_stat} />,
     },
     {
       key: 'tasksAssigned',
@@ -108,7 +108,7 @@ const MembersReportsTable = ({ membersList }: MembersReportsTableProps) => {
         dataSource={membersList}
         pagination={{ showSizeChanger: true, defaultPageSize: 10 }}
         scroll={{ x: 'max-content' }}
-        onRow={(record) => {
+        onRow={record => {
           return {
             style: { height: 48, cursor: 'pointer' },
             className: 'group even:bg-[#4e4e4e10]',

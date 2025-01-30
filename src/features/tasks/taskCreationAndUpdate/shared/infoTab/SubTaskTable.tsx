@@ -1,14 +1,4 @@
-import {
-  Button,
-  Flex,
-  Input,
-  Popconfirm,
-  Progress,
-  Table,
-  TableProps,
-  Tag,
-  Tooltip,
-} from 'antd';
+import { Button, Flex, Input, Popconfirm, Progress, Table, TableProps, Tag, Tooltip } from 'antd';
 import React, { useState } from 'react';
 import {
   DeleteOutlined,
@@ -17,11 +7,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { nanoid } from '@reduxjs/toolkit';
-import {
-  TaskPriorityType,
-  TaskStatusType,
-  TaskType,
-} from '../../../../../types/task.types';
+import { TaskPriorityType, TaskStatusType, TaskType } from '../../../../../types/task.types';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
 import { getPriorityColor } from '../../../../../utils/getPriorityColors';
 import { getStatusColor } from '../../../../../utils/getStatusColor';
@@ -36,7 +22,7 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
   // get theme details from theme slice
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // initialize subTaskList state
   const [subTaskList, setSubTaskList] = useState(datasource || []);
@@ -57,7 +43,7 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
 
   // function to handle deleting a subtask
   const handleDeleteSubTask = (taskId: string) => {
-    const updatedList = subTaskList.filter((task) => task.taskId !== taskId);
+    const updatedList = subTaskList.filter(task => task.taskId !== taskId);
     setSubTaskList(updatedList);
   };
 
@@ -69,7 +55,7 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
     },
     {
       key: 'priority',
-      render: (record) => (
+      render: record => (
         <Tag
           color={getPriorityColor(record.priority, themeMode)}
           style={{ textTransform: 'capitalize' }}
@@ -80,7 +66,7 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
     },
     {
       key: 'status',
-      render: (record) => (
+      render: record => (
         <Tag
           color={getStatusColor(record.status, themeMode)}
           style={{ textTransform: 'capitalize' }}
@@ -93,12 +79,7 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
       key: 'assignee',
       render: () => (
         <Tooltip title={'No member assigned to this task'}>
-          <Button
-            type="dashed"
-            shape="circle"
-            size="small"
-            icon={<UserOutlined />}
-          />
+          <Button type="dashed" shape="circle" size="small" icon={<UserOutlined />} />
         </Tooltip>
       ),
     },
@@ -118,21 +99,13 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
 
             <Popconfirm
               title={'Are you sure?'}
-              icon={
-                <ExclamationCircleFilled
-                  style={{ color: colors.vibrantOrange }}
-                />
-              }
+              icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
               okText={'Yes'}
               cancelText={'No'}
               onConfirm={() => handleDeleteSubTask(record.taskId)}
             >
               <Tooltip title="Delete">
-                <Button
-                  shape="default"
-                  icon={<DeleteOutlined />}
-                  size="small"
-                />
+                <Button shape="default" icon={<DeleteOutlined />} size="small" />
               </Tooltip>
             </Popconfirm>
           </Flex>
@@ -151,9 +124,9 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
             showHeader={false}
             dataSource={subTaskList}
             columns={columns}
-            rowKey={(record) => record.taskId}
+            rowKey={record => record.taskId}
             pagination={{ hideOnSinglePage: true }}
-            onRow={(record) => ({
+            onRow={record => ({
               onMouseEnter: () => setHoverRow(record.taskId),
               onMouseLeave: () => setHoverRow(null),
               style: {
@@ -172,12 +145,12 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
                 height: 48,
               }}
               placeholder="Type your task and hit enter"
-              onBlur={(e) =>
+              onBlur={e =>
                 e.currentTarget.value.length > 0
                   ? handleAddSubTask(e.currentTarget.value)
                   : setIsEdit(false)
               }
-              onPressEnter={(e) =>
+              onPressEnter={e =>
                 e.currentTarget.value.length > 0
                   ? handleAddSubTask(e.currentTarget.value)
                   : setIsEdit(false)

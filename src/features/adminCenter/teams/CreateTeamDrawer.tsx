@@ -9,9 +9,7 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
 
 const CreateTeamDrawer: React.FC = () => {
-  const isDrawerOpen = useSelector(
-    (state: RootState) => state.teamReducer.isDrawerOpen
-  );
+  const isDrawerOpen = useSelector((state: RootState) => state.teamReducer.isDrawerOpen);
   const dispatch = useAppDispatch();
   const [form] = Form.useForm();
 

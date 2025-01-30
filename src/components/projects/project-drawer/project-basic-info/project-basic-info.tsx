@@ -30,12 +30,7 @@ const ProjectBasicInfo = ({ editMode, project, form }: ProjectBasicInfoProps) =>
         </Form.Item>
       )}
 
-      <Form.Item 
-        name="color_code" 
-        label={t('projectColor')} 
-        layout="horizontal" 
-        required
-      >
+      <Form.Item name="color_code" label={t('projectColor')} layout="horizontal" required>
         <ColorPicker
           value={project?.color_code || defaultColorCode}
           onChange={value => form.setFieldValue('color_code', value.toHexString())}

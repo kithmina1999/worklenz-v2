@@ -17,14 +17,10 @@ const ProjectManagerCell = ({ manager }: ProjectMangerCellProps) => {
             <CustomAvatar avatarName={manager.name} />
           )}
 
-          <Typography.Text className="group-hover:text-[#1890ff]">
-            {manager.name}
-          </Typography.Text>
+          <Typography.Text className="group-hover:text-[#1890ff]">{manager.name}</Typography.Text>
         </Flex>
       ) : (
-        <Typography.Text className="group-hover:text-[#1890ff]">
-          -
-        </Typography.Text>
+        <Typography.Text className="group-hover:text-[#1890ff]">-</Typography.Text>
       )}
     </div>
   );

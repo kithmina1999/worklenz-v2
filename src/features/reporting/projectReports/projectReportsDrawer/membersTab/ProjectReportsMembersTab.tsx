@@ -9,9 +9,7 @@ type ProjectReportsMembersTabProps = {
   projectId?: string | null;
 };
 
-const ProjectReportsMembersTab = ({
-  projectId = null,
-}: ProjectReportsMembersTabProps) => {
+const ProjectReportsMembersTab = ({ projectId = null }: ProjectReportsMembersTabProps) => {
   const [searchQuery, setSearhQuery] = useState<string>('');
 
   // localization
@@ -63,7 +61,7 @@ const ProjectReportsMembersTab = ({
 
   // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
-    return teamMembersData.filter((item) =>
+    return teamMembersData.filter(item =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [searchQuery, teamMembersData]);

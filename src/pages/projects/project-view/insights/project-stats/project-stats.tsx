@@ -12,7 +12,7 @@ import { TFunction } from 'i18next';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '@/hooks/useAppSelector';
 
-const ProjectStats = ({ t, }: { t: TFunction }) => {
+const ProjectStats = ({ t }: { t: TFunction }) => {
   const { includeArchivedTasks, projectId } = useAppSelector(state => state.projectInsightsReducer);
   const [stats, setStats] = useState<IProjectInsightsGetRequest>({});
   const [loading, setLoading] = useState(false);

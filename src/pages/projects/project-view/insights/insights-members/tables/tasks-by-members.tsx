@@ -89,7 +89,11 @@ const TaskByMembersTable = () => {
       case 'overdue':
         return member.overdue_task_count;
       case 'progress':
-        return <Progress percent={Math.floor((member.done_task_count ?? 0) / (member.task_count ?? 1) * 100)} />;
+        return (
+          <Progress
+            percent={Math.floor(((member.done_task_count ?? 0) / (member.task_count ?? 1)) * 100)}
+          />
+        );
       default:
         return null;
     }

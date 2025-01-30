@@ -31,7 +31,9 @@ import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import React from 'react';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
-const StatusDrawer = React.lazy(() => import('@/components/project-task-filters/create-status-drawer/create-status-drawer'));
+const StatusDrawer = React.lazy(
+  () => import('@/components/project-task-filters/create-status-drawer/create-status-drawer')
+);
 const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 const ProjectView = () => {

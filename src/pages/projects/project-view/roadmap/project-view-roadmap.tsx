@@ -12,12 +12,12 @@ const ProjectViewRoadmap = () => {
   const [view, setView] = useState<ViewMode>(ViewMode.Day);
 
   // get theme details
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   return (
     <Flex vertical className={`${themeMode === 'dark' ? 'dark-theme' : ''}`}>
       {/* time filter */}
-      <TimeFilter onViewModeChange={(viewMode) => setView(viewMode)} />
+      <TimeFilter onViewModeChange={viewMode => setView(viewMode)} />
 
       <Flex>
         {/* table */}

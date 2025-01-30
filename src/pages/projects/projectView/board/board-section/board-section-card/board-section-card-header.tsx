@@ -1,14 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Button,
-  Dropdown,
-  Flex,
-  Input,
-  InputRef,
-  Popconfirm,
-  Tooltip,
-  Typography,
-} from 'antd';
+import { Button, Dropdown, Flex, Input, InputRef, Popconfirm, Tooltip, Typography } from 'antd';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -58,15 +49,13 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
   const inputRef = useRef<InputRef>(null);
 
   // editble id state
-  const editableSectionId = useAppSelector(
-    (state) => state.boardReducer.editableSectionId
-  );
+  const editableSectionId = useAppSelector(state => state.boardReducer.editableSectionId);
 
   //   localization
   const { t } = useTranslation('kanbanBoard');
 
   //   get theme data from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
@@ -130,18 +119,12 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
       label: (
         <Popconfirm
           title={t('deleteConfirmationTitle')}
-          icon={
-            <ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />
-          }
+          icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
           okText={t('deleteConfirmationOk')}
           cancelText={t('deleteConfirmationCancel')}
           onConfirm={() => dispatch(deleteSection({ sectionId: id }))}
         >
-          <Flex
-            gap={8}
-            align="center"
-            style={{ width: '100%', padding: '5px 12px' }}
-          >
+          <Flex gap={8} align="center" style={{ width: '100%', padding: '5px 12px' }}>
             <DeleteOutlined />
             {t('delete')}
           </Flex>
@@ -200,7 +183,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
             <Typography.Text
               ellipsis={{
                 tooltip: false,
-                onEllipsis: (ellipsed) => setIsEllipsisActive(ellipsed),
+                onEllipsis: ellipsed => setIsEllipsisActive(ellipsed),
               }}
               style={{
                 minWidth: 200,

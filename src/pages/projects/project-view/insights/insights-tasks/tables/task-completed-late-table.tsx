@@ -7,13 +7,22 @@ import { IInsightTasks } from '@/types/project/projectInsights.types';
 import logger from '@/utils/errorLogger';
 import { projectInsightsApiService } from '@/api/projects/insights/project-insights.api.service';
 
-const TaskCompletedLateTable = ({ projectId, includeArchivedTasks }: { projectId: string, includeArchivedTasks: boolean }) => {
+const TaskCompletedLateTable = ({
+  projectId,
+  includeArchivedTasks,
+}: {
+  projectId: string;
+  includeArchivedTasks: boolean;
+}) => {
   const [lateCompletedTaskList, setLateCompletedTaskList] = useState<IInsightTasks[]>([]);
   const [loading, setLoading] = useState(true);
 
   const getLateCompletedTasks = async () => {
     try {
-      const res = await projectInsightsApiService.getTasksCompletedLate(projectId, includeArchivedTasks);
+      const res = await projectInsightsApiService.getTasksCompletedLate(
+        projectId,
+        includeArchivedTasks
+      );
       if (res.done) {
         setLateCompletedTaskList(res.body);
       }
@@ -22,7 +31,7 @@ const TaskCompletedLateTable = ({ projectId, includeArchivedTasks }: { projectId
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     getLateCompletedTasks();
@@ -33,11 +42,7 @@ const TaskCompletedLateTable = ({ projectId, includeArchivedTasks }: { projectId
     {
       key: 'name',
       title: 'Name',
-      render: (record: IInsightTasks) => (
-        <Typography.Text>
-          {record.name}
-        </Typography.Text>
-      ),
+      render: (record: IInsightTasks) => <Typography.Text>{record.name}</Typography.Text>,
     },
     {
       key: 'status',
@@ -70,18 +75,14 @@ const TaskCompletedLateTable = ({ projectId, includeArchivedTasks }: { projectId
       key: 'dueDate',
       title: 'End Date',
       render: (record: IInsightTasks) => (
-        <Typography.Text>
-          {simpleDateFormat(record.end_date || null)}
-        </Typography.Text>
+        <Typography.Text>{simpleDateFormat(record.end_date || null)}</Typography.Text>
       ),
     },
     {
       key: 'completedDate',
       title: 'Completed At',
       render: (record: IInsightTasks) => (
-        <Typography.Text>
-          {simpleDateFormat(record.completed_at || null)}
-        </Typography.Text>
+        <Typography.Text>{simpleDateFormat(record.completed_at || null)}</Typography.Text>
       ),
     },
   ];
@@ -91,14 +92,14 @@ const TaskCompletedLateTable = ({ projectId, includeArchivedTasks }: { projectId
       className="custom-two-colors-row-table"
       dataSource={lateCompletedTaskList}
       columns={columns}
-      rowKey={(record) => record.taskId}
+      rowKey={record => record.taskId}
       pagination={{
         showSizeChanger: false,
         defaultPageSize: 10,
       }}
       loading={loading}
       size="small"
-      onRow={(record) => {
+      onRow={record => {
         return {
           style: {
             cursor: 'pointer',

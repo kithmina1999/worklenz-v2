@@ -20,16 +20,12 @@ const ProjectReportsDrawer = ({ projectId }: ProjectReportsDrawerProps) => {
 
   // get drawer open state and project list from the reducer
   const isDrawerOpen = useAppSelector(
-    (state) => state.projectReportsReducer.isProjectReportsDrawerOpen
+    state => state.projectReportsReducer.isProjectReportsDrawerOpen
   );
-  const { projectList } = useAppSelector(
-    (state) => state.projectReportsReducer
-  );
+  const { projectList } = useAppSelector(state => state.projectReportsReducer);
 
   // find the selected project based on projectId
-  const selectedProject = projectList.find(
-    (project) => project.id === projectId
-  );
+  const selectedProject = projectList.find(project => project.id === projectId);
 
   // function to handle drawer close
   const handleClose = () => {
@@ -66,9 +62,7 @@ const ProjectReportsDrawer = ({ projectId }: ProjectReportsDrawerProps) => {
         )
       }
     >
-      {selectedProject && (
-        <ProjectReportsDrawerTabs projectId={selectedProject.id} />
-      )}
+      {selectedProject && <ProjectReportsDrawerTabs projectId={selectedProject.id} />}
     </Drawer>
   );
 };

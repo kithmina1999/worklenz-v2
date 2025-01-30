@@ -29,7 +29,7 @@ const AuthenticatingPage: React.FC = () => {
     }
 
     navigate('/worklenz/home');
-  }
+  };
 
   useEffect(() => {
     const handleAuthentication = async () => {
@@ -52,7 +52,6 @@ const AuthenticatingPage: React.FC = () => {
         setTimeout(() => {
           handleSuccessRedirect();
         }, REDIRECT_DELAY);
-
       } catch (error) {
         logger.error('Authentication verification failed:', error);
         navigate('/auth/login');
@@ -64,7 +63,7 @@ const AuthenticatingPage: React.FC = () => {
 
   const cardStyles = {
     width: '100%',
-    boxShadow: 'none'
+    boxShadow: 'none',
   };
 
   return (

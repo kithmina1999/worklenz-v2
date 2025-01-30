@@ -154,7 +154,11 @@ const ClientsSettings: React.FC = () => {
               {t('createClient')}
             </Button>
             <Tooltip title={t('pinTooltip')} trigger={'hover'}>
-              <PinRouteToNavbarButton name="clients" path="/worklenz/settings/clients" adminOnly={true} />
+              <PinRouteToNavbarButton
+                name="clients"
+                path="/worklenz/settings/clients"
+                adminOnly={true}
+              />
             </Tooltip>
           </Flex>
         </Flex>

@@ -8,18 +8,14 @@ import { useTranslation } from 'react-i18next';
 
 const TaskTemplateDrawer = () => {
   const isTaskTemplateDrawerOpen = useAppSelector(
-    (state) => state.taskTemplateReducer.isTaskTemplateDrawerOpen
+    state => state.taskTemplateReducer.isTaskTemplateDrawerOpen
   );
-  const selectedTemplate = useAppSelector(
-    (state) => state.taskTemplateReducer.selectedTemplate
-  );
+  const selectedTemplate = useAppSelector(state => state.taskTemplateReducer.selectedTemplate);
   const dispatch = useAppDispatch();
-  const {t} = useTranslation('task-template-drawer')
+  const { t } = useTranslation('task-template-drawer');
 
   // Find the selected template data
-  const filteredData = jsonData.find(
-    (template) => template.id === selectedTemplate
-  );
+  const filteredData = jsonData.find(template => template.id === selectedTemplate);
 
   return (
     <Drawer
@@ -27,7 +23,11 @@ const TaskTemplateDrawer = () => {
       title={t('title')}
       open={isTaskTemplateDrawerOpen}
       onClose={() => dispatch(toggleTaskTemplateDrawer())}
-      footer={<div style={{display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'right'}}><Button>Cancel</Button> <Button type='primary'>Save</Button></div>}
+      footer={
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'right' }}>
+          <Button>Cancel</Button> <Button type="primary">Save</Button>
+        </div>
+      }
     >
       <Form>
         <Form.Item label={t('templateNameText')}>
@@ -40,7 +40,7 @@ const TaskTemplateDrawer = () => {
           <List
             bordered
             dataSource={filteredData?.tasks}
-            renderItem={(item) => (
+            renderItem={item => (
               <List.Item>
                 <div
                   style={{

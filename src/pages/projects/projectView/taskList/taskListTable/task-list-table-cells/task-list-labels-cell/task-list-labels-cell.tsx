@@ -14,7 +14,7 @@ const TaskListLabelsCell = ({ labels, taskId }: TaskListLabelsCellProps) => {
   return (
     <Flex>
       {labels && labels?.length <= 2 ? (
-        labels?.map((label) => <CustomColordLabel label={label} />)
+        labels?.map(label => <CustomColordLabel label={label} />)
       ) : (
         <Flex>
           <CustomColordLabel label={labels ? labels[0] : null} />

@@ -1,6 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { PlusOutlined } from '@ant-design/icons';
-import { Badge, Button, Card, Checkbox, Divider, Dropdown, Flex, Input, InputRef, List, Typography } from 'antd';
+import {
+  Badge,
+  Button,
+  Card,
+  Checkbox,
+  Divider,
+  Dropdown,
+  Flex,
+  Input,
+  InputRef,
+  List,
+  Typography,
+} from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
@@ -19,18 +31,18 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
   const { t } = useTranslation('task-list-table');
 
   // get label list from label reducer
-  const labelList = useAppSelector((state) => state.labelReducer.labelList);
+  const labelList = useAppSelector(state => state.labelReducer.labelList);
   const dispatch = useAppDispatch();
 
   // get task list from redux and find the selected task
-  const selectedTask = useAppSelector((state) => state.taskReducer.tasks).find(
-    (task) => task.taskId === taskId,
+  const selectedTask = useAppSelector(state => state.taskReducer.tasks).find(
+    task => task.taskId === taskId
   );
 
   // used useMemo hook for re-render the list when searching
   const filteredLabelData = useMemo(() => {
-    return labelList.filter((label) =>
-      label.labelName.toLowerCase().includes(searchQuery.toLowerCase()),
+    return labelList.filter(label =>
+      label.labelName.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [labelList, searchQuery]);
 
@@ -49,16 +61,19 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
 
   // custom dropdown content
   const labelDropdownContent = (
-    <Card className="custom-card" styles={{ body: { padding: 8, overflow: 'hidden', overflowY: 'auto', maxHeight: '255px'} }}>
+    <Card
+      className="custom-card"
+      styles={{ body: { padding: 8, overflow: 'hidden', overflowY: 'auto', maxHeight: '255px' } }}
+    >
       <Flex vertical gap={8}>
         <Input
           ref={labelInputRef}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          onChange={e => setSearchQuery(e.currentTarget.value)}
           placeholder={t('searchInputPlaceholder')}
-          onKeyDown={(e) => {
+          onKeyDown={e => {
             const isLabel = filteredLabelData.findIndex(
-              (label) => label.labelName.toLowerCase === searchQuery.toLowerCase,
+              label => label.labelName.toLowerCase === searchQuery.toLowerCase
             );
 
             if (isLabel === -1) {
@@ -71,7 +86,7 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
 
         <List style={{ padding: 0 }}>
           {filteredLabelData.length ? (
-            filteredLabelData.map((label) => (
+            filteredLabelData.map(label => (
               <List.Item
                 className="custom-list-item"
                 key={label.labelId}
@@ -88,9 +103,8 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
                   checked={
                     selectedTask?.labels
                       ? selectedTask?.labels.some(
-                        (existingLabel) =>
-                          existingLabel.labelId === label.labelId,
-                      )
+                          existingLabel => existingLabel.labelId === label.labelId
+                        )
                       : false
                   }
                   onChange={() => console.log(123)}

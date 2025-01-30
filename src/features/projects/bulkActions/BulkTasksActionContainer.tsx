@@ -17,10 +17,7 @@ type BulkTasksActionProps = {
   closeContainer: () => void;
 };
 
-const BulkTasksActionContainer = ({
-  selectedTaskIds,
-  closeContainer,
-}: BulkTasksActionProps) => {
+const BulkTasksActionContainer = ({ selectedTaskIds, closeContainer }: BulkTasksActionProps) => {
   const selectedTasksCount = selectedTaskIds.length;
   return (
     <Flex

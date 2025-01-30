@@ -7,9 +7,7 @@ type ProjectDaysLeftAndOverdueCellProps = {
   daysLeft: number | null;
 };
 
-const ProjectDaysLeftAndOverdueCell = ({
-  daysLeft,
-}: ProjectDaysLeftAndOverdueCellProps) => {
+const ProjectDaysLeftAndOverdueCell = ({ daysLeft }: ProjectDaysLeftAndOverdueCellProps) => {
   // localization
   const { t } = useTranslation('reporting-projects');
 

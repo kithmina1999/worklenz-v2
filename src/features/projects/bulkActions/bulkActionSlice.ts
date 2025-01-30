@@ -15,7 +15,7 @@ const bulkActionSlice = createSlice({
     selectTaskIds: (state, action: PayloadAction<string[]>) => {
       state.selectedTaskIdsList.push(...action.payload);
     },
-    deselectAll: (state) => {
+    deselectAll: state => {
       state.selectedTaskIdsList = [];
     },
   },

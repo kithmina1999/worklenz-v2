@@ -12,7 +12,7 @@ const PriorityFilterDropdown = (props: { priorities: ITaskPriority[] }) => {
 
   // localization
   const { t } = useTranslation('task-list-filters');
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {

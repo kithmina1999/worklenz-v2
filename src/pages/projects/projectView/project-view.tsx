@@ -18,8 +18,12 @@ import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
-const StatusDrawer = React.lazy(() => import('@/components/project-task-filters/create-status-drawer/create-status-drawer'));
-const ProjectMemberDrawer = React.lazy(() => import('@features/projects/singleProject/members/ProjectMemberDrawer'));
+const StatusDrawer = React.lazy(
+  () => import('@/components/project-task-filters/create-status-drawer/create-status-drawer')
+);
+const ProjectMemberDrawer = React.lazy(
+  () => import('@features/projects/singleProject/members/ProjectMemberDrawer')
+);
 const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 const ProjectView = () => {
@@ -142,7 +146,6 @@ const ProjectView = () => {
           </div>
         }
       />
-
 
       <ProjectMemberDrawer />
       <PhaseDrawer />

@@ -210,9 +210,15 @@ const projectSlice = createSlice({
       })
       .addCase(toggleArchiveProjectForAll.fulfilled, state => {
         state.loading = false;
-      })
+      });
   },
 });
 
-export const { toggleDrawer, setCategories, setFilteredCategories, setFilteredStatuses, setRequestParams } = projectSlice.actions;
+export const {
+  toggleDrawer,
+  setCategories,
+  setFilteredCategories,
+  setFilteredStatuses,
+  setRequestParams,
+} = projectSlice.actions;
 export default projectSlice.reducer;

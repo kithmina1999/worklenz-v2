@@ -41,7 +41,7 @@ const AssignedTasksListTable: React.FC<AssignedTasksListTableProps> = ({
         const res = await projectInsightsApiService.getMemberTasks({
           member_id: memberId,
           project_id: projectId,
-          archived
+          archived,
         });
         if (res.done) {
           setMemberTasks(res.body);

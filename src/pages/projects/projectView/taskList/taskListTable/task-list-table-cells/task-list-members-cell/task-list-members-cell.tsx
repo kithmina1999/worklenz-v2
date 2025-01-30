@@ -16,11 +16,7 @@ const TaskListMembersCell = ({ groupId, task }: TaskListMembersCellProps) => {
   return (
     <Flex gap={4} align="center" onClick={() => {}}>
       <Avatars members={task.assignees || []} />
-      <AssigneeSelector
-        showDropdown={showDropdown}
-        task={task}
-        groupId={groupId}
-      />
+      <AssigneeSelector showDropdown={showDropdown} task={task} groupId={groupId} />
     </Flex>
   );
 };

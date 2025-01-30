@@ -10,8 +10,8 @@ import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 const ProjectTemplatesSettings = () => {
   // localization
   const { t } = useTranslation('settings-project-templates');
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  const navigate = useNavigate()
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const navigate = useNavigate();
 
   useDocumentTitle('Project Templates');
 
@@ -24,22 +24,25 @@ const ProjectTemplatesSettings = () => {
     },
     {
       key: 'button',
-      render: (record) => (
+      render: record => (
         <div
           style={{ display: 'flex', gap: '10px', justifyContent: 'right' }}
           className="button-visibilty"
         >
           <Tooltip title={t('editToolTip')}>
-            <Button size="small" onClick={() => navigate(`/worklenz/settings/project-templates/edit/${record.id}/${record.name}`)}>
+            <Button
+              size="small"
+              onClick={() =>
+                navigate(`/worklenz/settings/project-templates/edit/${record.id}/${record.name}`)
+              }
+            >
               <EditOutlined />
             </Button>
           </Tooltip>
           <Tooltip title={t('deleteToolTip')}>
             <Popconfirm
               title={
-                <Typography.Text style={{ fontWeight: 400 }}>
-                  {t('confirmText')}
-                </Typography.Text>
+                <Typography.Text style={{ fontWeight: 400 }}>{t('confirmText')}</Typography.Text>
               }
               okText={t('okText')}
               cancelText={t('cancelText')}
@@ -56,9 +59,16 @@ const ProjectTemplatesSettings = () => {
 
   return (
     <Card style={{ width: '100%' }}>
-      <Table columns={columns} dataSource={jsonData} size="small" pagination={{ size: 'small' }}  rowClassName={(_, index) =>
+      <Table
+        columns={columns}
+        dataSource={jsonData}
+        size="small"
+        pagination={{ size: 'small' }}
+        rowClassName={(_, index) =>
           `no-border-row ${index % 2 === 0 ? '' : themeMode === 'dark' ? 'dark-alternate-row-color' : 'alternate-row-color'}`
-        } rowKey="id"/>
+        }
+        rowKey="id"
+      />
     </Card>
   );
 };

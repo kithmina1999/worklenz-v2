@@ -30,7 +30,7 @@ const ProjectStatusFilterDropdown = () => {
   const projectStatusDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 0 } }}>
       <List style={{ padding: 0 }}>
-        {projectStatusFieldsList.map((item) => (
+        {projectStatusFieldsList.map(item => (
           <List.Item
             className="custom-list-item"
             key={item.key}
@@ -56,7 +56,7 @@ const ProjectStatusFilterDropdown = () => {
       overlayClassName="custom-dropdown"
       trigger={['click']}
       dropdownRender={() => projectStatusDropdownContent}
-      onOpenChange={(open) => setIsDropdownOpen(open)}
+      onOpenChange={open => setIsDropdownOpen(open)}
     >
       <Button
         type="default"

@@ -1,4 +1,14 @@
-import { Button, Card, Flex, Input, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd';
+import {
+  Button,
+  Card,
+  Flex,
+  Input,
+  Popconfirm,
+  Table,
+  TableProps,
+  Tooltip,
+  Typography,
+} from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton';
@@ -17,11 +27,15 @@ const LabelsSettings = () => {
   const [labels, setLabels] = useState<ITaskLabel[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const filteredData = useMemo(() => labels.filter(record =>
-    Object.values(record).some(value =>
-      value?.toString().toLowerCase().includes(searchQuery.toLowerCase()),
-    ),
-  ), [labels, searchQuery]);
+  const filteredData = useMemo(
+    () =>
+      labels.filter(record =>
+        Object.values(record).some(value =>
+          value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      ),
+    [labels, searchQuery]
+  );
 
   const getLabels = useMemo(() => {
     setLoading(true);
@@ -69,11 +83,7 @@ const LabelsSettings = () => {
             cancelText="Cancel"
             onConfirm={() => deleteLabel(record.id!)}
           >
-            <Button
-              shape="default"
-              icon={<DeleteOutlined />}
-              size="small"
-            />
+            <Button shape="default" icon={<DeleteOutlined />} size="small" />
           </Popconfirm>
         </div>
       ),

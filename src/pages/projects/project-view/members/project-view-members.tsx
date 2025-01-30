@@ -71,15 +71,15 @@ const ProjectViewMembers = () => {
   // API Functions
   const getProjectMembers = async () => {
     if (!projectId) return;
-    
+
     setIsLoading(true);
     try {
       const res = await projectsApiService.getMembers(
-        projectId, 
-        pagination.current, 
-        pagination.pageSize, 
-        pagination.field, 
-        pagination.order, 
+        projectId,
+        pagination.current,
+        pagination.pageSize,
+        pagination.field,
+        pagination.order,
         null
       );
       if (res.done) {
@@ -94,7 +94,7 @@ const ProjectViewMembers = () => {
 
   const deleteMember = async (memberId: string | undefined) => {
     if (!memberId || !projectId) return;
-    
+
     try {
       const res = await projectMembersApiService.deleteProjectMember(memberId, projectId);
       if (res.done) {
@@ -180,9 +180,7 @@ const ProjectViewMembers = () => {
       title: t('accessColumn'),
       sorter: (a, b) => a.access.localeCompare(b.access),
       render: (record: IProjectMemberViewModel) => (
-        <Typography.Text style={{ textTransform: 'capitalize' }}>
-          {record.access}
-        </Typography.Text>
+        <Typography.Text style={{ textTransform: 'capitalize' }}>{record.access}</Typography.Text>
       ),
     },
     {
@@ -198,11 +196,11 @@ const ProjectViewMembers = () => {
             onConfirm={() => deleteMember(record.id)}
           >
             <Tooltip title={t('deleteButtonTooltip')}>
-              <Button 
-                disabled={checkDisabled(record)} 
-                shape="default" 
-                icon={<DeleteOutlined />} 
-                size="small" 
+              <Button
+                disabled={checkDisabled(record)}
+                shape="default"
+                icon={<DeleteOutlined />}
+                size="small"
               />
             </Tooltip>
           </Popconfirm>
@@ -221,10 +219,10 @@ const ProjectViewMembers = () => {
           </Typography.Text>
 
           <Tooltip title={t('refreshButtonTooltip')}>
-            <Button 
-              shape="circle" 
-              icon={<SyncOutlined />} 
-              onClick={() => void getProjectMembers()} 
+            <Button
+              shape="circle"
+              icon={<SyncOutlined />}
+              onClick={() => void getProjectMembers()}
             />
           </Tooltip>
         </Flex>

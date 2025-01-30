@@ -18,7 +18,7 @@ const TimeTracker = ({ taskId, initialTime = 0 }: TimeTrackerProps) => {
   const timeTrackingLogCard =
     initialTime > 0 ? (
       <Flex vertical style={{ width: 400, height: 300, overflowY: 'scroll' }}>
-        {mockTimeLogs.map((log) => (
+        {mockTimeLogs.map(log => (
           <React.Fragment key={log.logId}>
             <Flex gap={8} align="center">
               <CustomAvatar avatarName={log.username} />
@@ -57,9 +57,7 @@ const TimeTracker = ({ taskId, initialTime = 0 }: TimeTrackerProps) => {
         trigger="click"
         placement="bottomRight"
       >
-        <Typography.Text style={{ cursor: 'pointer' }}>
-          {formattedTime}
-        </Typography.Text>
+        <Typography.Text style={{ cursor: 'pointer' }}>{formattedTime}</Typography.Text>
       </Popover>
     </Flex>
   );

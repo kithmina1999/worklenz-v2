@@ -1,5 +1,12 @@
 import React, { useEffect } from 'react';
-import { DndContext, DragEndEvent, DragOverEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
 
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import TaskListFilters from '../taskList/taskListFilters/TaskListFilters';
@@ -57,8 +64,8 @@ const ProjectViewBoard: React.FC = () => {
     const overId = over.id;
 
     // Find which group the task is being dragged over
-    const targetGroup = taskGroups.find(group => 
-      group.id === overId || group.tasks.some(task => task.id === overId)
+    const targetGroup = taskGroups.find(
+      group => group.id === overId || group.tasks.some(task => task.id === overId)
     );
 
     if (targetGroup && activeTask) {
@@ -77,8 +84,8 @@ const ProjectViewBoard: React.FC = () => {
     const overId = over.id;
 
     // Similar to handleDragOver, but this is where you'd make the final update
-    const targetGroup = taskGroups.find(group => 
-      group.id === overId || group.tasks.some(task => task.id === overId)
+    const targetGroup = taskGroups.find(
+      group => group.id === overId || group.tasks.some(task => task.id === overId)
     );
 
     if (targetGroup && activeTask) {
@@ -102,11 +109,7 @@ const ProjectViewBoard: React.FC = () => {
             marginTop: '14px',
           }}
         >
-          <DndContext 
-            sensors={sensors}
-            onDragOver={handleDragOver}
-            onDragEnd={handleDragEnd}
-          >
+          <DndContext sensors={sensors} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
             <div
               style={{
                 paddingTop: '6px',

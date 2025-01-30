@@ -12,7 +12,6 @@ interface ProjectStatusSectionProps {
 }
 
 const ProjectStatusSection = ({ statuses, form, t }: ProjectStatusSectionProps) => {
-
   const statusOptions = statuses.map((status, index) => ({
     key: index,
     value: status.id,

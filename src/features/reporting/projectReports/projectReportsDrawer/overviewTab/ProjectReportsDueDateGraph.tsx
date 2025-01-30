@@ -26,12 +26,12 @@ const ProjectReportsDueDateGraph = () => {
 
   // chart data
   const chartData = {
-    labels: dueDateGraphItems.map((item) => t(`${item.name}Text`)),
+    labels: dueDateGraphItems.map(item => t(`${item.name}Text`)),
     datasets: [
       {
         label: t('tasksText'),
-        data: dueDateGraphItems.map((item) => item.count),
-        backgroundColor: dueDateGraphItems.map((item) => item.color),
+        data: dueDateGraphItems.map(item => item.count),
+        backgroundColor: dueDateGraphItems.map(item => item.color),
       },
     ],
   };
@@ -44,15 +44,12 @@ const ProjectReportsDueDateGraph = () => {
         position: 'top' as const,
       },
       datalabels: {
-        display: false
+        display: false,
       },
     },
-  }
+  };
 
-  const totalTasks = dueDateGraphItems.reduce(
-    (sum, item) => sum + item.count,
-    0
-  );
+  const totalTasks = dueDateGraphItems.reduce((sum, item) => sum + item.count, 0);
 
   return (
     <Card
@@ -79,7 +76,7 @@ const ProjectReportsDueDateGraph = () => {
           </Flex>
 
           {/* due Date-specific tasks */}
-          {dueDateGraphItems.map((item) => (
+          {dueDateGraphItems.map(item => (
             <Flex key={item.name} gap={4} align="center">
               <Badge color={item.color} />
               <Typography.Text ellipsis>

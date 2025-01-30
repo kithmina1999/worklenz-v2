@@ -94,11 +94,7 @@ const ForgotPasswordPage = () => {
       bordered={false}
     >
       {isSuccess ? (
-        <Result
-          status="success"
-          title={t('successTitle')}
-          subTitle={t('successMessage')}
-        />
+        <Result status="success" title={t('successTitle')} subTitle={t('successMessage')} />
       ) : (
         <>
           <PageHeader description={t('headerDescription')} />

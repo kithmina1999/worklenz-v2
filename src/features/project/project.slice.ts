@@ -42,7 +42,7 @@ const initialState: TaskListState = {
   isSubtasksIncluded: false,
   selectedTasks: [],
   isLoading: false,
-  error: null
+  error: null,
 };
 
 export const getProject = createAsyncThunk(
@@ -98,10 +98,13 @@ const projectSlice = createSlice({
     setActiveMembers: (state, action: PayloadAction<[]>) => {
       state.activeMembers = action.payload;
     },
-    addTask: (state, action: PayloadAction<{ task: IProjectTask; groupId: string; insert?: boolean }>) => {
+    addTask: (
+      state,
+      action: PayloadAction<{ task: IProjectTask; groupId: string; insert?: boolean }>
+    ) => {
       const { task, groupId, insert = false } = action.payload;
       const group = state.groups.find(g => g.id === groupId);
-      
+
       if (!group || !task.id) return;
 
       if (task.parent_task_id) {
@@ -110,7 +113,7 @@ const projectSlice = createSlice({
           parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
           if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
           parentTask.sub_tasks.push(task);
-          
+
           // Add subtask to the main tasks array if subtasks are included
           if (state.isSubtasksIncluded) {
             const parentIndex = group.tasks.indexOf(parentTask);
@@ -126,13 +129,13 @@ const projectSlice = createSlice({
     },
     deleteTask: (state, action: PayloadAction<{ taskId: string; index?: number }>) => {
       const { taskId, index } = action.payload;
-      
+
       for (const group of state.groups) {
         const taskIndex = index ?? group.tasks.findIndex(t => t.id === taskId);
         if (taskIndex === -1) continue;
 
         const task = group.tasks[taskIndex];
-        
+
         if (task.is_sub_task) {
           const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
           if (parentTask?.sub_tasks) {
@@ -148,11 +151,11 @@ const projectSlice = createSlice({
         break;
       }
     },
-    reset: () => initialState
+    reset: () => initialState,
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(getProject.pending, (state) => {
+      .addCase(getProject.pending, state => {
         state.projectLoading = true;
         state.error = null;
       })
@@ -164,7 +167,7 @@ const projectSlice = createSlice({
         state.projectLoading = false;
         state.error = action.payload as string;
       });
-  }
+  },
 });
 
 export const {
@@ -182,7 +185,7 @@ export const {
   setActiveMembers,
   addTask,
   deleteTask,
-  reset
+  reset,
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

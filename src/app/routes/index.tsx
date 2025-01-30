@@ -52,7 +52,10 @@ export const SetupGuard = ({ children }: GuardProps) => {
 };
 
 // Helper to wrap routes with guards
-const wrapRoutes = (routes: RouteObject[], Guard: React.ComponentType<{ children: React.ReactNode }>): RouteObject[] => {
+const wrapRoutes = (
+  routes: RouteObject[],
+  Guard: React.ComponentType<{ children: React.ReactNode }>
+): RouteObject[] => {
   return routes.map(route => {
     const wrappedRoute = {
       ...route,

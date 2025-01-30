@@ -9,7 +9,7 @@ import ProjectStats from '../project-stats/project-stats';
 import { TFunction } from 'i18next';
 import { useAppSelector } from '@/hooks/useAppSelector';
 
-const InsightsTasks = ({ t, }: {   t: TFunction }) => {
+const InsightsTasks = ({ t }: { t: TFunction }) => {
   const { includeArchivedTasks, projectId } = useAppSelector(state => state.projectInsightsReducer);
 
   return (
@@ -71,7 +71,10 @@ const InsightsTasks = ({ t, }: {   t: TFunction }) => {
           extra={<Button type="link">{t('common.seeAll')}</Button>}
           style={{ width: '100%' }}
         >
-          <TaskCompletedEarlyTable projectId={projectId} includeArchivedTasks={includeArchivedTasks} />
+          <TaskCompletedEarlyTable
+            projectId={projectId}
+            includeArchivedTasks={includeArchivedTasks}
+          />
         </Card>
 
         <Card
@@ -84,7 +87,10 @@ const InsightsTasks = ({ t, }: {   t: TFunction }) => {
           extra={<Button type="link">{t('common.seeAll')}</Button>}
           style={{ width: '100%' }}
         >
-          <TaskCompletedLateTable projectId={projectId} includeArchivedTasks={includeArchivedTasks} />
+          <TaskCompletedLateTable
+            projectId={projectId}
+            includeArchivedTasks={includeArchivedTasks}
+          />
         </Card>
       </Flex>
     </Flex>

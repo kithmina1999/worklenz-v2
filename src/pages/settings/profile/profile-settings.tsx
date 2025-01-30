@@ -19,7 +19,11 @@ import { changeUserName } from '@features/user/userSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
-import { evt_settings_profile_visit, evt_settings_profile_avatar_upload, evt_settings_profile_name_change } from '@/shared/worklenz-analytics-events';
+import {
+  evt_settings_profile_visit,
+  evt_settings_profile_avatar_upload,
+  evt_settings_profile_name_change,
+} from '@/shared/worklenz-analytics-events';
 
 const ProfileSettings = () => {
   const [loading, setLoading] = useState(false);
@@ -52,7 +56,7 @@ const ProfileSettings = () => {
       message.error(t('uploadError'));
     }
     if (!isLt2M) {
-      message.error(t('uploadSizeError')); 
+      message.error(t('uploadSizeError'));
     }
 
     return isJpgOrPng && isLt2M;

@@ -17,14 +17,9 @@ type TaskContextMenuProps = {
   onClose: () => void;
 };
 
-const TaskContextMenu = ({
-  visible,
-  position,
-  selectedTask,
-  onClose,
-}: TaskContextMenuProps) => {
+const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskContextMenuProps) => {
   // find the available status for the currently active project
-  const statusList = useAppSelector((state) => state.statusReducer.status);
+  const statusList = useAppSelector(state => state.statusReducer.status);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -49,7 +44,7 @@ const TaskContextMenu = ({
       key: '2',
       icon: <RetweetOutlined />,
       label: 'Move to',
-      children: statusList?.map((status) => ({
+      children: statusList?.map(status => ({
         key: status.id,
         label: (
           <Flex gap={8}>
@@ -77,12 +72,7 @@ const TaskContextMenu = ({
   ];
 
   return visible ? (
-    <Dropdown
-      menu={{ items }}
-      trigger={['contextMenu']}
-      open={visible}
-      onOpenChange={onClose}
-    >
+    <Dropdown menu={{ items }} trigger={['contextMenu']} open={visible} onOpenChange={onClose}>
       <div
         style={{
           position: 'fixed',

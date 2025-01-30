@@ -11,9 +11,7 @@ import { toggleUpgradeModal } from '../../../features/adminCenter/billing/billin
 
 const UpgradePlans: React.FC = () => {
   const dispatch = useAppDispatch();
-  const themeMode = useAppSelector(
-    (state: RootState) => state.themeReducer.mode
-  );
+  const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
   const [selectedCard, setSelectedCard] = useState(2);
 
   const handleCardSelect = (cardIndex: number) => {
@@ -40,20 +38,16 @@ const UpgradePlans: React.FC = () => {
   const userCurrency = timeZoneCurrencyMap[userTimeZone] || 'USD';
 
   const handleFormSubmit = () => {
-      notification.open({
-        message: '',
-        description:
-          'You contact information has been sent successfully',
-        placement: 'topRight',
-      });
-      dispatch(toggleUpgradeModal())
+    notification.open({
+      message: '',
+      description: 'You contact information has been sent successfully',
+      placement: 'topRight',
+    });
+    dispatch(toggleUpgradeModal());
   };
 
   return (
-    <div
-      className="upgrade-plans"
-      style={{ marginTop: '1.5rem', textAlign: 'center' }}
-    >
+    <div className="upgrade-plans" style={{ marginTop: '1.5rem', textAlign: 'center' }}>
       <Typography.Title level={2}>{t('modalTitle')}</Typography.Title>
 
       <Row justify="center">
@@ -299,9 +293,7 @@ const UpgradePlans: React.FC = () => {
             >
               <Typography.Title level={1}>{userCurrency} 250</Typography.Title>
               <span>{t('businessSubtitle')}</span>
-              <Typography.Title level={5}>
-                {t('enterpriseUsers')}
-              </Typography.Title>
+              <Typography.Title level={5}>{t('enterpriseUsers')}</Typography.Title>
             </div>
 
             <div
@@ -354,9 +346,7 @@ const UpgradePlans: React.FC = () => {
       >
         <Typography.Title level={4}>{t('footerTitle')}</Typography.Title>
 
-        <Form
-          onFinish={handleFormSubmit}
-        >
+        <Form onFinish={handleFormSubmit}>
           <Row justify="center" style={{ height: '32px' }}>
             <Form.Item
               style={{ margin: '0 24px 0 0' }}
@@ -368,10 +358,12 @@ const UpgradePlans: React.FC = () => {
                 },
               ]}
             >
-              <Input type='number' placeholder="07xxxxxxxx" maxLength={10} minLength={10}/>
+              <Input type="number" placeholder="07xxxxxxxx" maxLength={10} minLength={10} />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType='submit'>{t('footerButton')}</Button>
+              <Button type="primary" htmlType="submit">
+                {t('footerButton')}
+              </Button>
             </Form.Item>
           </Row>
         </Form>

@@ -20,7 +20,10 @@ const TaskCompletedEarlyTable = ({
 
   const getEarlyCompletedTasks = async () => {
     try {
-      const res = await projectInsightsApiService.getTasksCompletedEarly(projectId, includeArchivedTasks);
+      const res = await projectInsightsApiService.getTasksCompletedEarly(
+        projectId,
+        includeArchivedTasks
+      );
       if (res.done) {
         setEarlyCompletedTaskList(res.body);
       }
@@ -69,7 +72,7 @@ const TaskCompletedEarlyTable = ({
       ),
     },
     {
-      key: 'dueDate', 
+      key: 'dueDate',
       title: 'End Date',
       render: (record: IInsightTasks) => (
         <Typography.Text>
@@ -79,7 +82,7 @@ const TaskCompletedEarlyTable = ({
     },
     {
       key: 'completedDate',
-      title: 'Completed At', 
+      title: 'Completed At',
       render: (record: IInsightTasks) => (
         <Typography.Text>{simpleDateFormat(record.completed_at || null)}</Typography.Text>
       ),

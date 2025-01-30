@@ -28,25 +28,25 @@ const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
   const { t } = useTranslation('task-list-filters');
 
   const membersList = [
-    ...useAppSelector((state) => state.memberReducer.membersList),
-    useAppSelector((state) => state.memberReducer.owner),
+    ...useAppSelector(state => state.memberReducer.membersList),
+    useAppSelector(state => state.memberReducer.owner),
   ];
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
-    return membersList.filter((member) =>
+    return membersList.filter(member =>
       member.memberName.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [membersList, searchQuery]);
 
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {
-    setSelectedCount((prev) => (checked ? prev + 1 : prev - 1));
+    setSelectedCount(prev => (checked ? prev + 1 : prev - 1));
   };
 
   // custom dropdown content
@@ -56,13 +56,13 @@ const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
         <Input
           ref={membersInputRef}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          onChange={e => setSearchQuery(e.currentTarget.value)}
           placeholder={t('searchInputPlaceholder')}
         />
 
         <List style={{ padding: 0 }}>
           {filteredMembersData.length ? (
-            filteredMembersData.map((member) => (
+            filteredMembersData.map(member => (
               <List.Item
                 className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
                 key={member.memberId}
@@ -75,7 +75,7 @@ const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
               >
                 <Checkbox
                   id={member.memberId}
-                  onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
+                  onChange={e => handleSelectedFiltersCount(e.target.checked)}
                 />
                 <div>
                   <CustomAvatar avatarName={member.memberName} />
@@ -122,17 +122,14 @@ const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
         icon={<CaretDownFilled />}
         iconPosition="end"
         style={{
-          backgroundColor:
-            selectedCount > 0 ? colors.paleBlue : colors.transparent,
+          backgroundColor: selectedCount > 0 ? colors.paleBlue : colors.transparent,
 
           color: selectedCount > 0 ? colors.darkGray : 'inherit',
         }}
       >
         <Space>
           {t('membersText')}
-          {selectedCount > 0 && (
-            <Badge size="small" count={selectedCount} color={colors.skyBlue} />
-          )}
+          {selectedCount > 0 && <Badge size="small" count={selectedCount} color={colors.skyBlue} />}
         </Space>
       </Button>
     </Dropdown>

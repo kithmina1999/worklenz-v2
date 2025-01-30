@@ -7,9 +7,12 @@ interface AvatarsProps {
 }
 
 const renderAvatar = (member: InlineMember, index: number) => (
-  <Tooltip key={member.team_member_id || index} title={member.end && member.names ? member.names.join(', ') : member.name}>
+  <Tooltip
+    key={member.team_member_id || index}
+    title={member.end && member.names ? member.names.join(', ') : member.name}
+  >
     {member.avatar_url ? (
-      <Avatar src={member.avatar_url} size={28} key={member.team_member_id || index}/>
+      <Avatar src={member.avatar_url} size={28} key={member.team_member_id || index} />
     ) : (
       <Avatar
         size={28}

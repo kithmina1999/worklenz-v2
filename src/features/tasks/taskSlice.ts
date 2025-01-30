@@ -122,7 +122,7 @@ const initialState: TaskState = {
           memberRole: 'owner',
           isActivate: null,
           isInivitationAccept: false,
-        }
+        },
       ],
       labels: [
         {
@@ -228,13 +228,13 @@ const taskSlice = createSlice({
   initialState,
   reducers: {
     // create drawer toggle
-    toggleCreateTaskDrawer: (state) => {
+    toggleCreateTaskDrawer: state => {
       state.isCreateTaskDrawerOpen
         ? (state.isCreateTaskDrawerOpen = false)
         : (state.isCreateTaskDrawerOpen = true);
     },
     // update drawer toggle
-    toggleUpdateTaskDrawer: (state) => {
+    toggleUpdateTaskDrawer: state => {
       state.isUpdateTaskDrawerOpen
         ? (state.isUpdateTaskDrawerOpen = false)
         : (state.isUpdateTaskDrawerOpen = true);
@@ -250,45 +250,33 @@ const taskSlice = createSlice({
     },
 
     deleteTask: (state, action: PayloadAction<string>) => {
-      state.tasks = state.tasks.filter(
-        (task) => task.taskId !== action.payload
-      );
+      state.tasks = state.tasks.filter(task => task.taskId !== action.payload);
     },
 
     // update specific items
     // add or remove members to the task
-    toggleMember: (
-      state,
-      action: PayloadAction<{ taskId: string; member: MemberType }>
-    ) => {
+    toggleMember: (state, action: PayloadAction<{ taskId: string; member: MemberType }>) => {
       const { taskId, member } = action.payload;
-      const task = state.tasks.find((task) => task.taskId === taskId);
+      const task = state.tasks.find(task => task.taskId === taskId);
       if (task) {
         const memberExists = task.members?.some(
-          (existingMember) => existingMember.memberId === member.memberId
+          existingMember => existingMember.memberId === member.memberId
         );
         task.members = memberExists
-          ? task.members?.filter(
-              (existingMember) => existingMember.memberId !== member.memberId
-            )
+          ? task.members?.filter(existingMember => existingMember.memberId !== member.memberId)
           : [...(task.members || []), member];
       }
     },
     // add or remove labels to the task
-    toggleLabel: (
-      state,
-      action: PayloadAction<{ taskId: string; label: ITaskLabel }>
-    ) => {
+    toggleLabel: (state, action: PayloadAction<{ taskId: string; label: ITaskLabel }>) => {
       const { taskId, label } = action.payload;
-      const task = state.tasks.find((task) => task.taskId === taskId);
+      const task = state.tasks.find(task => task.taskId === taskId);
       if (task) {
         const labelExists = task.labels?.some(
           (existingLabel: ITaskLabel) => existingLabel.id === label.id
         );
         task.labels = labelExists
-          ? task.labels?.filter(
-              (existingLabel: ITaskLabel) => existingLabel.id !== label.id
-            )
+          ? task.labels?.filter((existingLabel: ITaskLabel) => existingLabel.id !== label.id)
           : [...(task.labels || []), label];
       }
     },

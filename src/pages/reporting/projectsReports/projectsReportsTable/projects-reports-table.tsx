@@ -43,9 +43,7 @@ const ProjectsReportsTable = ({
 
   const dispatch = useAppDispatch();
 
-  const columnsVisibility = useAppSelector(
-    (state) => state.projectReportsTableColumnsReducer,
-  );
+  const columnsVisibility = useAppSelector(state => state.projectReportsTableColumnsReducer);
 
   // function to handle drawer toggle
   const handleDrawerOpen = (id: string) => {
@@ -58,12 +56,12 @@ const ProjectsReportsTable = ({
       key: 'project',
       title: <CustomTableTitle title={t('projectColumn')} />,
       width: 300,
-      onCell: (record) => {
+      onCell: record => {
         return {
           onClick: () => handleDrawerOpen(record.id),
         };
       },
-      render: (record) => (
+      render: record => (
         <Flex gap={16} align="center" justify="space-between">
           <ProjectCell
             projectId={record.id}
@@ -93,7 +91,7 @@ const ProjectsReportsTable = ({
     {
       key: 'estimatedVsActual',
       title: <CustomTableTitle title={t('estimatedVsActualColumn')} />,
-      render: (record) => (
+      render: record => (
         <EstimatedVsActualCell
           actualTime={record.actual_time}
           actualTimeString={record.actual_time_string}
@@ -106,55 +104,46 @@ const ProjectsReportsTable = ({
     {
       key: 'tasksProgress',
       title: <CustomTableTitle title={t('tasksProgressColumn')} />,
-      render: (record) => <TasksProgressCell tasksStat={record.tasks_stat} />,
+      render: record => <TasksProgressCell tasksStat={record.tasks_stat} />,
       width: 200,
     },
     {
       key: 'lastActivity',
       title: <CustomTableTitle title={t('lastActivityColumn')} />,
-      render: (record) => (
-        <LastActivityCell
-          activity={record.last_activity?.last_activity_string}
-        />
-      ),
+      render: record => <LastActivityCell activity={record.last_activity?.last_activity_string} />,
       width: 200,
     },
     {
       key: 'status',
       title: <CustomTableTitle title={t('statusColumn')} />,
-      render: (record) => <ProjectStatusCell status={record.status_name} />,
+      render: record => <ProjectStatusCell status={record.status_name} />,
       sorter: (a, b) => a.status_name.localeCompare(b.status_name),
       width: 200,
     },
     {
       key: 'dates',
       title: <CustomTableTitle title={t('datesColumn')} />,
-      render: (record) => (
-        <ProjectDatesCell
-          startDate={record.start_date}
-          endDate={record.end_date}
-        />
+      render: record => (
+        <ProjectDatesCell startDate={record.start_date} endDate={record.end_date} />
       ),
       width: 275,
     },
     {
       key: 'daysLeft',
       title: <CustomTableTitle title={t('daysLeftColumn')} />,
-      render: (record) => (
-        <ProjectDaysLeftAndOverdueCell daysLeft={record.days_left} />
-      ),
+      render: record => <ProjectDaysLeftAndOverdueCell daysLeft={record.days_left} />,
       width: 200,
     },
     {
       key: 'projectHealth',
       title: <CustomTableTitle title={t('projectHealthColumn')} />,
-      render: (record) => <ProjectHealthCell />,
+      render: record => <ProjectHealthCell />,
       width: 200,
     },
     {
       key: 'category',
       title: <CustomTableTitle title="Category" />,
-      render: (record) => (
+      render: record => (
         <ProjectCategoryCell
           categoryId={record.category_id}
           categoryName={record.category_name}
@@ -166,37 +155,33 @@ const ProjectsReportsTable = ({
     {
       key: 'projectUpdate',
       title: <CustomTableTitle title={t('projectUpdateColumn')} />,
-      render: (record) => <ProjectUpdateCell updates={record.update} />,
+      render: record => <ProjectUpdateCell updates={record.update} />,
       width: 200,
     },
     {
       key: 'client',
       title: <CustomTableTitle title={t('clientColumn')} />,
-      render: (record) => <ProjectClientCell client={record.client} />,
+      render: record => <ProjectClientCell client={record.client} />,
       sorter: (a, b) => a.client.localeCompare(b.client),
       width: 200,
     },
     {
       key: 'team',
       title: <CustomTableTitle title={t('teamColumn')} />,
-      render: (record) => <ProjectTeamCell team={record.team_name} />,
+      render: record => <ProjectTeamCell team={record.team_name} />,
       sorter: (a, b) => a.team_name.localeCompare(b.team_name),
       width: 200,
     },
     {
       key: 'projectManager',
       title: <CustomTableTitle title={t('projectManagerColumn')} />,
-      render: (record) => (
-        <ProjectManagerCell manager={record.project_manager} />
-      ),
+      render: record => <ProjectManagerCell manager={record.project_manager} />,
       width: 200,
     },
   ];
 
   // filter columns based on the `hidden` state from Redux
-  const visibleColumns = columns.filter(
-    (col) => columnsVisibility[col.key as string],
-  );
+  const visibleColumns = columns.filter(col => columnsVisibility[col.key as string]);
 
   return (
     <ConfigProvider
@@ -215,7 +200,7 @@ const ProjectsReportsTable = ({
         pagination={{ showSizeChanger: true, defaultPageSize: 10 }}
         scroll={{ x: 'max-content' }}
         loading={loading}
-        onRow={(record) => {
+        onRow={record => {
           return {
             style: { height: 56, cursor: 'pointer' },
             className: 'group even:bg-[#4e4e4e10]',

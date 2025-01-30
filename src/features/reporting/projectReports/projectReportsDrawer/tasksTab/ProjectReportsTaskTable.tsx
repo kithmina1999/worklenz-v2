@@ -1,12 +1,4 @@
-import {
-  Badge,
-  Collapse,
-  Flex,
-  Table,
-  TableColumnsType,
-  Tag,
-  Typography,
-} from 'antd';
+import { Badge, Collapse, Flex, Table, TableColumnsType, Tag, Typography } from 'antd';
 import React from 'react';
 import CustomTableTitle from '../../../../../components/CustomTableTitle';
 import { colors } from '../../../../../styles/colors';
@@ -46,17 +38,15 @@ const ProjectReportsTasksTable = ({
     {
       key: 'task',
       title: <CustomTableTitle title={t('taskColumn')} />,
-      onCell: (record) => {
+      onCell: record => {
         return {
           onClick: () => handleUpdateTaskDrawer(record.id),
         };
       },
-      render: (record) => (
+      render: record => (
         <Flex>
           {Number(record.sub_tasks_count) > 0 && <DoubleRightOutlined />}
-          <Typography.Text className="group-hover:text-[#1890ff]">
-            {record.name}
-          </Typography.Text>
+          <Typography.Text className="group-hover:text-[#1890ff]">{record.name}</Typography.Text>
         </Flex>
       ),
       width: 260,
@@ -66,7 +56,7 @@ const ProjectReportsTasksTable = ({
     {
       key: 'status',
       title: <CustomTableTitle title={t('statusColumn')} />,
-      render: (record) => (
+      render: record => (
         <Tag
           style={{ color: colors.darkGray, borderRadius: 48 }}
           color={record.status_color}
@@ -78,7 +68,7 @@ const ProjectReportsTasksTable = ({
     {
       key: 'priority',
       title: <CustomTableTitle title={t('priorityColumn')} />,
-      render: (record) => (
+      render: record => (
         <Tag
           style={{ color: colors.darkGray, borderRadius: 48 }}
           color={record.priority_color}
@@ -90,7 +80,7 @@ const ProjectReportsTasksTable = ({
     {
       key: 'phase',
       title: <CustomTableTitle title={t('phaseColumn')} />,
-      render: (record) => (
+      render: record => (
         <Tag
           style={{ color: colors.darkGray, borderRadius: 48 }}
           color={record.phase_color}
@@ -102,11 +92,9 @@ const ProjectReportsTasksTable = ({
     {
       key: 'dueDate',
       title: <CustomTableTitle title={t('dueDateColumn')} />,
-      render: (record) => (
+      render: record => (
         <Typography.Text className="text-center group-hover:text-[#1890ff]">
-          {record.due_date
-            ? `${dayjs(record.due_date).format('MMM DD, YYYY')}`
-            : '-'}
+          {record.due_date ? `${dayjs(record.due_date).format('MMM DD, YYYY')}` : '-'}
         </Typography.Text>
       ),
       width: 120,
@@ -114,11 +102,9 @@ const ProjectReportsTasksTable = ({
     {
       key: 'completedOn',
       title: <CustomTableTitle title={t('completedOnColumn')} />,
-      render: (record) => (
+      render: record => (
         <Typography.Text className="text-center group-hover:text-[#1890ff]">
-          {record.completed_date
-            ? `${dayjs(record.completed_date).format('MMM DD, YYYY')}`
-            : '-'}
+          {record.completed_date ? `${dayjs(record.completed_date).format('MMM DD, YYYY')}` : '-'}
         </Typography.Text>
       ),
       width: 120,
@@ -155,11 +141,9 @@ const ProjectReportsTasksTable = ({
 
   // conditionaly show columns with the group type
   const visibleColumns = () => {
-    if (type === 'status') return columns.filter((el) => el.key !== 'status');
-    else if (type === 'priority')
-      return columns.filter((el) => el.key !== 'priority');
-    else if (type === 'phase')
-      return columns.filter((el) => el.key !== 'phase');
+    if (type === 'status') return columns.filter(el => el.key !== 'status');
+    else if (type === 'priority') return columns.filter(el => el.key !== 'priority');
+    else if (type === 'phase') return columns.filter(el => el.key !== 'phase');
     else return columns;
   };
 
@@ -174,9 +158,7 @@ const ProjectReportsTasksTable = ({
           label: (
             <Flex gap={8} align="center">
               <Badge color={color} />
-              <Typography.Text
-                strong
-              >{`${title} (${tasksData.length})`}</Typography.Text>
+              <Typography.Text strong>{`${title} (${tasksData.length})`}</Typography.Text>
             </Flex>
           ),
           children: (
@@ -185,7 +167,7 @@ const ProjectReportsTasksTable = ({
               dataSource={tasksData}
               pagination={false}
               scroll={{ x: 'max-content' }}
-              onRow={(record) => {
+              onRow={record => {
                 return {
                   style: { height: 38, cursor: 'pointer' },
                   className: 'group even:bg-[#4e4e4e10]',

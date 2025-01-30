@@ -17,7 +17,7 @@ const StatusOverview = () => {
 
   const getTaskStatusCounts = async () => {
     if (!projectId) return;
-    
+
     setLoading(true);
     try {
       const res = await projectInsightsApiService.getTaskStatusCounts(
@@ -50,14 +50,13 @@ const StatusOverview = () => {
       },
       tooltip: {
         callbacks: {
-          label: (context) => {
+          label: context => {
             const value = context.raw as number;
             return `${context.label}: ${value} task${value !== 1 ? 's' : ''}`;
-          }
-        }
-      }
+          },
+        },
+      },
     },
-
   };
 
   const data = {
@@ -83,17 +82,12 @@ const StatusOverview = () => {
 
   return (
     <Flex gap={24} wrap="wrap-reverse" justify="center">
-      {loading && <Spin />} 
+      {loading && <Spin />}
       <div style={{ position: 'relative', height: 350, width: '100%', maxWidth: 350 }}>
         <Doughnut options={options} data={data} />
       </div>
 
-      <Flex
-        gap={12}
-        style={{ marginBlockStart: 12 }}
-        wrap="wrap"
-        className="flex-row xl:flex-col"
-      >
+      <Flex gap={12} style={{ marginBlockStart: 12 }} wrap="wrap" className="flex-row xl:flex-col">
         {stats.map(status => (
           <Flex key={status.name} gap={8} align="center">
             <Badge color={status.color} />

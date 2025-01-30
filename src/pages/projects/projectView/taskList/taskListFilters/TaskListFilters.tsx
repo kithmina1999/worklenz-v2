@@ -29,15 +29,15 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
   const dispatch = useAppDispatch();
 
   const priorities = useAppSelector(state => state.priorityReducer.priorities);
-  
+
   const labels = useAppSelector(state => state.taskLabelsReducer.labels);
   const taskAssignees = useAppSelector(state => state.taskReducer.taskAssignees);
   const projectId = useAppSelector(state => state.projectReducer.projectId);
   const archived = useAppSelector(state => state.taskReducer.archived);
-  
+
   const handleShowArchivedChange = () => {
     dispatch(toggleArchived());
-  }
+  };
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -50,7 +50,9 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
       if (!taskAssignees?.length && projectId) {
         await dispatch(fetchTaskAssignees(projectId));
       }
-      dispatch(getTeamMembers({ index: 0, size: 100, field: null, order: null, search: null, all: true }));
+      dispatch(
+        getTeamMembers({ index: 0, size: 100, field: null, order: null, search: null, all: true })
+      );
     };
 
     fetchInitialData();
@@ -69,7 +71,12 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
 
       {position === 'list' && (
         <Flex gap={12} wrap={'wrap'}>
-          <Flex gap={4} align="center" style={{cursor: 'pointer'}} onClick={handleShowArchivedChange}>
+          <Flex
+            gap={4}
+            align="center"
+            style={{ cursor: 'pointer' }}
+            onClick={handleShowArchivedChange}
+          >
             <Checkbox checked={archived} />
             <Typography.Text>{t('showArchivedText')}</Typography.Text>
           </Flex>

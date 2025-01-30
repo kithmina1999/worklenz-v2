@@ -246,7 +246,6 @@ const AccountSetup: React.FC = () => {
             current={currentStep}
             items={steps}
             style={styles.steps}
-
           />
           <div className="step-content" style={styles.stepContent}>
             {steps[currentStep].content}

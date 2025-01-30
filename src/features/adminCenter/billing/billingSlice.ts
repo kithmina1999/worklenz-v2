@@ -14,16 +14,12 @@ const billingSlice = createSlice({
   name: 'billingReducer',
   initialState,
   reducers: {
-    toggleDrawer: (state) => {
-      state.isDrawerOpen
-        ? (state.isDrawerOpen = false)
-        : (state.isDrawerOpen = true);
+    toggleDrawer: state => {
+      state.isDrawerOpen ? (state.isDrawerOpen = false) : (state.isDrawerOpen = true);
     },
-    toggleUpgradeModal: (state) => {
-      state.isModalOpen
-        ? (state.isModalOpen = false)
-        : (state.isModalOpen = true);
-    }
+    toggleUpgradeModal: state => {
+      state.isModalOpen ? (state.isModalOpen = false) : (state.isModalOpen = true);
+    },
   },
 });
 

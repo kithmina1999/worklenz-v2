@@ -34,10 +34,7 @@ const TaskCell = ({
   const dispatch = useAppDispatch();
 
   // render the toggle arrow icon for tasks with subtasks
-  const renderToggleButtonForHasSubTasks = (
-    taskId: string,
-    hasSubtasks: boolean
-  ) => {
+  const renderToggleButtonForHasSubTasks = (taskId: string, hasSubtasks: boolean) => {
     if (!hasSubtasks) return null;
     return (
       <button
@@ -50,10 +47,7 @@ const TaskCell = ({
   };
 
   // show expand button on hover for tasks without subtasks
-  const renderToggleButtonForNonSubtasks = (
-    taskId: string,
-    isSubTask: boolean
-  ) => {
+  const renderToggleButtonForNonSubtasks = (taskId: string, isSubTask: boolean) => {
     return !isSubTask ? (
       <button
         onClick={() => toggleTaskExpansion(taskId)}
@@ -67,11 +61,7 @@ const TaskCell = ({
   };
 
   // render the double arrow icon and count label for tasks with subtasks
-  const renderSubtasksCountLabel = (
-    taskId: string,
-    isSubTask: boolean,
-    subTasksCount: number
-  ) => {
+  const renderSubtasksCountLabel = (taskId: string, isSubTask: boolean, subTasksCount: number) => {
     return (
       !isSubTask && (
         <Button
@@ -86,9 +76,7 @@ const TaskCell = ({
             border: 'none',
           }}
         >
-          <Typography.Text style={{ fontSize: 12, lineHeight: 1 }}>
-            {subTasksCount}
-          </Typography.Text>
+          <Typography.Text style={{ fontSize: 12, lineHeight: 1 }}>{subTasksCount}</Typography.Text>
           <DoubleRightOutlined style={{ fontSize: 10 }} />
         </Button>
       )
@@ -98,45 +86,34 @@ const TaskCell = ({
   return (
     <Flex align="center" justify="space-between">
       <Flex gap={8} align="center">
-        {(!!task?.sub_tasks?.length && task.id) ? (
-          renderToggleButtonForHasSubTasks(
-            task.id,
-            !!task?.sub_tasks?.length
-          )
+        {!!task?.sub_tasks?.length && task.id ? (
+          renderToggleButtonForHasSubTasks(task.id, !!task?.sub_tasks?.length)
         ) : (
           <div className="h-4 w-4"></div>
         )}
 
         {isSubTask && <DoubleRightOutlined style={{ fontSize: 12 }} />}
 
-        <Typography.Text ellipsis={{ expanded: false }}>
-          {task.name}
-        </Typography.Text>
+        <Typography.Text ellipsis={{ expanded: false }}>{task.name}</Typography.Text>
 
-        {renderSubtasksCountLabel(
-          task.id || '',
-          isSubTask,
-          task?.sub_tasks?.length || 0
-        )}
+        {renderSubtasksCountLabel(task.id || '', isSubTask, task?.sub_tasks?.length || 0)}
       </Flex>
 
-
-        <Button
-          type="text"
-          icon={<ExpandAltOutlined />}
-          onClick={() => {
-            setSelectedTaskId(task.id || '');
-            dispatch(toggleTaskDrawer());
-          }}
-          style={{
-            backgroundColor: colors.transparent,
-            padding: 0,
-            height: 'fit-content',
-          }}
-        >
-          {t('openButton')}
-        </Button>
-
+      <Button
+        type="text"
+        icon={<ExpandAltOutlined />}
+        onClick={() => {
+          setSelectedTaskId(task.id || '');
+          dispatch(toggleTaskDrawer());
+        }}
+        style={{
+          backgroundColor: colors.transparent,
+          padding: 0,
+          height: 'fit-content',
+        }}
+      >
+        {t('openButton')}
+      </Button>
     </Flex>
   );
 };

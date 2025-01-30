@@ -12,11 +12,9 @@ const StatusGroupTables = ({ group }: { group: ITaskListGroup }) => {
   const dispatch = useAppDispatch();
 
   // get bulk action detatils
-  const selectedTaskIdsList = useAppSelector(
-    (state) => state.bulkActionReducer.selectedTaskIdsList
-  );
+  const selectedTaskIdsList = useAppSelector(state => state.bulkActionReducer.selectedTaskIdsList);
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // fuction for get a color regariding the status
   const getStatusColor = (status: string) => {
@@ -34,7 +32,7 @@ const StatusGroupTables = ({ group }: { group: ITaskListGroup }) => {
 
   return (
     <Flex gap={24} vertical>
-      {group.tasks.map((status) => (
+      {group.tasks.map(status => (
         <TaskListTableWrapper
           key={status.id}
           taskList={group.tasks}

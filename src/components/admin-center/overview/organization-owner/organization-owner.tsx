@@ -97,9 +97,7 @@ const OrganizationOwner = ({ themeMode, organization, t, refetch }: Organization
             ref={contactNoRef}
           />
         ) : number === '' ? (
-          <Typography.Link onClick={addContactNumber}>
-            {t('contactNumber')}
-          </Typography.Link>
+          <Typography.Link onClick={addContactNumber}>{t('contactNumber')}</Typography.Link>
         ) : (
           <Typography.Text>
             {number}

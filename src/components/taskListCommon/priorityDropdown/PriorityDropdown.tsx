@@ -1,11 +1,6 @@
 import { Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd';
 import React, { useState } from 'react';
-import {
-  DoubleLeftOutlined,
-  DownOutlined,
-  MinusOutlined,
-  PauseOutlined,
-} from '@ant-design/icons';
+import { DoubleLeftOutlined, DownOutlined, MinusOutlined, PauseOutlined } from '@ant-design/icons';
 // custom css file
 import './priorityDropdown.css';
 import { colors } from '../../../styles/colors';
@@ -24,7 +19,7 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
   // localization
   const { t } = useTranslation('task-list-table');
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // menu type
   type MenuItem = Required<MenuProps>['items'][number];
@@ -35,9 +30,7 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
       label: (
         <Flex gap={4}>
           {t('lowSelectorText')}
-          <MinusOutlined
-            style={{ color: getPriorityColor('low', themeMode) }}
-          />
+          <MinusOutlined style={{ color: getPriorityColor('low', themeMode) }} />
         </Flex>
       ),
     },
@@ -72,7 +65,7 @@ const PriorityDropdown = ({ currentPriority }: PriorityDropdownProps) => {
   ];
 
   // handle priority select
-  const onClick: MenuProps['onClick'] = (e) => {
+  const onClick: MenuProps['onClick'] = e => {
     e.key === 'low'
       ? setPriority('low')
       : e.key === 'medium'

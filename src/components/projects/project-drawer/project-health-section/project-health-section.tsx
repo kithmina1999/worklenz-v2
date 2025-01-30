@@ -10,7 +10,6 @@ interface ProjectHealthSectionProps {
 }
 
 const ProjectHealthSection = ({ healths, form, t }: ProjectHealthSectionProps) => {
-
   const healthOptions = healths.map((status, index) => ({
     key: index,
     value: status.id,
@@ -23,10 +22,7 @@ const ProjectHealthSection = ({ healths, form, t }: ProjectHealthSectionProps) =
 
   return (
     <Form.Item name="health_id" label={t('health')}>
-      <Select
-        options={healthOptions}
-        onChange={value => form.setFieldValue('health_id', value)}
-      />
+      <Select options={healthOptions} onChange={value => form.setFieldValue('health_id', value)} />
     </Form.Item>
   );
 };

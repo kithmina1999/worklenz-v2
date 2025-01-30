@@ -27,29 +27,31 @@ const HomeTasksStatusDropdown = ({ task, teamId }: HomeTasksStatusDropdownProps)
   const handleStatusChange = (statusId: string) => {
     if (!task.id || !statusId) return;
 
-    socket?.emit(SocketEvents.TASK_STATUS_CHANGE.toString(), JSON.stringify({
-      task_id: task.id,
-      status_id: statusId,
-      parent_task: task.parent_task_id || null,
-      team_id: teamId
-    }));
+    socket?.emit(
+      SocketEvents.TASK_STATUS_CHANGE.toString(),
+      JSON.stringify({
+        task_id: task.id,
+        status_id: statusId,
+        parent_task: task.parent_task_id || null,
+        team_id: teamId,
+      })
+    );
 
     getTaskProgress(task.id);
   };
 
   const handleTaskStatusChange = (response: ITaskListStatusChangeResponse) => {
     if (response && response.id === task.id) {
-
       task.status_color = response.color_code;
       task.complete_ratio = +response.complete_ratio || 0;
       task.status_id = response.status_id;
       task.status_category = response.statusCategory;
     }
-  }
+  };
 
   const getTaskProgress = (taskId: string) => {
     socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), taskId);
-  }
+  };
 
   useEffect(() => {
     const foundStatus = task.project_statuses?.find(status => status.id === task.status_id);
@@ -64,31 +66,39 @@ const HomeTasksStatusDropdown = ({ task, teamId }: HomeTasksStatusDropdownProps)
     };
   }, [task.status_id, connected]);
 
-  const options = useMemo(() => task.project_statuses?.map(status => ({
-    value: status.id,
-    label: (
-      <Flex gap={8} align="center">
-        <Badge color={status.color_code} text={status.name} />
-      </Flex>
-    ),
-  })), [task.project_statuses]);
+  const options = useMemo(
+    () =>
+      task.project_statuses?.map(status => ({
+        value: status.id,
+        label: (
+          <Flex gap={8} align="center">
+            <Badge color={status.color_code} text={status.name} />
+          </Flex>
+        ),
+      })),
+    [task.project_statuses]
+  );
 
   return (
     <>
-      {(
+      {
         <Select
-          variant='borderless'
+          variant="borderless"
           value={task.status_id}
           onChange={handleStatusChange}
           dropdownStyle={{ borderRadius: 8, minWidth: 150, maxWidth: 200 }}
-          style={{ backgroundColor: selectedStatus?.color_code + ALPHA_CHANNEL, borderRadius: 16, height: 22 }}
-          labelRender={(value) => {
+          style={{
+            backgroundColor: selectedStatus?.color_code + ALPHA_CHANNEL,
+            borderRadius: 16,
+            height: 22,
+          }}
+          labelRender={value => {
             const status = task.project_statuses?.find(status => status.id === value.value);
             return status ? <span style={{ fontSize: 13 }}>{status.name}</span> : '';
           }}
           options={options}
         />
-      )}
+      }
     </>
   );
 };

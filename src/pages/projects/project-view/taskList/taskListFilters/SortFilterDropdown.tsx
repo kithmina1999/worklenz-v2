@@ -1,8 +1,4 @@
-import {
-  CaretDownFilled,
-  SortAscendingOutlined,
-  SortDescendingOutlined,
-} from '@ant-design/icons';
+import { CaretDownFilled, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { Badge, Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
 import React, { useState } from 'react';
 import { colors } from '../../../../../styles/colors';
@@ -11,23 +7,21 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 
 const SortFilterDropdown = () => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
-  const [sortState, setSortState] = useState<
-    Record<string, 'ascending' | 'descending'>
-  >({});
+  const [sortState, setSortState] = useState<Record<string, 'ascending' | 'descending'>>({});
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode)
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // localization
   const { t } = useTranslation('task-list-filters');
 
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {
-    setSelectedCount((prev) => (checked ? prev + 1 : prev - 1));
+    setSelectedCount(prev => (checked ? prev + 1 : prev - 1));
   };
 
   // fuction for handle sort
   const handleSort = (key: string) => {
-    setSortState((prev) => ({
+    setSortState(prev => ({
       ...prev,
       [key]: prev[key] === 'ascending' ? 'descending' : 'ascending',
     }));
@@ -54,7 +48,7 @@ const SortFilterDropdown = () => {
   const sortDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 0 } }}>
       <List style={{ padding: 0 }}>
-        {sortFieldsList.map((item) => (
+        {sortFieldsList.map(item => (
           <List.Item
             className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
             key={item.key}
@@ -68,7 +62,7 @@ const SortFilterDropdown = () => {
             <Space>
               <Checkbox
                 id={item.key}
-                onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
+                onChange={e => handleSelectedFiltersCount(e.target.checked)}
               />
               {item.label}
             </Space>
@@ -90,7 +84,7 @@ const SortFilterDropdown = () => {
 
   return (
     <Dropdown
-      overlayClassName='custom-dropdown'
+      overlayClassName="custom-dropdown"
       trigger={['click']}
       dropdownRender={() => sortDropdownContent}
     >
@@ -98,8 +92,7 @@ const SortFilterDropdown = () => {
         icon={<CaretDownFilled />}
         iconPosition="end"
         style={{
-          backgroundColor:
-            selectedCount > 0 ? colors.paleBlue : colors.transparent,
+          backgroundColor: selectedCount > 0 ? colors.paleBlue : colors.transparent,
 
           color: selectedCount > 0 ? colors.darkGray : 'inherit',
         }}
@@ -107,9 +100,7 @@ const SortFilterDropdown = () => {
         <Space>
           <SortAscendingOutlined />
           {t('sortText')}
-          {selectedCount > 0 && (
-            <Badge size="small" count={selectedCount} color={colors.skyBlue} />
-          )}
+          {selectedCount > 0 && <Badge size="small" count={selectedCount} color={colors.skyBlue} />}
         </Space>
       </Button>
     </Dropdown>

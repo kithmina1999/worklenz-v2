@@ -22,8 +22,11 @@ export const statusApiService = {
     return response.data;
   },
 
-  createStatus: async (body: ITaskStatusCreateRequest, currentProjectId: string): Promise<IServerResponse<ITaskStatus>> => {
-    const q = toQueryString({current_project_id: currentProjectId})
+  createStatus: async (
+    body: ITaskStatusCreateRequest,
+    currentProjectId: string
+  ): Promise<IServerResponse<ITaskStatus>> => {
+    const q = toQueryString({ current_project_id: currentProjectId });
     const response = await apiClient.post<IServerResponse<ITaskStatus>>(`${rootUrl}?${q}`, body);
     return response.data;
   },

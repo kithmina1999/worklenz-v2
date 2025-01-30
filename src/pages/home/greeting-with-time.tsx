@@ -17,7 +17,10 @@ const GreetingWithTime = () => {
       <Typography.Title level={3} style={{ fontWeight: 500, marginBlock: 0 }}>
         {greet}
       </Typography.Title>
-      <Typography.Title level={4} style={{ fontSize: 16, fontWeight: 400, marginBlock: 0, color: colors.skyBlue }}>
+      <Typography.Title
+        level={4}
+        style={{ fontSize: 16, fontWeight: 400, marginBlock: 0, color: colors.skyBlue }}
+      >
         {currentDateString()}
       </Typography.Title>
     </Flex>

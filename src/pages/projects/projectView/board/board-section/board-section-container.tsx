@@ -12,9 +12,7 @@ const BoardSectionCardContainer = ({
   datasource: any;
   group: 'status' | 'priority' | 'phases' | 'members';
 }) => {
-  const selectedTaskId = useAppSelector(
-    (state) => state.boardReducer.selectedTaskId
-  );
+  const selectedTaskId = useAppSelector(state => state.boardReducer.selectedTaskId);
 
   return (
     <Flex

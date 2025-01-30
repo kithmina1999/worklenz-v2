@@ -17,7 +17,11 @@ const SearchDropdown = () => {
   const searchDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 8, width: 360 } }}>
       <Flex vertical gap={8}>
-        <Input ref={searchInputRef} placeholder={t('searchInputPlaceholder')} onChange={handleSearchInputChange}/>
+        <Input
+          ref={searchInputRef}
+          placeholder={t('searchInputPlaceholder')}
+          onChange={handleSearchInputChange}
+        />
         <Space>
           <Button type="primary">{t('searchButton')}</Button>
           <Button>{t('resetButton')}</Button>

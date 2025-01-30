@@ -24,10 +24,8 @@ const InvoicesTable: React.FC = () => {
     {
       title: t('transactionDate'),
       key: 'transactionDate',
-      render: (record) => {
-        const formattedStartingDate = new Date(
-          record.startingDate
-        ).toLocaleDateString('en-US', {
+      render: record => {
+        const formattedStartingDate = new Date(record.startingDate).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
@@ -39,17 +37,13 @@ const InvoicesTable: React.FC = () => {
     {
       title: t('billingPeriod'),
       key: 'billingPeriod',
-      render: (record) => {
-        const formattedStartingDate = new Date(
-          record.startingDate
-        ).toLocaleDateString('en-US', {
+      render: record => {
+        const formattedStartingDate = new Date(record.startingDate).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
         });
-        const formattedEndingDate = new Date(
-          record.endingDate
-        ).toLocaleDateString('en-US', {
+        const formattedEndingDate = new Date(record.endingDate).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
@@ -67,7 +61,7 @@ const InvoicesTable: React.FC = () => {
       title: t('status'),
       key: 'status',
       dataIndex: 'status',
-      render: (text) => (
+      render: text => (
         <>
           <Badge status="success" />
           <span style={{ paddingLeft: '4px' }}>{text}</span>

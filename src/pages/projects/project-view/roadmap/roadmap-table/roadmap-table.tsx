@@ -3,28 +3,21 @@ import { DatePicker, Typography } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import {
-  NewTaskType,
-  updateTaskDate,
-} from '@features/roadmap/roadmap-slice';
+import { NewTaskType, updateTaskDate } from '@features/roadmap/roadmap-slice';
 import { colors } from '@/styles/colors';
 import RoadmapTaskCell from './roadmap-task-cell';
 
 const RoadmapTable = () => {
   // Get task list and expanded tasks from roadmap slice
-  const tasks = useAppSelector((state) => state.roadmapReducer.tasksList);
+  const tasks = useAppSelector(state => state.roadmapReducer.tasksList);
 
   // Get theme data from theme slice
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
   // function to handle date changes
-  const handleDateChange = (
-    taskId: string,
-    dateType: 'start' | 'end',
-    date: Dayjs
-  ) => {
+  const handleDateChange = (taskId: string, dateType: 'start' | 'end', date: Dayjs) => {
     const updatedDate = date.toDate();
 
     dispatch(
@@ -73,7 +66,7 @@ const RoadmapTable = () => {
             format={'MMM DD, YYYY'}
             suffixIcon={null}
             disabled={task.type === 'project'}
-            onChange={(date) => handleDateChange(task.id, 'end', date)}
+            onChange={date => handleDateChange(task.id, 'end', date)}
             style={{
               backgroundColor: colors.transparent,
               border: 'none',
@@ -90,7 +83,7 @@ const RoadmapTable = () => {
             format={'MMM DD, YYYY'}
             suffixIcon={null}
             disabled={task.type === 'project'}
-            onChange={(date) => handleDateChange(task.id, 'end', date)}
+            onChange={date => handleDateChange(task.id, 'end', date)}
             style={{
               backgroundColor: colors.transparent,
               border: 'none',
@@ -104,7 +97,7 @@ const RoadmapTable = () => {
     }
   };
 
-  const dataSource = tasks.map((task) => ({
+  const dataSource = tasks.map(task => ({
     id: task.id,
     name: task.name,
     start: task.start,
@@ -121,9 +114,7 @@ const RoadmapTable = () => {
   const customBodyColumnStyles = `border px-2 h-[50px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10 after:min-h-[40px] after:w-1.5 after:bg-transparent after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent ${themeMode === 'dark' ? 'bg-transparent border-[#303030]' : 'bg-transparent'}`;
 
   const rowBackgroundStyles =
-    themeMode === 'dark'
-      ? 'even:bg-[#1b1b1b] odd:bg-[#141414]'
-      : 'even:bg-[#f4f4f4] odd:bg-white';
+    themeMode === 'dark' ? 'even:bg-[#1b1b1b] odd:bg-[#141414]' : 'even:bg-[#f4f4f4] odd:bg-white';
 
   return (
     <div className="relative w-full max-w-[1000px]">
@@ -131,15 +122,13 @@ const RoadmapTable = () => {
         <thead className="h-[50px]">
           <tr>
             {/* table header */}
-            {columns.map((column) => (
+            {columns.map(column => (
               <th
                 key={column.key}
                 className={`${customHeaderColumnStyles}`}
                 style={{ width: column.width, fontWeight: 500 }}
               >
-                <Typography.Text style={{ fontWeight: 500 }}>
-                  {column.title}
-                </Typography.Text>
+                <Typography.Text style={{ fontWeight: 500 }}>{column.title}</Typography.Text>
               </th>
             ))}
           </tr>
@@ -152,13 +141,13 @@ const RoadmapTable = () => {
               </td>
             </tr>
           ) : (
-            dataSource.map((task) => (
+            dataSource.map(task => (
               <React.Fragment key={task.id}>
                 <tr
                   key={task.id}
                   className={`group cursor-pointer ${dataSource.length === 0 ? 'h-0' : 'h-[50px]'} ${rowBackgroundStyles}`}
                 >
-                  {columns.map((column) => (
+                  {columns.map(column => (
                     <td
                       key={column.key}
                       className={`${customBodyColumnStyles}`}
@@ -173,12 +162,9 @@ const RoadmapTable = () => {
 
                 {/* subtasks */}
                 {task.isExpanded &&
-                  task?.subTasks?.map((subtask) => (
-                    <tr
-                      key={`subtask-${subtask.id}`}
-                      className={`h-[50px] ${rowBackgroundStyles}`}
-                    >
-                      {columns.map((column) => (
+                  task?.subTasks?.map(subtask => (
+                    <tr key={`subtask-${subtask.id}`} className={`h-[50px] ${rowBackgroundStyles}`}>
+                      {columns.map(column => (
                         <td
                           key={column.key}
                           className={`${customBodyColumnStyles}`}

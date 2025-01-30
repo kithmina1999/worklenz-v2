@@ -13,9 +13,14 @@ import { IProjectUpdateCommentViewModel } from '@/types/project/project.types';
 const rootUrl = `${API_BASE_URL}/project-comments`;
 
 export const projectCommentsApiService = {
-  createProjectComment: async (body: IProjectCommentsCreateRequest): Promise<IServerResponse<IProjectCommentsCreateRequest>> => {
+  createProjectComment: async (
+    body: IProjectCommentsCreateRequest
+  ): Promise<IServerResponse<IProjectCommentsCreateRequest>> => {
     const url = `${rootUrl}`;
-    const response = await apiClient.post<IServerResponse<IProjectCommentsCreateRequest>>(`${url}`, body);
+    const response = await apiClient.post<IServerResponse<IProjectCommentsCreateRequest>>(
+      `${url}`,
+      body
+    );
     return response.data;
   },
 
@@ -39,9 +44,14 @@ export const projectCommentsApiService = {
     return response.data;
   },
 
-  getByProjectId: async (projectId: string, isLimit: boolean = false): Promise<IServerResponse<IProjectUpdateCommentViewModel[]>> => {
-    const url = `${rootUrl}/project-comments/${projectId}${toQueryString({latest: isLimit})}`;
-    const response = await apiClient.get<IServerResponse<IProjectUpdateCommentViewModel[]>>(`${url}`);
+  getByProjectId: async (
+    projectId: string,
+    isLimit: boolean = false
+  ): Promise<IServerResponse<IProjectUpdateCommentViewModel[]>> => {
+    const url = `${rootUrl}/project-comments/${projectId}${toQueryString({ latest: isLimit })}`;
+    const response = await apiClient.get<IServerResponse<IProjectUpdateCommentViewModel[]>>(
+      `${url}`
+    );
     return response.data;
   },
 

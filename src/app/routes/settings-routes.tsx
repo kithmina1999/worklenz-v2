@@ -12,7 +12,7 @@ const settingsRoutes: RouteObject[] = [
         <SettingsLayout />
       </Suspense>
     ),
-    children: settingsItems.map((item) => ({
+    children: settingsItems.map(item => ({
       path: item.endpoint,
       element: item.element,
     })),

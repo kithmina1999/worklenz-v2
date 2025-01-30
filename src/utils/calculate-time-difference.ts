@@ -1,4 +1,13 @@
-import { differenceInSeconds, differenceInMinutes, differenceInHours, differenceInDays, differenceInWeeks, differenceInMonths, differenceInYears, formatDistanceToNow } from 'date-fns';
+import {
+  differenceInSeconds,
+  differenceInMinutes,
+  differenceInHours,
+  differenceInDays,
+  differenceInWeeks,
+  differenceInMonths,
+  differenceInYears,
+  formatDistanceToNow,
+} from 'date-fns';
 import { enUS, es, pt } from 'date-fns/locale';
 import { getLanguageFromLocalStorage } from './language-utils';
 

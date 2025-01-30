@@ -36,7 +36,7 @@ const categoriesSlice = createSlice({
     // action for delete category
     deleteCategory: (state, action: PayloadAction<string>) => {
       state.categoriesList = state.categoriesList.filter(
-        (category) => category.id !== action.payload
+        category => category.id !== action.payload
       );
     },
   },

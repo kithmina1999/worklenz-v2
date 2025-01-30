@@ -32,17 +32,17 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
   const { t } = useTranslation('task-list-table');
 
   // get label list from label reducer
-  const labelList = useAppSelector((state) => state.labelReducer.labelList);
+  const labelList = useAppSelector(state => state.labelReducer.labelList);
   const dispatch = useAppDispatch();
 
   // get task list from redux and find the selected task
-  const selectedTask = useAppSelector((state) => state.taskReducer.tasks).find(
-    (task) => task.taskId === taskId
+  const selectedTask = useAppSelector(state => state.taskReducer.tasks).find(
+    task => task.taskId === taskId
   );
 
   // used useMemo hook for re render the list when searching
   const filteredLabelData = useMemo(() => {
-    return labelList.filter((label) =>
+    return labelList.filter(label =>
       label.labelName.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [labelList, searchQuery]);
@@ -62,16 +62,19 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
 
   // custom dropdown content
   const labelDropdownContent = (
-    <Card className="custom-card" styles={{ body: { padding: 8, overflow: 'hidden', overflowY: 'auto', maxHeight: '255px'} }}>
+    <Card
+      className="custom-card"
+      styles={{ body: { padding: 8, overflow: 'hidden', overflowY: 'auto', maxHeight: '255px' } }}
+    >
       <Flex vertical gap={8}>
         <Input
           ref={labelInputRef}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          onChange={e => setSearchQuery(e.currentTarget.value)}
           placeholder={t('labelInputPlaceholder')}
-          onKeyDown={(e) => {
+          onKeyDown={e => {
             const isLabel = filteredLabelData.findIndex(
-              (label) => label.labelName.toLowerCase === searchQuery.toLowerCase
+              label => label.labelName.toLowerCase === searchQuery.toLowerCase
             );
 
             if (isLabel === -1) {
@@ -84,7 +87,7 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
 
         <List style={{ padding: 0, maxHeight: 300, overflow: 'scroll' }}>
           {filteredLabelData.length ? (
-            filteredLabelData.map((label) => (
+            filteredLabelData.map(label => (
               <List.Item
                 className="custom-list-item"
                 key={label.labelId}
@@ -101,8 +104,7 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
                   checked={
                     selectedTask?.labels
                       ? selectedTask?.labels.some(
-                          (existingLabel) =>
-                            existingLabel.labelId === label.labelId
+                          existingLabel => existingLabel.labelId === label.labelId
                         )
                       : false
                   }

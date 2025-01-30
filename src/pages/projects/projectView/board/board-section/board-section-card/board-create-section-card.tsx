@@ -13,7 +13,7 @@ const BoardCreateSectionCard = () => {
   const { t } = useTranslation('kanbanBoard');
 
   //   get theme data from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 

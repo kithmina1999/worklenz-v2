@@ -1,7 +1,11 @@
 import { useGetProjectsQuery } from '@/api/projects/projects.v1.api.service';
 import { AppDispatch } from '@/app/store';
 import { getProject, setProjectId } from '@/features/project/project.slice';
-import { toggleArchiveProjectForAll, toggleArchiveProject, toggleDrawer } from '@/features/projects/projectsSlice';
+import {
+  toggleArchiveProjectForAll,
+  toggleArchiveProject,
+  toggleDrawer,
+} from '@/features/projects/projectsSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import logger from '@/utils/errorLogger';
@@ -22,7 +26,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   isOwnerOrAdmin,
 }) => {
   const { requestParams } = useAppSelector(state => state.projectsReducer);
-  const { refetch: refetchProjects  } = useGetProjectsQuery(requestParams);
+  const { refetch: refetchProjects } = useGetProjectsQuery(requestParams);
 
   const handleSettingsClick = () => {
     if (record.id) {

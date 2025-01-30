@@ -1,8 +1,5 @@
 import { useEffect } from 'react';
-import Card from 'antd/es/card';
-import Flex from 'antd/es/flex';
-import Spin from 'antd/es/spin';
-import Typography from 'antd/es/typography';
+import { Card, Flex, Spin, Typography } from 'antd/es';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthService } from '../../hooks/useAuth';

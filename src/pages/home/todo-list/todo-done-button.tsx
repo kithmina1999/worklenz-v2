@@ -12,9 +12,7 @@ type TodoDoneButtonProps = {
 };
 
 const TodoDoneButton = ({ record }: TodoDoneButtonProps) => {
-  const [checkIconColor, setCheckIconColor] = useState<string>(
-    colors.lightGray
-  );
+  const [checkIconColor, setCheckIconColor] = useState<string>(colors.lightGray);
 
   const handleCompleteTodo = () => {
     setCheckIconColor(colors.limeGreen);
@@ -28,7 +26,7 @@ const TodoDoneButton = ({ record }: TodoDoneButtonProps) => {
     <ConfigProvider wave={{ disabled: true }}>
       <Tooltip title={'Mark as done'}>
         <Button
-          type='text'
+          type="text"
           className="borderless-icon-btn"
           style={{ backgroundColor: colors.transparent }}
           shape="circle"

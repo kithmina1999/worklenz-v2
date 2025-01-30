@@ -9,7 +9,7 @@ const TaskListTable = ({
   taskListGroup,
   visibleColumns,
   onTaskSelect,
-  onTaskExpand
+  onTaskExpand,
 }: {
   taskListGroup: ITaskListGroup;
   tableId: string;
@@ -38,62 +38,64 @@ const TaskListTable = ({
     count: flattenedTasks.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 42, // row height
-    overscan: 5
+    overscan: 5,
   });
 
   // Memoize cell render functions
-  const renderCell = useCallback((columnKey: string | number, task: IProjectTask, isSubtask = false) => {
-    const cellContent = {
-      taskId: () => {
-        const key = task.task_key?.toString() || '';
-        return (
-          <Tooltip title={key}>
-            <Tag>{key}</Tag>
-          </Tooltip>
-        );
-      },
-      task: () => (
-        <Flex align="center" className="pl-2">
-          {task.name}
-        </Flex>
-      ),
-      // Add other cell renderers as needed...
-    }[columnKey];
+  const renderCell = useCallback(
+    (columnKey: string | number, task: IProjectTask, isSubtask = false) => {
+      const cellContent = {
+        taskId: () => {
+          const key = task.task_key?.toString() || '';
+          return (
+            <Tooltip title={key}>
+              <Tag>{key}</Tag>
+            </Tooltip>
+          );
+        },
+        task: () => (
+          <Flex align="center" className="pl-2">
+            {task.name}
+          </Flex>
+        ),
+        // Add other cell renderers as needed...
+      }[columnKey];
 
-    return cellContent ? cellContent() : null;
-  }, []);
+      return cellContent ? cellContent() : null;
+    },
+    []
+  );
 
   // Memoize header rendering
-  const TableHeader = useMemo(() => (
-    <div className="sticky top-0 z-20 flex border-b" style={{ height: 42 }}>
-      <div className="sticky left-0 z-30 w-8 bg-white dark:bg-gray-900 flex items-center justify-center">
-        <Checkbox />
-      </div>
-      {visibleColumns.map(column => (
-        <div
-          key={column.key}
-          className="flex items-center px-3 border-r"
-          style={{ width: column.width }}
-        >
-          {column.key}
+  const TableHeader = useMemo(
+    () => (
+      <div className="sticky top-0 z-20 flex border-b" style={{ height: 42 }}>
+        <div className="sticky left-0 z-30 w-8 bg-white dark:bg-gray-900 flex items-center justify-center">
+          <Checkbox />
         </div>
-      ))}
-    </div>
-  ), [visibleColumns]);
+        {visibleColumns.map(column => (
+          <div
+            key={column.key}
+            className="flex items-center px-3 border-r"
+            style={{ width: column.width }}
+          >
+            {column.key}
+          </div>
+        ))}
+      </div>
+    ),
+    [visibleColumns]
+  );
 
   // Handle scroll shadows
-  const handleScroll = useCallback((e: { target: any; }) => {
+  const handleScroll = useCallback((e: { target: any }) => {
     const target = e.target;
     const hasHorizontalShadow = target.scrollLeft > 0;
     target.classList.toggle('show-shadow', hasHorizontalShadow);
   }, []);
 
   return (
-    <div
-      ref={parentRef}
-      className="h-[400px] overflow-auto"
-      onScroll={handleScroll}
-    >
+    <div ref={parentRef} className="h-[400px] overflow-auto" onScroll={handleScroll}>
       {TableHeader}
 
       <div
@@ -101,7 +103,7 @@ const TaskListTable = ({
         style={{
           height: `${rowVirtualizer.getTotalSize()}px`,
           width: '100%',
-          position: 'relative'
+          position: 'relative',
         }}
       >
         {rowVirtualizer.getVirtualItems().map(virtualRow => {
@@ -121,8 +123,9 @@ const TaskListTable = ({
               {visibleColumns.map(column => (
                 <div
                   key={column.key}
-                  className={`flex items-center px-3 border-r ${hoverRow === task.id ? 'bg-gray-50 dark:bg-gray-800' : ''
-                    }`}
+                  className={`flex items-center px-3 border-r ${
+                    hoverRow === task.id ? 'bg-gray-50 dark:bg-gray-800' : ''
+                  }`}
                   style={{ width: column.width }}
                 >
                   {renderCell(column.key, task, task.is_sub_task)}

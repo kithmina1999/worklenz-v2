@@ -1,13 +1,4 @@
-import {
-  Button,
-  Card,
-  Col,
-  Modal,
-  Progress,
-  Row,
-  Tooltip,
-  Typography,
-} from 'antd';
+import { Button, Card, Col, Modal, Progress, Row, Tooltip, Typography } from 'antd';
 import React, { useState } from 'react';
 import './current-bill.css';
 import { InfoCircleTwoTone } from '@ant-design/icons';
@@ -19,13 +10,14 @@ import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useMediaQuery } from 'react-responsive';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleDrawer, toggleUpgradeModal } from '../../../features/adminCenter/billing/billingSlice';
+import {
+  toggleDrawer,
+  toggleUpgradeModal,
+} from '../../../features/adminCenter/billing/billingSlice';
 import RedeemCodeDrawer from '../../../features/adminCenter/billing/RedeemCodeDrawer';
 
 const CurrentBill: React.FC = () => {
-  const themeMode = useAppSelector(
-    (state: RootState) => state.themeReducer.mode
-  );
+  const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
   const dispatch = useAppDispatch();
   const totalData = 1;
   const usedData = 0;
@@ -33,14 +25,14 @@ const CurrentBill: React.FC = () => {
 
   const percentage = (usedData / totalData) * 100;
 
-  const isModalOpen = useAppSelector((state) => state.billingReducer.isModalOpen)
+  const isModalOpen = useAppSelector(state => state.billingReducer.isModalOpen);
 
   const showModal = () => {
-    dispatch(toggleUpgradeModal())
+    dispatch(toggleUpgradeModal());
   };
 
   const handleCancel = () => {
-    dispatch(toggleUpgradeModal())
+    dispatch(toggleUpgradeModal());
   };
 
   const isTablet = useMediaQuery({ query: '(min-width: 1025px)' });
@@ -99,7 +91,7 @@ const CurrentBill: React.FC = () => {
                   <Typography.Text style={{ fontWeight: 700 }}>
                     {t('cardBodyText01')}
                   </Typography.Text>
-                  <Tooltip title = 'Monday,November 18,2024'>
+                  <Tooltip title="Monday,November 18,2024">
                     <Typography.Text>{t('cardBodyText02')}</Typography.Text>
                   </Tooltip>
                 </div>
@@ -140,9 +132,7 @@ const CurrentBill: React.FC = () => {
                   <Progress
                     percent={percentage}
                     type="circle"
-                    format={(percent) => (
-                      <span style={{ fontSize: '13px' }}>{percent}% Used</span>
-                    )}
+                    format={percent => <span style={{ fontSize: '13px' }}>{percent}% Used</span>}
                   />
                 </div>
                 <div
@@ -252,9 +242,7 @@ const CurrentBill: React.FC = () => {
                   <Progress
                     percent={percentage}
                     type="circle"
-                    format={(percent) => (
-                      <span style={{ fontSize: '13px' }}>{percent}% Used</span>
-                    )}
+                    format={percent => <span style={{ fontSize: '13px' }}>{percent}% Used</span>}
                   />
                 </div>
                 <div

@@ -73,7 +73,7 @@ const ProjectViewHeader = () => {
 
   const handleDrawerClose = () => {
     if (!selectedProject?.id) return;
-    dispatch(getProject(selectedProject?.id))
+    dispatch(getProject(selectedProject?.id));
   };
 
   // create task button items
@@ -114,7 +114,10 @@ const ProjectViewHeader = () => {
 
           {selectedProject?.status && (
             <Tooltip title={selectedProject.status}>
-              <ProjectStatusIcon iconName={selectedProject.status_icon || ''} color={selectedProject.status_color || ''} />
+              <ProjectStatusIcon
+                iconName={selectedProject.status_icon || ''}
+                color={selectedProject.status_color || ''}
+              />
             </Tooltip>
           )}
 
@@ -122,9 +125,11 @@ const ProjectViewHeader = () => {
             <Tooltip
               title={
                 <Typography.Text style={{ color: colors.white }}>
-                  {selectedProject?.start_date && `Start date: ${formatDate(new Date(selectedProject?.start_date))}`}
+                  {selectedProject?.start_date &&
+                    `Start date: ${formatDate(new Date(selectedProject?.start_date))}`}
                   <br />
-                  {selectedProject?.end_date && `End date: ${formatDate(new Date(selectedProject?.end_date))}`}
+                  {selectedProject?.end_date &&
+                    `End date: ${formatDate(new Date(selectedProject?.end_date))}`}
                 </Typography.Text>
               }
             >

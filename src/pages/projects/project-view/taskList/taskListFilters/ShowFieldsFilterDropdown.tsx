@@ -14,37 +14,37 @@ const ShowFieldsFilterDropdown = () => {
   const { t } = useTranslation('task-list-filters');
   const dispatch = useAppDispatch();
   const { trackMixpanelEvent } = useMixpanelTracking();
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // Filter out fixed columns
   const changableColumnList = columnList.filter(
-    (column) => !['selector', 'task'].includes(column.key)
+    column => !['selector', 'task'].includes(column.key)
   );
 
   const columnsVisibility = useAppSelector(
-    (state) => state.projectViewTaskListColumnsReducer.columnsVisibility
+    state => state.projectViewTaskListColumnsReducer.columnsVisibility
   );
 
   const handleColumnToggle = (columnKey: string) => {
     dispatch(toggleColumnVisibility(columnKey));
     trackMixpanelEvent('task_list_column_visibility_changed', {
       column: columnKey,
-      visible: !columnsVisibility[columnKey as keyof typeof columnsVisibility]
+      visible: !columnsVisibility[columnKey as keyof typeof columnsVisibility],
     });
   };
 
   const showFieldsDropdownContent = (
     <Card
       className="custom-card"
-      style={{ 
-        height: 300, 
+      style={{
+        height: 300,
         overflowY: 'auto',
-        minWidth: 130
+        minWidth: 130,
       }}
       styles={{ body: { padding: 0 } }}
     >
       <List style={{ padding: 0 }}>
-        {changableColumnList.map((col) => (
+        {changableColumnList.map(col => (
           <List.Item
             key={col.key}
             className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
@@ -53,7 +53,7 @@ const ShowFieldsFilterDropdown = () => {
               gap: 8,
               padding: '4px 8px',
               border: 'none',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
             onClick={() => handleColumnToggle(col.key)}
           >
@@ -74,11 +74,7 @@ const ShowFieldsFilterDropdown = () => {
   );
 
   return (
-    <Dropdown 
-      overlay={showFieldsDropdownContent} 
-      trigger={['click']}
-      placement="bottomRight"
-    >
+    <Dropdown overlay={showFieldsDropdownContent} trigger={['click']} placement="bottomRight">
       <Button icon={<MoreOutlined />}>{t('showFieldsText')}</Button>
     </Dropdown>
   );

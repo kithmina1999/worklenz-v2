@@ -1,11 +1,11 @@
-import { IUser } from "../auth/login.types";
-import { ISubTask } from "./subTask.types";
+import { IUser } from '../auth/login.types';
+import { ISubTask } from './subTask.types';
 
 export interface ITaskAssignee {
   team_member_id: any;
   id: string;
   project_member_id: string;
-  name: string
+  name: string;
 }
 
 export interface ITask {

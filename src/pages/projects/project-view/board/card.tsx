@@ -1,6 +1,6 @@
-import { FC } from "react";
-import { CSS } from "@dnd-kit/utilities";
-import { useSortable } from "@dnd-kit/sortable";
+import { FC } from 'react';
+import { CSS } from '@dnd-kit/utilities';
+import { useSortable } from '@dnd-kit/sortable';
 export type CardType = {
   id: string;
   title: string;
@@ -9,16 +9,16 @@ export type CardType = {
 const Card: FC<CardType> = ({ id, title }) => {
   // useSortableに指定するidは一意になるよう設定する必要があります。s
   const { attributes, listeners, setNodeRef, transform } = useSortable({
-    id: id
+    id: id,
   });
 
   const style = {
-    margin: "10px",
+    margin: '10px',
     opacity: 1,
-    color: "#333",
-    background: "white",
-    padding: "10px",
-    transform: CSS.Transform.toString(transform)
+    color: '#333',
+    background: 'white',
+    padding: '10px',
+    transform: CSS.Transform.toString(transform),
   };
 
   return (

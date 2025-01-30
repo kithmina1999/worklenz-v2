@@ -19,7 +19,7 @@ const ProjectViewExtra = () => {
   const LEAVE_TXT = 'leave';
 
   const emitJoinOrLeave = (type: string) => {
-    socket?.emit(SocketEvents.JOIN_OR_LEAVE_PROJECT_ROOM.toString(), {type, id: projectId});
+    socket?.emit(SocketEvents.JOIN_OR_LEAVE_PROJECT_ROOM.toString(), { type, id: projectId });
   };
 
   const handleMemberView = (res: any) => {
@@ -27,8 +27,7 @@ const ProjectViewExtra = () => {
   };
 
   const handleProjectUpdates = (res: any) => {
-        console.log(res);
-
+    console.log(res);
   };
 
   const handleProjectDataChange = (res: any) => {
@@ -44,14 +43,17 @@ const ProjectViewExtra = () => {
     return () => {
       emitJoinOrLeave(LEAVE_TXT);
       socket?.removeListener(SocketEvents.JOIN_OR_LEAVE_PROJECT_ROOM.toString(), handleMemberView);
-      socket?.removeListener(SocketEvents.PROJECT_UPDATES_AVAILABLE.toString(), handleProjectUpdates);
+      socket?.removeListener(
+        SocketEvents.PROJECT_UPDATES_AVAILABLE.toString(),
+        handleProjectUpdates
+      );
       socket?.removeListener(SocketEvents.PROJECT_DATA_CHANGE.toString(), handleProjectDataChange);
     };
   }, [activeMembers, connected]);
 
   return (
     <div>
-      <Avatars members={activeMembers as InlineMember[] || []} />
+      <Avatars members={(activeMembers as InlineMember[]) || []} />
       <span style={{ position: 'relative', top: '-10px' }}>
         <Tooltip title="Members who are active on this project will be displayed here.">
           <QuestionCircleOutlined />

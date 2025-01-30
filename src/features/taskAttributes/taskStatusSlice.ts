@@ -56,7 +56,10 @@ export const fetchStatusesCategories = createAsyncThunk(
 
 export const createStatus = createAsyncThunk(
   'status/createStatus',
-  async ({body, currentProjectId}: {body: ITaskStatusCreateRequest, currentProjectId: string}, { rejectWithValue }) => {
+  async (
+    { body, currentProjectId }: { body: ITaskStatusCreateRequest; currentProjectId: string },
+    { rejectWithValue }
+  ) => {
     return await statusApiService.createStatus(body, currentProjectId);
   }
 );

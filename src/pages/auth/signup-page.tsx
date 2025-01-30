@@ -94,10 +94,7 @@ const SignupPage = () => {
   }, []);
 
   const getInvitationQueryParams = () => {
-    const params = [
-      `team=${urlParams.teamId}`,
-      `teamMember=${urlParams.teamMemberId}`,
-    ];
+    const params = [`team=${urlParams.teamId}`, `teamMember=${urlParams.teamMemberId}`];
     if (getProjectId()) {
       params.push(`project=${getProjectId()}`);
     }

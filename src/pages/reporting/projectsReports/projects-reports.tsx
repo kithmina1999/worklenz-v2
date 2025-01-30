@@ -19,9 +19,7 @@ const ProjectsReports = () => {
   const dispatch = useAppDispatch();
 
   // get project list and loading state from project repors reducer
-  const { projectList, isLoading } = useAppSelector(
-    (state) => state.projectReportsReducer,
-  );
+  const { projectList, isLoading } = useAppSelector(state => state.projectReportsReducer);
 
   // load data from project reports reducer
   useEffect(() => {
@@ -49,11 +47,7 @@ const ProjectsReports = () => {
       />
 
       <Card title={<ProjectsReportsFilters />}>
-        {isLoading ? (
-          <Skeleton />
-        ) : (
-          <ProjectReportsTable projectList={projectList} />
-        )}
+        {isLoading ? <Skeleton /> : <ProjectReportsTable projectList={projectList} />}
       </Card>
     </Flex>
   );

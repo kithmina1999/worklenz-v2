@@ -8,9 +8,7 @@ type ProjectReportsOverviewTabProps = {
   projectId?: string | null;
 };
 
-const ProjectReportsOverviewTab = ({
-  projectId = null,
-}: ProjectReportsOverviewTabProps) => {
+const ProjectReportsOverviewTab = ({ projectId = null }: ProjectReportsOverviewTabProps) => {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <ProjectReportsStatCard />

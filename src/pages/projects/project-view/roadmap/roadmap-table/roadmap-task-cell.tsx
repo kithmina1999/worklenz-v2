@@ -5,10 +5,7 @@ import {
   RightOutlined,
   ExpandAltOutlined,
 } from '@ant-design/icons';
-import {
-  NewTaskType,
-  toggleTaskExpansion,
-} from '@features/roadmap/roadmap-slice';
+import { NewTaskType, toggleTaskExpansion } from '@features/roadmap/roadmap-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleTaskDrawer } from '@features/tasks/taskSlice';
 import { colors } from '@/styles/colors';
@@ -22,10 +19,7 @@ const RoadmapTaskCell = ({ task, isSubtask = false }: RoadmapTaskCellProps) => {
   const dispatch = useAppDispatch();
 
   // render the toggle arrow icon for tasks with subtasks
-  const renderToggleButtonForHasSubTasks = (
-    id: string,
-    hasSubtasks: boolean
-  ) => {
+  const renderToggleButtonForHasSubTasks = (id: string, hasSubtasks: boolean) => {
     if (!hasSubtasks) return null;
     return (
       <button
@@ -52,11 +46,7 @@ const RoadmapTaskCell = ({ task, isSubtask = false }: RoadmapTaskCellProps) => {
   };
 
   // render the double arrow icon and count label for tasks with subtasks
-  const renderSubtasksCountLabel = (
-    id: string,
-    isSubtask: boolean,
-    subTasksCount: number
-  ) => {
+  const renderSubtasksCountLabel = (id: string, isSubtask: boolean, subTasksCount: number) => {
     return (
       !isSubtask && (
         <Button
@@ -71,9 +61,7 @@ const RoadmapTaskCell = ({ task, isSubtask = false }: RoadmapTaskCellProps) => {
             border: 'none',
           }}
         >
-          <Typography.Text style={{ fontSize: 12, lineHeight: 1 }}>
-            {subTasksCount}
-          </Typography.Text>
+          <Typography.Text style={{ fontSize: 12, lineHeight: 1 }}>{subTasksCount}</Typography.Text>
           <DoubleRightOutlined style={{ fontSize: 10 }} />
         </Button>
       )
@@ -94,19 +82,12 @@ const RoadmapTaskCell = ({ task, isSubtask = false }: RoadmapTaskCellProps) => {
         {isSubtask && <DoubleRightOutlined style={{ fontSize: 12 }} />}
 
         <Tooltip title={task.name}>
-          <Typography.Text
-            ellipsis={{ expanded: false }}
-            style={{ maxWidth: 100 }}
-          >
+          <Typography.Text ellipsis={{ expanded: false }} style={{ maxWidth: 100 }}>
             {task.name}
           </Typography.Text>
         </Tooltip>
 
-        {renderSubtasksCountLabel(
-          task.id,
-          isSubtask,
-          task?.subTasks?.length || 0
-        )}
+        {renderSubtasksCountLabel(task.id, isSubtask, task?.subTasks?.length || 0)}
       </Flex>
 
       <Button

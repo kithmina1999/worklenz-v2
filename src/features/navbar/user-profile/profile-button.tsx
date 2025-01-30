@@ -37,7 +37,11 @@ const ProfileButton = ({ isOwnerOrAdmin }: ProfileButtonProps) => {
             <div style={{ paddingBlock: '16px' }}>
               <Typography.Text>Account</Typography.Text>
               <Flex gap={8} align="center" justify="flex-start">
-                <SingleAvatar avatarUrl={userDetails?.avatar_url} name={userDetails?.name} email={userDetails?.email} />
+                <SingleAvatar
+                  avatarUrl={userDetails?.avatar_url}
+                  name={userDetails?.name}
+                  email={userDetails?.email}
+                />
                 <Flex vertical>
                   <Typography.Text>{userDetails?.name}</Typography.Text>
                   <Typography.Text style={{ fontSize: 12 }}>{userDetails?.email}</Typography.Text>

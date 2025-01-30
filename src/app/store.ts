@@ -70,7 +70,7 @@ import homePageApiService from '@/api/home-page/home-page.api.service';
 import { projectsApi } from '@/api/projects/projects.v1.api.service';
 
 export const store = configureStore({
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: false,
     }).concat(homePageApiService.middleware, projectsApi.middleware),
@@ -104,7 +104,7 @@ export const store = configureStore({
     projectInsightsReducer: projectInsightsReducer,
     taskListCustomColumnsReducer: taskListCustomColumnsReducer,
     boardReducer: boardReducer,
-    
+
     // Project Lookups
     projectCategoriesReducer: projectCategoriesReducer,
     projectStatusesReducer: projectStatusesReducer,

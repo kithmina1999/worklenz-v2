@@ -60,12 +60,7 @@ export const TimeFilter = ({ onViewModeChange }: TimeFilterProps) => {
   ];
 
   return (
-    <Flex
-      gap={12}
-      align="center"
-      justify="flex-end"
-      style={{ marginBlockEnd: 24 }}
-    >
+    <Flex gap={12} align="center" justify="flex-end" style={{ marginBlockEnd: 24 }}>
       <Select
         className="ViewModeSelect"
         style={{ minWidth: 120 }}

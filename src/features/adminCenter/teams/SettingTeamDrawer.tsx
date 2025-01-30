@@ -1,14 +1,4 @@
-import {
-  Button,
-  Drawer,
-  Form,
-  Input,
-  message,
-  Select,
-  Table,
-  TableProps,
-  Typography,
-} from 'antd';
+import { Button, Drawer, Form, Input, message, Select, Table, TableProps, Typography } from 'antd';
 import React from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { RootState } from '../../../app/store';
@@ -28,11 +18,9 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
   );
   const dispatch = useAppDispatch();
   const [form] = Form.useForm();
-  const teamsLists = useAppSelector(
-    (state: RootState) => state.teamReducer.teamsList
-  );
+  const teamsLists = useAppSelector((state: RootState) => state.teamReducer.teamsList);
 
-  const team = teamsLists.find((team) => team.teamId === teamId);
+  const team = teamsLists.find(team => team.teamId === teamId);
 
   const handleFormSubmit = (values: any) => {
     const newTeam: TeamsType = {
@@ -87,9 +75,7 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
   return (
     <Drawer
       title={
-        <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-          Team Settings
-        </Typography.Text>
+        <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>Team Settings</Typography.Text>
       }
       width={550}
       open={isSettingDrawerOpen}

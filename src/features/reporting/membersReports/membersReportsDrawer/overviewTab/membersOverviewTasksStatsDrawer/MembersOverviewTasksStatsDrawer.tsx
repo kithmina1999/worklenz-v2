@@ -13,9 +13,7 @@ type MembersOverviewTasksStatsDrawerProps = {
   memberId: string | null;
 };
 
-const MembersOverviewTasksStatsDrawer = ({
-  memberId,
-}: MembersOverviewTasksStatsDrawerProps) => {
+const MembersOverviewTasksStatsDrawer = ({ memberId }: MembersOverviewTasksStatsDrawerProps) => {
   const [tasksData, setTasksData] = useState<any[]>([]);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
@@ -26,14 +24,12 @@ const MembersOverviewTasksStatsDrawer = ({
 
   // get drawer open state from the member reports reducer
   const isDrawerOpen = useAppSelector(
-    (state) => state.membersReportsReducer.isMembersOverviewTasksStatsDrawerOpen
+    state => state.membersReportsReducer.isMembersOverviewTasksStatsDrawerOpen
   );
-  const { membersList } = useAppSelector(
-    (state) => state.membersReportsReducer
-  );
+  const { membersList } = useAppSelector(state => state.membersReportsReducer);
 
   // find the selected member based on memberId
-  const selectedMember = membersList.find((member) => member.id === memberId);
+  const selectedMember = membersList.find(member => member.id === memberId);
 
   // function to handle drawer close
   const handleClose = () => {
@@ -42,10 +38,7 @@ const MembersOverviewTasksStatsDrawer = ({
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {
-    fetchData(
-      '/reportingMockData/membersReports/tasksStatsOverview.json',
-      setTasksData
-    );
+    fetchData('/reportingMockData/membersReports/tasksStatsOverview.json', setTasksData);
   }, []);
 
   return (
@@ -63,7 +56,7 @@ const MembersOverviewTasksStatsDrawer = ({
       }
     >
       {tasksData &&
-        tasksData.map((item) => (
+        tasksData.map(item => (
           <MembersOverviewTasksStatsTable
             title={item.name}
             color={item.color_code}

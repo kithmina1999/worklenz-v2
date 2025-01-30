@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setGroupBy } from '@features/group-by-filter-dropdown/group-by-filter-dropdown-slice';
 
-const GroupByFilterDropdown = ({position}: {position: 'list' | 'board'}) => {
-  const dispatch = useAppDispatch()
+const GroupByFilterDropdown = ({ position }: { position: 'list' | 'board' }) => {
+  const dispatch = useAppDispatch();
 
   type GroupTypes = 'status' | 'priority' | 'phase' | 'members' | 'list';
 
@@ -22,7 +22,7 @@ const GroupByFilterDropdown = ({position}: {position: 'list' | 'board'}) => {
 
   const handleChange = (value: string) => {
     setActiveGroup(value as GroupTypes);
-    dispatch(setGroupBy(value as GroupTypes))
+    dispatch(setGroupBy(value as GroupTypes));
   };
 
   // get selected project from useSelectedPro
@@ -30,8 +30,8 @@ const GroupByFilterDropdown = ({position}: {position: 'list' | 'board'}) => {
 
   //get phases details from phases slice
   const phase =
-    useAppSelector((state) => state.phaseReducer.phaseList).find(
-      (phase) => phase.projectId === selectedProject?.id
+    useAppSelector(state => state.phaseReducer.phaseList).find(
+      phase => phase.projectId === selectedProject?.id
     ) || null;
 
   const groupDropdownMenuItems = [
@@ -54,13 +54,11 @@ const GroupByFilterDropdown = ({position}: {position: 'list' | 'board'}) => {
         options={groupDropdownMenuItems}
         onChange={handleChange}
         suffixIcon={<CaretDownFilled />}
-        dropdownStyle={{width: 'wrap-content'}}
+        dropdownStyle={{ width: 'wrap-content' }}
       />
       {(activeGroup === 'status' || activeGroup === 'phase') && (
         <ConfigProvider wave={{ disabled: true }}>
-          {activeGroup === 'phase' && (
-            <ConfigPhaseButton color={colors.skyBlue} />
-          )}
+          {activeGroup === 'phase' && <ConfigPhaseButton color={colors.skyBlue} />}
           {activeGroup === 'status' && <CreateStatusButton />}
         </ConfigProvider>
       )}

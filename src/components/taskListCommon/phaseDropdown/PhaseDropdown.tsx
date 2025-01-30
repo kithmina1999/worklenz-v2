@@ -9,23 +9,22 @@ import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
 
 const PhaseDropdown = ({ projectId }: { projectId: string }) => {
-  const [currentPhaseOption, setCurrentPhaseOption] =
-    useState<PhaseOption | null>(null);
+  const [currentPhaseOption, setCurrentPhaseOption] = useState<PhaseOption | null>(null);
 
   // localization
   const { t } = useTranslation('task-list-table');
 
   // get phase data from redux
-  const phaseList = useAppSelector((state) => state.phaseReducer.phaseList);
+  const phaseList = useAppSelector(state => state.phaseReducer.phaseList);
 
   //get phases details from phases slice
-  const phase = phaseList.find((el) => el.projectId === projectId);
+  const phase = phaseList.find(el => el.projectId === projectId);
 
   // menu type
   type MenuItem = Required<MenuProps>['items'][number];
   // phase menu item
   const phaseMenuItems: MenuItem[] = phase
-    ? phase.phaseOptions.map((option) => ({
+    ? phase.phaseOptions.map(option => ({
         key: option.optionId,
         label: (
           <Flex gap={4}>
@@ -36,10 +35,8 @@ const PhaseDropdown = ({ projectId }: { projectId: string }) => {
     : [];
 
   // Handle phase select
-  const handlePhaseOptionSelect: MenuProps['onClick'] = (e) => {
-    const selectedOption = phase?.phaseOptions.find(
-      (option) => option.optionId === e.key
-    );
+  const handlePhaseOptionSelect: MenuProps['onClick'] = e => {
+    const selectedOption = phase?.phaseOptions.find(option => option.optionId === e.key);
     if (selectedOption) {
       setCurrentPhaseOption(selectedOption);
     }
@@ -51,11 +48,7 @@ const PhaseDropdown = ({ projectId }: { projectId: string }) => {
       key: '1',
       label: (
         <Card className="phase-dropdown-card" bordered={false}>
-          <Menu
-            className="phase-menu"
-            items={phaseMenuItems}
-            onClick={handlePhaseOptionSelect}
-          />
+          <Menu className="phase-menu" items={phaseMenuItems} onClick={handlePhaseOptionSelect} />
         </Card>
       ),
     },

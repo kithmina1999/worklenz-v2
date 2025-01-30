@@ -1,10 +1,7 @@
 import { Button, Flex, Input } from 'antd';
 import React, { useRef, useState } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import {
-  addTaskCardToTheBottom,
-  addTaskCardToTheTop,
-} from '@/features/board/board-slice';
+import { addTaskCardToTheBottom, addTaskCardToTheTop } from '@/features/board/board-slice';
 import { useTranslation } from 'react-i18next';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -34,7 +31,7 @@ const BoardViewCreateTaskCard = ({
   const { t } = useTranslation('kanbanBoard');
 
   //   get theme details from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
@@ -102,12 +99,8 @@ const BoardViewCreateTaskCard = ({
       <Input
         autoFocus
         value={newTaskName}
-        onChange={(e) => setNewTaskName(e.target.value)}
-        onPressEnter={
-          position === 'bottom'
-            ? handleAddTaskToTheBottom
-            : handleAddTaskToTheTop
-        }
+        onChange={e => setNewTaskName(e.target.value)}
+        onPressEnter={position === 'bottom' ? handleAddTaskToTheBottom : handleAddTaskToTheTop}
         onBlur={
           newTaskName.length > 0 && position === 'bottom'
             ? handleAddTaskToTheBottom

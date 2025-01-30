@@ -26,7 +26,7 @@ const ProjectReportsMembersTaskDrawer = () => {
 
   // get drawer open state and project list from the reducer
   const isDrawerOpen = useAppSelector(
-    (state) => state.projectReportsReducer.isProjectReportsMembersTaskDrawerOpen
+    state => state.projectReportsReducer.isProjectReportsMembersTaskDrawerOpen
   );
 
   // function to handle drawer close
@@ -36,17 +36,12 @@ const ProjectReportsMembersTaskDrawer = () => {
 
   //   get task data from mock json file in public/reporingMockData/projectRepoting
   useMemo(() => {
-    fetchData(
-      '/reportingMockData/projectReports/memberTasks.json',
-      setTaskData
-    );
+    fetchData('/reportingMockData/projectReports/memberTasks.json', setTaskData);
   }, []);
 
   // used useMemo hook for re render the list when searching
   const filteredTaskData = useMemo(() => {
-    return taskData.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    return taskData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [searchQuery, taskData]);
 
   return (

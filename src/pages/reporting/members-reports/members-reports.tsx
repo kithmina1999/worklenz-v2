@@ -1,13 +1,4 @@
-import {
-  Button,
-  Card,
-  Checkbox,
-  Dropdown,
-  Flex,
-  Skeleton,
-  Space,
-  Typography,
-} from 'antd';
+import { Button, Card, Checkbox, Dropdown, Flex, Skeleton, Space, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import MembersReportsTable from './membersReportsTable.tsx/MembersReportsTable';
@@ -31,9 +22,7 @@ const MembersReports = () => {
   const dispatch = useAppDispatch();
 
   // get members list and loading state from members repors reducer
-  const { membersList, isLoading } = useAppSelector(
-    (state) => state.membersReportsReducer
-  );
+  const { membersList, isLoading } = useAppSelector(state => state.membersReportsReducer);
 
   // load data from members reports reducer
   useEffect(() => {
@@ -74,11 +63,7 @@ const MembersReports = () => {
           </Flex>
         }
       >
-        {isLoading ? (
-          <Skeleton />
-        ) : (
-          <MembersReportsTable membersList={membersList} />
-        )}
+        {isLoading ? <Skeleton /> : <MembersReportsTable membersList={membersList} />}
       </Card>
     </Flex>
   );

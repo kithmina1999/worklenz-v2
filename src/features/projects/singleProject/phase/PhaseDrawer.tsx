@@ -12,9 +12,7 @@ import { nanoid } from '@reduxjs/toolkit';
 
 const PhaseDrawer = () => {
   // get drawer state from phase slice
-  const isDrawerOpen = useAppSelector(
-    (state) => state.phaseReducer.isPhaseDrawerOpen
-  );
+  const isDrawerOpen = useAppSelector(state => state.phaseReducer.isPhaseDrawerOpen);
   const dispatch = useAppDispatch();
 
   // get currently selected project from useSelectedProject hook
@@ -22,13 +20,11 @@ const PhaseDrawer = () => {
 
   // get phase data from phase reducer
   const phase =
-    useAppSelector((state) => state.phaseReducer.phaseList).find(
-      (phase) => phase.projectId === selectedProject?.projectId
+    useAppSelector(state => state.phaseReducer.phaseList).find(
+      phase => phase.projectId === selectedProject?.projectId
     ) || null;
 
-  const [phaseName, setPhaseName] = useState<string>(
-    phase ? phase?.phase : 'Phase'
-  );
+  const [phaseName, setPhaseName] = useState<string>(phase ? phase?.phase : 'Phase');
 
   // handle add option
   const handleAddOptions = () => {
@@ -38,9 +34,7 @@ const PhaseDrawer = () => {
       optionColor: '#fbc84c',
     };
 
-    dispatch(
-      addPhaseOption({ phaseId: phase?.phaseId || '', option: newPhaseOption })
-    );
+    dispatch(addPhaseOption({ phaseId: phase?.phaseId || '', option: newPhaseOption }));
   };
 
   return (
@@ -58,7 +52,7 @@ const PhaseDrawer = () => {
         <Input
           placeholder="Enter a name for label"
           value={phaseName}
-          onChange={(e) => setPhaseName(e.currentTarget.value)}
+          onChange={e => setPhaseName(e.currentTarget.value)}
         />
       </Flex>
 
@@ -68,18 +62,14 @@ const PhaseDrawer = () => {
         <Flex align="center" justify="space-between">
           <Typography.Text>Phase Options :</Typography.Text>
 
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleAddOptions}
-          >
+          <Button type="primary" icon={<PlusOutlined />} onClick={handleAddOptions}>
             Add Option
           </Button>
         </Flex>
 
         <Flex vertical gap={16}>
           {phase
-            ? phase.phaseOptions.map((option) => (
+            ? phase.phaseOptions.map(option => (
                 <PhaseOptionItem
                   key={option.optionId}
                   option={option}

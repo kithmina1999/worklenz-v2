@@ -9,14 +9,14 @@ const DescriptionEditor = ({ description }: { description: string | null }) => {
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
 
   // get theme details from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // trigger re-render for TinyEditor on theme change
   const [editorKey, setEditorKey] = useState<number>(0);
 
   useEffect(() => {
     if (isEditorOpen) {
-      setEditorKey((prevKey) => prevKey + 1);
+      setEditorKey(prevKey => prevKey + 1);
     }
   }, [isEditorOpen, themeMode]);
 

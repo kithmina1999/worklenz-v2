@@ -11,7 +11,7 @@ import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 
 const LastUpdatedTasks = () => {
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
   const { includeArchivedTasks, projectId } = useAppSelector(state => state.projectInsightsReducer);
 
   const [data, setData] = useState<IInsightTasks[]>([]);
@@ -21,8 +21,11 @@ const LastUpdatedTasks = () => {
     if (!projectId) return;
     setLoading(true);
     try {
-      const res = await projectInsightsApiService.getLastUpdatedTasks(projectId, includeArchivedTasks);
-      if (res.done ) {
+      const res = await projectInsightsApiService.getLastUpdatedTasks(
+        projectId,
+        includeArchivedTasks
+      );
+      if (res.done) {
         setData(res.body);
       }
     } catch (error) {
@@ -30,7 +33,7 @@ const LastUpdatedTasks = () => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     getLastUpdatedTasks();
@@ -41,11 +44,7 @@ const LastUpdatedTasks = () => {
     {
       key: 'name',
       title: 'Name',
-      render: (record: IInsightTasks) => (
-        <Typography.Text>
-          {record.name}
-        </Typography.Text>
-      ),
+      render: (record: IInsightTasks) => <Typography.Text>{record.name}</Typography.Text>,
     },
     {
       key: 'status',
@@ -96,7 +95,7 @@ const LastUpdatedTasks = () => {
     },
   ];
 
-  const dataSource = data.map((record) => ({
+  const dataSource = data.map(record => ({
     ...record,
     key: record.id,
   }));
@@ -106,7 +105,7 @@ const LastUpdatedTasks = () => {
       className="custom-two-colors-row-table"
       dataSource={dataSource}
       columns={columns}
-      rowKey={(record) => record.id}
+      rowKey={record => record.id}
       pagination={{
         showSizeChanger: true,
         defaultPageSize: 20,

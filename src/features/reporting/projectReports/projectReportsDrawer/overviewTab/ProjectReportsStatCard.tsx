@@ -33,16 +33,12 @@ const ProjectReportsStatCard = () => {
     },
     {
       name: 'overdueTasks',
-      icon: (
-        <ExclamationCircleOutlined style={{ fontSize: 24, color: '#eb6363' }} />
-      ),
+      icon: <ExclamationCircleOutlined style={{ fontSize: 24, color: '#eb6363' }} />,
       value: '0',
     },
     {
       name: 'allocatedHours',
-      icon: (
-        <ClockCircleOutlined style={{ fontSize: 24, color: colors.skyBlue }} />
-      ),
+      icon: <ClockCircleOutlined style={{ fontSize: 24, color: colors.skyBlue }} />,
       value: '0',
     },
     {
@@ -55,7 +51,7 @@ const ProjectReportsStatCard = () => {
   return (
     <Card style={{ width: '100%' }}>
       <Flex vertical gap={16} style={{ padding: '12px 24px' }}>
-        {statItems.map((item) => (
+        {statItems.map(item => (
           <Flex gap={12} align="center">
             {item.icon}
             <Typography.Text>

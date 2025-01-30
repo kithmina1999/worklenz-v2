@@ -16,9 +16,7 @@ const SettingSidebar: React.FC = () => {
   // function for get the active menu item
   const getCurrentActiveKey = () => {
     // this one return the stirng after worklenz/
-    const afterWorklenzString = location.pathname.split(
-      '/worklenz/settings/'
-    )[1];
+    const afterWorklenzString = location.pathname.split('/worklenz/settings/')[1];
 
     // this one return the stirng after worklenz/ **pathKey** /
     const pathKey = afterWorklenzString.split('/')[0];
@@ -28,15 +26,13 @@ const SettingSidebar: React.FC = () => {
 
   // menu items
   const items: MenuItem[] = [
-    ...menuItems.map((item) => ({
+    ...menuItems.map(item => ({
       key: item.key,
       label: (
         <Flex gap={8} justify="space-between">
           <Flex gap={8}>
             {item.icon}
-            <Link to={`/worklenz/settings/${item.endpoint}`}>
-              {t(item.name)}
-            </Link>
+            <Link to={`/worklenz/settings/${item.endpoint}`}>{t(item.name)}</Link>
           </Flex>
           <RightOutlined style={{ fontSize: 12 }} />
         </Flex>

@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 const ConfigPhaseButton = ({ color }: { color: string }) => {
   // get theme details from redux
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // localization
   const { t } = useTranslation('task-list-filters');

@@ -19,14 +19,11 @@ const initialState: BoardState = {
 };
 
 // async thunk for fetching members data
-export const fetchTaskData = createAsyncThunk(
-  'board/fetchTaskData',
-  async (endpoint: string) => {
-    const response = await fetch(endpoint);
-    if (!response.ok) throw new Error(`Response error: ${response.status}`);
-    return await response.json();
-  }
-);
+export const fetchTaskData = createAsyncThunk('board/fetchTaskData', async (endpoint: string) => {
+  const response = await fetch(endpoint);
+  if (!response.ok) throw new Error(`Response error: ${response.status}`);
+  return await response.json();
+});
 
 const boardSlice = createSlice({
   name: 'boardReducer',
@@ -66,25 +63,15 @@ const boardSlice = createSlice({
       state.editableSectionId = action.payload;
     },
 
-    addTaskCardToTheTop: (
-      state,
-      action: PayloadAction<{ sectionId: string; task: any }>
-    ) => {
-      const section = state.taskList.find(
-        (sec) => sec.id === action.payload.sectionId
-      );
+    addTaskCardToTheTop: (state, action: PayloadAction<{ sectionId: string; task: any }>) => {
+      const section = state.taskList.find(sec => sec.id === action.payload.sectionId);
       if (section) {
         section.tasks.unshift(action.payload.task);
       }
     },
 
-    addTaskCardToTheBottom: (
-      state,
-      action: PayloadAction<{ sectionId: string; task: any }>
-    ) => {
-      const section = state.taskList.find(
-        (sec) => sec.id === action.payload.sectionId
-      );
+    addTaskCardToTheBottom: (state, action: PayloadAction<{ sectionId: string; task: any }>) => {
+      const section = state.taskList.find(sec => sec.id === action.payload.sectionId);
       if (section) {
         section.tasks.push(action.payload.task);
       }
@@ -94,13 +81,9 @@ const boardSlice = createSlice({
       state,
       action: PayloadAction<{ sectionId: string; taskId: string; subtask: any }>
     ) => {
-      const section = state.taskList.find(
-        (sec) => sec.id === action.payload.sectionId
-      );
+      const section = state.taskList.find(sec => sec.id === action.payload.sectionId);
       if (section) {
-        const task = section.tasks.find(
-          (task: any) => task.id === action.payload.taskId
-        );
+        const task = section.tasks.find((task: any) => task.id === action.payload.taskId);
 
         if (task) {
           task.sub_tasks.push(action.payload.subtask);
@@ -109,29 +92,20 @@ const boardSlice = createSlice({
       }
     },
 
-    deleteBoardTask: (
-      state,
-      action: PayloadAction<{ sectionId: string; taskId: string }>
-    ) => {
-      const section = state.taskList.find(
-        (sec) => sec.id === action.payload.sectionId
-      );
+    deleteBoardTask: (state, action: PayloadAction<{ sectionId: string; taskId: string }>) => {
+      const section = state.taskList.find(sec => sec.id === action.payload.sectionId);
       if (section) {
-        section.tasks = section.tasks.filter(
-          (task: any) => task.id !== action.payload.taskId
-        );
+        section.tasks = section.tasks.filter((task: any) => task.id !== action.payload.taskId);
       }
     },
 
     deleteSection: (state, action: PayloadAction<{ sectionId: string }>) => {
-      state.taskList = state.taskList.filter(
-        (section) => section.id !== action.payload.sectionId
-      );
+      state.taskList = state.taskList.filter(section => section.id !== action.payload.sectionId);
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchTaskData.pending, (state) => {
+      .addCase(fetchTaskData.pending, state => {
         state.isLoading = true;
         state.error = null;
       })

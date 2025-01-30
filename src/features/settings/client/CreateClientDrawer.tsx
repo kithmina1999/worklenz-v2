@@ -12,9 +12,7 @@ const CreateClientDrawer = () => {
   const { t } = useTranslation('settings-clients');
 
   // get drawer state from client reducer
-  const isDrawerOpen = useAppSelector(
-    (state) => state.clientReducer.isCreateClientDrawerOpen
-  );
+  const isDrawerOpen = useAppSelector(state => state.clientReducer.isCreateClientDrawerOpen);
   const dispatch = useAppDispatch();
 
   const [form] = Form.useForm();
@@ -23,7 +21,7 @@ const CreateClientDrawer = () => {
   const handleFormSubmit = async (values: any) => {
     try {
       const newClient: IClient = {
-        name: values.name
+        name: values.name,
       };
 
       dispatch(addClient(newClient));

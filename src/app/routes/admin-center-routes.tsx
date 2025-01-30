@@ -12,7 +12,7 @@ const adminCenterRoutes: RouteObject[] = [
         <AdminCenterLayout />
       </Suspense>
     ),
-    children: adminCenterItems.map((item) => ({
+    children: adminCenterItems.map(item => ({
       path: item.endpoint,
       element: item.element,
     })),

@@ -11,9 +11,7 @@ const CreateTaskDrawer = () => {
   const [taskName, setTaskName] = useState<string>('Untitled Task');
 
   // get create task drawer state from task slice
-  const isDrawerOpen = useAppSelector(
-    (state) => state.taskReducer.isCreateTaskDrawerOpen
-  );
+  const isDrawerOpen = useAppSelector(state => state.taskReducer.isCreateTaskDrawerOpen);
 
   // auto focused when open the drawer
   const taskNameInputRef = useRef<InputRef>(null);

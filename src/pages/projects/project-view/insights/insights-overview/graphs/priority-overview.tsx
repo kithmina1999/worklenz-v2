@@ -76,13 +76,12 @@ const PriorityOverview = () => {
   };
 
   const data = {
-    labels: stats.map((stat) => stat.name),
+    labels: stats.map(stat => stat.name),
     datasets: [
       {
         label: 'Tasks',
-        data: stats.map((stat) => stat.data),
-        backgroundColor: stats.map((stat) => stat.color),
-        
+        data: stats.map(stat => stat.data),
+        backgroundColor: stats.map(stat => stat.color),
       },
     ],
   };
@@ -101,11 +100,7 @@ const PriorityOverview = () => {
 
   return (
     <Flex justify="center">
-      <Bar
-        options={options}
-        data={data}
-        className="h-[350px] w-full md:max-w-[580px]"
-      />
+      <Bar options={options} data={data} className="h-[350px] w-full md:max-w-[580px]" />
     </Flex>
   );
 };

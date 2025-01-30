@@ -27,19 +27,21 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
   const handleStatusChange = (statusId: string) => {
     if (!task.id || !statusId) return;
 
-    socket?.emit(SocketEvents.TASK_STATUS_CHANGE.toString(), JSON.stringify({
-      task_id: task.id,
-      status_id: statusId,
-      parent_task: task.parent_task_id || null,
-      team_id: teamId
-    }));
+    socket?.emit(
+      SocketEvents.TASK_STATUS_CHANGE.toString(),
+      JSON.stringify({
+        task_id: task.id,
+        status_id: statusId,
+        parent_task: task.parent_task_id || null,
+        team_id: teamId,
+      })
+    );
 
     getTaskProgress(task.id);
   };
 
   const handleTaskStatusChange = (response: ITaskListStatusChangeResponse) => {
     if (response && response.id === task.id) {
-
       task.status_color = response.color_code;
       task.complete_ratio = +response.complete_ratio || 0;
       task.status = response.status_id;
@@ -57,15 +59,15 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
       // this.service.emitUpdateGroupProgress(this.task.id);
       // this.kanbanService.emitRefreshGroups();
     }
-  }
+  };
 
   const isGroupByStatus = () => {
     return getCurrentGroup().value === GROUP_BY_STATUS_VALUE;
-  }
+  };
 
   const getTaskProgress = (taskId: string) => {
     socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), taskId);
-  }
+  };
 
   useEffect(() => {
     socket?.on(SocketEvents.TASK_STATUS_CHANGE.toString(), handleTaskStatusChange);
@@ -75,25 +77,29 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
     };
   }, [task.status, connected]);
 
-  const options = useMemo(() => statusList.map(status => ({
-    value: status.id,
-    label: (
-      <Flex gap={8} align="center">
-        <Badge color={status.color_code} text={status.name} />
-      </Flex>
-    ),
-  })), [statusList]);
+  const options = useMemo(
+    () =>
+      statusList.map(status => ({
+        value: status.id,
+        label: (
+          <Flex gap={8} align="center">
+            <Badge color={status.color_code} text={status.name} />
+          </Flex>
+        ),
+      })),
+    [statusList]
+  );
 
   return (
     <>
       {task.status && (
         <Select
-          variant='borderless'
+          variant="borderless"
           value={task.status}
           onChange={handleStatusChange}
           dropdownStyle={{ borderRadius: 8, minWidth: 150, maxWidth: 200 }}
           style={{ backgroundColor: task.status_color, borderRadius: 16, height: 22 }}
-          labelRender={(value) => {
+          labelRender={value => {
             const status = statusList.find(status => status.id === value.value);
             return status ? <span style={{ fontSize: 13 }}>{status.name}</span> : '';
           }}

@@ -10,9 +10,7 @@ const RedeemCodeDrawer: React.FC = () => {
   const [form] = Form.useForm();
   const { t } = useTranslation('current-bill');
   const [redeemCode, setRedeemCode] = useState<number | null>(null);
-  const isDrawerOpen = useAppSelector(
-    (state: RootState) => state.billingReducer.isDrawerOpen
-  );
+  const isDrawerOpen = useAppSelector((state: RootState) => state.billingReducer.isDrawerOpen);
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,9 +30,7 @@ const RedeemCodeDrawer: React.FC = () => {
     setTimeout(() => {
       api.open({
         message: (
-          <span style={{ fontSize: '14px' }}>
-            Redeem Code verification failed! Try again.
-          </span>
+          <span style={{ fontSize: '14px' }}>Redeem Code verification failed! Try again.</span>
         ),
       });
     }, 2500);
@@ -65,10 +61,7 @@ const RedeemCodeDrawer: React.FC = () => {
               },
             ]}
           >
-            <Input
-              placeholder={t('drawerPlaceholder')}
-              onChange={handleChange}
-            />
+            <Input placeholder={t('drawerPlaceholder')} onChange={handleChange} />
           </Form.Item>
 
           <Form.Item>
@@ -88,12 +81,7 @@ const RedeemCodeDrawer: React.FC = () => {
                 </Button>
               )
             ) : (
-              <Button
-                type="primary"
-                style={{ width: '100%' }}
-                htmlType="submit"
-                disabled
-              >
+              <Button type="primary" style={{ width: '100%' }} htmlType="submit" disabled>
                 {t('redeemSubmit')}
               </Button>
             )}

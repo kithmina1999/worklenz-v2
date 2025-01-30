@@ -35,14 +35,18 @@ const Navbar = () => {
   }, []);
 
   type MenuItem = Required<MenuProps>['items'][number];
-  const navlinkItems = useMemo(() => navRoutesList.map((route, index) => ({
-    key: route.path.split('/').pop() || index,
-    label: (
-      <Link to={route.path} style={{ fontWeight: 600 }}>
-        {t(route.name)}
-      </Link>
-    ),
-  })), [navRoutesList, t]);
+  const navlinkItems = useMemo(
+    () =>
+      navRoutesList.map((route, index) => ({
+        key: route.path.split('/').pop() || index,
+        label: (
+          <Link to={route.path} style={{ fontWeight: 600 }}>
+            {t(route.name)}
+          </Link>
+        ),
+      })),
+    [navRoutesList, t]
+  );
 
   useEffect(() => {
     const afterWorklenzString = location.pathname.split('/worklenz/')[1];

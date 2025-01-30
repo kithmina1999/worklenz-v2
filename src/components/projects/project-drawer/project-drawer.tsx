@@ -214,7 +214,8 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
             onFinish={handleFormSubmit}
             initialValues={{
               color_code: project?.color_code || projectColors[0],
-              status_id: project?.status_id || projectStatuses.find(status => status.is_default)?.id,
+              status_id:
+                project?.status_id || projectStatuses.find(status => status.is_default)?.id,
               health_id: project?.health_id || projectHealths.find(health => health.is_default)?.id,
               client_id: project?.client_id || null,
               client: project?.client_name || null,

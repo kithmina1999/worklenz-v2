@@ -13,7 +13,7 @@ const initialState: ProjectMembersState = {
   membersList: [],
   isDrawerOpen: false,
   isLoading: false,
-  error: null
+  error: null,
 };
 
 const getProjectMembers = createAsyncThunk(
@@ -27,7 +27,14 @@ const getProjectMembers = createAsyncThunk(
     search: string | null;
   }) => {
     const { projectId, index, size, field, order, search } = params;
-    const response = await projectsApiService.getMembers(projectId, index, size, field, order, search);
+    const response = await projectsApiService.getMembers(
+      projectId,
+      index,
+      size,
+      field,
+      order,
+      search
+    );
     if (!response.done) {
       throw new Error('Failed to fetch project members');
     }
@@ -39,7 +46,7 @@ const projectMembersSlice = createSlice({
   name: 'projectMembers',
   initialState,
   reducers: {
-    toggleProjectMemberDrawer: (state) => {
+    toggleProjectMemberDrawer: state => {
       state.isDrawerOpen = !state.isDrawerOpen;
     },
     addProjectMember: (state, action: PayloadAction<IMentionMemberViewModel>) => {
@@ -49,9 +56,9 @@ const projectMembersSlice = createSlice({
       state.membersList = action.payload;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(getProjectMembers.pending, (state) => {
+      .addCase(getProjectMembers.pending, state => {
         state.isLoading = true;
         state.error = null;
       })
@@ -68,6 +75,7 @@ const projectMembersSlice = createSlice({
   },
 });
 
-export const { toggleProjectMemberDrawer, addProjectMember, setProjectMembers } = projectMembersSlice.actions;
+export const { toggleProjectMemberDrawer, addProjectMember, setProjectMembers } =
+  projectMembersSlice.actions;
 export { getProjectMembers };
 export default projectMembersSlice.reducer;

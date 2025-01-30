@@ -16,7 +16,7 @@ const initialState: ILabelState = {
   selectedLabel: null,
   loading: false,
   error: null,
-  initialized: false
+  initialized: false,
 };
 
 // Create async thunk for fetching labels
@@ -85,7 +85,7 @@ const taskLabelSlice = createSlice({
   name: 'taskLabelReducer',
   initialState,
   reducers: {
-    updateLabelColor: (state, action: PayloadAction<{id: string, color: string}>) => {
+    updateLabelColor: (state, action: PayloadAction<{ id: string; color: string }>) => {
       const label = state.labels.find(l => l.id === action.payload.id);
       if (label) {
         label.color_code = action.payload.color;
@@ -93,11 +93,11 @@ const taskLabelSlice = createSlice({
     },
     deleteLabel: (state, action: PayloadAction<string>) => {
       state.labels = state.labels.filter(label => label.id !== action.payload);
-    }
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchLabels.pending, (state) => {
+      .addCase(fetchLabels.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -111,7 +111,7 @@ const taskLabelSlice = createSlice({
         state.error = action.payload as string;
       })
       // Fetch Labels By Task
-      .addCase(fetchLabelsByTask.pending, (state) => {
+      .addCase(fetchLabelsByTask.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -124,7 +124,7 @@ const taskLabelSlice = createSlice({
         state.error = action.payload as string;
       })
       // Fetch Labels By Project
-      .addCase(fetchLabelsByProject.pending, (state) => {
+      .addCase(fetchLabelsByProject.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -136,9 +136,8 @@ const taskLabelSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       });
-  }
+  },
 });
 
 export const { updateLabelColor, deleteLabel } = taskLabelSlice.actions;
 export default taskLabelSlice.reducer;
-

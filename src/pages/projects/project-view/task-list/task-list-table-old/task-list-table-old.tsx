@@ -190,7 +190,7 @@ const TaskListTable = ({
       // progress column
       case 'progress': {
         return task?.progress || task?.progress === 0 ? (
-          <TaskProgress progress={task?.progress} numberOfSubTasks={task?.sub_tasks?.length || 0}/>
+          <TaskProgress progress={task?.progress} numberOfSubTasks={task?.sub_tasks?.length || 0} />
         ) : (
           <div></div>
         );
@@ -200,7 +200,7 @@ const TaskListTable = ({
       case 'members':
         return (
           <Flex gap={4} align="center">
-            <Avatars members={task.names || []}/>
+            <Avatars members={task.names || []} />
             {/* <Avatar.Group>
               {task.assignees?.map(member => (
                 <CustomAvatar key={member.id} avatarName={member.name} size={26} />

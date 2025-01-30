@@ -1,9 +1,6 @@
 import { RouteObject } from 'react-router-dom';
 import ReportingLayout from '@/layouts/ReportingLayout';
-import {
-  ReportingMenuItems,
-  reportingsItems,
-} from '@/lib/reporting/reporting-constants';
+import { ReportingMenuItems, reportingsItems } from '@/lib/reporting/reporting-constants';
 import { SuspenseFallback } from '@/components/suspense-fallback/suspense-fallback';
 import { Suspense } from 'react';
 
@@ -27,7 +24,7 @@ const reportingRoutes: RouteObject[] = [
         <ReportingLayout />
       </Suspense>
     ),
-    children: flattenedItems.map((item) => ({
+    children: flattenedItems.map(item => ({
       path: item.endpoint,
       element: item.element,
     })),

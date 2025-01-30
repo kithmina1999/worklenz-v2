@@ -27,7 +27,7 @@ const TaskList = () => {
   const onTaskSelect = (taskId: string) => {
     console.log('taskId:', taskId);
   };
-  
+
   const onTaskExpand = (taskId: string) => {
     console.log('taskId:', taskId);
   };

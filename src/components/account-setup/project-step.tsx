@@ -36,7 +36,7 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
   useEffect(() => {
     setTimeout(() => inputRef.current?.focus(), 200);
   }, []);
-  
+
   const { projectName, templateId, organizationName } = useSelector(
     (state: RootState) => state.accountSetupReducer
   );
@@ -123,7 +123,11 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
             <Button style={{ marginRight: '8px' }} onClick={() => toggleTemplateSelector(false)}>
               {t('cancel')}
             </Button>
-            <Button type="primary" onClick={() => createFromTemplate()} loading={creatingFromTemplate}>
+            <Button
+              type="primary"
+              onClick={() => createFromTemplate()}
+              loading={creatingFromTemplate}
+            >
               {t('create')}
             </Button>
           </div>

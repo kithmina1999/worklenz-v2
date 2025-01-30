@@ -33,36 +33,26 @@ const phaseSlice = createSlice({
   name: 'phaseReducer',
   initialState,
   reducers: {
-    toggleDrawer: (state) => {
+    toggleDrawer: state => {
       state.isPhaseDrawerOpen
         ? (state.isPhaseDrawerOpen = false)
         : (state.isPhaseDrawerOpen = true);
     },
 
-    changePhaseName: (
-      state,
-      action: PayloadAction<{ phaseId: string; phase: string }>
-    ) => {
+    changePhaseName: (state, action: PayloadAction<{ phaseId: string; phase: string }>) => {
       const { phaseId, phase } = action.payload;
 
-      const index = state.phaseList.findIndex(
-        (phase) => phase.phaseId === phaseId
-      );
+      const index = state.phaseList.findIndex(phase => phase.phaseId === phaseId);
 
       if (index !== -1) {
         state.phaseList[index] = { ...state.phaseList[index], phase };
       }
     },
 
-    addPhaseOption: (
-      state,
-      action: PayloadAction<{ phaseId: string; option: PhaseOption }>
-    ) => {
+    addPhaseOption: (state, action: PayloadAction<{ phaseId: string; option: PhaseOption }>) => {
       const { phaseId, option } = action.payload;
 
-      const index = state.phaseList.findIndex(
-        (phase) => phase.phaseId === phaseId
-      );
+      const index = state.phaseList.findIndex(phase => phase.phaseId === phaseId);
 
       if (index !== -1) {
         state.phaseList[index] = {
@@ -72,21 +62,16 @@ const phaseSlice = createSlice({
       }
     },
 
-    deletePhaseOption: (
-      state,
-      action: PayloadAction<{ phaseId: string; optionId: string }>
-    ) => {
+    deletePhaseOption: (state, action: PayloadAction<{ phaseId: string; optionId: string }>) => {
       const { phaseId, optionId } = action.payload;
 
-      const index = state.phaseList.findIndex(
-        (phase) => phase.phaseId === phaseId
-      );
+      const index = state.phaseList.findIndex(phase => phase.phaseId === phaseId);
 
       if (index !== -1) {
         state.phaseList[index] = {
           ...state.phaseList[index],
           phaseOptions: state.phaseList[index].phaseOptions.filter(
-            (option) => option.optionId !== optionId
+            option => option.optionId !== optionId
           ),
         };
       }
@@ -94,10 +79,6 @@ const phaseSlice = createSlice({
   },
 });
 
-export const {
-  toggleDrawer,
-  changePhaseName,
-  addPhaseOption,
-  deletePhaseOption,
-} = phaseSlice.actions;
+export const { toggleDrawer, changePhaseName, addPhaseOption, deletePhaseOption } =
+  phaseSlice.actions;
 export default phaseSlice.reducer;

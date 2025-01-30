@@ -7,9 +7,7 @@ import { fetchTaskData } from '../../../../features/board/board-slice';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 
 const ProjectViewBoard = () => {
-  const { taskList, group, isLoading, error } = useAppSelector(
-    (state) => state.boardReducer
-  );
+  const { taskList, group, isLoading, error } = useAppSelector(state => state.boardReducer);
 
   const dispatch = useAppDispatch();
 

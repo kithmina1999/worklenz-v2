@@ -13,11 +13,9 @@ interface OverviewReportsProjectsTabProps {
   teamsId?: string | null;
 }
 
-const OverviewReportsProjectsTab = ({
-  teamsId = null,
-}: OverviewReportsProjectsTabProps) => {
+const OverviewReportsProjectsTab = ({ teamsId = null }: OverviewReportsProjectsTabProps) => {
   const { t } = useTranslation('reporting-projects-drawer');
-  const { includeArchivedProjects } = useAppSelector((state) => state.reportingReducer);
+  const { includeArchivedProjects } = useAppSelector(state => state.reportingReducer);
   const [searchQuery, setSearchQuery] = useState('');
   const [projectList, setProjectList] = useState<IRPTProject[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,10 +52,7 @@ const OverviewReportsProjectsTab = ({
 
   useEffect(() => {
     fetchOverviewProjects();
-  }, [
-    searchQuery,
-    includeArchivedProjects,
-  ]);
+  }, [searchQuery, includeArchivedProjects]);
 
   return (
     <Flex vertical gap={24}>

@@ -11,13 +11,11 @@ const ProjectTableShowFieldsDropdown = () => {
   // localization
   const { t } = useTranslation('reporting-projects-filters');
 
-  const columnsVisibility = useAppSelector(
-    (state) => state.projectReportsTableColumnsReducer
-  );
+  const columnsVisibility = useAppSelector(state => state.projectReportsTableColumnsReducer);
   const dispatch = useAppDispatch();
 
   const columnKeys = Object.keys(columnsVisibility).filter(
-    (key) => key !== 'project' && key !== 'projectManager'
+    key => key !== 'project' && key !== 'projectManager'
   );
 
   // custom dropdown content
@@ -28,7 +26,7 @@ const ProjectTableShowFieldsDropdown = () => {
       styles={{ body: { padding: 0 } }}
     >
       <List style={{ padding: 0 }}>
-        {columnKeys.map((key) => (
+        {columnKeys.map(key => (
           <List.Item
             key={key}
             className="custom-list-item"
@@ -58,7 +56,7 @@ const ProjectTableShowFieldsDropdown = () => {
       overlayClassName="custom-dropdown"
       trigger={['click']}
       dropdownRender={() => showFieldsDropdownContent}
-      onOpenChange={(open) => setIsDropdownOpen(open)}
+      onOpenChange={open => setIsDropdownOpen(open)}
     >
       <Button
         icon={<MoreOutlined />}

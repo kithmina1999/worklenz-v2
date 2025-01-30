@@ -15,17 +15,16 @@ import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 import React from 'react';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
-const StatusDrawer = React.lazy(() => import('@/components/project-task-filters/create-status-drawer/create-status-drawer'));
+const StatusDrawer = React.lazy(
+  () => import('@/components/project-task-filters/create-status-drawer/create-status-drawer')
+);
 
 const ProjectTemplateEditView = () => {
-  const dataSource: TaskType[] = useAppSelector(
-    (state) => state.taskReducer.tasks
-  );
+  const dataSource: TaskType[] = useAppSelector(state => state.taskReducer.tasks);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { templateId, templateName } = useParams();
   type GroupTypes = 'status' | 'priority' | 'phase';
-
 
   const [activeGroup, setActiveGroup] = useState<GroupTypes>('status');
 
@@ -40,8 +39,8 @@ const ProjectTemplateEditView = () => {
 
   //get phases details from phases slice
   const phase =
-    useAppSelector((state) => state.phaseReducer.phaseList).find(
-      (phase) => phase.projectId === selectedProject?.id
+    useAppSelector(state => state.phaseReducer.phaseList).find(
+      phase => phase.projectId === selectedProject?.id
     ) || null;
 
   const groupDropdownMenuItems = [
@@ -59,14 +58,8 @@ const ProjectTemplateEditView = () => {
         className="site-page-header"
         title={
           <Flex gap={8} align="center">
-            <ArrowLeftOutlined
-              style={{ fontSize: 16 }}
-              onClick={() => navigate(-1)}
-            />
-            <Typography.Title
-              level={4}
-              style={{ marginBlockEnd: 0, marginInlineStart: 12 }}
-            >
+            <ArrowLeftOutlined style={{ fontSize: 16 }} onClick={() => navigate(-1)} />
+            <Typography.Title level={4} style={{ marginBlockEnd: 0, marginInlineStart: 12 }}>
               {templateName}
             </Typography.Title>
           </Flex>
@@ -86,10 +79,7 @@ const ProjectTemplateEditView = () => {
             />
           </Flex>
           {activeGroup === 'phase' ? (
-            <Button
-              type="primary"
-              onClick={() => dispatch(togglePhaseDrawer())}
-            >
+            <Button type="primary" onClick={() => dispatch(togglePhaseDrawer())}>
               {t('addPhaseButton')}
             </Button>
           ) : activeGroup === 'status' ? (

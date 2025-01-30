@@ -54,7 +54,7 @@ const ProjectClientSection = ({
     }
     form.setFieldsValue({
       client_name: option.label,
-      client_id: option.value
+      client_id: option.value,
     });
   };
 

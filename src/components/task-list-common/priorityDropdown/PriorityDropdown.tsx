@@ -105,9 +105,7 @@ const PriorityDropdown = ({ task, teamId }: PriorityDropdownProps) => {
           labelRender={value => {
             const priority = priorityList.find(priority => priority.id === value.value);
             return priority ? (
-              <Typography.Text
-                style={{ fontSize: 13, color: '#383838' }}
-              >
+              <Typography.Text style={{ fontSize: 13, color: '#383838' }}>
                 {priority.name}
               </Typography.Text>
             ) : (

@@ -11,12 +11,10 @@ type EditTeamProps = {
 
 const EditTeamModal = ({ selectedTeamId }: EditTeamProps) => {
   // get team list from team reducer
-  const teamsList = useAppSelector((state) => state.teamReducer.teamsList);
-  const isModalOpen = useAppSelector(
-    (state) => state.teamReducer.isUpdateTitleNameModalOpen
-  );
+  const teamsList = useAppSelector(state => state.teamReducer.teamsList);
+  const isModalOpen = useAppSelector(state => state.teamReducer.isUpdateTitleNameModalOpen);
   // get selected team data
-  const selectedTeam = teamsList.find((team) => team.teamId === selectedTeamId);
+  const selectedTeam = teamsList.find(team => team.teamId === selectedTeamId);
 
   const dispatch = useAppDispatch();
 
