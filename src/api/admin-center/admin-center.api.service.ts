@@ -8,6 +8,8 @@ import {
   IOrganizationUsersGetRequest,
   IOrganizationTeamGetRequest,
   IOrganizationProjectsGetResponse,
+  IBillingConfigurationCountry,
+  IBillingConfiguration,
 } from '@/types/admin-center/admin-center.types';
 import { IClient } from '@/types/client.types';
 import { toQueryString } from '@/utils/toQueryString';
@@ -139,6 +141,28 @@ export const adminCenterApiService = {
     });
     const response = await apiClient.get<IServerResponse<IOrganizationProjectsGetResponse>>(
       `${rootUrl}/organization/projects?${params}`
+    );
+    return response.data;
+  },
+
+  async getCountries(): Promise<IServerResponse<IBillingConfigurationCountry[]>> {
+    const response = await apiClient.get<IServerResponse<IBillingConfigurationCountry[]>>(
+      `${rootUrl}/billing/countries`
+    );
+    return response.data;
+  },
+
+  async getBillingConfiguration(): Promise<IServerResponse<IBillingConfiguration>> {
+    const response = await apiClient.get<IServerResponse<IBillingConfiguration>>(
+      `${rootUrl}/billing/configuration`
+    );
+    return response.data;
+  },
+
+  async updateBillingConfiguration(body: IBillingConfiguration): Promise<IServerResponse<IBillingConfiguration>> {
+    const response = await apiClient.put<IServerResponse<IBillingConfiguration>>(
+      `${rootUrl}/billing/configuration`,
+      body
     );
     return response.data;
   },

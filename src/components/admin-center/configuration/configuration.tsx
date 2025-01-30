@@ -1,48 +1,63 @@
 import { Button, Card, Col, Divider, Form, Input, notification, Row, Select } from 'antd';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { RootState } from '../../../app/store';
 import { useAppSelector } from '../../../hooks/useAppSelector';
+import { IBillingConfigurationCountry } from '@/types/admin-center/country.types';
+import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
+import { IBillingConfiguration } from '@/types/admin-center/admin-center.types';
 
 const Configuration: React.FC = () => {
   const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
 
-  const name = 'Raveesha Dilanka';
-  const emailAddress = 'raveeshadilanka1999@gmail.com';
-
-  const [api, contextHolder] = notification.useNotification();
-
-  const handleSave = () => {
-    api.open({
-      message: '',
-      description: 'Configuration Updated',
-      duration: 4.5,
-    });
+  const [countries, setCountries] = useState<IBillingConfigurationCountry[]>([]);
+  const [configuration, setConfiguration] = useState<IBillingConfiguration>();
+  const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
+  const fetchCountries = async () => {
+    try {
+      const res = await adminCenterApiService.getCountries();
+      if (res.done) {
+        setCountries(res.body);
+      }
+    } catch (error) {
+      console.error('Error fetching countries:', error);
+    }
   };
 
-  const { Option } = Select;
+  const fetchConfiguration = async () => {
+    const res = await adminCenterApiService.getBillingConfiguration();
+    if (res.done) {
+      setConfiguration(res.body);
+      form.setFieldsValue(res.body);
+    }
+  };
 
-  const countries = [
-    'United States',
-    'Canada',
-    'United Kingdom',
-    'Australia',
-    'India',
-    'sdasd',
-    'dasdas',
-    'sdasdas',
-    'sdasd',
-    // Add more countries as needed
-  ];
+  useEffect(() => {
+    fetchCountries();
+    fetchConfiguration();
+  }, []);
 
-  // Map countries to an array of objects with label and value
+  const handleSave = async (values: any) => {
+    try {   
+      setLoading(true);
+      const res = await adminCenterApiService.updateBillingConfiguration(values);
+      if (res.done) {
+        fetchConfiguration();
+      }
+    } catch (error) {
+      console.error('Error updating configuration:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const countryOptions = countries.map(country => ({
-    label: country,
-    value: country,
+    label: country.name,
+    value: country.id,
   }));
 
   return (
     <div>
-      {contextHolder}
       <Card
         title={
           <span
@@ -60,11 +75,9 @@ const Configuration: React.FC = () => {
         style={{ marginTop: '16px' }}
       >
         <Form
-          initialValues={{
-            name: name,
-            emailAddress: emailAddress,
-            companyName: name,
-          }}
+          form={form}
+          initialValues={configuration}
+          onFinish={handleSave}
         >
           <Row>
             <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
@@ -83,7 +96,7 @@ const Configuration: React.FC = () => {
             </Col>
             <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
               <Form.Item
-                name="emailAddress"
+                name="email"
                 label="Email Address"
                 layout="vertical"
                 rules={[
@@ -97,7 +110,7 @@ const Configuration: React.FC = () => {
             </Col>
             <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
               <Form.Item
-                name="contactNumber"
+                name="phone"
                 label="Contact Number"
                 layout="vertical"
                 rules={[
@@ -135,17 +148,17 @@ const Configuration: React.FC = () => {
 
           <Row>
             <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
-              <Form.Item name="companyName" label="Company Name" layout="vertical">
+              <Form.Item name="company_name" label="Company Name" layout="vertical">
                 <Input placeholder="Company Name" />
               </Form.Item>
             </Col>
             <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
-              <Form.Item name="addressLine01" label="Address Line 01" layout="vertical">
+              <Form.Item name="address_line_1" label="Address Line 01" layout="vertical">
                 <Input placeholder="Address Line 01" />
               </Form.Item>
             </Col>
             <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
-              <Form.Item name="addressLine02" label="Address Line 02" layout="vertical">
+              <Form.Item name="address_line_2" label="Address Line 02" layout="vertical">
                 <Input placeholder="Address Line 02" />
               </Form.Item>
             </Col>
@@ -166,9 +179,7 @@ const Configuration: React.FC = () => {
                   showSearch
                   placeholder="Country"
                   optionFilterProp="label"
-                  filterOption={(input, option) =>
-                    (option?.label as string).toLowerCase().includes(input.toLowerCase())
-                  }
+                  
                   allowClear
                   options={countryOptions}
                 />
@@ -187,7 +198,7 @@ const Configuration: React.FC = () => {
           </Row>
           <Row>
             <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
-              <Form.Item name="postalCode" label="Postal Code" layout="vertical">
+              <Form.Item name="postal_code" label="Postal Code" layout="vertical">
                 <Input placeholder="Postal Code" />
               </Form.Item>
             </Col>
@@ -195,7 +206,7 @@ const Configuration: React.FC = () => {
           <Row>
             <Col style={{ paddingLeft: '12px' }}>
               <Form.Item>
-                <Button type="primary" htmlType="submit" onClick={handleSave}>
+                <Button type="primary" htmlType="submit">
                   Save
                 </Button>
               </Form.Item>
