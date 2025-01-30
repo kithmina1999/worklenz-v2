@@ -23,7 +23,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 const CategoriesSettings = () => {
   // localization
-  const { t } = useTranslation('settings-categories');
+  const { t } = useTranslation('settings/categories');
 
   useDocumentTitle('Manage Categories');
 

@@ -20,7 +20,7 @@ import CustomColorLabel from '@components/task-list-common/labelsSelector/custom
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const LabelsSettings = () => {
-  const { t } = useTranslation('settings-labels');
+  const { t } = useTranslation('settings/labels');
   useDocumentTitle('Manage Labels');
 
   const [searchQuery, setSearchQuery] = useState('');

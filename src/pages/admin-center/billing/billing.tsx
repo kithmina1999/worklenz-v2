@@ -11,7 +11,7 @@ const Billing: React.FC = () => {
   const items: TabsProps['items'] = [
     {
       key: '1',
-      label: t('current-bill'),
+      label: t('currentBill'),
       children: <CurrentBill />,
     },
     {

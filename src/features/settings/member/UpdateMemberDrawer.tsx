@@ -31,7 +31,7 @@ type UpdateMemberDrawerProps = {
 };
 
 const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
-  const { t } = useTranslation('settings-team-members');
+  const { t } = useTranslation('settings/team-members');
   const dispatch = useAppDispatch();
   const auth = useAuthService();
   const [form] = Form.useForm();

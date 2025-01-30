@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Space, Steps, Button, Typography } from 'antd/es';
+
 import logger from '@/utils/errorLogger';
 import { setCurrentStep } from '@/features/account-setup/account-setup.slice';
 import { OrganizationStep } from '@/components/account-setup/organization-step';
@@ -27,9 +29,6 @@ import logoDark from '@/assets/images/logo-dark-mode.png';
 import './account-setup.css';
 import { IAccountSetupRequest } from '@/types/project-templates/project-templates.types';
 import { profileSettingsApiService } from '@/api/settings/profile/profile-settings.api.service';
-import Space from 'antd/es/space';
-import Steps from 'antd/es/steps';
-import Button from 'antd/es/button';
 
 const { Title } = Typography;
 
@@ -52,7 +51,7 @@ const AccountSetup: React.FC = () => {
     trackMixpanelEvent(evt_account_setup_visit);
     const verifyAuthStatus = async () => {
       try {
-        const response = (await dispatch(verifyAuthentication()).unwrap()) as IAuthorizeResponse;
+        const response = (await dispatch(verifyAuthentication()).unwrap()).payload as IAuthorizeResponse;
         if (response?.authenticated) {
           setSession(response.user);
           dispatch(setUser(response.user));

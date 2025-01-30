@@ -1,12 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import Form, { Rule } from 'antd/es/form';
-import Card from 'antd/es/card';
-import Input from 'antd/es/input';
-import Flex from 'antd/es/flex';
-import Checkbox from 'antd/es/checkbox';
-import Button from 'antd/es/button';
-import Typography from 'antd/es/typography';
-import Space from 'antd/es/space';
+import { Card, Input, Flex, Checkbox, Button, Typography, Space, Form, message } from 'antd/es';
+import { Rule } from 'antd/es/form';
 
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
@@ -32,7 +26,6 @@ import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import alertService from '@/services/alerts/alertService';
 import { useAuthService } from '@/hooks/useAuth';
 import { WORKLENZ_REDIRECT_PROJ_KEY } from '@/shared/constants';
-import message from 'antd/es/message';
 
 interface LoginFormValues {
   email: string;

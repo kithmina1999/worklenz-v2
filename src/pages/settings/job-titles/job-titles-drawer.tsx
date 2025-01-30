@@ -14,7 +14,7 @@ const JobTitleDrawer = ({
   jobTitleId = null,
   drawerClosed,
 }: JobTitleDrawerProps) => {
-  const { t } = useTranslation('settings-job-titles');
+  const { t } = useTranslation('settings/job-titles');
   const [form] = Form.useForm();
 
   useEffect(() => {

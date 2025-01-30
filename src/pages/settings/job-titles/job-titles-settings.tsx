@@ -38,7 +38,7 @@ interface PaginationType {
 }
 
 const JobTitlesSettings = () => {
-  const { t } = useTranslation('settings-job-titles');
+  const { t } = useTranslation('settings/job-titles');
   const dispatch = useAppDispatch();
   useDocumentTitle('Manage Job Titles');
 

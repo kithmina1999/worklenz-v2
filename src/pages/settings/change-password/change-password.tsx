@@ -2,37 +2,29 @@ import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { Button, Card, Form, Input, notification, Row, Typography } from 'antd';
 import React, { useState } from 'react';
 import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { profileSettingsApiService } from '@/api/settings/profile/profile-settings.api.service';
 
 const ChangePassword: React.FC = () => {
   useDocumentTitle('Change Password');
   const [passwordStrength, setPasswordStrength] = useState<string>('');
+  const [form] = Form.useForm();
 
-  // Function to evaluate password strength
-  const evaluatePasswordStrength = (password: string) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const handleFormSubmit = async (values: any) => {
+    const body = {
+      password: values.newPassword,
+      confirm_password: values.confirmPassword,
+      current_password: values.currentPassword,
+    };
 
-    if (regex.test(password)) {
-      return 'Strong';
-    }
-    return 'Weak';
-  };
-
-  const handleFormSubmit = (values: { newPassword: string }) => {
-    const strength = evaluatePasswordStrength(values.newPassword);
-
-    if (strength === 'Weak') {
-      notification.open({
-        message: 'Please use a strong new password',
-        description:
-          'Minimum 8 characters, with uppercase and lowercase and a number and a symbol.',
-        placement: 'topRight',
-      });
+    const res = await profileSettingsApiService.changePassword(body);
+    if (res.done) {
+      form.resetFields();
     }
   };
 
   return (
     <Card style={{ width: '100%' }}>
-      <Form layout="vertical" initialValues={{ remember: true }} onFinish={handleFormSubmit}>
+      <Form layout="vertical" form={form} onFinish={handleFormSubmit}>
         <Row>
           <Form.Item
             name="currentPassword"

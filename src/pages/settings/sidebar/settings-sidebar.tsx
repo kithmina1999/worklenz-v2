@@ -7,7 +7,7 @@ import { settingsItems } from '@/lib/settings/settings-constants';
 
 const SettingSidebar: React.FC = () => {
   const location = useLocation();
-  const { t } = useTranslation('settings-sidebar');
+  const { t } = useTranslation('settings/sidebar');
 
   type MenuItem = Required<MenuProps>['items'][number];
   // import menu items from settings sidebar constants

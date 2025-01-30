@@ -9,7 +9,7 @@ import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const ProjectTemplatesSettings = () => {
   // localization
-  const { t } = useTranslation('settings-project-templates');
+  const { t } = useTranslation('settings/project-templates');
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const navigate = useNavigate();
 

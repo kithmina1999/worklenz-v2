@@ -1,12 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import Form from 'antd/es/form';
-import Card from 'antd/es/card';
-import Flex from 'antd/es/flex';
-import Input from 'antd/es/input';
-import Result from 'antd/es/result';
-import Button from 'antd/es/button';
-import Typography from 'antd/es/typography';
+import { Form, Card, Input, Flex, Button, Typography, Result } from 'antd/es';
 import { LockOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
@@ -17,7 +11,7 @@ import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 
-import { resetPassword, updatePassword } from '@/features/auth/authSlice';
+import { updatePassword } from '@/features/auth/authSlice';
 import { evt_verify_reset_email_page_visit } from '@/shared/worklenz-analytics-events';
 
 import logger from '@/utils/errorLogger';

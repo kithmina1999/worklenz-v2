@@ -2,7 +2,7 @@ import apiClient from '@api/api-client';
 import { API_BASE_URL } from '@/shared/constants';
 import { IServerResponse } from '@/types/common.types';
 import { IProfileSettings } from '@/types/settings/profile.types';
-import { INotificationSettings } from '../notifications/notifications.types';
+import { INotificationSettings } from '@/types/settings/notifications.types';
 import {
   IAccountSetupRequest,
   IAccountSetupResponse,
@@ -54,6 +54,18 @@ export const profileSettingsApiService = {
 
   updateTeamName: async (body: { team_name: string }): Promise<IServerResponse<ITeam>> => {
     const response = await apiClient.put<IServerResponse<ITeam>>(`${rootUrl}/team-name`, body);
+    return response.data;
+  },
+
+  changePassword: async (body: {
+    password: string;
+    confirm_password: string;
+    current_password: string;
+  }): Promise<IServerResponse<any>> => {
+    const response = await apiClient.post<IServerResponse<any>>(
+      `${API_BASE_URL}/change-password`,
+      body
+    );
     return response.data;
   },
 };

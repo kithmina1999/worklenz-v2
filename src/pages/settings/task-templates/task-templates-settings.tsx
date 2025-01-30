@@ -16,7 +16,7 @@ import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const TaskTemplatesSettings = () => {
   // localization
-  const { t } = useTranslation('settings-task-templates');
+  const { t } = useTranslation('settings/task-templates');
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 

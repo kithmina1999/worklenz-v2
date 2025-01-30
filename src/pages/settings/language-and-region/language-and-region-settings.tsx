@@ -13,7 +13,7 @@ import {
 
 const LanguageAndRegionSettings = () => {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation('settings-language');
+  const { t } = useTranslation('settings/language');
   const { trackMixpanelEvent } = useMixpanelTracking();
   const { lng } = useAppSelector(state => state.localesReducer);
 

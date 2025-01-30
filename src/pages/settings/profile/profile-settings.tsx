@@ -30,7 +30,7 @@ const ProfileSettings = () => {
   const [imageUrl, setImageUrl] = useState<string>();
   const userDetails = useAppSelector(state => state.userReducer);
   const dispatch = useAppDispatch();
-  const { t } = useTranslation('settings-profile');
+  const { t } = useTranslation('settings/profile');
   const [form] = Form.useForm();
   const { trackMixpanelEvent } = useMixpanelTracking();
 
