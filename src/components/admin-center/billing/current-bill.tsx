@@ -15,6 +15,7 @@ import {
   toggleUpgradeModal,
 } from '../../../features/adminCenter/billing/billingSlice';
 import RedeemCodeDrawer from '../../../features/adminCenter/billing/RedeemCodeDrawer';
+import CurrentPlanDetails from './current-plan-details/current-plan-details';
 
 const CurrentBill: React.FC = () => {
   const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
@@ -44,7 +45,8 @@ const CurrentBill: React.FC = () => {
       {isTablet ? (
         <Row>
           <Col span={16} style={{ paddingRight: '10px' }}>
-            <Card
+            <CurrentPlanDetails />
+            {/* <Card
               title={
                 <span
                   style={{
@@ -110,7 +112,7 @@ const CurrentBill: React.FC = () => {
                 </Button>
                 <RedeemCodeDrawer />
               </div>
-            </Card>
+            </Card> */}
           </Col>
 
           <Col span={8} style={{ paddingLeft: '10px' }}>

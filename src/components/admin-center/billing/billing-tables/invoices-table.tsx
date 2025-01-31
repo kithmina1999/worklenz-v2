@@ -1,6 +1,8 @@
+import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
+import { IBillingTransaction } from '@/types/admin-center/admin-center.types';
 import { ContainerOutlined } from '@ant-design/icons';
 import { Badge, Button, Table, TableProps } from 'antd';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface DataType {
@@ -14,6 +16,27 @@ interface DataType {
 
 const InvoicesTable: React.FC = () => {
   const { t } = useTranslation('current-bill');
+
+  const [transactions, setTransactions] = useState<IBillingTransaction[]>([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
+
+  const fetchTransactions = async () => {
+    try {
+      setLoadingTransactions(true);
+      const res = await adminCenterApiService.getTransactions();
+      if (res.done) {
+        setTransactions(res.body);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingTransactions(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
 
   const columns: TableProps['columns'] = [
     {
@@ -78,18 +101,15 @@ const InvoicesTable: React.FC = () => {
     },
   ];
 
-  const data: DataType[] = [
-    {
-      key: '1',
-      transactionId: '113687890',
-      startingDate: new Date('2024-08-31T08:30:00'),
-      endingDate: new Date('2025-08-30T08:30:00'),
-      status: 'Success',
-      paymentMethod: 'Card',
-    },
-  ];
-
-  return <Table columns={columns} dataSource={data} pagination={false} />;
+  return (
+    <Table
+      columns={columns}
+      dataSource={transactions}
+      pagination={false}
+      loading={loadingTransactions}
+      rowKey="id"
+    />
+  );
 };
 
 export default InvoicesTable;

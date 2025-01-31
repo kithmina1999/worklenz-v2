@@ -1,5 +1,7 @@
+import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
+import { IBillingCharge, IBillingChargesResponse } from '@/types/admin-center/admin-center.types';
 import { Table, TableProps } from 'antd';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface DataType {
@@ -14,16 +16,29 @@ interface DataType {
 }
 
 const ChargesTable: React.FC = () => {
-  const perUserValue = 5.99;
-  const users = 23;
-
   const { t } = useTranslation('current-bill');
+  const [charges, setCharges] = useState<IBillingChargesResponse>({});
+  const [loadingCharges, setLoadingCharges] = useState(false);
+
+  const fetchCharges = async () => {
+    try {
+      setLoadingCharges(true);
+      const res = await adminCenterApiService.getCharges();
+      if (res.done) {
+        setCharges(res.body);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingCharges(false);
+    }
+  };
 
   const columns: TableProps['columns'] = [
     {
       title: t('description'),
-      key: 'description',
-      dataIndex: 'description',
+      key: 'name',
+      dataIndex: 'name',
     },
     {
       title: t('billingPeriod'),
@@ -45,14 +60,14 @@ const ChargesTable: React.FC = () => {
     },
     {
       title: t('billStatus'),
-      key: 'billStatus',
-      dataIndex: 'billStatus',
+      key: 'status',
+      dataIndex: 'status',
     },
     {
       title: t('perUserValue'),
       key: 'perUserValue',
       dataIndex: 'perUserValue',
-      render: text => <span>USD {text}</span>,
+      render: (_, record) => <span>{record.currency} {record.unit_price}</span>,
     },
     {
       title: t('users'),
@@ -67,20 +82,19 @@ const ChargesTable: React.FC = () => {
     },
   ];
 
-  const data: DataType[] = [
-    {
-      key: '1',
-      description: 'PRO - Monthly Plan Charge',
-      startingDate: new Date('2024-08-31T08:30:00'),
-      endingDate: new Date('2025-08-30T08:30:00'),
-      billStatus: 'Deleted',
-      perUserValue: perUserValue,
-      users: users,
-      amount: perUserValue * users,
-    },
-  ];
+  useEffect(() => {
+    fetchCharges();
+  }, []);
 
-  return <Table columns={columns} dataSource={data} pagination={false} />;
+  return (
+    <Table<IBillingCharge>
+      columns={columns}
+      dataSource={charges.plan_charges}
+      pagination={false}
+      loading={loadingCharges}
+      rowKey="id"
+    />
+  );
 };
 
 export default ChargesTable;
