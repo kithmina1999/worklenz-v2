@@ -160,7 +160,7 @@ const TaskListTable = ({
     switch (columnKey) {
       case 'KEY':
         return <TaskListTaskIdCell taskId={task.task_key || ''} />;
-      case 'task':
+      case 'TASK':
         return (
           <TaskListTaskCell
             task={task}
@@ -361,7 +361,8 @@ const TaskListTable = ({
                   <Checkbox checked={isSelectAll} onChange={toggleSelectAll} />
                 </Flex>
               </th>
-              {visibleColumns.map(column => (
+              {visibleColumns.map((column, index) => (
+
                 <th
                   key={column.key}
                   className={`${customHeaderColumnStyles(column.key)}`}

@@ -369,6 +369,12 @@ const taskSlice = createSlice({
       })
       .addCase(fetTaskListColumns.fulfilled, (state, action) => {
         state.loadingColumns = false;
+        action.payload.splice(1, 0, {
+          key: 'TASK',
+          name: 'Task',
+          index: 1,
+          pinned: true,
+        });
         state.columns = action.payload;
       });
   },
