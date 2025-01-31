@@ -122,19 +122,19 @@ const CurrentPlanDetails = () => {
     return (
       <Space>
         {showPausePlanButton() && (
-          <Button type="link" danger className="mt-2" loading={pausingPlan}>
+          <Button type="link" danger loading={pausingPlan}>
             Pause Plan
           </Button>
         )}
 
         {showResumePlanButton() && (
-          <Button type="primary" className="mt-2" loading={cancellingPlan}>
+          <Button type="primary" loading={cancellingPlan}>
             Resume Plan
           </Button>
         )}
 
         {billingInfo.trial_in_progress && (
-          <Button type="primary" className="mt-2" onClick={() => setIsVisible(true)}>
+          <Button type="primary" onClick={() => setIsVisible(true)}>
             Upgrade Plan
           </Button>
         )}
@@ -142,7 +142,6 @@ const CurrentPlanDetails = () => {
         {showChangeButton() && (
           <Button
             type="primary"
-            className="mt-2 me-2"
             loading={pausingPlan || cancellingPlan}
             onClick={() => setIsVisible(true)}
           >
@@ -216,9 +215,9 @@ const CurrentPlanDetails = () => {
         }}
       >
         <div style={{ marginBottom: '14px' }}>
-          <Typography.Text style={{ fontWeight: 700 }}>{t('cardBodyText01')}</Typography.Text>
+          <Typography.Text strong>{billingInfo?.plan_name}</Typography.Text>
           <Tooltip title={billingInfo?.trial_expire_date}>
-            <Typography.Text>{t('cardBodyText02')}</Typography.Text>
+            <Typography.Text></Typography.Text>
           </Tooltip>
         </div>
         <Button
