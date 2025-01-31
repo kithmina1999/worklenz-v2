@@ -368,9 +368,9 @@ const TaskListTable = ({
                   className={`${customHeaderColumnStyles(column.key)}`}
                   style={{ fontWeight: 500 }}
                 >
-                  {column.key === 'phases' || column.key === 'customColumn' || column.isCustomColumn
+                  {column.key === 'phases' || column.key === 'customColumn' || column.custom_column
                     ? column.name
-                    : t(`${column.name?.toLowerCase()}Column`)}
+                    : t(`${column.key?.toLowerCase()}Column`)}
                 </th>
               ))}
             </tr>
@@ -419,10 +419,10 @@ const TaskListTable = ({
                             : '#fff',
                       }}
                     >
-                      {column.isCustomColumn
+                      {column.custom_column
                         ? renderCustomColumnContent(
-                            column.customColumnObj,
-                            column.customColumnObj.fieldType,
+                            column.custom_column_obj,
+                            column.custom_column_obj.fieldType,
                             task
                           )
                         : renderColumnContent(column.key || '', task)}
