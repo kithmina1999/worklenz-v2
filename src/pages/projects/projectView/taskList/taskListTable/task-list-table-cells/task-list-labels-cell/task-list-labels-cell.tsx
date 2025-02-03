@@ -3,18 +3,19 @@ import React from 'react';
 import CustomColordLabel from '../../../../../../../components/taskListCommon/labelsSelector/CustomColordLabel';
 import CustomNumberLabel from '../../../../../../../components/taskListCommon/labelsSelector/CustomNumberLabel';
 import LabelsSelector from '../../../../../../../components/taskListCommon/labelsSelector/LabelsSelector';
-import { LabelType } from '../../../../../../../types/label.type';
+import { ITaskLabel } from '../../../../../../../types/tasks/taskLabel.types';
 
-type TaskListLabelsCellProps = {
-  labels: LabelType[];
+interface TaskListLabelsCellProps {
+  labels: ITaskLabel[];
   taskId: string;
-};
+}
+
 
 const TaskListLabelsCell = ({ labels, taskId }: TaskListLabelsCellProps) => {
   return (
     <Flex>
       {labels && labels?.length <= 2 ? (
-        labels?.map(label => <CustomColordLabel label={label} />)
+        labels?.map(label => <CustomColordLabel key={label.id} label={label} />)
       ) : (
         <Flex>
           <CustomColordLabel label={labels ? labels[0] : null} />
