@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import {
   IGroupByOption,
+  ILabelsChangeResponse,
   ITaskListColumn,
   ITaskListConfigV2,
   ITaskListGroup,
@@ -276,10 +277,11 @@ const taskSlice = createSlice({
       }
     },
 
-    updateTaskLabel: (state, action: PayloadAction<{ taskId: string; label: ITaskLabel }>) => {
-      const { taskId, label } = action.payload;
+    updateTaskLabel: (state, action: PayloadAction<ILabelsChangeResponse>) => {
+      const label = action.payload;
       state.taskGroups.forEach(group => {
-        const task = group.tasks.find(task => task.id === taskId);
+        const task = group.tasks.find(task => task.id === label.id);
+        
         if (task) {
           if (!task.labels) {
             task.labels = [];
@@ -384,7 +386,7 @@ export const {
   addTask,
   deleteTask,
   updateTaskAssignees,
-  updateTaskLabel: toggleLabel,
+  updateTaskLabel,
   toggleTaskDrawer,
   toggleArchived,
   setLabels,

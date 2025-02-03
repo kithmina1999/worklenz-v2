@@ -171,21 +171,16 @@ const TaskListTable = ({
         );
       case 'DESCRIPTION':
         return <TaskListDescriptionCell description={task?.description || ''} />;
-      case 'PROGRESS': {
-        return (
-          <TaskListProgressCell
-            progress={task?.progress || 0}
-            numberOfSubTasks={task?.sub_tasks?.length || 0}
-          />
-        );
-      }
+      case 'PROGRESS':
+        return <TaskListProgressCell task={task} />;
       case 'ASSIGNEES':
         return <TaskListMembersCell groupId={tableId} task={task} />;
       case 'LABELS':
-        return <TaskListLabelsCell labels={task?.labels || []} taskId={task.id || ''} />;
+        return <TaskListLabelsCell task={task} />;
       case 'PHASES':
         return <PhaseDropdown projectId={selectedProject?.id || ''} />;
       case 'STATUS':
+
         return <StatusDropdown task={task} teamId={selectedProject?.team_id || ''} />;
       case 'PRIORITY':
         return <PriorityDropdown task={task} teamId={selectedProject?.team_id || ''} />;
@@ -362,7 +357,6 @@ const TaskListTable = ({
                 </Flex>
               </th>
               {visibleColumns.map((column, index) => (
-
                 <th
                   key={column.key}
                   className={`${customHeaderColumnStyles(column.key)}`}

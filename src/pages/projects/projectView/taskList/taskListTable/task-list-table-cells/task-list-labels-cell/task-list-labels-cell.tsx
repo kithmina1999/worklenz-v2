@@ -1,33 +1,24 @@
 import { Flex } from 'antd';
-import React from 'react';
-import CustomColordLabel from '../../../../../../../components/taskListCommon/labelsSelector/CustomColordLabel';
-import CustomNumberLabel from '../../../../../../../components/taskListCommon/labelsSelector/CustomNumberLabel';
-import LabelsSelector from '../../../../../../../components/taskListCommon/labelsSelector/LabelsSelector';
-import { ITaskLabel } from '../../../../../../../types/tasks/taskLabel.types';
+import CustomColordLabel from '@/components/taskListCommon/labelsSelector/CustomColordLabel';
+import CustomNumberLabel from '@/components/taskListCommon/labelsSelector/CustomNumberLabel';
+import LabelsSelector from '@/components/taskListCommon/labelsSelector/LabelsSelector';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 interface TaskListLabelsCellProps {
-  labels: ITaskLabel[];
-  taskId: string;
+  task: IProjectTask;
 }
 
-
-const TaskListLabelsCell = ({ labels, taskId }: TaskListLabelsCellProps) => {
+const TaskListLabelsCell = ({ task }: TaskListLabelsCellProps) => {
   return (
     <Flex>
-      {labels && labels?.length <= 2 ? (
-        labels?.map(label => <CustomColordLabel key={label.id} label={label} />)
-      ) : (
-        <Flex>
-          <CustomColordLabel label={labels ? labels[0] : null} />
-          <CustomColordLabel label={labels ? labels[1] : null} />
-          {/* this component show other label names  */}
-          <CustomNumberLabel
-            // this label list get the labels without 1, 2 elements
-            labelList={labels ? labels : null}
-          />
-        </Flex>
-      )}
-      <LabelsSelector taskId={taskId} />
+      {task.labels?.map(label => (
+        label.end && label.names && label.name ? (
+          <CustomNumberLabel key={label.id} labelList={label.names ?? []} namesString={label.name} />
+        ) : (
+          <CustomColordLabel key={label.id} label={label} />
+        )
+      ))}
+      <LabelsSelector task={task} />
     </Flex>
   );
 };

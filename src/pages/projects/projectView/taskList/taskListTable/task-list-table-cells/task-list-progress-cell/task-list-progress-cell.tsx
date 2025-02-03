@@ -1,28 +1,23 @@
 import { Progress, Tooltip } from 'antd';
-import React from 'react';
 import './task-progress-cell.css';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 type TaskListProgressCellProps = {
-  progress: number;
-  numberOfSubTasks: number;
+  task: IProjectTask;
 };
 
-const TaskListProgressCell = ({
-  progress = 0,
-  numberOfSubTasks = 0,
-}: TaskListProgressCellProps) => {
-  const totalTasks = numberOfSubTasks + 1;
-  const completedTasks = 0;
-
-  const size = progress === 100 ? 21 : 26;
+const TaskListProgressCell = ({ task }: TaskListProgressCellProps) => {
+  const totalTasks = task.total_tasks_count;
+  const completedTasks = task.completed_count;
 
   return (
     <Tooltip title={`${completedTasks} / ${totalTasks}`}>
       <Progress
-        percent={progress}
+        percent={task.progress}
         type="circle"
-        size={size}
+        size={26}
         style={{ cursor: 'default' }}
+
         className="task-progress"
       />
     </Tooltip>

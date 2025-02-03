@@ -5,6 +5,6 @@ export interface ITaskLabel {
   team_id?: string;
   selected?: boolean;
   end?: boolean;
-  names?: string;
+  names?: string[];
   usage?: number;
 }
