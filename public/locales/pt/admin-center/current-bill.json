@@ -23,6 +23,7 @@
   "transactionDate": "Data da Transação",
   "paymentMethod": "Método de Pagamento",
   "status": "Status",
+  "ltdUsers": "Puedes agregar hasta {{ltd_users}} usuarios.",
 
   "drawerTitle": "Resgatar Código",
   "label": "Resgatar Código",
@@ -61,5 +62,13 @@
   "footerButton": "Contate-nos",
 
   "redeemCodePlaceHolder": "Digite seu código de resgate",
-  "submit": "Enviar"
+  "submit": "Enviar",
+
+  "trialPlan": "Plano de Teste",
+  "trialExpireDate": "Válido até {{trial_expire_date}}",
+  "trialExpired": "Sua prova gratuita expirou {{trial_expire_string}}",
+  "trialInProgress": "Sua prova gratuita expira {{trial_expire_string}}",
+
+  "required": "Este campo é obrigatório",
+  "invalidCode": "Código inválido"
 }

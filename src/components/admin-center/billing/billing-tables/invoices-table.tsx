@@ -15,7 +15,7 @@ interface DataType {
 }
 
 const InvoicesTable: React.FC = () => {
-  const { t } = useTranslation('current-bill');
+  const { t } = useTranslation('admin-center/current-bill');;
 
   const [transactions, setTransactions] = useState<IBillingTransaction[]>([]);
   const [loadingTransactions, setLoadingTransactions] = useState(false);

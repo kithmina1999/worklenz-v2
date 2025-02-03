@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import {
   evt_billing_pause_plan,
@@ -6,29 +6,35 @@ import {
 } from '@/shared/worklenz-analytics-events';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import logger from '@/utils/errorLogger';
-import { Button, Card, Modal, Skeleton, Space, Tooltip, Typography } from 'antd/es';
-import { IBillingAccountInfo } from '@/types/admin-center/admin-center.types';
-import RedeemCodeDrawer from '@/features/adminCenter/billing/RedeemCodeDrawer';
-import { toggleDrawer, toggleUpgradeModal } from '@/features/adminCenter/billing/billingSlice';
+import { Button, Card, Flex, Modal, Space, Tooltip, Typography } from 'antd/es';
+import RedeemCodeDrawer from '../drawers/redeem-code-drawer/redeem-code-drawer';
+import {
+  fetchBillingInfo,
+  toggleRedeemCodeDrawer,
+  toggleUpgradeModal,
+} from '@/features/admin-center/admin-center.slice';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
-import UpgradePlans from '../upgrade-plans';
+import { WarningTwoTone } from '@ant-design/icons';
+import { calculateTimeGap } from '@/utils/calculate-time-gap';
+import { formatDate } from '@/utils/timeUtils';
+import UpgradePlansLKR from '../drawers/upgrade-plans-lkr/upgrade-plans-lkr';
+import UpgradePlans from '../drawers/upgrade-plans/upgrade-plans';
 
 const CurrentPlanDetails = () => {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation('current-bill');
+  const { t } = useTranslation('admin-center/current-bill');
+  const { trackMixpanelEvent } = useMixpanelTracking();
 
-  const [billingInfo, setBillingInfo] = useState<IBillingAccountInfo | null>(null);
-  const [loadingInfo, setLoadingInfo] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [showRedeem, setShowRedeem] = useState(false);
   const [pausingPlan, setPausingPlan] = useState(false);
   const [cancellingPlan, setCancellingPlan] = useState(false);
 
-  const { trackMixpanelEvent } = useMixpanelTracking();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const isModalOpen = useAppSelector(state => state.billingReducer.isModalOpen);
+  const { loadingBillingInfo, billingInfo, freePlanSettings, isUpgradeModalOpen } = useAppSelector(
+    state => state.adminCenterReducer
+  );
 
   const subscriptionStatus = {
     ACTIVE: 'active',
@@ -36,25 +42,10 @@ const CurrentPlanDetails = () => {
     PAUSED: 'paused',
     DELETED: 'deleted',
     TRIALING: 'trialing',
+    FREE: 'free',
   };
 
-  useEffect(() => {
-    getBillingAccountInfo();
-  }, []);
-
-  const getBillingAccountInfo = async () => {
-    try {
-      setLoadingInfo(true);
-      const res = await adminCenterApiService.getBillingAccountInfo();
-      if (res.done) {
-        setBillingInfo(res.body);
-      }
-    } catch (e) {
-      logger.error('Error getting billing account info', e);
-    } finally {
-      setLoadingInfo(false);
-    }
-  };
+  const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const confirmPauseSubscription = async () => {
     try {
@@ -63,7 +54,7 @@ const CurrentPlanDetails = () => {
       if (res.done) {
         setTimeout(() => {
           setPausingPlan(false);
-          getBillingAccountInfo();
+          dispatch(fetchBillingInfo());
           trackMixpanelEvent(evt_billing_pause_plan);
         }, 8000);
       }
@@ -81,7 +72,7 @@ const CurrentPlanDetails = () => {
       if (res.done) {
         setTimeout(() => {
           setCancellingPlan(false);
-          getBillingAccountInfo();
+          dispatch(fetchBillingInfo());
           trackMixpanelEvent(evt_billing_resume_plan);
         }, 8000);
       }
@@ -134,7 +125,7 @@ const CurrentPlanDetails = () => {
         )}
 
         {billingInfo.trial_in_progress && (
-          <Button type="primary" onClick={() => setIsVisible(true)}>
+          <Button type="primary" onClick={() => dispatch(toggleUpgradeModal())}>
             Upgrade Plan
           </Button>
         )}
@@ -152,23 +143,54 @@ const CurrentPlanDetails = () => {
     );
   };
 
-  const fetchBillingInfo = async () => {
-    try {
-      setLoadingInfo(true);
-      const res = await adminCenterApiService.getBillingAccountInfo();
-      if (res.done) {
-        setBillingInfo(res.body);
-      }
-    } catch (e) {
-      logger.error('Error getting billing account info', e);
-    } finally {
-      setLoadingInfo(false);
-    }
+  const renderLtdDetails = () => {
+    if (!billingInfo) return null;
+    if (billingInfo.is_custom) return null;
+    return (
+      <Flex vertical>
+        <Typography.Text strong>{billingInfo?.plan_name}</Typography.Text>
+        <Typography.Text>{t('ltdUsers', { ltd_users: billingInfo?.ltd_users })}</Typography.Text>
+      </Flex>
+    );
   };
 
-  useEffect(() => {
-    fetchBillingInfo();
-  }, []);
+  const renderTrialDetails = () => {
+    const checkIfTrialExpired = () => {
+      if (!billingInfo?.trial_expire_date) return false;
+      const today = new Date();
+      const trialExpireDate = new Date(billingInfo?.trial_expire_date);
+      return today > trialExpireDate;
+    };
+    return (
+      <Flex vertical>
+        <Typography.Text strong>
+          {t('trialPlan')}
+          &nbsp;
+          {checkIfTrialExpired() ? <WarningTwoTone color="yellow" /> : null}
+        </Typography.Text>
+        <Tooltip title={formatDate(new Date(billingInfo?.trial_expire_date || ''))}>
+          <Typography.Text>
+            {t(checkIfTrialExpired() ? 'trialExpired' : 'trialInProgress', {
+              trial_expire_string: calculateTimeGap(billingInfo?.trial_expire_date || ''),
+            })}
+          </Typography.Text>
+        </Tooltip>
+      </Flex>
+    );
+  };
+
+  const renderFreePlan = () => {
+    return (
+      <Typography.Text>
+        <br />-{' '}
+        {freePlanSettings?.team_member_limit === 0
+          ? 'Unlimited'
+          : freePlanSettings?.team_member_limit}{' '}
+        team members <br />- {freePlanSettings?.projects_limit} projects <br />-{' '}
+        {freePlanSettings?.free_tier_storage} MB storage
+      </Typography.Text>
+    );
+  };
 
   return (
     <Card
@@ -183,42 +205,14 @@ const CurrentPlanDetails = () => {
           {t('currentPlanDetails')}
         </span>
       }
-      extra={
-        <div
-          style={{
-            marginTop: '8px',
-            marginRight: '8px',
-          }}
-        >
-          <Button type="primary" onClick={() => dispatch(toggleUpgradeModal())}>
-            {t('upgradePlan')}
-          </Button>
-          <Modal
-            open={isModalOpen}
-            onCancel={() => dispatch(toggleUpgradeModal())}
-            width={1000}
-            centered
-            okButtonProps={{ hidden: true }}
-            cancelButtonProps={{ hidden: true }}
-          >
-            <UpgradePlans />
-          </Modal>
-        </div>
-      }
+      loading={loadingBillingInfo}
+      extra={renderExtra()}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '50%',
-          padding: '0 12px',
-        }}
-      >
+      <Flex vertical>
         <div style={{ marginBottom: '14px' }}>
-          <Typography.Text strong>{billingInfo?.plan_name}</Typography.Text>
-          <Tooltip title={billingInfo?.trial_expire_date}>
-            <Typography.Text></Typography.Text>
-          </Tooltip>
+          {billingInfo?.is_ltd_user && renderLtdDetails()}
+          {billingInfo?.status === subscriptionStatus.TRIALING && renderTrialDetails()}
+          {billingInfo?.status === subscriptionStatus.FREE && renderFreePlan()}
         </div>
         <Button
           type="link"
@@ -228,13 +222,23 @@ const CurrentPlanDetails = () => {
             width: '90px',
           }}
           onClick={() => {
-            dispatch(toggleDrawer());
+            dispatch(toggleRedeemCodeDrawer());
           }}
         >
           {t('redeemCode')}
         </Button>
         <RedeemCodeDrawer />
-      </div>
+        <Modal
+          open={isUpgradeModalOpen}
+          onCancel={() => dispatch(toggleUpgradeModal())}
+          width={1000}
+          centered
+          okButtonProps={{ hidden: true }}
+          cancelButtonProps={{ hidden: true }}
+        >
+          {browserTimeZone === 'Asia/Colombo' ? <UpgradePlansLKR /> : <UpgradePlans />}
+        </Modal>
+      </Flex>
     </Card>
   );
 };

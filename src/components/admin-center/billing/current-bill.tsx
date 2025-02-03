@@ -1,10 +1,10 @@
 import { Button, Card, Col, Modal, Progress, Row, Tooltip, Typography } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './current-bill.css';
 import { InfoCircleTwoTone } from '@ant-design/icons';
 import ChargesTable from './billing-tables/charges-table';
 import InvoicesTable from './billing-tables/invoices-table';
-import UpgradePlans from './upgrade-plans';
+import UpgradePlansLKR from './drawers/upgrade-plans-lkr/upgrade-plans-lkr';
 import { RootState } from '../../../app/store';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useMediaQuery } from 'react-responsive';
@@ -14,31 +14,26 @@ import {
   toggleDrawer,
   toggleUpgradeModal,
 } from '../../../features/adminCenter/billing/billingSlice';
-import RedeemCodeDrawer from '../../../features/adminCenter/billing/RedeemCodeDrawer';
+import RedeemCodeDrawer from './drawers/redeem-code-drawer/redeem-code-drawer';
 import CurrentPlanDetails from './current-plan-details/current-plan-details';
+import AccountStorage from './account-storage/account-storage';
+import { IBillingAccountInfo } from '@/types/admin-center/admin-center.types';
+import { fetchBillingInfo } from '@/features/admin-center/admin-center.slice';
+import UpgradePlans from './drawers/upgrade-plans/upgrade-plans';
 
 const CurrentBill: React.FC = () => {
   const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
   const dispatch = useAppDispatch();
-  const totalData = 1;
-  const usedData = 0;
-  const remainingData = totalData - usedData;
+  const { t } = useTranslation('admin-center/current-bill');
 
-  const percentage = (usedData / totalData) * 100;
-
-  const isModalOpen = useAppSelector(state => state.billingReducer.isModalOpen);
-
-  const showModal = () => {
-    dispatch(toggleUpgradeModal());
-  };
-
-  const handleCancel = () => {
-    dispatch(toggleUpgradeModal());
-  };
+  const { loadingBillingInfo, billingInfo, isRedeemCodeDrawerOpen, isUpgradeModalOpen } = useAppSelector(state => state.adminCenterReducer);
 
   const isTablet = useMediaQuery({ query: '(min-width: 1025px)' });
+  const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  const { t } = useTranslation('current-bill');
+  useEffect(() => {
+    dispatch(fetchBillingInfo());
+  }, [dispatch]);
 
   return (
     <div style={{ width: '100%' }} className="current-billing">
@@ -46,113 +41,10 @@ const CurrentBill: React.FC = () => {
         <Row>
           <Col span={16} style={{ paddingRight: '10px' }}>
             <CurrentPlanDetails />
-            {/* <Card
-              title={
-                <span
-                  style={{
-                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                    fontWeight: 500,
-                    fontSize: '16px',
-                  }}
-                >
-                  {t('currentPlanDetails')}
-                </span>
-              }
-              extra={
-                <div
-                  style={{
-                    marginTop: '8px',
-                    marginRight: '8px',
-                  }}
-                >
-                  <Button type="primary" onClick={showModal}>
-                    {t('upgradePlan')}
-                  </Button>
-                  <Modal
-                    open={isModalOpen}
-                    onCancel={handleCancel}
-                    width={1000}
-                    centered
-                    okButtonProps={{ hidden: true }}
-                    cancelButtonProps={{ hidden: true }}
-                  >
-                    <UpgradePlans />
-                  </Modal>
-                </div>
-              }
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  width: '50%',
-                  padding: '0 12px',
-                }}
-              >
-                <div style={{ marginBottom: '14px' }}>
-                  <Typography.Text style={{ fontWeight: 700 }}>
-                    {t('cardBodyText01')}
-                  </Typography.Text>
-                  <Tooltip title="Monday,November 18,2024">
-                    <Typography.Text>{t('cardBodyText02')}</Typography.Text>
-                  </Tooltip>
-                </div>
-                <Button
-                  type="link"
-                  style={{
-                    margin: 0,
-                    padding: 0,
-                    width: '90px',
-                  }}
-                  onClick={() => {
-                    dispatch(toggleDrawer());
-                  }}
-                >
-                  {t('redeemCode')}
-                </Button>
-                <RedeemCodeDrawer />
-              </div>
-            </Card> */}
           </Col>
 
           <Col span={8} style={{ paddingLeft: '10px' }}>
-            <Card
-              title={
-                <span
-                  style={{
-                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                    fontWeight: 500,
-                    fontSize: '16px',
-                  }}
-                >
-                  {t('accountStorage')}
-                </span>
-              }
-            >
-              <div style={{ display: 'flex' }}>
-                <div style={{ padding: '0 8px' }}>
-                  <Progress
-                    percent={percentage}
-                    type="circle"
-                    format={percent => <span style={{ fontSize: '13px' }}>{percent}% Used</span>}
-                  />
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: '0 8px',
-                  }}
-                >
-                  <Typography.Text>
-                    {t('used')} <strong>{usedData} GB</strong>
-                  </Typography.Text>
-                  <Typography.Text>
-                    {t('remaining')} <strong>{remainingData} GB</strong>
-                  </Typography.Text>
-                </div>
-              </div>
-            </Card>
+            <AccountStorage themeMode={themeMode} />
           </Col>
         </Row>
       ) : (
@@ -177,18 +69,18 @@ const CurrentBill: React.FC = () => {
                     marginRight: '8px',
                   }}
                 >
-                  <Button type="primary" onClick={showModal}>
+                  <Button type="primary" onClick={() => dispatch(toggleUpgradeModal())}>
                     {t('upgradePlan')}
                   </Button>
                   <Modal
-                    open={isModalOpen}
-                    onCancel={handleCancel}
+                    open={isUpgradeModalOpen}
+                    onCancel={() => dispatch(toggleUpgradeModal())}
                     width={1000}
                     centered
                     okButtonProps={{ hidden: true }}
                     cancelButtonProps={{ hidden: true }}
                   >
-                    <UpgradePlans />
+                    {browserTimeZone === 'Asia/Colombo' ? <UpgradePlansLKR /> : <UpgradePlans />}
                   </Modal>
                 </div>
               }
@@ -226,43 +118,7 @@ const CurrentBill: React.FC = () => {
           </Col>
 
           <Col span={24} style={{ marginTop: '1.5rem' }}>
-            <Card
-              title={
-                <span
-                  style={{
-                    color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
-                    fontWeight: 500,
-                    fontSize: '16px',
-                  }}
-                >
-                  {t('accountStorage')}
-                </span>
-              }
-            >
-              <div style={{ display: 'flex' }}>
-                <div style={{ padding: '0 8px' }}>
-                  <Progress
-                    percent={percentage}
-                    type="circle"
-                    format={percent => <span style={{ fontSize: '13px' }}>{percent}% Used</span>}
-                  />
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: '0 8px',
-                  }}
-                >
-                  <Typography.Text>
-                    {t('used')} <strong>{usedData} GB</strong>
-                  </Typography.Text>
-                  <Typography.Text>
-                    {t('remaining')} <strong>{remainingData} GB</strong>
-                  </Typography.Text>
-                </div>
-              </div>
-            </Card>
+            <AccountStorage themeMode={themeMode} />
           </Col>
         </div>
       )}

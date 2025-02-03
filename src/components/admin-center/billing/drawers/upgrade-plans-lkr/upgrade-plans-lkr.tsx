@@ -1,18 +1,21 @@
 import { Button, Card, Col, Form, Input, notification, Row, Tag, Typography } from 'antd';
 import React, { useState } from 'react';
-import './upgrade-plans.css';
+import './upgrade-plans-lkr.css';
 import { CheckCircleFilled } from '@ant-design/icons';
-import { RootState } from '../../../app/store';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { RootState } from '@/app/store';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
-import { timeZoneCurrencyMap } from '../../../utils/timeZoneCurrencyMap';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleUpgradeModal } from '../../../features/adminCenter/billing/billingSlice';
+import { timeZoneCurrencyMap } from '@/utils/timeZoneCurrencyMap';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { toggleUpgradeModal } from '@features/admin-center/admin-center.slice';
 
-const UpgradePlans: React.FC = () => {
+const UpgradePlansLKR: React.FC = () => {
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
   const [selectedCard, setSelectedCard] = useState(2);
+  const { t } = useTranslation('admin-center/current-bill');;
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const userCurrency = timeZoneCurrencyMap[userTimeZone] || 'USD';
 
   const handleCardSelect = (cardIndex: number) => {
     setSelectedCard(cardIndex);
@@ -31,11 +34,6 @@ const UpgradePlans: React.FC = () => {
   const isSelected = (cardIndex: number) => {
     return selectedCard === cardIndex ? { border: '2px solid #1890ff' } : {};
   };
-
-  const { t } = useTranslation('current-bill');
-
-  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const userCurrency = timeZoneCurrencyMap[userTimeZone] || 'USD';
 
   const handleFormSubmit = () => {
     notification.open({
@@ -372,4 +370,4 @@ const UpgradePlans: React.FC = () => {
   );
 };
 
-export default UpgradePlans;
+export default UpgradePlansLKR;

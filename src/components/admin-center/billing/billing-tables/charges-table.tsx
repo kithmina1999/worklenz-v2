@@ -16,7 +16,7 @@ interface DataType {
 }
 
 const ChargesTable: React.FC = () => {
-  const { t } = useTranslation('current-bill');
+  const { t } = useTranslation('admin-center/current-bill');;
   const [charges, setCharges] = useState<IBillingChargesResponse>({});
   const [loadingCharges, setLoadingCharges] = useState(false);
 

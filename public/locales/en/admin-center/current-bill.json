@@ -23,6 +23,7 @@
   "transactionDate": "Transaction Date",
   "paymentMethod": "Payment Method",
   "status": "Status",
+  "ltdUsers": "You can add up to {{ltd_users}} users.",
 
   "drawerTitle": "Redeem Code",
   "label": "Redeem Code",
@@ -61,5 +62,13 @@
   "footerButton": "Contact us",
 
   "redeemCodePlaceHolder": "Enter your redeem code",
-  "submit": "Submit"
+  "submit": "Submit",
+
+  "trialPlan": "Free Trial",
+  "trialExpireDate": "Valid until {{trial_expire_date}}",
+  "trialExpired": "Your free trial expired {{trial_expire_string}}",
+  "trialInProgress": "Your free trial expires {{trial_expire_string}}",
+
+  "required": "This field is required",
+  "invalidCode": "Invalid code"
 }

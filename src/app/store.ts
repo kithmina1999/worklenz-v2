@@ -50,6 +50,9 @@ import billingReducer from '@features/adminCenter/billing/billingSlice';
 import categoriesReducer from '@features/settings/categories/categoriesSlice';
 import labelReducer from '@features/settings/label/labelSlice';
 
+// Admin Center
+import adminCenterReducer from '@features/admin-center/admin-center.slice';
+
 // Features
 import dateReducer from '@features/date/dateSlice';
 import notificationReducer from '@features/navbar/notification/notificationSlice';
@@ -126,6 +129,9 @@ export const store = configureStore({
     billingReducer: billingReducer,
     categoriesReducer: categoriesReducer,
     labelReducer: labelReducer,
+
+    // Admin Center
+    adminCenterReducer: adminCenterReducer,
 
     // Features
     dateReducer: dateReducer,

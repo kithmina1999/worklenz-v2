@@ -16,6 +16,7 @@ import {
   IBillingTransaction,
   IBillingChargesResponse,
   IStorageInfo,
+  IFreePlanSettings,
 } from '@/types/admin-center/admin-center.types';
 import { IClient } from '@/types/client.types';
 import { toQueryString } from '@/utils/toQueryString';
@@ -191,6 +192,11 @@ export const adminCenterApiService = {
     return response.data;
   },
 
+  async getFreePlanSettings(): Promise<IServerResponse<IFreePlanSettings>> {
+    const response = await apiClient.get<IServerResponse<IFreePlanSettings>>(`${rootUrl}/billing/free-plan`);
+    return response.data;
+  },
+
   async upgradePlan(plan: string): Promise<IServerResponse<IUpgradeSubscriptionPlanResponse>> {
     const response = await apiClient.get<IServerResponse<IUpgradeSubscriptionPlanResponse>>(`${rootUrl}/billing/upgrade-plan${toQueryString({plan})}`);
     return response.data;
@@ -223,6 +229,13 @@ export const adminCenterApiService = {
 
   async cancelSubscription(): Promise<IServerResponse<any>> {
     const response = await apiClient.get<IServerResponse<any>>(`${rootUrl}/billing/cancel-plan`);
+    return response.data;
+  },
+
+  async redeemCode(code: string): Promise<IServerResponse<IUpgradeSubscriptionPlanResponse>> {
+    const response = await apiClient.post<IServerResponse<IUpgradeSubscriptionPlanResponse>>(`${rootUrl}/billing/redeem`, {
+      code,
+    });
     return response.data;
   },
 };
