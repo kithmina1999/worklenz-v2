@@ -35,7 +35,7 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   const { t } = useTranslation('task-list-table');
   const { socket, connected } = useSocket();
   const dispatch = useAppDispatch();
-  
+
   const labelInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -45,6 +45,7 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   const currentSession = useAuthService().getCurrentSession();
 
   const handleLabelsChange = (labels: ILabelsChangeResponse) => {
+    console.log('labels', labels);
     dispatch(updateTaskLabel(labels));
   };
 
@@ -69,7 +70,7 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   };
 
   useEffect(() => {
-    setLabelList(labels);
+    setLabelList(labels as ITaskLabel[]);
   }, [labels, task.labels]);
 
   useEffect(() => {
@@ -134,13 +135,13 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
                       ? task?.labels.some(existingLabel => existingLabel.id === label.id)
                       : false
                   }
-                  onChange={() => task.id && dispatch(toggleLabel({ taskId: task.id, label }))}
-                />
-
-                <Flex gap={8}>
-                  <Badge color={label.color_code} />
-                  {label.name}
-                </Flex>
+                  onChange={() => handleLabelChange(label)}
+                >
+                  <Flex gap={8}>
+                    <Badge color={label.color_code} />
+                    {label.name}
+                  </Flex>
+                </Checkbox>
               </List.Item>
             ))
           ) : (

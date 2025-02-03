@@ -23,7 +23,7 @@ const CustomColordLabel = ({ label }: ICustomColordLabelProps) => {
           fontSize: 11,
         }}
       >
-        {label.name}
+        {label.name && label.name.length > 10 ? `${label.name.substring(0, 10)}...` : label.name}
       </Tag>
     </Tooltip>
   );
