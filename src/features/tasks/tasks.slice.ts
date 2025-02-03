@@ -13,7 +13,6 @@ import { ITaskListMemberFilter } from '@/types/tasks/taskListFilters.types';
 import { ITaskAssignee } from '@/types/tasks/task.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { ITaskPrioritiesGetResponse } from '@/types/tasks/taskPriority.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
 
 export enum IGroupBy {
