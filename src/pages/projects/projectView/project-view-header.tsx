@@ -93,10 +93,11 @@ const ProjectViewHeader = () => {
       className="site-page-header"
       title={
         <Flex gap={8} align="center">
-          <ArrowLeftOutlined style={{ fontSize: 16 }} onClick={() => navigate(-1)} />
+          <ArrowLeftOutlined style={{ fontSize: 16 }} onClick={() => navigate('/worklenz/projects')} />
           <Typography.Title level={4} style={{ marginBlockEnd: 0, marginInlineStart: 12 }}>
             {selectedProject?.name}
           </Typography.Title>
+
 
           {/* attributes thats appear only if available  */}
           {selectedProject?.category_id && (
