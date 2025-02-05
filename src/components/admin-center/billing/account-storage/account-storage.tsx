@@ -1,6 +1,10 @@
+import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { SUBSCRIPTION_STATUS } from '@/shared/constants';
+import { IBillingAccountStorage } from '@/types/admin-center/admin-center.types';
+import logger from '@/utils/errorLogger';
 import { Card, Progress, Typography } from 'antd/es';
-import { t } from 'i18next';
+import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface IAccountStorageProps {
@@ -8,16 +12,57 @@ interface IAccountStorageProps {
 }
 
 const AccountStorage = ({ themeMode }: IAccountStorageProps) => {
-  const { t } = useTranslation('admin-center/current-bill');;
+  const { t } = useTranslation('admin-center/current-bill');
+  const [storage, setStorage] = useState<IBillingAccountStorage>({});
+  const [subscriptionType, setSubscriptionType] = useState<string>(SUBSCRIPTION_STATUS.TRIALING);
 
   const { loadingBillingInfo, billingInfo } = useAppSelector(state => state.adminCenterReducer);
+
+  const fetchStorage = async () => {
+    try {
+      const res = await adminCenterApiService.getAccountStorage();
+      if (res.done) {
+        setStorage(res.body);
+      }
+    } catch (error) {
+      logger.error('Error fetching storage info:', error);
+    }
+  };
+
+  const formatBytes = useMemo(
+    () =>
+      (bytes = 0, decimals = 2) => {
+        if (!+bytes) return '0 MB';
+
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        const formattedValue = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
+
+        return `${formattedValue} ${subscriptionType !== SUBSCRIPTION_STATUS.FREE ? sizes[i] : 'MB'}`;
+      },
+    [subscriptionType]
+  );
+
+  useEffect(() => {
+    fetchStorage();
+  }, []);
+
+  useEffect(() => {
+    setSubscriptionType(billingInfo?.status ?? SUBSCRIPTION_STATUS.TRIALING);
+  }, [billingInfo?.status]);
+
+  const textColor = themeMode === 'dark' ? '#ffffffd9' : '#000000d9';
+
   return (
     <Card
       loading={loadingBillingInfo}
       title={
         <span
           style={{
-            color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
+            color: textColor,
             fontWeight: 500,
             fontSize: '16px',
           }}
@@ -26,8 +71,8 @@ const AccountStorage = ({ themeMode }: IAccountStorageProps) => {
         </span>
       }
     >
-      <div style={{ display: 'flex' }}>
-        <div style={{ padding: '0 8px' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ padding: '0 16px' }}>
           <Progress
             percent={billingInfo?.usedPercentage ?? 0}
             type="circle"
@@ -38,14 +83,14 @@ const AccountStorage = ({ themeMode }: IAccountStorageProps) => {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            padding: '0 8px',
+            gap: '8px',
           }}
         >
           <Typography.Text>
-            {t('used')} <strong>{billingInfo?.usedStorage ?? 0} GB</strong>
+            {t('used')} <strong>{formatBytes(storage.used, 1)}</strong>
           </Typography.Text>
           <Typography.Text>
-            {t('remaining')} <strong>{billingInfo?.remainingStorage ?? 0} GB</strong>
+            {t('remaining')} <strong>{formatBytes(storage.remaining, 1)}</strong>
           </Typography.Text>
         </div>
       </div>

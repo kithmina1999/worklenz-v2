@@ -17,10 +17,10 @@ import {
   IBillingChargesResponse,
   IStorageInfo,
   IFreePlanSettings,
+  IBillingAccountStorage,
 } from '@/types/admin-center/admin-center.types';
 import { IClient } from '@/types/client.types';
 import { toQueryString } from '@/utils/toQueryString';
-import search from 'antd/es/transfer/search';
 
 const rootUrl = `${API_BASE_URL}/admin-center`;
 
@@ -238,4 +238,10 @@ export const adminCenterApiService = {
     });
     return response.data;
   },
+
+  async getAccountStorage(): Promise<IServerResponse<IBillingAccountStorage>> {
+    const response = await apiClient.get<IServerResponse<IBillingAccountStorage>>(`${rootUrl}/billing/account-storage`);
+    return response.data;
+  },
+
 };
