@@ -1,15 +1,6 @@
 import { useEffect, useState } from 'react';
-import { toggleDrawer } from '@features/projects/projectsSlice';
-import { fetchClients } from '@/features/settings/client/clientSlice';
-import {
-  useCreateProjectMutation,
-  useDeleteProjectMutation,
-  useGetProjectsQuery,
-  useUpdateProjectMutation,
-} from '@/api/projects/projects.v1.api.service';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import logger from '@/utils/errorLogger';
 import {
   Button,
   DatePicker,
@@ -18,6 +9,7 @@ import {
   Flex,
   Form,
   Input,
+  notification,
   Popconfirm,
   Skeleton,
   Space,
@@ -25,8 +17,23 @@ import {
   Typography,
 } from 'antd';
 import dayjs from 'dayjs';
+
+import { toggleDrawer } from '@features/projects/projectsSlice';
+import { fetchClients } from '@/features/settings/client/clientSlice';
+import {
+  useCreateProjectMutation,
+  useDeleteProjectMutation,
+  useGetProjectsQuery,
+  useUpdateProjectMutation,
+} from '@/api/projects/projects.v1.api.service';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { projectColors } from '@/lib/project/projectConstants';
+import { setProject, setProjectId } from '@/features/project/project.slice';
+import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
+import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
+import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
+
 import ProjectManagerDropdown from '../project-manager-dropdown/project-manager-dropdown';
 import ProjectBasicInfo from './project-basic-info/project-basic-info';
 import ProjectHealthSection from './project-health-section/project-health-section';
@@ -34,53 +41,51 @@ import ProjectStatusSection from './project-status-section/project-status-sectio
 import ProjectCategorySection from './project-category-section/project-category-section';
 import ProjectClientSection from './project-client-section/project-client-section';
 
-import { projectColors } from '@/lib/project/projectConstants';
-import { setProject, setProjectId } from '@/features/project/project.slice';
-
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
-import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
-import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
-import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
+import logger from '@/utils/errorLogger';
 
 const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation('project-drawer');
   const navigate = useNavigate();
+  const { t } = useTranslation('project-drawer');
+  const [form] = Form.useForm();
 
+  // State
+  const [editMode, setEditMode] = useState<boolean>(false);
+  const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(null);
+
+  // Selectors
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
   const { project, projectId, projectLoading } = useAppSelector(state => state.projectReducer);
-  const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(
-    null
-  );
-  const { requestParams } = useAppSelector(state => state.projectsReducer);
+  const { requestParams, isProjectDrawerOpen } = useAppSelector(state => state.projectsReducer);
   const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
   const { projectHealths } = useAppSelector(state => state.projectHealthReducer);
   const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
 
+  // API Hooks
   const { refetch: refetchProjects } = useGetProjectsQuery(requestParams);
   const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
   const [updateProject, { isLoading: isUpdatingProject }] = useUpdateProjectMutation();
   const [createProject, { isLoading: isCreatingProject }] = useCreateProjectMutation();
 
+  // Load initial data
   useEffect(() => {
-    if (projectStatuses.length === 0) dispatch(fetchProjectStatuses());
-    if (projectCategories.length === 0) dispatch(fetchProjectCategories());
-    if (projectHealths.length === 0) dispatch(fetchProjectHealth());
+    const loadInitialData = async () => {
+      if (projectStatuses.length === 0) await dispatch(fetchProjectStatuses());
+      if (projectCategories.length === 0) await dispatch(fetchProjectCategories());
+      if (projectHealths.length === 0) await dispatch(fetchProjectHealth());
 
-    if (!clients.data?.length)
-      dispatch(fetchClients({ index: 1, size: 5, field: null, order: null, search: null }));
+      if (!clients.data?.length) {
+        await dispatch(fetchClients({ index: 1, size: 5, field: null, order: null, search: null }));
+      }
+    };
+
+    loadInitialData();
   }, [dispatch]);
 
-  const [editMode, setEditMode] = useState<boolean>(false);
-
-  const isDrawerOpen = useAppSelector(state => state.projectsReducer.isProjectDrawerOpen);
-
-  const [form] = Form.useForm();
-
-  // function for handle form submit
   const handleFormSubmit = async (values: any) => {
     try {
       const projectModel: IProjectViewModel = {
@@ -100,27 +105,39 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         hours_per_day: parseInt(values.hours_per_day),
         project_manager: selectedProjectManager,
       };
+
       if (editMode && projectId) {
         const response = await updateProject({ id: projectId, project: projectModel });
-        if (response?.data?.body?.id) {
+        if (response?.data?.done) {
           form.resetFields();
           dispatch(toggleDrawer());
           refetchProjects();
+        } else {
+          notification.error({
+            message: response?.data?.message,
+          });
+          logger.error('Error updating project', response?.data?.message);
         }
       } else {
         const response = await createProject(projectModel);
-        if (response?.data?.body?.id) {
+        if (response?.data?.done) {
           form.resetFields();
           dispatch(toggleDrawer());
           navigate(`/worklenz/projects/${response.data.body.id}`);
+        } else {
+          notification.error({
+            message: response?.data?.message,
+          });
+          logger.error('Error creating project', response?.data?.message);
         }
       }
+
     } catch (error) {
-      logger.error('Error creating project', error);
+      logger.error('Error saving project', error);
     }
   };
 
-  const visibleChanged = (visible: boolean) => {
+  const handleVisibilityChange = (visible: boolean) => {
     if (visible && projectId) {
       setEditMode(true);
       if (project) {
@@ -131,27 +148,27 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         });
         setSelectedProjectManager(project.project_manager || null);
       }
-    }
-    if (!projectId) {
-      setEditMode(false);
-      form.resetFields();
-      setSelectedProjectManager(null);
-      dispatch(setProject({} as IProjectViewModel));
+    } else {
+      resetForm();
     }
   };
 
-  const handleDrawerClose = () => {
-    form.resetFields();
+  const resetForm = () => {
     setEditMode(false);
+    form.resetFields();
     setSelectedProjectManager(null);
-    setTimeout(() => {
-      dispatch(toggleDrawer());
-    }, 300);
+    dispatch(setProject({} as IProjectViewModel));
+  };
+
+  const handleDrawerClose = () => {
+    resetForm();
+    setTimeout(() => dispatch(toggleDrawer()), 300);
     onClose();
   };
 
   const handleDeleteProject = async () => {
     if (!projectId) return;
+
     try {
       const res = await deleteProject(projectId);
       if (res?.data?.done) {
@@ -166,6 +183,18 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
     }
   };
 
+  const defaultFormValues = {
+    color_code: project?.color_code || projectColors[0],
+    status_id: project?.status_id || projectStatuses.find(status => status.is_default)?.id,
+    health_id: project?.health_id || projectHealths.find(health => health.is_default)?.id,
+    client_id: project?.client_id || null,
+    client: project?.client_name || null,
+    category_id: project?.category_id || null,
+    working_days: project?.working_days || 0,
+    man_days: project?.man_days || 0,
+    hours_per_day: project?.hours_per_day || 8,
+  };
+
   return (
     <Drawer
       title={
@@ -173,10 +202,10 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
           {editMode ? t('editProject') : t('createProject')}
         </Typography.Text>
       }
-      open={isDrawerOpen}
+      open={isProjectDrawerOpen}
       onClose={handleDrawerClose}
       destroyOnClose
-      afterOpenChange={visibleChanged}
+      afterOpenChange={handleVisibilityChange}
       footer={
         <Flex justify="space-between">
           <Space>
@@ -206,88 +235,78 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         </Flex>
       }
     >
-      {
-        <Skeleton active paragraph={{ rows: 12 }} loading={projectLoading}>
-          <Form
+      <Skeleton active paragraph={{ rows: 12 }} loading={projectLoading}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleFormSubmit}
+          initialValues={defaultFormValues}
+        >
+          <ProjectBasicInfo editMode={editMode} project={project} form={form} />
+          <ProjectStatusSection statuses={projectStatuses} form={form} t={t} />
+          <ProjectHealthSection healths={projectHealths} form={form} t={t} />
+          <ProjectCategorySection categories={projectCategories} form={form} t={t} />
+
+          <Form.Item name="notes" label={t('notes')}>
+            <Input.TextArea placeholder={t('enterNotes')} />
+          </Form.Item>
+
+          <ProjectClientSection
+            clients={clients}
             form={form}
-            layout="vertical"
-            onFinish={handleFormSubmit}
-            initialValues={{
-              color_code: project?.color_code || projectColors[0],
-              status_id:
-                project?.status_id || projectStatuses.find(status => status.is_default)?.id,
-              health_id: project?.health_id || projectHealths.find(health => health.is_default)?.id,
-              client_id: project?.client_id || null,
-              client: project?.client_name || null,
-              category_id: project?.category_id || null,
-              working_days: project?.working_days || 0,
-              man_days: project?.man_days || 0,
-              hours_per_day: project?.hours_per_day || 8,
-            }}
-          >
-            <ProjectBasicInfo editMode={editMode} project={project} form={form} />
-            <ProjectStatusSection statuses={projectStatuses} form={form} t={t} />
-            <ProjectHealthSection healths={projectHealths} form={form} t={t} />
-            <ProjectCategorySection categories={projectCategories} form={form} t={t} />
+            t={t}
+            project={project}
+            loadingClients={loadingClients}
+          />
 
-            <Form.Item name="notes" label={t('notes')}>
-              <Input.TextArea placeholder={t('enterNotes')} />
-            </Form.Item>
-
-            <ProjectClientSection
-              clients={clients}
-              form={form}
-              t={t}
-              project={project}
-              loadingClients={loadingClients}
+          <Form.Item name="project_manager" label={t('projectManager')} layout="horizontal">
+            <ProjectManagerDropdown
+              selectedProjectManager={selectedProjectManager}
+              setSelectedProjectManager={setSelectedProjectManager}
             />
+          </Form.Item>
 
-            <Form.Item name="project_manager" label={t('projectManager')} layout="horizontal">
-              <ProjectManagerDropdown
-                selectedProjectManager={selectedProjectManager}
-                setSelectedProjectManager={setSelectedProjectManager}
-              />
-            </Form.Item>
-            <Form.Item name="date" layout="horizontal">
-              <Flex gap={8}>
-                <Form.Item name="start_date" label={t('startDate')}>
-                  <DatePicker />
-                </Form.Item>
-                <Form.Item name="end_date" label={t('endDate')}>
-                  <DatePicker />
-                </Form.Item>
-              </Flex>
-            </Form.Item>
-            <Form.Item name="working_days" label={t('estimateWorkingDays')}>
-              <Input type="number" />
-            </Form.Item>
-            <Form.Item name="man_days" label={t('estimateManDays')}>
-              <Input type="number" />
-            </Form.Item>
-            <Form.Item name="hours_per_day" label={t('hoursPerDay')}>
-              <Input type="number" />
-            </Form.Item>
-          </Form>
-          {editMode && (
-            <Flex vertical gap={4}>
-              <Divider />
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                {t('createdAt')}&nbsp;
-                <Tooltip title={formatDateTimeWithLocale(project?.created_at || '')}>
-                  {calculateTimeDifference(project?.created_at || '')}
-                </Tooltip>{' '}
-                {t('by')} {project?.project_owner || ''}
-              </Typography.Text>
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                {t('updatedAt')}&nbsp;
-                <Tooltip title={formatDateTimeWithLocale(project?.updated_at || '')}>
-                  {calculateTimeDifference(project?.updated_at || '')}
-                </Tooltip>
-              </Typography.Text>
+          <Form.Item name="date" layout="horizontal">
+            <Flex gap={8}>
+              <Form.Item name="start_date" label={t('startDate')}>
+                <DatePicker />
+              </Form.Item>
+              <Form.Item name="end_date" label={t('endDate')}>
+                <DatePicker />
+              </Form.Item>
             </Flex>
-          )}
-        </Skeleton>
-      }
+          </Form.Item>
+
+          <Form.Item name="working_days" label={t('estimateWorkingDays')}>
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item name="man_days" label={t('estimateManDays')}>
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item name="hours_per_day" label={t('hoursPerDay')}>
+            <Input type="number" />
+          </Form.Item>
+        </Form>
+
+        {editMode && (
+          <Flex vertical gap={4}>
+            <Divider />
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {t('createdAt')}&nbsp;
+              <Tooltip title={formatDateTimeWithLocale(project?.created_at || '')}>
+                {calculateTimeDifference(project?.created_at || '')}
+              </Tooltip>{' '}
+              {t('by')} {project?.project_owner || ''}
+            </Typography.Text>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {t('updatedAt')}&nbsp;
+              <Tooltip title={formatDateTimeWithLocale(project?.updated_at || '')}>
+                {calculateTimeDifference(project?.updated_at || '')}
+              </Tooltip>
+            </Typography.Text>
+          </Flex>
+        )}
+      </Skeleton>
     </Drawer>
   );
 };

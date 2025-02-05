@@ -244,4 +244,10 @@ export const adminCenterApiService = {
     return response.data;
   },
 
+  async switchToFreePlan(teamId: string): Promise<IServerResponse<any>> {
+    const response = await apiClient.get<IServerResponse<any>>(`${rootUrl}/billing/switch-to-free-plan/${teamId}`);
+    return response.data;
+  },
+
 };
+

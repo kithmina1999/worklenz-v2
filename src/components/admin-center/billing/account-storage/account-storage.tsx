@@ -58,6 +58,9 @@ const AccountStorage = ({ themeMode }: IAccountStorageProps) => {
 
   return (
     <Card
+      style={{
+        height: '100%',
+      }}
       loading={loadingBillingInfo}
       title={
         <span

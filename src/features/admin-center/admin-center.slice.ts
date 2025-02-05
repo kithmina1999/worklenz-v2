@@ -50,8 +50,13 @@ const adminCenterSlice = createSlice({
     builder.addCase(fetchBillingInfo.rejected, (state, action) => {
       state.loadingBillingInfo = false;
     });
+
+    builder.addCase(fetchFreePlanSettings.fulfilled, (state, action) => {
+      state.freePlanSettings = action.payload;
+    });
   },
 });
+
 
 export const { toggleRedeemCodeDrawer, toggleUpgradeModal } = adminCenterSlice.actions;
 export default adminCenterSlice.reducer;

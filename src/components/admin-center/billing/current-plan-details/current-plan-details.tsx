@@ -39,40 +39,34 @@ const CurrentPlanDetails = () => {
 
   const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  const confirmPauseSubscription = async () => {
+  const handleSubscriptionAction = async (action: 'pause' | 'resume') => {
+    const isResume = action === 'resume';
+    const setLoadingState = isResume ? setCancellingPlan : setPausingPlan;
+    const apiMethod = isResume
+      ? adminCenterApiService.resumeSubscription
+      : adminCenterApiService.pauseSubscription;
+    const eventType = isResume ? evt_billing_resume_plan : evt_billing_pause_plan;
+
     try {
-      setPausingPlan(true);
-      const res = await adminCenterApiService.pauseSubscription();
+      setLoadingState(true);
+      const res = await apiMethod();
       if (res.done) {
         setTimeout(() => {
-          setPausingPlan(false);
+          setLoadingState(false);
           dispatch(fetchBillingInfo());
-          trackMixpanelEvent(evt_billing_pause_plan);
+          trackMixpanelEvent(eventType);
         }, 8000);
       }
     } catch (error) {
-      logger.error('Error pausing subscription', error);
+      logger.error(`Error ${action}ing subscription`, error);
     } finally {
-      setPausingPlan(false);
+      setLoadingState(false);
     }
   };
 
-  const confirmResumeSubscription = async () => {
-    try {
-      setCancellingPlan(true);
-      const res = await adminCenterApiService.resumeSubscription();
-      if (res.done) {
-        setTimeout(() => {
-          setCancellingPlan(false);
-          dispatch(fetchBillingInfo());
-          trackMixpanelEvent(evt_billing_resume_plan);
-        }, 8000);
-      }
-    } catch (error) {
-      logger.error('Error resuming subscription', error);
-    } finally {
-      setCancellingPlan(false);
-    }
+  const checkSubscriptionStatus = (allowedStatuses: any[]) => {
+    if (!billingInfo?.status || billingInfo.is_ltd_user) return false;
+    return allowedStatuses.includes(billingInfo.status);
   };
 
   const shouldShowRedeemButton = () => {
@@ -81,49 +75,46 @@ const CurrentPlanDetails = () => {
   };
 
   const showChangeButton = () => {
-    if (!billingInfo?.status) return false;
-    if (billingInfo.is_ltd_user) return false;
-
-    const status = [SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.PASTDUE];
-    return status.includes(billingInfo.status);
+    return checkSubscriptionStatus([SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.PASTDUE]);
   };
 
   const showPausePlanButton = () => {
-    if (!billingInfo?.status) return false;
-    if (billingInfo.is_ltd_user) return false;
-
-    const status = [SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.PASTDUE];
-    return status.includes(billingInfo.status);
+    return checkSubscriptionStatus([SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.PASTDUE]);
   };
 
   const showResumePlanButton = () => {
-    if (!billingInfo?.status) return false;
-    if (billingInfo.is_ltd_user) return false;
-    const status = [SUBSCRIPTION_STATUS.PAUSED];
-    return status.includes(billingInfo.status);
+    return checkSubscriptionStatus([SUBSCRIPTION_STATUS.PAUSED]);
   };
 
   const renderExtra = () => {
-    if (!billingInfo) return null;
+    if (!billingInfo || billingInfo.is_custom) return null;
 
-    if (billingInfo.is_custom) return null;
     return (
       <Space>
         {showPausePlanButton() && (
-          <Button type="link" danger loading={pausingPlan}>
-            Pause Plan
+          <Button
+            type="link"
+            danger
+            loading={pausingPlan}
+            onClick={() => handleSubscriptionAction('pause')}
+          >
+            {t('pausePlan')}
           </Button>
         )}
 
         {showResumePlanButton() && (
-          <Button type="primary" loading={cancellingPlan}>
-            Resume Plan
+          <Button
+            type="primary"
+            loading={cancellingPlan}
+            onClick={() => handleSubscriptionAction('resume')}
+          >
+            {t('resumePlan')}
           </Button>
         )}
 
         {billingInfo.trial_in_progress && (
           <Button type="primary" onClick={() => dispatch(toggleUpgradeModal())}>
-            Upgrade Plan
+            {t('upgradePlan')}
           </Button>
         )}
 
@@ -133,7 +124,7 @@ const CurrentPlanDetails = () => {
             loading={pausingPlan || cancellingPlan}
             onClick={() => setIsVisible(true)}
           >
-            Change Plan
+            {t('changePlan')}
           </Button>
         )}
       </Space>
@@ -141,12 +132,11 @@ const CurrentPlanDetails = () => {
   };
 
   const renderLtdDetails = () => {
-    if (!billingInfo) return null;
-    if (billingInfo.is_custom) return null;
+    if (!billingInfo || billingInfo.is_custom) return null;
     return (
       <Flex vertical>
-        <Typography.Text strong>{billingInfo?.plan_name}</Typography.Text>
-        <Typography.Text>{t('ltdUsers', { ltd_users: billingInfo?.ltd_users })}</Typography.Text>
+        <Typography.Text strong>{billingInfo.plan_name}</Typography.Text>
+        <Typography.Text>{t('ltdUsers', { ltd_users: billingInfo.ltd_users })}</Typography.Text>
       </Flex>
     );
   };
@@ -155,20 +145,23 @@ const CurrentPlanDetails = () => {
     const checkIfTrialExpired = () => {
       if (!billingInfo?.trial_expire_date) return false;
       const today = new Date();
-      const trialExpireDate = new Date(billingInfo?.trial_expire_date);
+      const trialExpireDate = new Date(billingInfo.trial_expire_date);
       return today > trialExpireDate;
     };
+
+    const isExpired = checkIfTrialExpired();
+    const trialExpireDate = billingInfo?.trial_expire_date || '';
+
     return (
       <Flex vertical>
         <Typography.Text strong>
           {t('trialPlan')}
-          &nbsp;
-          {checkIfTrialExpired() ? <WarningTwoTone color="yellow" /> : null}
+          {isExpired && <WarningTwoTone twoToneColor="#faad14" style={{ marginLeft: 8 }} />}
         </Typography.Text>
-        <Tooltip title={formatDate(new Date(billingInfo?.trial_expire_date || ''))}>
+        <Tooltip title={formatDate(new Date(trialExpireDate))}>
           <Typography.Text>
-            {t(checkIfTrialExpired() ? 'trialExpired' : 'trialInProgress', {
-              trial_expire_string: calculateTimeGap(billingInfo?.trial_expire_date || ''),
+            {t(isExpired ? 'trialExpired' : 'trialInProgress', {
+              trial_expire_string: calculateTimeGap(trialExpireDate),
             })}
           </Typography.Text>
         </Tooltip>
@@ -176,31 +169,33 @@ const CurrentPlanDetails = () => {
     );
   };
 
-  const renderFreePlan = () => {
-    return (
+  const renderFreePlan = () => (
+    <Flex vertical>
+      <Typography.Text strong>Free Plan</Typography.Text>
       <Typography.Text>
         <br />-{' '}
+
         {freePlanSettings?.team_member_limit === 0
-          ? 'Unlimited'
-          : freePlanSettings?.team_member_limit}{' '}
-        team members <br />- {freePlanSettings?.projects_limit} projects <br />-{' '}
-        {freePlanSettings?.free_tier_storage} MB storage
+          ? t('unlimitedTeamMembers')
+          : `${freePlanSettings?.team_member_limit} ${t('teamMembers')}`}
+        <br />- {freePlanSettings?.projects_limit} {t('projects')}
+        <br />- {freePlanSettings?.free_tier_storage} MB {t('storage')}
       </Typography.Text>
-    );
-  };
+    </Flex>
+  );
 
   return (
     <Card
       title={
-        <span
+        <Typography.Text
           style={{
-            color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
+            color: themeMode === 'dark' ? '#ffffffd9' : '#000000d9',
             fontWeight: 500,
             fontSize: '16px',
           }}
         >
           {t('currentPlanDetails')}
-        </span>
+        </Typography.Text>
       }
       loading={loadingBillingInfo}
       extra={renderExtra()}
@@ -215,26 +210,15 @@ const CurrentPlanDetails = () => {
           <>
             <Button
               type="link"
-              style={{
-                margin: 0,
-
-            padding: 0,
-            width: '90px',
-          }}
-          onClick={() => {
-            dispatch(toggleRedeemCodeDrawer());
-          }}
-        >
-            {t('redeemCode')}
-          </Button>
-          <RedeemCodeDrawer />
-        </>
-      )}
-      <Modal
-
-          style={{
-            width: '60vw',
-          }}
+              style={{ margin: 0, padding: 0, width: '90px' }}
+              onClick={() => dispatch(toggleRedeemCodeDrawer())}
+            >
+              {t('redeemCode')}
+            </Button>
+            <RedeemCodeDrawer />
+          </>
+        )}
+        <Modal
           open={isUpgradeModalOpen}
           onCancel={() => dispatch(toggleUpgradeModal())}
           width={1000}

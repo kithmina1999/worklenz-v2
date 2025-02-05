@@ -1,21 +1,44 @@
 import { useEffect, useState } from 'react';
-import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
-import { IPricingPlans } from '@/types/admin-center/admin-center.types';
-import logger from '@/utils/errorLogger';
-import Typography from 'antd/es/typography';
-import { Button, Card, Col, Flex, Form, Row, Select, Tag, Tooltip } from 'antd/es';
-import { useAppSelector } from '@/hooks/useAppSelector';
+import {
+  Button,
+  Card,
+  Col,
+  Flex,
+  Form,
+  message,
+  Row,
+  Select,
+  Tag,
+  Tooltip,
+  Typography,
+} from 'antd/es';
 import { useTranslation } from 'react-i18next';
+
+import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
+import { IPricingPlans, IUpgradeSubscriptionPlanResponse } from '@/types/admin-center/admin-center.types';
+import logger from '@/utils/errorLogger';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { SUBSCRIPTION_STATUS } from '@/shared/constants';
-import { CheckCircleFilled, InfoCircleFilled, InfoCircleOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, InfoCircleOutlined } from '@ant-design/icons';
+import { useAuthService } from '@/hooks/useAuth';
+import { fetchBillingInfo, toggleUpgradeModal } from '@/features/admin-center/admin-center.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { billingApiService } from '@/api/admin-center/billing.api.service';
+
+declare const Paddle: any;
 
 const UpgradePlans = () => {
+  const dispatch = useAppDispatch();
   const { t } = useTranslation('admin-center/current-bill');
   const [plans, setPlans] = useState<IPricingPlans>({});
-  const [selectedCard, setSelectedCard] = useState(2);
+  const [selectedPlan, setSelectedCard] = useState(2);
   const [selectedSeatCount, setSelectedSeatCount] = useState(5);
   const [seatCountOptions, setSeatCountOptions] = useState<number[]>([]);
+  const [switchingToFreePlan, setSwitchingToFreePlan] = useState(false);
+  const [switchingToPaddlePlan, setSwitchingToPaddlePlan] = useState(false);
   const [form] = Form.useForm();
+  const currentSession = useAuthService().getCurrentSession();
+
 
   const { billingInfo } = useAppSelector(state => state.adminCenterReducer);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
@@ -48,8 +71,95 @@ const UpgradePlans = () => {
     }
   };
 
+  const switchToFreePlan = async () => {
+    const teamId = currentSession?.team_id;
+    if (!teamId) return;
+    console.log('teamId', teamId);
+
+    try {
+      setSwitchingToFreePlan(true);
+      const res = await adminCenterApiService.switchToFreePlan(teamId);
+      if (res.done) {
+        dispatch(fetchBillingInfo());
+        dispatch(toggleUpgradeModal());
+      }
+    } catch (error) {
+      logger.error('Error switching to free plan', error);
+    } finally {
+      setSwitchingToFreePlan(false);
+    }
+  };
+
+  const handlePaddleCallback = (data: any) => {
+    if (data.event === 'Checkout.Loaded') {
+      setSwitchingToPaddlePlan(false);
+    }
+
+    if (data.event === 'Checkout.Complete') {
+      dispatch(fetchBillingInfo());
+      dispatch(toggleUpgradeModal());
+    }
+  }
+
+  const initializePaddle = (data: IUpgradeSubscriptionPlanResponse) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.paddle.com/paddle/paddle.js';
+    script.type = 'text/javascript';
+    script.async = true;
+
+    document.getElementsByTagName('head')[0].appendChild(script);
+
+    script.onload = () => {
+      if (data.sandbox) Paddle.Environment.set('sandbox');
+      Paddle.Setup({
+        vendor: parseInt(data.vendor_id),
+        eventCallback: (data: any) => {
+          void handlePaddleCallback(data);
+        }
+      });
+      Paddle.Checkout.open(data.params);
+    }
+  }
+
+  const upgradeToPaddlePlan = async (planId: string) => {
+    try {
+
+      setSwitchingToPaddlePlan(true);
+      if (billingInfo?.trial_in_progress && billingInfo.status === SUBSCRIPTION_STATUS.TRIALING) {
+        const res = await billingApiService.upgradeToPaidPlan(planId, selectedSeatCount);
+        if (res.done) {
+          setSwitchingToPaddlePlan(false);
+          initializePaddle(res.body);
+        }
+      }
+
+    } catch (error) {
+      logger.error('Error upgrading to paddle plan', error);
+    }
+  };
+
+  const continueWithPaddlePlan = async () => {
+    if (selectedPlan && selectedSeatCount.toString() === '100+') return;
+    
+    try {
+      setSwitchingToPaddlePlan(true);
+      let planId: string | null = null;
+
+      if (selectedPlan === 2 && plans.annual_plan_id) {
+        planId = plans.annual_plan_id;
+      } else if (selectedPlan === 3 && plans.monthly_plan_id) {
+        planId = plans.monthly_plan_id;
+      }
+      if (planId) upgradeToPaddlePlan(planId);          
+    } catch (error) {
+      logger.error('Error upgrading to paddle plan', error);
+    } finally {
+      setSwitchingToPaddlePlan(false);
+    }
+  };
+
   const isSelected = (cardIndex: number) =>
-    selectedCard === cardIndex ? { border: '2px solid #1890ff' } : {};
+    selectedPlan === cardIndex ? { border: '2px solid #1890ff' } : {};
 
   const cardStyles = {
     title: {
@@ -250,21 +360,27 @@ const UpgradePlans = () => {
         </Row>
       </Flex>
       <Row justify="end" className="mt-4">
-        {selectedCard === 1 && (
-          <Button type="primary" htmlType="submit">
+        {selectedPlan === 1 && (
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={switchingToFreePlan}
+            onClick={switchToFreePlan}
+          >
             Try for free
           </Button>
         )}
-        {selectedCard === 3 && (
-          <Button type="primary" htmlType="submit">
-            Continue with {t('monthlyPlan')}
-          </Button>
-        )}
-        {selectedCard === 2 && (
-          <Button type="primary" htmlType="submit">
+        {selectedPlan === 2 && (
+          <Button type="primary" htmlType="submit" loading={switchingToPaddlePlan} onClick={continueWithPaddlePlan}>
             Continue with {t('annualPlan')}
           </Button>
         )}
+        {selectedPlan === 3 && (
+          <Button type="primary" htmlType="submit" loading={switchingToPaddlePlan} onClick={continueWithPaddlePlan}>
+            Continue with {t('monthlyPlan')}
+          </Button>
+        )}
+
       </Row>
     </div>
   );
