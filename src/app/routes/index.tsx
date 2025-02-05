@@ -6,6 +6,7 @@ import notFoundRoute from './not-found-route';
 import accountSetupRoute from './account-setup-routes';
 import reportingRoutes from './reporting-routes';
 import { useAuthService } from '@/hooks/useAuth';
+import extraRoutes from './extra-routes';
 
 interface GuardProps {
   children: React.ReactNode;
@@ -13,10 +14,16 @@ interface GuardProps {
 
 export const AuthGuard = ({ children }: GuardProps) => {
   const isAuthenticated = useAuthService().isAuthenticated();
+  const isExpired = useAuthService().isExpired();
   const location = useLocation();
+
 
   if (!isAuthenticated) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  if (isExpired) {
+    return <Navigate to="/worklenz/license-expired" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
@@ -85,6 +92,7 @@ const router = createBrowserRouter([
   ...protectedMainRoutes,
   ...adminRoutes,
   ...setupRoutes,
+  ...extraRoutes,
 ]);
 
 export default router;

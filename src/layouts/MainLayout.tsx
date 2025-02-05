@@ -4,8 +4,6 @@ import Navbar from '../features/navbar/Navbar';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { useMediaQuery } from 'react-responsive';
 import { colors } from '../styles/colors';
-import { useAuthService } from '@/hooks/useAuth';
-import { useEffect } from 'react';
 
 const MainLayout = () => {
   const themeMode = useAppSelector(state => state.themeReducer.mode);
