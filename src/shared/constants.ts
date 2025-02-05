@@ -183,3 +183,9 @@ export const SUBSCRIPTION_STATUS = {
   TRIALING: 'trialing',
   FREE: 'free',
 };
+
+export enum IPaddlePlans {
+  FREE = "FREE",
+  ANNUAL = "ANNUAL",
+  MONTHLY = "MONTHLY",
+}

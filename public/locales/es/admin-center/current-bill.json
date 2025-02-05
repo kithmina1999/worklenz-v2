@@ -88,5 +88,10 @@
   "reporting": "Informes",
   "subscribeToProjects": "Suscribirse a proyectos",
   "billedAnnually": "Facturado Anualmente",
-  "billedMonthly": "Facturado Mensualmente"
+  "billedMonthly": "Facturado Mensualmente",
+
+  "pausePlan": "Pausar Plan",
+  "resumePlan": "Reanudar Plan",
+  "changePlan": "Cambiar Plan",
+  "cancelPlan": "Cancelar Plan"
 }

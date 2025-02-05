@@ -28,7 +28,6 @@ const CurrentPlanDetails = () => {
   const { t } = useTranslation('admin-center/current-bill');
   const { trackMixpanelEvent } = useMixpanelTracking();
 
-  const [isVisible, setIsVisible] = useState(false);
   const [pausingPlan, setPausingPlan] = useState(false);
   const [cancellingPlan, setCancellingPlan] = useState(false);
 
@@ -122,7 +121,7 @@ const CurrentPlanDetails = () => {
           <Button
             type="primary"
             loading={pausingPlan || cancellingPlan}
-            onClick={() => setIsVisible(true)}
+            onClick={() => dispatch(toggleUpgradeModal())}
           >
             {t('changePlan')}
           </Button>
@@ -184,6 +183,16 @@ const CurrentPlanDetails = () => {
     </Flex>
   );
 
+  const renderPaddleSubscriptionInfo = () => {
+    return (
+      <Flex vertical>
+        <Typography.Text strong>{billingInfo?.plan_name}</Typography.Text>
+        <Typography.Text>{billingInfo?.default_currency}</Typography.Text>
+
+      </Flex>
+    );
+  };
+
   return (
     <Card
       title={
@@ -205,6 +214,7 @@ const CurrentPlanDetails = () => {
           {billingInfo?.is_ltd_user && renderLtdDetails()}
           {billingInfo?.status === SUBSCRIPTION_STATUS.TRIALING && renderTrialDetails()}
           {billingInfo?.status === SUBSCRIPTION_STATUS.FREE && renderFreePlan()}
+          {billingInfo?.status === SUBSCRIPTION_STATUS.ACTIVE && renderPaddleSubscriptionInfo()}
         </div>
         {shouldShowRedeemButton() && (
           <>

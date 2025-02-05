@@ -89,5 +89,10 @@
   "reporting": "Reporting",
   "subscribeToProjects": "Subscribe to projects",
   "billedAnnually": "Billed Annually",
-  "billedMonthly": "Billed Monthly"
+  "billedMonthly": "Billed Monthly",
+
+  "pausePlan": "Pause Plan",
+  "resumePlan": "Resume Plan",
+  "changePlan": "Change Plan",
+  "cancelPlan": "Cancel Plan"
 }
