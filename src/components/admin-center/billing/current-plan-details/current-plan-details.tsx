@@ -82,18 +82,23 @@ const CurrentPlanDetails = () => {
 
   const showChangeButton = () => {
     if (!billingInfo?.status) return false;
+    if (billingInfo.is_ltd_user) return false;
+
     const status = [SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.PASTDUE];
     return status.includes(billingInfo.status);
   };
 
   const showPausePlanButton = () => {
     if (!billingInfo?.status) return false;
+    if (billingInfo.is_ltd_user) return false;
+
     const status = [SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.PASTDUE];
     return status.includes(billingInfo.status);
   };
 
   const showResumePlanButton = () => {
     if (!billingInfo?.status) return false;
+    if (billingInfo.is_ltd_user) return false;
     const status = [SUBSCRIPTION_STATUS.PAUSED];
     return status.includes(billingInfo.status);
   };
@@ -206,10 +211,13 @@ const CurrentPlanDetails = () => {
           {billingInfo?.status === SUBSCRIPTION_STATUS.TRIALING && renderTrialDetails()}
           {billingInfo?.status === SUBSCRIPTION_STATUS.FREE && renderFreePlan()}
         </div>
-        <Button
-          type="link"
-          style={{
-            margin: 0,
+        {shouldShowRedeemButton() && (
+          <>
+            <Button
+              type="link"
+              style={{
+                margin: 0,
+
             padding: 0,
             width: '90px',
           }}
@@ -217,10 +225,13 @@ const CurrentPlanDetails = () => {
             dispatch(toggleRedeemCodeDrawer());
           }}
         >
-          {t('redeemCode')}
-        </Button>
-        <RedeemCodeDrawer />
-        <Modal
+            {t('redeemCode')}
+          </Button>
+          <RedeemCodeDrawer />
+        </>
+      )}
+      <Modal
+
           style={{
             width: '60vw',
           }}

@@ -13,6 +13,7 @@ const AccountStorage = ({ themeMode }: IAccountStorageProps) => {
   const { loadingBillingInfo, billingInfo } = useAppSelector(state => state.adminCenterReducer);
   return (
     <Card
+      loading={loadingBillingInfo}
       title={
         <span
           style={{
