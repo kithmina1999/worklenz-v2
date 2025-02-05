@@ -8,17 +8,15 @@ import WithStartAndEndDates from '../../components/schedule-old/tabs/withStartAn
 import { useTranslation } from 'react-i18next';
 
 const ScheduleDrawer = () => {
-  const isScheduleDrawerOpen = useAppSelector(
-    (state) => state.scheduleReducer.isScheduleDrawerOpen
-  );
+  const isScheduleDrawerOpen = useAppSelector(state => state.scheduleReducer.isScheduleDrawerOpen);
   const dispatch = useAppDispatch();
-  const {t} = useTranslation('schedule')
+  const { t } = useTranslation('schedule');
 
   const items: TabsProps['items'] = [
     {
       key: '1',
       label: '2024-11-04 - 2024-12-24',
-      children: <WithStartAndEndDates />
+      children: <WithStartAndEndDates />,
     },
     {
       key: '2',
@@ -39,11 +37,7 @@ const ScheduleDrawer = () => {
       onClose={() => dispatch(toggleScheduleDrawer())}
       open={isScheduleDrawerOpen}
     >
-        <Tabs
-        defaultActiveKey="1"
-        type="card"
-        items={items}
-      />
+      <Tabs defaultActiveKey="1" type="card" items={items} />
     </Drawer>
   );
 };

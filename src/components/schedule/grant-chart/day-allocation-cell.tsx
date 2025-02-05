@@ -29,9 +29,7 @@ const DayAllocationCell = ({
     </div>
   ) : (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <span>
-        Total Allocation: {effectiveTotalPerDayHours + effectiveLoggedHours}h
-      </span>
+      <span>Total Allocation: {effectiveTotalPerDayHours + effectiveLoggedHours}h</span>
       <span>Time Logged: {effectiveLoggedHours}h</span>
       <span>Remaining Time: {effectiveTotalPerDayHours}h</span>
     </div>
@@ -75,9 +73,7 @@ const DayAllocationCell = ({
             flexDirection: 'column',
             cursor: isWeekend ? 'not-allowed' : 'pointer', // Change cursor for weekends
           }}
-          onClick={
-            !isWeekend ? () => dispatch(toggleScheduleDrawer()) : undefined
-          }
+          onClick={!isWeekend ? () => dispatch(toggleScheduleDrawer()) : undefined}
         >
           <span
             style={{

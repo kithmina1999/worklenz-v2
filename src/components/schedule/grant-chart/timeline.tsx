@@ -39,9 +39,7 @@ const Timeline = () => {
   useMemo(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          '/scheduler-data/scheduler-timeline-dates.json'
-        );
+        const response = await fetch('/scheduler-data/scheduler-timeline-dates.json');
         const data = await response.json();
         setDates(data);
       } catch (error) {
@@ -62,9 +60,7 @@ const Timeline = () => {
       !isNaN(validEnd.getTime())
     ) {
       const oneDay = 24 * 60 * 60 * 1000;
-      return Math.round(
-        Math.abs((validStart.getTime() - validEnd.getTime()) / oneDay)
-      );
+      return Math.round(Math.abs((validStart.getTime() - validEnd.getTime()) / oneDay));
     } else {
       console.error('Invalid date(s)');
       return 0;
@@ -72,9 +68,7 @@ const Timeline = () => {
   };
 
   const numberOfDays =
-    dates?.chart_start && dates?.chart_end
-      ? getDaysBetween(dates.chart_start, dates.chart_end)
-      : 0;
+    dates?.chart_start && dates?.chart_end ? getDaysBetween(dates.chart_start, dates.chart_end) : 0;
 
   return (
     <div

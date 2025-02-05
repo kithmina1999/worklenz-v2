@@ -24,34 +24,30 @@ const initialState: scheduleState = {
   error: null,
 };
 
-export const fetchTeamData = createAsyncThunk(
-  'schedule/fetchTeamData',
-  async () => {
-    const response = await fetch('/scheduler-data/team-data.json');
-    if (!response.ok) {
-      throw new Error('Failed to fetch team data');
-    }
-    const data = await response.json();
-    return data;
+export const fetchTeamData = createAsyncThunk('schedule/fetchTeamData', async () => {
+  const response = await fetch('/scheduler-data/team-data.json');
+  if (!response.ok) {
+    throw new Error('Failed to fetch team data');
   }
-);
+  const data = await response.json();
+  return data;
+});
 
 export const fetchDateList = createAsyncThunk(
   'schedule/fetchDateList',
-  async () => {
-    const response = await fetch('/scheduler-data/dates-list.json');
-    if (!response.ok) {
+  async ({ date, type }: { date: string; type: string }) => {
+    const response = await scheduleAPIService.fetchScheduleDates({ date, type });
+    if (!response.done) {
       throw new Error('Failed to fetch date list');
     }
-    const data = await response.json();
+    const data = response.body;
     return data;
   }
 );
 
-
 export const updateWorking = createAsyncThunk(
   'schedule/updateWorking',
-  async ({ workingDays, workingHours }: { workingDays: string[], workingHours: number }) => {
+  async ({ workingDays, workingHours }: { workingDays: string[]; workingHours: number }) => {
     const response = await scheduleAPIService.updateScheduleSettings({ workingDays, workingHours });
     if (!response.done) {
       throw new Error('Failed to fetch date list');
@@ -84,14 +80,14 @@ const scheduleSlice = createSlice({
   name: 'scheduleReducer',
   initialState,
   reducers: {
-    toggleSettingsDrawer: (state) => {
+    toggleSettingsDrawer: state => {
       state.isSettingsDrawerOpen = !state.isSettingsDrawerOpen;
     },
     updateSettings(state, action) {
       state.workingDays = action.payload.workingDays;
       state.workingHours = action.payload.workingHours;
     },
-    toggleScheduleDrawer: (state) => {
+    toggleScheduleDrawer: state => {
       state.isScheduleDrawerOpen = !state.isScheduleDrawerOpen;
     },
     getWorkingSettings(state, action) {
@@ -99,9 +95,9 @@ const scheduleSlice = createSlice({
       state.workingHours = action.payload.workingHours;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchTeamData.pending, (state) => {
+      .addCase(fetchTeamData.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -113,7 +109,7 @@ const scheduleSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch team data';
       })
-      .addCase(fetchDateList.pending, (state) => {
+      .addCase(fetchDateList.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -125,7 +121,7 @@ const scheduleSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch date list';
       })
-      .addCase(updateWorking.pending, (state) => {
+      .addCase(updateWorking.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -138,7 +134,7 @@ const scheduleSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch date list';
       })
-      .addCase(getWorking.pending, (state) => {
+      .addCase(getWorking.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -150,8 +146,7 @@ const scheduleSlice = createSlice({
       .addCase(getWorking.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch list';
-      })
-      ;
+      });
   },
 });
 

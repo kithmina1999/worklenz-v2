@@ -11,28 +11,24 @@ import { getStatusColor } from '../../../../../../utils/getStatusColor';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 const StatusGroupTables = ({ datasource }: { datasource: IProjectTask[] }) => {
-  const statusList = useAppSelector((state) => state.statusReducer.status);
+  const statusList = useAppSelector(state => state.statusReducer.status);
 
   const dispatch = useAppDispatch();
 
   // get bulk action detatils
-  const selectedTaskIdsList = useAppSelector(
-    (state) => state.bulkActionReducer.selectedTaskIdsList
-  );
+  const selectedTaskIdsList = useAppSelector(state => state.bulkActionReducer.selectedTaskIdsList);
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   return (
     <Flex gap={24} vertical>
-      {statusList.map((status) => (
+      {statusList.map(status => (
         <TaskListTableWrapper
           key={status.id}
-          taskList={datasource.filter(
-            (task) => task.status === status.category
-          )}
+          taskList={datasource.filter(task => task.status === status.category)}
           tableId={status.id}
           name={status.name}
-          groupBy='status'
+          groupBy="status"
           statusCategory={status.category}
           color={getStatusColor(status.category, themeMode)}
         />

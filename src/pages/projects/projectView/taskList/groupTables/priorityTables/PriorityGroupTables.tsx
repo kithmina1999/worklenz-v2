@@ -22,16 +22,14 @@ const PriorityGroupTables = ({ datasource }: { datasource: IProjectTask[] }) => 
     },
   ];
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   return (
     <Flex gap={24} vertical>
       {priorityList.map((priority, index) => (
         <TaskListTableWrapper
           key={index}
-          taskList={datasource.filter(
-            (task) => task.priority === priority.name
-          )}
+          taskList={datasource.filter(task => task.priority === priority.name)}
           tableId={priority.id}
           name={priority.name}
           groupBy="priority"

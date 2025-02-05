@@ -28,7 +28,7 @@ const ProjectTimelineBar = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { t } = useTranslation('schedule');
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
   const dispatch = useAppDispatch();
 
   const handleResize = (
@@ -53,11 +53,7 @@ const ProjectTimelineBar = ({
       newLeftOffset = leftOffset - deltaWidth;
       newWidth = width + deltaWidth;
 
-      if (
-        newLeftOffset >= 0 &&
-        newWidth >= CELL_WIDTH &&
-        newWidth <= CELL_WIDTH * 30
-      ) {
+      if (newLeftOffset >= 0 && newWidth >= CELL_WIDTH && newWidth <= CELL_WIDTH * 30) {
         setLeftOffset(newLeftOffset);
         setWidth(newWidth);
         const newDuration = Math.round(newWidth / CELL_WIDTH);
@@ -140,10 +136,7 @@ const ProjectTimelineBar = ({
             {t('total')} {totalHours}h
           </Typography.Text>
           {currentDuration > 1 && (
-            <Typography.Text
-              style={{ fontSize: '10px' }}
-              ellipsis={{ expanded: false }}
-            >
+            <Typography.Text style={{ fontSize: '10px' }} ellipsis={{ expanded: false }}>
               {t('perDay')} {project.hours_per_day}h
             </Typography.Text>
           )}
@@ -154,7 +147,7 @@ const ProjectTimelineBar = ({
               width: 'fit-content',
             }}
             ellipsis={{ expanded: false }}
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               dispatch(toggleScheduleDrawer());
             }}

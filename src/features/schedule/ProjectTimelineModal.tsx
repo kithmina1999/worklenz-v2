@@ -2,11 +2,7 @@ import { Button, Col, DatePicker, Flex, Input, Row } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const ProjectTimelineModal = ({
-  setIsModalOpen,
-}: {
-  setIsModalOpen: (x: boolean) => void;
-}) => {
+const ProjectTimelineModal = ({ setIsModalOpen }: { setIsModalOpen: (x: boolean) => void }) => {
   const { t } = useTranslation('schedule');
 
   return (
@@ -55,9 +51,7 @@ const ProjectTimelineModal = ({
       >
         <Button type="link">{t('deleteButton')}</Button>
         <div style={{ display: 'flex', gap: '5px' }}>
-          <Button onClick={() => setIsModalOpen(false)}>
-            {t('cancelButton')}
-          </Button>
+          <Button onClick={() => setIsModalOpen(false)}>{t('cancelButton')}</Button>
           <Button type="primary" onClick={() => setIsModalOpen(false)}>
             {t('saveButton')}
           </Button>

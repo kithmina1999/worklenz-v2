@@ -27,7 +27,7 @@ const GranttMembersTable = React.memo(
     const { t } = useTranslation('schedule');
 
     // get theme details
-    const themeMode = useAppSelector((state) => state.themeReducer.mode);
+    const themeMode = useAppSelector(state => state.themeReducer.mode);
 
     const dispatch = useDispatch();
 
@@ -48,8 +48,7 @@ const GranttMembersTable = React.memo(
         style={{
           width: 370,
           marginBlockStart: 60,
-          borderTop:
-            themeMode === 'dark' ? '1px solid #303030' : '1px solid #e5e7eb',
+          borderTop: themeMode === 'dark' ? '1px solid #303030' : '1px solid #e5e7eb',
         }}
       >
         {/* right side of the table */}
@@ -74,7 +73,7 @@ const GranttMembersTable = React.memo(
             overflow: 'auto',
           }}
         >
-          {members.map((member) => (
+          {members.map(member => (
             <Flex vertical key={member.id}>
               <Flex
                 gap={8}
@@ -96,16 +95,8 @@ const GranttMembersTable = React.memo(
                     {member.name}
                   </Button>
                 </Flex>
-                <Button
-                  size="small"
-                  type="text"
-                  onClick={() => handleToggleProject(member.id)}
-                >
-                  {expandedProject === member.id ? (
-                    <CaretDownOutlined />
-                  ) : (
-                    <CaretRightFilled />
-                  )}
+                <Button size="small" type="text" onClick={() => handleToggleProject(member.id)}>
+                  {expandedProject === member.id ? <CaretDownOutlined /> : <CaretRightFilled />}
                 </Button>
               </Flex>
 
@@ -125,9 +116,7 @@ const GranttMembersTable = React.memo(
                       <Badge color="red" />
                       <Tooltip
                         title={
-                          <div
-                            style={{ display: 'flex', flexDirection: 'column' }}
-                          >
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <span>
                               {t('startDate')}: {project?.date_union.start}
                             </span>

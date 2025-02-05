@@ -1,34 +1,33 @@
-import { Button, Checkbox, Col, Drawer, Form, Input, Row } from "antd";
-import React, { ReactHTMLElement, useEffect, useState } from "react";
-import { useAppSelector } from "../../hooks/useAppSelector";
-import { getWorking, toggleSettingsDrawer, updateSettings, updateWorking } from "./scheduleSlice";
-import { useDispatch } from "react-redux";
-import { useTranslation } from "react-i18next";
-import { scheduleAPIService } from "@/api/schedule/schedule.api.service";
-import Skeleton from "antd/es/skeleton/Skeleton";
-import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { Button, Checkbox, Col, Drawer, Form, Input, Row } from 'antd';
+import React, { ReactHTMLElement, useEffect, useState } from 'react';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import { getWorking, toggleSettingsDrawer, updateSettings, updateWorking } from './scheduleSlice';
+import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { scheduleAPIService } from '@/api/schedule/schedule.api.service';
+import Skeleton from 'antd/es/skeleton/Skeleton';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 const ScheduleSettingsDrawer: React.FC = () => {
-  const isDrawerOpen = useAppSelector((state) => state.scheduleReducer.isSettingsDrawerOpen);
+  const isDrawerOpen = useAppSelector(state => state.scheduleReducer.isSettingsDrawerOpen);
   const dispatch = useAppDispatch();
   const [form] = Form.useForm();
   const { t } = useTranslation('schedule');
 
-  const { workingDays, workingHours, loading } = useAppSelector((state) => state.scheduleReducer);
+  const { workingDays, workingHours, loading } = useAppSelector(state => state.scheduleReducer);
 
   const handleFormSubmit = async (values: any) => {
-    console.log(values);
     dispatch(updateWorking(values));
     dispatch(toggleSettingsDrawer());
   };
 
   const fetchSettings = async () => {
-    dispatch(getWorking())
-  }
+    dispatch(getWorking());
+  };
 
   useEffect(() => {
-    form.setFieldsValue({ workingDays, workingHours })
-  }, [workingDays, workingHours])
+    form.setFieldsValue({ workingDays, workingHours });
+  }, [workingDays, workingHours]);
 
   return (
     <div>
@@ -39,14 +38,14 @@ const ScheduleSettingsDrawer: React.FC = () => {
           dispatch(toggleSettingsDrawer());
         }}
         destroyOnClose
-        afterOpenChange={() => { fetchSettings() }}
+        afterOpenChange={() => {
+          fetchSettings();
+        }}
       >
         <Skeleton loading={loading} active paragraph={{ rows: 1 }}>
-          <Form layout="vertical" form={form} onFinish={handleFormSubmit} >
+          <Form layout="vertical" form={form} onFinish={handleFormSubmit}>
             <Form.Item label={t('workingDays')} name="workingDays">
-              <Checkbox.Group
-                defaultValue={workingDays}
-              >
+              <Checkbox.Group defaultValue={workingDays}>
                 <Row>
                   <Col span={8} style={{ paddingBottom: '8px' }}>
                     <Checkbox value="Monday">{t('monday')}</Checkbox>

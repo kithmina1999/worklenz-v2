@@ -1,10 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import {
-  fetchDateList,
-  fetchTeamData,
-} from '../../../features/schedule/scheduleSlice';
+import { fetchDateList, fetchTeamData } from '../../../features/schedule/scheduleSlice';
 import { themeWiseColor } from '../../../utils/themeWiseColor';
 import GranttMembersTable from './grantt-members-table';
 import { CELL_WIDTH } from '../../../shared/constants';
@@ -12,14 +9,14 @@ import { Flex } from 'antd';
 import DayAllocationCell from './day-allocation-cell';
 import ProjectTimelineBar from './project-timeline-bar';
 
-const GranttChart = React.forwardRef((props, ref) => {
+const GranttChart = React.forwardRef(({ type, date }: { type: string; date: string }, ref) => {
   const [expandedProject, setExpandedProject] = useState<string | null>(null);
 
-  const { teamData } = useAppSelector((state) => state.scheduleReducer);
-  const { dateList } = useAppSelector((state) => state.scheduleReducer);
+  const { teamData } = useAppSelector(state => state.scheduleReducer);
+  const { dateList, loading } = useAppSelector(state => state.scheduleReducer);
 
   // get theme details from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
@@ -28,8 +25,10 @@ const GranttChart = React.forwardRef((props, ref) => {
   }, [dispatch]);
 
   useMemo(() => {
-    dispatch(fetchDateList());
-  }, [dispatch]);
+    if (loading) {
+      dispatch(fetchDateList({ date, type }));
+    }
+  }, [date, type]);
 
   // function to scroll the timeline header and body together
 
@@ -42,13 +41,11 @@ const GranttChart = React.forwardRef((props, ref) => {
   const syncVerticalScroll = (source: 'timeline' | 'members') => {
     if (source === 'timeline') {
       if (membersScrollRef.current && timelineScrollRef.current) {
-        membersScrollRef.current.scrollTop =
-          timelineScrollRef.current.scrollTop;
+        membersScrollRef.current.scrollTop = timelineScrollRef.current.scrollTop;
       }
     } else {
       if (timelineScrollRef.current && membersScrollRef.current) {
-        timelineScrollRef.current.scrollTop =
-          membersScrollRef.current.scrollTop;
+        timelineScrollRef.current.scrollTop = membersScrollRef.current.scrollTop;
       }
     }
   };
@@ -57,13 +54,11 @@ const GranttChart = React.forwardRef((props, ref) => {
   const syncHorizontalScroll = (source: 'timeline' | 'header') => {
     if (source === 'timeline') {
       if (timelineHeaderScrollRef.current && timelineScrollRef.current) {
-        timelineHeaderScrollRef.current.scrollLeft =
-          timelineScrollRef.current.scrollLeft;
+        timelineHeaderScrollRef.current.scrollLeft = timelineScrollRef.current.scrollLeft;
       }
     } else {
       if (timelineScrollRef.current && timelineHeaderScrollRef.current) {
-        timelineScrollRef.current.scrollLeft =
-          timelineHeaderScrollRef.current.scrollLeft;
+        timelineScrollRef.current.scrollLeft = timelineHeaderScrollRef.current.scrollLeft;
       }
     }
   };
@@ -103,8 +98,7 @@ const GranttChart = React.forwardRef((props, ref) => {
         gridTemplateColumns: '375px 1fr',
         overflow: 'hidden',
         height: 'calc(100vh - 206px)',
-        border:
-          themeMode === 'dark' ? '1px solid #303030' : '1px solid #e5e7eb',
+        border: themeMode === 'dark' ? '1px solid #303030' : '1px solid #e5e7eb',
         borderRadius: '4px',
         backgroundColor: themeMode === 'dark' ? '#141414' : '',
       }}
@@ -138,8 +132,7 @@ const GranttChart = React.forwardRef((props, ref) => {
             zIndex: 100,
             backgroundColor: themeWiseColor('#fff', '#141414', themeMode),
             scrollbarWidth: 'none',
-            borderBottom:
-              themeMode === 'dark' ? '1px solid #303030' : '1px solid #e5e7eb',
+            borderBottom: themeMode === 'dark' ? '1px solid #303030' : '1px solid #e5e7eb',
           }}
           onScroll={() => syncHorizontalScroll('header')}
         >
@@ -149,10 +142,10 @@ const GranttChart = React.forwardRef((props, ref) => {
               gridTemplateColumns: `repeat(${365}, ${CELL_WIDTH}px)`,
             }}
           >
-            {dateList?.date_data?.map((date: any, index:number) =>
+            {dateList?.date_data?.map((date: any, index: number) =>
               date.days.map((day: any) => (
                 <div
-                  key={index+day.day}
+                  key={index + day.day}
                   style={{
                     background: day.isWeekend
                       ? 'rgba(217, 217, 217, 0.4)'
@@ -200,9 +193,7 @@ const GranttChart = React.forwardRef((props, ref) => {
                   <div
                     key={`${date.month}-${day.day}`}
                     style={{
-                      background: day.isWeekend
-                        ? 'rgba(217, 217, 217, 0.4)'
-                        : '',
+                      background: day.isWeekend ? 'rgba(217, 217, 217, 0.4)' : '',
                       color: day.isToday ? '#fff' : '',
                       height: 90,
                     }}
@@ -237,14 +228,13 @@ const GranttChart = React.forwardRef((props, ref) => {
                           height: 65,
                         }}
                       >
-                        {project?.date_union?.start &&
-                          project?.date_union?.end && (
-                            <ProjectTimelineBar
-                              project={project}
-                              indicatorWidth={project?.indicator_width}
-                              indicatorOffset={project?.indicator_offset}
-                            />
-                          )}
+                        {project?.date_union?.start && project?.date_union?.end && (
+                          <ProjectTimelineBar
+                            project={project}
+                            indicatorWidth={project?.indicator_width}
+                            indicatorOffset={project?.indicator_offset}
+                          />
+                        )}
                       </Flex>
 
                       {dateList?.date_data?.map((date: any) =>
@@ -252,9 +242,7 @@ const GranttChart = React.forwardRef((props, ref) => {
                           <div
                             key={`${date.month}-${day.day}`}
                             style={{
-                              background: day.isWeekend
-                                ? 'rgba(217, 217, 217, 0.4)'
-                                : '',
+                              background: day.isWeekend ? 'rgba(217, 217, 217, 0.4)' : '',
                               height: 65,
                             }}
                           >

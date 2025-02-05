@@ -17,16 +17,18 @@ type PickerType = 'week' | 'month';
 const PickerWithType = ({
   type,
   onChange,
+  date,
 }: {
   type: PickerType;
   onChange: DatePickerProps['onChange'];
+  date?: Date;
 }) => {
-  return <DatePicker picker={type} onChange={onChange} />;
+  return <DatePicker value={dayjs(date)} picker={type} onChange={onChange} />;
 };
 
 const Schedule: React.FC = () => {
-  const [type, setType] = useState<PickerType>('week');
-  const [date, setDate] = useState<Date | null>(null);
+  const [type, setType] = useState<PickerType>('month');
+  const [date, setDate] = useState<Date | null>(new Date());
   const { t } = useTranslation('schedule');
 
   const dispatch = useDispatch();
@@ -41,11 +43,7 @@ const Schedule: React.FC = () => {
 
     // If 'Month' is selected, default to the first day of the selected month
     if (type === 'month') {
-      selectedDate = new Date(
-        selectedDate.getFullYear(),
-        selectedDate.getMonth(),
-        1
-      );
+      selectedDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
     }
 
     setDate(selectedDate);
@@ -71,27 +69,20 @@ const Schedule: React.FC = () => {
         >
           <Button onClick={handleToday}>{t('today')}</Button>
           <Space>
-            <Select
-              value={type}
-              onChange={(value) => setType(value as PickerType)}
-            >
+            <Select value={type} onChange={value => setType(value as PickerType)}>
               <Option value="week">{t('week')}</Option>
               <Option value="month">{t('month')}</Option>
             </Select>
-            <PickerWithType type={type} onChange={handleDateChange} />
+            <PickerWithType date={date as Date} type={type} onChange={handleDateChange} />
           </Space>
         </Flex>
-        <Button
-          size="small"
-          shape="circle"
-          onClick={() => dispatch(toggleSettingsDrawer())}
-        >
+        <Button size="small" shape="circle" onClick={() => dispatch(toggleSettingsDrawer())}>
           <SettingOutlined />
         </Button>
       </Flex>
 
       <Flex vertical gap={24}>
-        <GranttChart ref={granttChartRef} />
+        <GranttChart type={type} date={date ? date.toISOString() : ''} ref={granttChartRef} />
       </Flex>
 
       <ScheduleSettingsDrawer />
