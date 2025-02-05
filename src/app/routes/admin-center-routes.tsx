@@ -5,9 +5,9 @@ import { Navigate } from 'react-router-dom';
 import { useAuthService } from '@/hooks/useAuth';
 
 const AdminCenterGuard = ({ children }: { children: React.ReactNode }) => {
-  const currentSession = useAuthService().getCurrentSession();
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
-  if (!currentSession?.is_admin || !currentSession?.owner) {
+  if (!isOwnerOrAdmin) {
     return <Navigate to="/worklenz/unauthorized" replace />;
   }
 
