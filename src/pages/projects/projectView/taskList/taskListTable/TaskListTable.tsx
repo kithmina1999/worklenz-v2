@@ -44,25 +44,19 @@ import { deselectAll, selectTaskIds } from '@/features/projects/bulkActions/bulk
 import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/PriorityDropdown';
 
-const TaskListTable = ({
-  taskList,
-  tableId,
-}: {
+interface TaskListTableProps {
   taskList: IProjectTask[] | null;
   tableId: string;
-}) => {
+}
+
+const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [expandedTasks, setExpandedTasks] = useState<string[]>([]);
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
-  const [contextMenuPosition, setContextMenuPosition] = useState({
-    x: 0,
-    y: 0,
-  });
-  const [scrollingTables, setScrollingTables] = useState<{
-    [key: string]: boolean;
-  }>({});
+  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+  const [scrollingTables, setScrollingTables] = useState<Record<string, boolean>>({});
 
   const { t } = useTranslation('task-list-table');
   const dispatch = useAppDispatch();
@@ -71,6 +65,9 @@ const TaskListTable = ({
   const columnList = useAppSelector(state => state.taskReducer.columns);
   const visibleColumns = columnList.filter(column => column.pinned);
 
+  const isDarkMode = themeMode === 'dark';
+  const customBorderColor = isDarkMode ? 'border-[#303030]' : '';
+
   const toggleTaskExpansion = (taskId: string) => {
     setExpandedTasks(prev =>
       prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId]
@@ -78,16 +75,16 @@ const TaskListTable = ({
   };
 
   const toggleSelectAll = () => {
+    if (!taskList) return;
+
+    const allTaskIds = taskList
+      .flatMap(task => [task.id, ...(task.sub_tasks?.map(subtask => subtask.id) || [])])
+      .filter(Boolean) as string[];
+
     if (isSelectAll) {
       setSelectedRows([]);
       dispatch(deselectAll());
     } else {
-      const allTaskIds =
-        taskList?.flatMap(task => [
-          task.id,
-          ...(task.sub_tasks?.map((subtask: IProjectTask) => subtask.id) || []),
-        ]) || [];
-
       setSelectedRows(allTaskIds);
       dispatch(selectTaskIds(allTaskIds));
     }
@@ -95,25 +92,18 @@ const TaskListTable = ({
   };
 
   const toggleRowSelection = (task: IProjectTask) => {
+    if (!task.id) return;
+
     setSelectedRows(prevSelectedRows =>
-      prevSelectedRows.includes(task.id || '')
+      prevSelectedRows.includes(task.id)
         ? prevSelectedRows.filter(id => id !== task.id)
-        : [...prevSelectedRows, task.id || '']
+        : [...prevSelectedRows, task.id]
     );
   };
-
-  useEffect(() => {
-    // console.log('Selected tasks and subtasks:', selectedRows);
-  }, [selectedRows]);
 
   const selectOneRow = (task: IProjectTask) => {
     if (!task.id) return;
     setSelectedRows([task.id]);
-
-    // log the task object when selected
-    if (!selectedRows.includes(task.id || '')) {
-      // console.log('Selected task:', task);
-    }
   };
 
   const handleContextMenu = (e: React.MouseEvent, task: IProjectTask) => {
@@ -126,29 +116,38 @@ const TaskListTable = ({
   };
 
   useEffect(() => {
-    const tableContainer = document.querySelector(`.tasklist-container-${tableId}`);
+    const tableContainer = document.querySelector<HTMLElement>(`.tasklist-container-${tableId}`);
+    if (!tableContainer) return;
+
     const handleScroll = () => {
-      if (tableContainer) {
-        setScrollingTables(prev => ({
-          ...prev,
-          [tableId]: tableContainer.scrollLeft > 0,
-        }));
-      }
+      setScrollingTables(prev => ({
+        ...prev,
+        [tableId]: tableContainer.scrollLeft > 0,
+      }));
     };
-    tableContainer?.addEventListener('scroll', handleScroll);
-    return () => tableContainer?.removeEventListener('scroll', handleScroll);
+
+    tableContainer.addEventListener('scroll', handleScroll);
+    return () => tableContainer.removeEventListener('scroll', handleScroll);
   }, [tableId]);
 
-  const customBorderColor = themeMode === 'dark' && ' border-[#303030]';
-
-  const customHeaderColumnStyles = (key: string | undefined) => {
+  const getColumnStyles = (key: string | undefined, isHeader: boolean) => {
     if (!key) return '';
-    return `border px-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:h-[42px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-[#fafafa]'}`;
-  };
 
-  const customBodyColumnStyles = (key: string | undefined) => {
-    if (!key) return '';
-    return `border px-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:min-h-[40px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
+    const baseStyles = `border px-2 ${key === 'selector' ? 'sticky left-0 z-10' : ''}`;
+    const taskStyles =
+      key === 'task'
+        ? `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10 after:w-1.5 after:bg-transparent ${
+            scrollingTables[tableId]
+              ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent'
+              : ''
+          }`
+        : '';
+    const heightStyles = isHeader ? 'after:h-[42px]' : 'after:min-h-[40px]';
+    const themeStyles = isDarkMode
+      ? `bg-${isHeader ? '[#1d1d1d]' : '[#141414]'} border-[#303030]`
+      : `bg-${isHeader ? '[#fafafa]' : 'white'}`;
+
+    return `${baseStyles} ${taskStyles} ${heightStyles} ${themeStyles}`;
   };
 
   const renderColumnContent = (
@@ -156,57 +155,38 @@ const TaskListTable = ({
     task: IProjectTask,
     isSubtask: boolean = false
   ) => {
-    if (!columnKey) return null;
-    switch (columnKey) {
-      case 'KEY':
-        return <TaskListTaskIdCell taskId={task.task_key || ''} />;
-      case 'TASK':
-        return (
-          <TaskListTaskCell
-            task={task}
-            isSubTask={isSubtask}
-            expandedTasks={expandedTasks}
-            toggleTaskExpansion={toggleTaskExpansion}
-          />
-        );
-      case 'DESCRIPTION':
-        return <TaskListDescriptionCell description={task?.description || ''} />;
-      case 'PROGRESS':
-        return <TaskListProgressCell task={task} />;
-      case 'ASSIGNEES':
-        return <TaskListMembersCell groupId={tableId} task={task} />;
-      case 'LABELS':
-        return <TaskListLabelsCell task={task} />;
-      case 'PHASES':
-        return <PhaseDropdown projectId={selectedProject?.id || ''} />;
-      case 'STATUS':
+    if (!columnKey || !task) return null;
 
-        return <StatusDropdown task={task} teamId={selectedProject?.team_id || ''} />;
-      case 'PRIORITY':
-        return <PriorityDropdown task={task} teamId={selectedProject?.team_id || ''} />;
-      case 'TIME_TRACKING':
-        return (
-          <TaskListTimeTrackerCell taskId={task.id || ''} initialTime={task?.time_spent || 0} />
-        );
-      case 'ESTIMATION':
-        return <TaskListEstimationCell />;
-      case 'START_DATE':
-        return <TaskListStartDateCell startDate={task?.start_date || null} />;
-      case 'DUE_DATE':
-        return <TaskListDueDateCell dueDate={task?.end_date || null} />;
-      case 'DUE_TIME':
-        return <TaskListDueTimeCell />;
-      case 'COMPLETED_DATE':
-        return <TaskListCompletedDateCell completedDate={task?.completed_at || null} />;
-      case 'CREATED_DATE':
-        return <TaskListCreatedDateCell createdDate={task?.created_at || null} />;
-      case 'LAST_UPDATED':
-        return <TaskListLastUpdatedCell lastUpdated={task?.updated_at || null} />;
-      case 'REPORTER':
-        return <TaskListReporterCell task={task} />;
-      default:
-        return null;
-    }
+    const columnComponents = {
+      KEY: () => <TaskListTaskIdCell taskId={task.task_key || ''} />,
+      TASK: () => (
+        <TaskListTaskCell
+          task={task}
+          isSubTask={isSubtask}
+          expandedTasks={expandedTasks}
+          toggleTaskExpansion={toggleTaskExpansion}
+        />
+      ),
+      DESCRIPTION: () => <TaskListDescriptionCell description={task.description || ''} />,
+      PROGRESS: () => <TaskListProgressCell task={task} />,
+      ASSIGNEES: () => <TaskListMembersCell groupId={tableId} task={task} />,
+      LABELS: () => <TaskListLabelsCell task={task} />,
+      PHASES: () => <PhaseDropdown projectId={selectedProject?.id || ''} />,
+      STATUS: () => <StatusDropdown task={task} teamId={selectedProject?.team_id || ''} />,
+      PRIORITY: () => <PriorityDropdown task={task} teamId={selectedProject?.team_id || ''} />,
+      TIME_TRACKING: () => <TaskListTimeTrackerCell task={task} />,
+      ESTIMATION: () => <TaskListEstimationCell />,
+      START_DATE: () => <TaskListStartDateCell startDate={task.start_date || null} />,
+
+      DUE_DATE: () => <TaskListDueDateCell dueDate={task.end_date || null} />,
+      DUE_TIME: () => <TaskListDueTimeCell />,
+      COMPLETED_DATE: () => <TaskListCompletedDateCell completedDate={task.completed_at || null} />,
+      CREATED_DATE: () => <TaskListCreatedDateCell createdDate={task.created_at || null} />,
+      LAST_UPDATED: () => <TaskListLastUpdatedCell lastUpdated={task.updated_at || null} />,
+      REPORTER: () => <TaskListReporterCell task={task} />,
+    };
+
+    return columnComponents[columnKey as keyof typeof columnComponents]?.() || null;
   };
 
   const renderCustomColumnContent = (
@@ -214,152 +194,128 @@ const TaskListTable = ({
     columnType: CustomFieldsTypes,
     task: IProjectTask
   ) => {
-    switch (columnType) {
-      case 'people':
-        return <AssigneeSelector task={task} showDropdown={false} groupId={tableId} />;
-      case 'date':
-        return (
-          <DatePicker
-            placeholder="Set  Date"
-            format={'MMM DD, YYYY'}
-            suffixIcon={null}
-            style={{
-              backgroundColor: colors.transparent,
-              border: 'none',
-              boxShadow: 'none',
-            }}
-          />
-        );
-      case 'checkbox':
-        return <Checkbox />;
-      case 'key':
-        return (
-          <Tooltip title={task.id || ''} className="flex justify-center">
-            <Tag>{task.id || ''}</Tag>
-          </Tooltip>
-        );
-      case 'number': {
-        switch (columnObj?.numberType) {
-          case 'formatted':
-            return (
+    const customComponents = {
+      people: () => <AssigneeSelector task={task} showDropdown={false} groupId={tableId} />,
+      date: () => (
+        <DatePicker
+          placeholder="Set Date"
+          format="MMM DD, YYYY"
+          suffixIcon={null}
+          style={{
+            backgroundColor: colors.transparent,
+            border: 'none',
+            boxShadow: 'none',
+          }}
+        />
+      ),
+      checkbox: () => <Checkbox />,
+      key: () => (
+        <Tooltip title={task.id || ''} className="flex justify-center">
+          <Tag>{task.id || ''}</Tag>
+        </Tooltip>
+      ),
+      number: () => {
+        const numberTypes = {
+          formatted: () => (
+            <Input
+              defaultValue={columnObj?.previewValue.toFixed(columnObj?.decimals)}
+              style={{ padding: 0, border: 'none', background: 'transparent' }}
+            />
+          ),
+          withLabel: () => (
+            <Flex gap={4} align="center" justify="flex-start">
+              {columnObj?.labelPosition === 'left' && columnObj?.label}
               <Input
                 defaultValue={columnObj?.previewValue.toFixed(columnObj?.decimals)}
                 style={{
                   padding: 0,
                   border: 'none',
                   background: 'transparent',
+                  width: '100%',
                 }}
               />
-            );
-          case 'withLabel':
-            return (
-              <Flex gap={4} align="center" justify="flex-start">
-                {columnObj?.labelPosition === 'left' && columnObj?.label}
-                <Input
-                  defaultValue={columnObj?.previewValue.toFixed(columnObj?.decimals)}
-                  style={{
-                    padding: 0,
-                    border: 'none',
-                    background: 'transparent',
-                    width: '100%',
-                  }}
-                />
-                {columnObj?.labelPosition === 'right' && columnObj?.label}
-              </Flex>
-            );
-          case 'unformatted':
-            return (
-              <Input
-                defaultValue={columnObj?.previewValue}
-                style={{
-                  padding: 0,
-                  border: 'none',
-                  background: 'transparent',
-                }}
-              />
-            );
-          case 'percentage':
-            return (
-              <Input
-                defaultValue={columnObj?.previewValue.toFixed(columnObj?.decimals) + '%'}
-                style={{
-                  padding: 0,
-                  border: 'none',
-                  background: 'transparent',
-                }}
-              />
-            );
-          default:
-            return null;
-        }
-      }
-      case 'formula': {
-        const firstColumnId = columnObj?.firstNumericColumn;
-        const secondColumnId = columnObj?.secondNumericColumn;
+              {columnObj?.labelPosition === 'right' && columnObj?.label}
+            </Flex>
+          ),
+          unformatted: () => (
+            <Input
+              defaultValue={columnObj?.previewValue}
+              style={{ padding: 0, border: 'none', background: 'transparent' }}
+            />
+          ),
+          percentage: () => (
+            <Input
+              defaultValue={`${columnObj?.previewValue.toFixed(columnObj?.decimals)}%`}
+              style={{ padding: 0, border: 'none', background: 'transparent' }}
+            />
+          ),
+        };
 
-        console.log('first column', firstColumnId);
-        console.log('second column', secondColumnId);
-
+        return numberTypes[columnObj?.numberType as keyof typeof numberTypes]?.() || null;
+      },
+      formula: () => {
         const calculateResult = () => {
           if (
-            columnObj?.firstNumericColumn == null ||
-            columnObj?.secondNumericColumn == null ||
+            !columnObj?.firstNumericColumn ||
+            !columnObj?.secondNumericColumn ||
             !columnObj?.expression
           ) {
             return null;
           }
 
-          switch (columnObj.expression) {
-            case 'add':
-              return columnObj.firstNumericColumn + columnObj.secondNumericColumn;
-            case 'substract':
-              return columnObj.firstNumericColumn - columnObj.secondNumericColumn;
-            case 'multiply':
-              return columnObj.firstNumericColumn * columnObj.secondNumericColumn;
-            case 'divide':
-              return columnObj.secondNumericColumn !== 0
+          const operations = {
+            add: () => columnObj.firstNumericColumn + columnObj.secondNumericColumn,
+            subtract: () => columnObj.firstNumericColumn - columnObj.secondNumericColumn,
+            multiply: () => columnObj.firstNumericColumn * columnObj.secondNumericColumn,
+            divide: () =>
+              columnObj.secondNumericColumn !== 0
                 ? columnObj.firstNumericColumn / columnObj.secondNumericColumn
-                : null;
-            default:
-              return null;
-          }
+                : null,
+          };
+
+          return operations[columnObj.expression as keyof typeof operations]?.() || null;
         };
+
         return <Typography.Text>{calculateResult() ?? 'Invalid Formula'}</Typography.Text>;
-      }
-      case 'labels': {
-        const labelsList: ITaskLabel[] = columnObj?.labelsList || [];
-        return <CustomColumnLabelCell labelsList={labelsList} />;
-      }
-      case 'selection': {
-        const selectionsList: SelectionType[] = columnObj?.selectionsList || [];
+      },
+      labels: () => <CustomColumnLabelCell labelsList={columnObj?.labelsList || []} />,
+      selection: () => (
+        <CustomColumnSelectionCell selectionsList={columnObj?.selectionsList || []} />
+      ),
+    };
 
-        return <CustomColumnSelectionCell selectionsList={selectionsList} />;
-      }
+    return customComponents[columnType]?.() || null;
+  };
 
-      default:
-        return null;
-    }
+  const getRowBackgroundColor = (taskId: string | undefined) => {
+    if (!taskId) return isDarkMode ? '#181818' : '#fff';
+    return selectedRows.includes(taskId)
+      ? isDarkMode
+        ? '#000'
+        : '#dceeff'
+      : isDarkMode
+        ? '#181818'
+        : '#fff';
   };
 
   return (
     <div className={`border-x border-b ${customBorderColor}`}>
       <div className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}>
-        <table className={`rounded-2 w-full min-w-max border-collapse`}>
+        <table className="rounded-2 w-full min-w-max border-collapse">
           <thead className="h-[42px]">
             <tr>
               <th
-                key={'selector'}
-                className={`${customHeaderColumnStyles('selector')}`}
+                className={getColumnStyles('selector', true)}
                 style={{ width: 56, fontWeight: 500 }}
               >
                 <Flex justify="flex-start" style={{ marginInlineStart: 22 }}>
                   <Checkbox checked={isSelectAll} onChange={toggleSelectAll} />
                 </Flex>
               </th>
-              {visibleColumns.map((column, index) => (
+              {visibleColumns.map(column => (
                 <th
                   key={column.key}
-                  className={`${customHeaderColumnStyles(column.key)}`}
+                  className={getColumnStyles(column.key, true)}
                   style={{ fontWeight: 500 }}
                 >
                   {column.key === 'phases' || column.key === 'customColumn' || column.custom_column
@@ -373,20 +329,18 @@ const TaskListTable = ({
             {taskList?.map(task => (
               <React.Fragment key={task.id}>
                 <tr
-                  key={task.id}
                   onContextMenu={e => handleContextMenu(e, task)}
-                  className={`${taskList.length === 0 ? 'h-0' : 'h-[42px]'} task-row`}
+                  className={`${!taskList.length ? 'h-0' : 'h-[42px]'} task-row`}
                 >
                   <td
-                    key={'selector'}
-                    className={customBodyColumnStyles('selector')}
+                    className={getColumnStyles('selector', false)}
                     style={{
                       width: 56,
                       backgroundColor: selectedRows.includes(task.id || '')
-                        ? themeMode === 'dark'
+                        ? isDarkMode
                           ? colors.skyBlue
                           : '#dceeff'
-                        : themeMode === 'dark'
+                        : isDarkMode
                           ? '#181818'
                           : '#fff',
                     }}
@@ -402,15 +356,9 @@ const TaskListTable = ({
                   {visibleColumns.map(column => (
                     <td
                       key={column.key}
-                      className={customBodyColumnStyles(column.key)}
+                      className={getColumnStyles(column.key, false)}
                       style={{
-                        backgroundColor: selectedRows.includes(task.id || '')
-                          ? themeMode === 'dark'
-                            ? '#000'
-                            : '#dceeff'
-                          : themeMode === 'dark'
-                            ? '#181818'
-                            : '#fff',
+                        backgroundColor: getRowBackgroundColor(task.id),
                       }}
                     >
                       {column.custom_column
@@ -419,71 +367,52 @@ const TaskListTable = ({
                             column.custom_column_obj.fieldType,
                             task
                           )
-                        : renderColumnContent(column.key || '', task)}
+                        : renderColumnContent(column.key, task)}
                     </td>
                   ))}
                 </tr>
 
-                {expandedTasks.includes(task.id || '') &&
-                  task?.sub_tasks?.map(subtask => (
-                    <tr
-                      key={subtask.id}
-                      onContextMenu={e => handleContextMenu(e, subtask)}
-                      className={`${taskList.length === 0 ? 'h-0' : 'h-[42px]'} task-row`}
-                    >
-                      <td
-                        key={'selector'}
-                        className={customBodyColumnStyles('selector')}
-                        style={{
-                          width: 20,
-                          backgroundColor: selectedRows.includes(subtask.id || '')
-                            ? themeMode === 'dark'
-                              ? colors.skyBlue
-                              : '#dceeff'
-                            : themeMode === 'dark'
-                              ? '#181818'
-                              : '#fff',
-                        }}
+                {expandedTasks.includes(task.id || '') && (
+                  <>
+                    {task?.sub_tasks?.map(subtask => (
+                      <tr
+                        key={subtask.id}
+                        onContextMenu={e => handleContextMenu(e, subtask)}
+                        className={`${!taskList.length ? 'h-0' : 'h-[42px]'} task-row`}
                       >
-                        <Flex style={{ marginInlineStart: 22 }}>
-                          <Checkbox
-                            checked={selectedRows.includes(subtask.id || '')}
-                            onChange={() => toggleRowSelection(subtask)}
-                          />
-                        </Flex>
-                      </td>
-
-                      {/* other sub tasks cells  */}
-                      {visibleColumns.map(column => (
                         <td
-                          key={column.key}
-                          className={customBodyColumnStyles(column.key)}
+                          className={getColumnStyles('selector', false)}
                           style={{
-                            backgroundColor: selectedRows.includes(subtask.id || '')
-                              ? themeMode === 'dark'
-                                ? '#000'
-                                : '#dceeff'
-                              : // : hoverRow === subtask.id
-                                //   ? themeMode === 'dark'
-                                //     ? '#000'
-                                //     : '#f8f7f9'
-                                themeMode === 'dark'
-                                ? '#181818'
-                                : '#fff',
+                            width: 20,
+                            backgroundColor: getRowBackgroundColor(subtask.id),
                           }}
                         >
-                          {renderColumnContent(column.key, subtask, true)}
+                          <Flex style={{ marginInlineStart: 22 }}>
+                            <Checkbox
+                              checked={selectedRows.includes(subtask.id || '')}
+                              onChange={() => toggleRowSelection(subtask)}
+                            />
+                          </Flex>
                         </td>
-                      ))}
+                        {visibleColumns.map(column => (
+                          <td
+                            key={column.key}
+                            className={getColumnStyles(column.key, false)}
+                            style={{
+                              backgroundColor: getRowBackgroundColor(subtask.id),
+                            }}
+                          >
+                            {renderColumnContent(column.key, subtask, true)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                    <tr>
+                      <td colSpan={visibleColumns.length + 1}>
+                        <AddSubTaskListRow />
+                      </td>
                     </tr>
-                  ))}
-
-                {expandedTasks.includes(task.id || '') && (
-                  <tr>
-                    <td colSpan={visibleColumns.length}>
-                      <AddSubTaskListRow />
-                    </td>
-                  </tr>
+                  </>
                 )}
               </React.Fragment>
             ))}
@@ -491,10 +420,8 @@ const TaskListTable = ({
         </table>
       </div>
 
-      {/* add a main task to the table  */}
       <AddTaskListRow groupId={tableId} />
 
-      {/* custom task context menu  */}
       <TaskContextMenu
         visible={contextMenuVisible}
         position={contextMenuPosition}

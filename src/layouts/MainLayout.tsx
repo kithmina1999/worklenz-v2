@@ -10,15 +10,6 @@ import { useEffect } from 'react';
 const MainLayout = () => {
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
-  const { getCurrentSession } = useAuthService();
-  const currentSession = getCurrentSession();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (currentSession?.is_expired) {
-      navigate('/worklenz/license-expired');
-    }
-  }, [currentSession, navigate]);
 
   const headerStyles = {
     zIndex: 999,
