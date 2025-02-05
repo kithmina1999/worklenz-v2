@@ -13,7 +13,7 @@ const UpgradePlansLKR: React.FC = () => {
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
   const [selectedCard, setSelectedCard] = useState(2);
-  const { t } = useTranslation('admin-center/current-bill');;
+  const { t } = useTranslation('admin-center/current-bill');
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const userCurrency = timeZoneCurrencyMap[userTimeZone] || 'USD';
 
@@ -38,7 +38,7 @@ const UpgradePlansLKR: React.FC = () => {
   const handleFormSubmit = () => {
     notification.open({
       message: '',
-      description: 'You contact information has been sent successfully',
+      description: 'Your contact information has been sent successfully',
       placement: 'topRight',
     });
     dispatch(toggleUpgradeModal());

@@ -21,6 +21,7 @@ import { calculateTimeGap } from '@/utils/calculate-time-gap';
 import { formatDate } from '@/utils/timeUtils';
 import UpgradePlansLKR from '../drawers/upgrade-plans-lkr/upgrade-plans-lkr';
 import UpgradePlans from '../drawers/upgrade-plans/upgrade-plans';
+import { SUBSCRIPTION_STATUS } from '@/shared/constants';
 
 const CurrentPlanDetails = () => {
   const dispatch = useAppDispatch();
@@ -35,15 +36,6 @@ const CurrentPlanDetails = () => {
   const { loadingBillingInfo, billingInfo, freePlanSettings, isUpgradeModalOpen } = useAppSelector(
     state => state.adminCenterReducer
   );
-
-  const subscriptionStatus = {
-    ACTIVE: 'active',
-    PASTDUE: 'past_due',
-    PAUSED: 'paused',
-    DELETED: 'deleted',
-    TRIALING: 'trialing',
-    FREE: 'free',
-  };
 
   const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -90,19 +82,19 @@ const CurrentPlanDetails = () => {
 
   const showChangeButton = () => {
     if (!billingInfo?.status) return false;
-    const status = [subscriptionStatus.ACTIVE, subscriptionStatus.PASTDUE];
+    const status = [SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.PASTDUE];
     return status.includes(billingInfo.status);
   };
 
   const showPausePlanButton = () => {
     if (!billingInfo?.status) return false;
-    const status = [subscriptionStatus.ACTIVE, subscriptionStatus.PASTDUE];
+    const status = [SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.PASTDUE];
     return status.includes(billingInfo.status);
   };
 
   const showResumePlanButton = () => {
     if (!billingInfo?.status) return false;
-    const status = [subscriptionStatus.PAUSED];
+    const status = [SUBSCRIPTION_STATUS.PAUSED];
     return status.includes(billingInfo.status);
   };
 
@@ -211,8 +203,8 @@ const CurrentPlanDetails = () => {
       <Flex vertical>
         <div style={{ marginBottom: '14px' }}>
           {billingInfo?.is_ltd_user && renderLtdDetails()}
-          {billingInfo?.status === subscriptionStatus.TRIALING && renderTrialDetails()}
-          {billingInfo?.status === subscriptionStatus.FREE && renderFreePlan()}
+          {billingInfo?.status === SUBSCRIPTION_STATUS.TRIALING && renderTrialDetails()}
+          {billingInfo?.status === SUBSCRIPTION_STATUS.FREE && renderFreePlan()}
         </div>
         <Button
           type="link"
@@ -229,6 +221,9 @@ const CurrentPlanDetails = () => {
         </Button>
         <RedeemCodeDrawer />
         <Modal
+          style={{
+            width: '60vw',
+          }}
           open={isUpgradeModalOpen}
           onCancel={() => dispatch(toggleUpgradeModal())}
           width={1000}

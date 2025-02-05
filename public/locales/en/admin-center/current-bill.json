@@ -70,5 +70,23 @@
   "trialInProgress": "Your free trial expires {{trial_expire_string}}",
 
   "required": "This field is required",
-  "invalidCode": "Invalid code"
+  "invalidCode": "Invalid code",
+
+  "selectPlan": "Select the best plan for your team",
+  "changeSubscriptionPlan": "Change your subscription plan",
+  "noOfSeats": "Number of seats",
+  "annualPlan": "Pro - Annual",
+  "monthlyPlan": "Pro - Monthly",
+  "freeForever": "Free Forever",
+  "bestForPersonalUse": "Best for personal use",
+  "storage": "Storage",
+  "projects": "Projects",
+  "teamMembers": "Team Members",
+  "unlimitedTeamMembers": "Unlimited Team Members",
+  "unlimitedActiveProjects": "Unlimited active projects",
+  "schedule": "Schedule",
+  "reporting": "Reporting",
+  "subscribeToProjects": "Subscribe to projects",
+  "billedAnnually": "Billed Annually",
+  "billedMonthly": "Billed Monthly"
 }

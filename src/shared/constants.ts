@@ -174,3 +174,12 @@ export const NOTIFICATION_OPTIONS = [NOTIFICATION_OPTION_UNREAD, NOTIFICATION_OP
 
 export const MY_DASHBOARD_ACTIVE_FILTER = 'my-dashboard-active-filter';
 export const MY_DASHBOARD_DEFAULT_VIEW = 'All';
+
+export const SUBSCRIPTION_STATUS = {
+  ACTIVE: 'active',
+  PASTDUE: 'past_due',
+  PAUSED: 'paused',
+  DELETED: 'deleted',
+  TRIALING: 'trialing',
+  FREE: 'free',
+};

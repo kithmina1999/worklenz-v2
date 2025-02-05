@@ -70,5 +70,23 @@
   "trialInProgress": "Su prueba gratuita expira {{trial_expire_string}}",
 
   "required": "Este campo es requerido",
-  "invalidCode": "Código inválido"
+  "invalidCode": "Código inválido",
+
+  "selectPlan": "Seleccione el mejor plan para su equipo",
+  "changeSubscriptionPlan": "Cambie su plan de suscripción",
+  "noOfSeats": "Número de asientos",
+  "annualPlan": "Pro - Anual",
+  "monthlyPlan": "Pro - Mensual",
+  "freeForever": "Gratis para siempre",
+  "bestForPersonalUse": "Mejor para uso personal",
+  "storage": "Almacenamiento",
+  "projects": "Proyectos",
+  "teamMembers": "Miembros del equipo",
+  "unlimitedTeamMembers": "Miembros del equipo ilimitados",
+  "unlimitedActiveProjects": "Proyectos activos ilimitados",
+  "schedule": "Programación",
+  "reporting": "Informes",
+  "subscribeToProjects": "Suscribirse a proyectos",
+  "billedAnnually": "Facturado Anualmente",
+  "billedMonthly": "Facturado Mensualmente"
 }

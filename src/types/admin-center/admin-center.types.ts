@@ -80,6 +80,9 @@ export interface IBillingAccountInfo {
   is_custom?: boolean;
   is_ltd_user?: boolean;
   ltd_users?: number;
+  total_seats?: number;
+  total_used?: number;
+  is_lkr_billing?: boolean;
 }
 
 export interface IPricingPlans {
@@ -90,6 +93,9 @@ export interface IPricingPlans {
   team_member_limit?: string;
   projects_limit?: string;
   free_tier_storage?: string;
+  current_user_count?: string;
+  annual_price?: string;
+  monthly_price?: string;
 }
 
 export interface IPaddleCheckoutParams {
