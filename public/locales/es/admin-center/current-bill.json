@@ -10,7 +10,7 @@
   "accountStorage": "Almacenamiento de la Cuenta",
   "used": "Usado:",
   "remaining": "Restante:",
-  "chargers": "Cargos",
+  "charges": "Cargos",
   "tooltip": "Cargos para el ciclo de facturación actual",
   "description": "Descripción",
   "billingPeriod": "Periodo de Facturación",

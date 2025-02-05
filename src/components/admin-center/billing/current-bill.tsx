@@ -135,7 +135,7 @@ const CurrentBill: React.FC = () => {
                 gap: '4px',
               }}
             >
-              <span>{t('chargers')}</span>
+              <span>{t('charges')}</span>
               <Tooltip title={t('tooltip')}>
                 <InfoCircleTwoTone />
               </Tooltip>

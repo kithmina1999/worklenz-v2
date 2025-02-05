@@ -10,7 +10,7 @@
   "accountStorage": "Armazenamento da Conta",
   "used": "Usado:",
   "remaining": "Restante:",
-  "chargers": "Cobranças",
+  "charges": "Cobranças",
   "tooltip": "Cobranças para o ciclo de faturamento atual",
   "description": "Descrição",
   "billingPeriod": "Período de Faturamento",
