@@ -1,10 +1,14 @@
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { Button, Result } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-const LicenseExpired = () => {
+const Unauthorized = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation('license-expired');
+  const { t } = useTranslation('unauthorized');
+  useDocumentTitle('Unauthorized');
+
+
   return (
     <div style={{ marginBlock: 65, minHeight: '90vh' }}>
       <Result
@@ -12,11 +16,7 @@ const LicenseExpired = () => {
         title={t('title')}
         subTitle={t('subtitle')}
         extra={
-          <Button
-            type="primary"
-            key="console"
-            onClick={() => navigate('/worklenz/admin-center/billing')}
-          >
+          <Button type="primary" key="console" onClick={() => navigate('/worklenz/home')}>
             {t('button')}
           </Button>
         }
@@ -25,4 +25,4 @@ const LicenseExpired = () => {
   );
 };
 
-export default LicenseExpired;
+export default Unauthorized;

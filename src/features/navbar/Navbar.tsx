@@ -34,18 +34,19 @@ const Navbar = () => {
     setNavRoutesList(storedNavRoutesList);
   }, []);
 
-  type MenuItem = Required<MenuProps>['items'][number];
   const navlinkItems = useMemo(
     () =>
-      navRoutesList.map((route, index) => ({
-        key: route.path.split('/').pop() || index,
-        label: (
-          <Link to={route.path} style={{ fontWeight: 600 }}>
-            {t(route.name)}
-          </Link>
-        ),
-      })),
-    [navRoutesList, t]
+      navRoutesList
+        .filter((route) => !route.adminOnly || isOwnerOrAdmin)
+        .map((route, index) => ({
+          key: route.path.split('/').pop() || index,
+          label: (
+            <Link to={route.path} style={{ fontWeight: 600 }}>
+              {t(route.name)}
+            </Link>
+          ),
+        })),
+    [navRoutesList, t, isOwnerOrAdmin]
   );
 
   useEffect(() => {
