@@ -326,7 +326,14 @@ const taskSlice = createSlice({
         //   }
         // }
         return taskGroup;
-      });
+      })
+    },
+
+    toggleColumnVisibility: (state, action: PayloadAction<string>) => {
+      const column = state.columns.find(col => col.key === action.payload);
+      if (column) {
+        column.pinned = !column.pinned;
+      }
     },
   },
 
@@ -387,6 +394,7 @@ export const {
   setFields,
   setSearch,
   setShowTaskDrawer,
+  toggleColumnVisibility,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

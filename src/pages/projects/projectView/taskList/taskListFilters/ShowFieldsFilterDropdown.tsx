@@ -9,7 +9,7 @@ import Space from 'antd/es/space';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleColumnVisibility } from '@/features/projects/singleProject/taskListColumns/taskColumnsSlice';
+import { toggleColumnVisibility } from '@/features/tasks/tasks.slice';
 
 const ShowFieldsFilterDropdown = () => {
   // localization
@@ -18,7 +18,7 @@ const ShowFieldsFilterDropdown = () => {
   const dispatch = useAppDispatch();
 
   // access the updated columnList with isVisible properties
-  const columnList = useAppSelector(state => state.projectViewTaskListColumnsReducer.columnList);
+  const columnList = useAppSelector(state => state.taskReducer.columns);
 
   // remove the task and selector columns as they are fixed
   const visibilityChangableColumnList = columnList.filter(
@@ -47,12 +47,13 @@ const ShowFieldsFilterDropdown = () => {
           >
             <Space>
               <Checkbox
-                checked={col.isVisible}
-                onClick={() => dispatch(toggleColumnVisibility(col.key))}
-              />
-              {col.isCustomColumn
-                ? col.name
-                : t(`${col.key === 'phases' ? 'phasesText' : col.columnHeader + 'Text'}`)}
+                checked={col.pinned}
+                onClick={() => dispatch(toggleColumnVisibility(col.key ?? ''))}
+              >
+                {col.custom_column
+                  ? col.name
+                  : t(`${col.key === 'phases' ? 'phasesText' : col.name + 'Text'}`)}
+              </Checkbox>
             </Space>
           </List.Item>
         ))}
