@@ -279,20 +279,11 @@ const taskSlice = createSlice({
 
     updateTaskLabel: (state, action: PayloadAction<ILabelsChangeResponse>) => {
       const label = action.payload;
-      console.log('updateTaskLabel', label);
       state.taskGroups.forEach(group => {
         const task = group.tasks.find(task => task.id === label.id);
 
         if (task) {
-          if (!task.labels) {
-            task.labels = [];
-          }
-          const labelIndex = task.labels.findIndex(existingLabel => existingLabel.id === label.id);
-          if (labelIndex >= 0) {
-            task.labels.splice(labelIndex, 1);
-          } else {
-            task.labels.push(label);
-          }
+          task.labels = label.labels || [];
         }
       });
     },

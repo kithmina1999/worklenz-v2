@@ -94,11 +94,12 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
   const toggleRowSelection = (task: IProjectTask) => {
     if (!task.id) return;
 
-    setSelectedRows(prevSelectedRows =>
-      prevSelectedRows.includes(task.id)
+    setSelectedRows(prevSelectedRows => {
+      if (!task.id) return prevSelectedRows;
+      return prevSelectedRows.includes(task.id)
         ? prevSelectedRows.filter(id => id !== task.id)
-        : [...prevSelectedRows, task.id]
-    );
+        : [...prevSelectedRows, task.id];
+    });
   };
 
   const selectOneRow = (task: IProjectTask) => {
@@ -320,7 +321,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
                 >
                   {column.key === 'phases' || column.key === 'customColumn' || column.custom_column
                     ? column.name
-                    : t(`${column.key?.toLowerCase()}Column`)}
+                    : t(`${column.key?.replace('_', '').toLowerCase()}Column`)}
                 </th>
               ))}
             </tr>

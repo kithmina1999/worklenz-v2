@@ -45,7 +45,6 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   const currentSession = useAuthService().getCurrentSession();
 
   const handleLabelsChange = (labels: ILabelsChangeResponse) => {
-    console.log('labels', labels);
     dispatch(updateTaskLabel(labels));
   };
 
