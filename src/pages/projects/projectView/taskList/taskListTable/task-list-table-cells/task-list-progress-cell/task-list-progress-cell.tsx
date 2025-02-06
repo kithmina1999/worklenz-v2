@@ -1,23 +1,22 @@
 import { Progress, Tooltip } from 'antd';
 import './task-progress-cell.css';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { useSocket } from '@/socket/socketContext';
 
 type TaskListProgressCellProps = {
   task: IProjectTask;
 };
 
 const TaskListProgressCell = ({ task }: TaskListProgressCellProps) => {
-  const totalTasks = task.total_tasks_count;
-  const completedTasks = task.completed_count;
+  const { socket } = useSocket();
 
   return (
-    <Tooltip title={`${completedTasks} / ${totalTasks}`}>
+    <Tooltip title={`${task.completed_count} / ${task.total_tasks_count}`}>
       <Progress
-        percent={task.progress}
+        percent={task.complete_ratio || 0}
         type="circle"
-        size={26}
+        size={24}
         style={{ cursor: 'default' }}
-
         className="task-progress"
       />
     </Tooltip>
