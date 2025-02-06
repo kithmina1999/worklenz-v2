@@ -93,5 +93,7 @@
   "pausePlan": "Pausar Plano",
   "resumePlan": "Reanudar Plano",
   "changePlan": "Mudar Plano",
-  "cancelPlan": "Cancelar Plano"
+  "cancelPlan": "Cancelar Plano",
+
+  "perMonthPerUser": "por usuário / mês"
 }

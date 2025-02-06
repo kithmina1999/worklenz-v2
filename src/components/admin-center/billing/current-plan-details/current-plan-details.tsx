@@ -173,7 +173,6 @@ const CurrentPlanDetails = () => {
       <Typography.Text strong>Free Plan</Typography.Text>
       <Typography.Text>
         <br />-{' '}
-
         {freePlanSettings?.team_member_limit === 0
           ? t('unlimitedTeamMembers')
           : `${freePlanSettings?.team_member_limit} ${t('teamMembers')}`}
@@ -187,17 +186,27 @@ const CurrentPlanDetails = () => {
     return (
       <Flex vertical>
         <Typography.Text strong>{billingInfo?.plan_name}</Typography.Text>
-        <Typography.Text>{billingInfo?.default_currency}</Typography.Text>
+        <Flex>
+          <Typography.Text>{billingInfo?.default_currency}</Typography.Text>&nbsp;
+          <Typography.Text>
+            {billingInfo?.billing_type === 'year'
+              ? billingInfo.unit_price_per_month
+              : billingInfo?.unit_price}
 
+            &nbsp;{t('perMonthPerUser')}
+          </Typography.Text>
+        </Flex>
       </Flex>
     );
   };
 
   return (
     <Card
+      style={{ height: '100%' }}
       title={
         <Typography.Text
           style={{
+
             color: themeMode === 'dark' ? '#ffffffd9' : '#000000d9',
             fontWeight: 500,
             fontSize: '16px',

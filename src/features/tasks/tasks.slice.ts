@@ -281,9 +281,9 @@ const taskSlice = createSlice({
       const label = action.payload;
       state.taskGroups.forEach(group => {
         const task = group.tasks.find(task => task.id === label.id);
-
         if (task) {
           task.labels = label.labels || [];
+          task.all_labels = label.all_labels || [];
         }
       });
     },

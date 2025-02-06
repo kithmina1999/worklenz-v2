@@ -43,6 +43,7 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   const [labelList, setLabelList] = useState<ITaskLabel[]>([]);
 
   const currentSession = useAuthService().getCurrentSession();
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const handleLabelsChange = (labels: ILabelsChangeResponse) => {
     dispatch(updateTaskLabel(labels));
@@ -117,7 +118,7 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
           {filteredLabelData.length ? (
             filteredLabelData.map(label => (
               <List.Item
-                className="custom-list-item"
+                className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
                 key={label.id}
                 style={{
                   display: 'flex',
@@ -130,8 +131,8 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
                 <Checkbox
                   id={label.id}
                   checked={
-                    task?.labels
-                      ? task?.labels.some(existingLabel => existingLabel.id === label.id)
+                    task?.all_labels
+                      ? task?.all_labels.some(existingLabel => existingLabel.id === label.id)
                       : false
                   }
                   onChange={() => handleLabelChange(label)}

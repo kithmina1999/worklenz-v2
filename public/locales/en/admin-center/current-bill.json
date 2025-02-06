@@ -94,5 +94,7 @@
   "pausePlan": "Pause Plan",
   "resumePlan": "Resume Plan",
   "changePlan": "Change Plan",
-  "cancelPlan": "Cancel Plan"
+  "cancelPlan": "Cancel Plan",
+
+  "perMonthPerUser": "per user/month"
 }
