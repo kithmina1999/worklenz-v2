@@ -17,7 +17,7 @@ const TaskListProgressCell = ({ task }: TaskListProgressCellProps) => {
         type="circle"
         size={24}
         style={{ cursor: 'default' }}
-        className="task-progress"
+        strokeWidth={(task.complete_ratio || 0) >= 100 ? 9 : 7}
       />
     </Tooltip>
   );
