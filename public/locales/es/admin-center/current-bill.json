@@ -95,5 +95,6 @@
   "changePlan": "Cambiar Plan",
   "cancelPlan": "Cancelar Plan",
 
-  "perMonthPerUser": "por usuario / mes"
+  "perMonthPerUser": "por usuario / mes",
+  "viewInvoice": "Ver Factura"
 }
