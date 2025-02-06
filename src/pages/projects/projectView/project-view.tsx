@@ -35,9 +35,6 @@ const ProjectView = () => {
   const { projectId } = useParams();
   if (projectId) dispatch(setProjectId(projectId));
 
-  // useResponsive custom hook
-  const { isDesktop } = useResponsive();
-
   const selectedProject = useAppSelector(state => state.projectReducer.project);
   useDocumentTitle(`${selectedProject?.name}`);
 

@@ -2,14 +2,13 @@ import { Badge, Flex, Select } from 'antd';
 import './statusDropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
-import { ITaskStatus } from '@/types/status.types';
-import { useState, useEffect, useMemo } from 'react';
-import { ALPHA_CHANNEL } from '@/shared/constants';
+import { useEffect, useMemo } from 'react';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.component';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { getCurrentGroup, GROUP_BY_STATUS_VALUE } from '@/features/tasks/tasks.slice';
+import { getCurrentGroup, GROUP_BY_STATUS_VALUE, updateTaskStatus } from '@/features/tasks/tasks.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 type StatusDropdownProps = {
   task: IProjectTask;
@@ -19,6 +18,7 @@ type StatusDropdownProps = {
 const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
   const { t } = useTranslation('task-list-table');
   const { socket, connected } = useSocket();
+  const dispatch = useAppDispatch();
 
   const statusList = useAppSelector(state => state.taskStatusReducer.status);
 
@@ -36,29 +36,11 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
         team_id: teamId,
       })
     );
-
     getTaskProgress(task.id);
   };
 
   const handleTaskStatusChange = (response: ITaskListStatusChangeResponse) => {
-    if (response && response.id === task.id) {
-      task.status_color = response.color_code;
-      task.complete_ratio = +response.complete_ratio || 0;
-      task.status = response.status_id;
-      task.status_category = response.statusCategory;
-
-      // if (isGroupByStatus()) {
-      //   if (!task.is_sub_task) {
-      //     this.service.updateTaskGroup(task, false);
-      //   }
-      //   if (this.service.isSubtasksIncluded) {
-      //     this.service.emitRefreshSubtasksIncluded();
-      //   }
-      // }
-
-      // this.service.emitUpdateGroupProgress(this.task.id);
-      // this.kanbanService.emitRefreshGroups();
-    }
+      dispatch(updateTaskStatus(response));
   };
 
   const isGroupByStatus = () => {
