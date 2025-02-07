@@ -1,4 +1,5 @@
 import { scheduleAPIService } from '@/api/schedule/schedule.api.service';
+import { PickerType, ScheduleData } from '@/types/schedule/schedule-v2.types';
 import logger from '@/utils/errorLogger';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
@@ -11,6 +12,9 @@ interface scheduleState {
   dateList: any;
   loading: boolean;
   error: string | null;
+  type: PickerType;
+  date: Date;
+  dayCount: number;
 }
 
 const initialState: scheduleState = {
@@ -22,21 +26,24 @@ const initialState: scheduleState = {
   dateList: {},
   loading: false,
   error: null,
+  type: 'month',
+  date: new Date(),
+  dayCount: 0,
 };
 
 export const fetchTeamData = createAsyncThunk('schedule/fetchTeamData', async () => {
-  const response = await fetch('/scheduler-data/team-data.json');
-  if (!response.ok) {
+  const response = await scheduleAPIService.fetchScheduleMembers();
+  if (!response.done) {
     throw new Error('Failed to fetch team data');
   }
-  const data = await response.json();
+  const data = response.body;
   return data;
 });
 
 export const fetchDateList = createAsyncThunk(
   'schedule/fetchDateList',
-  async ({ date, type }: { date: string; type: string }) => {
-    const response = await scheduleAPIService.fetchScheduleDates({ date, type });
+  async ({ date, type }: { date: Date; type: string }) => {
+    const response = await scheduleAPIService.fetchScheduleDates({ date: date.toISOString(), type });
     if (!response.done) {
       throw new Error('Failed to fetch date list');
     }
@@ -76,6 +83,30 @@ export const getWorking = createAsyncThunk(
   }
 );
 
+export const fetchMemberProjects = createAsyncThunk(
+  'schedule/fetchMemberProjects',
+  async ({ id }: { id: string }) => {
+    const response = await scheduleAPIService.fetchMemberProjects({ id });
+    if (!response.done) {
+      throw new Error('Failed to fetch date list');
+    }
+    const data = response.body;
+    return data;
+  }
+);
+
+export const createSchedule = createAsyncThunk(
+  'schedule/createSchedule',
+  async ({ schedule }: { schedule: ScheduleData}) => {
+    const response = await scheduleAPIService.submitScheduleData({ schedule });
+    if (!response.done) {
+      throw new Error('Failed to fetch date list');
+    }
+    const data = response.body;
+    return data;
+  }
+);
+
 const scheduleSlice = createSlice({
   name: 'scheduleReducer',
   initialState,
@@ -93,6 +124,15 @@ const scheduleSlice = createSlice({
     getWorkingSettings(state, action) {
       state.workingDays = action.payload.workingDays;
       state.workingHours = action.payload.workingHours;
+    },
+    setDate(state, action) {
+      state.date = action.payload;
+    },
+    setType(state, action) {
+      state.type = action.payload;
+    },
+    setDayCount(state, action) {
+      state.dayCount = action.payload;
     },
   },
   extraReducers: builder => {
@@ -115,6 +155,7 @@ const scheduleSlice = createSlice({
       })
       .addCase(fetchDateList.fulfilled, (state, action) => {
         state.dateList = action.payload;
+        state.dayCount = (action.payload as any)?.date_data[0]?.days?.length;
         state.loading = false;
       })
       .addCase(fetchDateList.rejected, (state, action) => {
@@ -146,10 +187,37 @@ const scheduleSlice = createSlice({
       .addCase(getWorking.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch list';
+      }).addCase(fetchMemberProjects.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMemberProjects.fulfilled, (state, action) => {
+        const data = action.payload;
+
+        state.teamData.find((team: any) => {
+          if (team.id === data.id) {
+            team.projects = data.projects||[];
+          }
+        })
+        state.loading = false;
+      })
+      .addCase(fetchMemberProjects.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch date list';
+      }).addCase(createSchedule.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createSchedule.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(createSchedule.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to send schedule';
       });
   },
 });
 
-export const { toggleSettingsDrawer, updateSettings, toggleScheduleDrawer, getWorkingSettings } =
+export const { toggleSettingsDrawer, updateSettings, toggleScheduleDrawer, getWorkingSettings, setDate, setType, setDayCount } =
   scheduleSlice.actions;
 export default scheduleSlice.reducer;

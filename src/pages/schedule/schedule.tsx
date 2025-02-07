@@ -2,17 +2,17 @@ import { Button, DatePicker, DatePickerProps, Flex, Select, Space } from 'antd';
 import React, { useRef, useState } from 'react';
 import { SettingOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { toggleSettingsDrawer } from '../../features/schedule/scheduleSlice';
-import ScheduleSettingsDrawer from '../../features/schedule/ScheduleSettingsDrawer';
+import { setDate, setType, toggleSettingsDrawer } from '@/features/schedule/scheduleSlice';
+import ScheduleSettingsDrawer from '@/features/schedule/ScheduleSettingsDrawer';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import { useDocumentTitle } from '../../hooks/useDoumentTItle';
-import ScheduleDrawer from '../../features/schedule/ScheduleDrawer';
-import GranttChart from '../../components/schedule/grant-chart/grantt-chart';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import ScheduleDrawer from '@/features/schedule/ScheduleDrawer';
+import GranttChart from '@/components/schedule/grant-chart/grantt-chart';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { PickerType } from '@/types/schedule/schedule-v2.types';
 
 const { Option } = Select;
-
-type PickerType = 'week' | 'month';
 
 const PickerWithType = ({
   type,
@@ -27,13 +27,10 @@ const PickerWithType = ({
 };
 
 const Schedule: React.FC = () => {
-  const [type, setType] = useState<PickerType>('month');
-  const [date, setDate] = useState<Date | null>(new Date());
   const { t } = useTranslation('schedule');
-
   const dispatch = useDispatch();
-
   const granttChartRef = useRef<any>(null);
+  const { date, type } = useAppSelector(state => state.scheduleReducer);
 
   useDocumentTitle('Schedule');
 
@@ -46,7 +43,7 @@ const Schedule: React.FC = () => {
       selectedDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
     }
 
-    setDate(selectedDate);
+    dispatch(setDate(selectedDate));
   };
 
   const handleToday = () => {
@@ -69,7 +66,7 @@ const Schedule: React.FC = () => {
         >
           <Button onClick={handleToday}>{t('today')}</Button>
           <Space>
-            <Select value={type} onChange={value => setType(value as PickerType)}>
+            <Select value={type} onChange={value => dispatch(setType(value))}>
               <Option value="week">{t('week')}</Option>
               <Option value="month">{t('month')}</Option>
             </Select>
@@ -82,7 +79,7 @@ const Schedule: React.FC = () => {
       </Flex>
 
       <Flex vertical gap={24}>
-        <GranttChart type={type} date={date ? date.toISOString() : ''} ref={granttChartRef} />
+        <GranttChart type={type} date={date} ref={granttChartRef} />
       </Flex>
 
       <ScheduleSettingsDrawer />

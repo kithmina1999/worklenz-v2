@@ -5,29 +5,35 @@ import { fetchDateList, fetchTeamData } from '../../../features/schedule/schedul
 import { themeWiseColor } from '../../../utils/themeWiseColor';
 import GranttMembersTable from './grantt-members-table';
 import { CELL_WIDTH } from '../../../shared/constants';
-import { Flex } from 'antd';
+import { Flex, Popover } from 'antd';
 import DayAllocationCell from './day-allocation-cell';
 import ProjectTimelineBar from './project-timeline-bar';
+import ProjectTimelineModal from '@/features/schedule/ProjectTimelineModal';
 
-const GranttChart = React.forwardRef(({ type, date }: { type: string; date: string }, ref) => {
+const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date }, ref) => {
   const [expandedProject, setExpandedProject] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string|undefined>(undefined);
 
   const { teamData } = useAppSelector(state => state.scheduleReducer);
-  const { dateList, loading } = useAppSelector(state => state.scheduleReducer);
+  const { dateList, loading, dayCount } = useAppSelector(state => state.scheduleReducer);
 
   // get theme details from theme reducer
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
-  useMemo(() => {
-    dispatch(fetchTeamData());
-  }, [dispatch]);
+  const getAllData = async () => {
+    await dispatch(fetchTeamData());
+    await dispatch(fetchDateList({ date, type }));
+  };
+
+  // useMemo(() => {
+  //   dispatch(fetchTeamData());
+  // }, [date, type]);
 
   useMemo(() => {
-    if (loading) {
-      dispatch(fetchDateList({ date, type }));
-    }
+    getAllData();
   }, [date, type]);
 
   // function to scroll the timeline header and body together
@@ -139,7 +145,7 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: stri
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: `repeat(${365}, ${CELL_WIDTH}px)`,
+              gridTemplateColumns: `repeat(${dayCount}, ${CELL_WIDTH}px)`,
             }}
           >
             {dateList?.date_data?.map((date: any, index: number) =>
@@ -185,7 +191,7 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: stri
               key={member.id}
               style={{
                 display: 'grid',
-                gridTemplateColumns: `repeat(${365}, ${CELL_WIDTH}px)`,
+                gridTemplateColumns: `repeat(${dayCount}, ${CELL_WIDTH}px)`,
               }}
             >
               {dateList?.date_data?.map((date: any) =>
@@ -210,12 +216,23 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: stri
 
               {expandedProject === member.id && (
                 <div>
+                  <Popover
+                    content={<ProjectTimelineModal memberId={member?.team_member_id} projectId={selectedProjectId} setIsModalOpen={setIsModalOpen} />}
+                    trigger={'click'}
+                    open={isModalOpen}
+                  ></Popover>
                   {member.projects.map((project: any) => (
                     <div
                       key={project.id}
+                      onClick={() => {
+                        if (!(project?.date_union?.start && project?.date_union?.end)) {
+                          setSelectedProjectId(project?.id);
+                          setIsModalOpen(true);
+                        }
+                      }}
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: `repeat(${365}, ${CELL_WIDTH}px)`,
+                        gridTemplateColumns: `repeat(${dayCount}, ${CELL_WIDTH}px)`,
                         position: 'relative',
                       }}
                     >
@@ -230,6 +247,7 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: stri
                       >
                         {project?.date_union?.start && project?.date_union?.end && (
                           <ProjectTimelineBar
+                            defaultData={project?.default_values}
                             project={project}
                             indicatorWidth={project?.indicator_width}
                             indicatorOffset={project?.indicator_offset}

@@ -1,11 +1,11 @@
 import { Badge, Button, Flex, Tooltip } from 'antd';
 import React, { useCallback } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useDispatch } from 'react-redux';
 import CustomAvatar from '../../CustomAvatar';
-import { toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
+import { fetchMemberProjects, toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
 import { CaretDownOutlined, CaretRightFilled } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 type GranttChartMembersTabelProps = {
   members: any[];
@@ -29,7 +29,7 @@ const GranttMembersTable = React.memo(
     // get theme details
     const themeMode = useAppSelector(state => state.themeReducer.mode);
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const handleToggleDrawer = useCallback(() => {
       dispatch(toggleScheduleDrawer());
@@ -37,7 +37,12 @@ const GranttMembersTable = React.memo(
 
     const handleToggleProject = useCallback(
       (id: string) => {
+        if(expandedProject != id) {
+          
+          dispatch(fetchMemberProjects({ id }));
+        }
         setExpandedProject(expandedProject === id ? null : id);
+
       },
       [expandedProject, setExpandedProject]
     );
@@ -118,10 +123,10 @@ const GranttMembersTable = React.memo(
                         title={
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <span>
-                              {t('startDate')}: {project?.date_union.start}
+                              {t('startDate')}: {project?.date_union?.start}
                             </span>
                             <span>
-                              {t('endDate')}: {project?.date_union.end}
+                              {t('endDate')}: {project?.date_union?.end}
                             </span>
                           </div>
                         }

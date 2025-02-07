@@ -3,23 +3,26 @@ import { Flex, Popover, Typography } from 'antd';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import { toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
+import { getWorking, toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
 import ProjectTimelineModal from '../../../features/schedule/ProjectTimelineModal';
 import { Resizable } from 're-resizable';
 import { themeWiseColor } from '../../../utils/themeWiseColor';
 import { MoreOutlined } from '@ant-design/icons';
 import { CELL_WIDTH } from '../../../shared/constants';
+import { ScheduleData } from '@/types/schedule/schedule-v2.types';
 
 type ProjectTimelineBarProps = {
   project: any;
   indicatorOffset: number;
   indicatorWidth: number;
+  defaultData?: ScheduleData;
 };
 
 const ProjectTimelineBar = ({
   project,
   indicatorOffset,
   indicatorWidth,
+  defaultData,
 }: ProjectTimelineBarProps) => {
   const [width, setWidth] = useState(indicatorWidth);
   const [currentDuration, setCurrentDuration] = useState(indicatorWidth);
@@ -46,7 +49,7 @@ const ProjectTimelineBar = ({
         setWidth(newWidth);
         const newDuration = Math.round(newWidth / CELL_WIDTH);
         setCurrentDuration(newDuration);
-        setTotalHours(newDuration * project.hours_per_day);
+        setTotalHours(newDuration * project?.hours_per_day);
       }
     } else if (direction === 'left') {
       const deltaWidth = Math.min(leftOffset, delta.width);
@@ -58,14 +61,14 @@ const ProjectTimelineBar = ({
         setWidth(newWidth);
         const newDuration = Math.round(newWidth / CELL_WIDTH);
         setCurrentDuration(newDuration);
-        setTotalHours(newDuration * project.hours_per_day);
+        setTotalHours(newDuration * project?.hours_per_day);
       }
     }
   };
 
   return (
     <Popover
-      content={<ProjectTimelineModal setIsModalOpen={setIsModalOpen} />}
+      content={<ProjectTimelineModal defaultData={defaultData} projectId={project?.id} setIsModalOpen={setIsModalOpen} />}
       trigger={'click'}
       open={isModalOpen}
     >
@@ -124,7 +127,7 @@ const ProjectTimelineBar = ({
           align="center"
           justify="center"
           style={{ width: '100%' }}
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {setIsModalOpen(true);dispatch(getWorking());}}
         >
           <Typography.Text
             style={{
@@ -137,7 +140,7 @@ const ProjectTimelineBar = ({
           </Typography.Text>
           {currentDuration > 1 && (
             <Typography.Text style={{ fontSize: '10px' }} ellipsis={{ expanded: false }}>
-              {t('perDay')} {project.hours_per_day}h
+              {t('perDay')} {project?.hours_per_day}h
             </Typography.Text>
           )}
           <Typography.Text
