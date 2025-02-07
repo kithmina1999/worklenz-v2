@@ -1,9 +1,11 @@
+import { projectMembersApiService } from '@/api/project-members/project-members.api.service';
 import { projectsApiService } from '@/api/projects/projects.api.service';
 import { IMentionMemberViewModel } from '@/types/project/projectComments.types';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ProjectMembersState {
   membersList: IMentionMemberViewModel[];
+  allMembersList: IMentionMemberViewModel[];
   isDrawerOpen: boolean;
   isLoading: boolean;
   error: string | null;
@@ -11,6 +13,7 @@ interface ProjectMembersState {
 
 const initialState: ProjectMembersState = {
   membersList: [],
+  allMembersList: [],
   isDrawerOpen: false,
   isLoading: false,
   error: null,
@@ -42,8 +45,17 @@ const getProjectMembers = createAsyncThunk(
   }
 );
 
+const getAllProjectMembers = createAsyncThunk(
+  'projectMembers/getAllProjectMembers',
+  async (projectId: string) => {
+    const response = await projectMembersApiService.getByProjectId(projectId);
+    return response.body;
+  }
+);
+
 const projectMembersSlice = createSlice({
   name: 'projectMembers',
+
   initialState,
   reducers: {
     toggleProjectMemberDrawer: state => {
@@ -71,11 +83,27 @@ const projectMembersSlice = createSlice({
         state.membersList = [];
         state.isLoading = false;
         state.error = action.error.message || 'Failed to fetch members';
+      })
+      .addCase(getAllProjectMembers.pending, state => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getAllProjectMembers.fulfilled, (state, action) => {
+        state.allMembersList = action.payload as IMentionMemberViewModel[];
+        state.isLoading = false;
+        state.error = null;
+
+      })
+      .addCase(getAllProjectMembers.rejected, (state, action) => {
+        state.allMembersList = [];
+        state.isLoading = false;
+        state.error = action.error.message || 'Failed to fetch members';
       });
+
   },
 });
 
 export const { toggleProjectMemberDrawer, addProjectMember, setProjectMembers } =
   projectMembersSlice.actions;
-export { getProjectMembers };
+export { getProjectMembers, getAllProjectMembers };
 export default projectMembersSlice.reducer;

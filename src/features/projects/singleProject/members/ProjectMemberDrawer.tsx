@@ -1,14 +1,16 @@
 import { Drawer, Flex, Form, Select, Typography } from 'antd';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleProjectMemberDrawer } from './projectMembersSlice';
+import { getAllProjectMembers, toggleProjectMemberDrawer } from './projectMembersSlice';
 import { colors } from '@/styles/colors';
-import CustomAvatar from '@/components/CustomAvatar';
 import { nanoid } from '@reduxjs/toolkit';
 import SingleAvatar from '@/components/common/single-avatar/single-avatar';
+import { List } from 'antd/es/form/Form';
+import { IMentionMemberViewModel } from '@/types/project/projectComments.types';
 
 const ProjectMemberDrawer = () => {
-  const { isDrawerOpen, membersList } = useAppSelector(state => state.projectMemberReducer);
+  const { isDrawerOpen, allMembersList } = useAppSelector(state => state.projectMemberReducer);
+  const { projectId } = useAppSelector(state => state.projectReducer);
 
   const dispatch = useAppDispatch();
 
@@ -22,7 +24,11 @@ const ProjectMemberDrawer = () => {
     console.log('search:', value);
   };
 
-  // this function for handle form submit
+  const fetchProjectMembers = async () => {
+    if (!projectId) return;
+    dispatch(getAllProjectMembers(projectId));
+  };
+
   const handleFormSubmit = async (values: any) => {
     try {
       const newMember: any = {
@@ -47,6 +53,9 @@ const ProjectMemberDrawer = () => {
       }
       open={isDrawerOpen}
       onClose={() => dispatch(toggleProjectMemberDrawer())}
+      afterOpenChange={() => {
+        fetchProjectMembers();
+      }}
     >
       <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
         <Form.Item name="memberName" label="Add members by adding their name or email">
@@ -55,12 +64,16 @@ const ProjectMemberDrawer = () => {
             showSearch
             onSearch={onSearch}
             onChange={onChange}
-            options={membersList.map(member => ({
+            options={allMembersList.map(member => ({
               key: member.id,
               value: member.name,
               label: (
                 <Flex gap={8} align="center">
-                  <SingleAvatar />
+                  <SingleAvatar
+                    avatarUrl={member.avatar_url}
+                    name={member.name}
+                    email={member.email}
+                  />
                   <Flex vertical>
                     <Typography.Text
                       style={{
@@ -87,6 +100,7 @@ const ProjectMemberDrawer = () => {
         </Form.Item>
       </Form>
     </Drawer>
+
   );
 };
 
