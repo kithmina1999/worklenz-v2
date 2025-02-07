@@ -15,6 +15,7 @@ interface ProjectState {
   creatingProject: boolean;
   initialized: boolean;
   isProjectDrawerOpen: boolean;
+  isSaveAsTemplateDrawerOpen: boolean;
   filteredCategories: string[];
   filteredStatuses: string[];
   requestParams: {
@@ -39,6 +40,7 @@ const initialState: ProjectState = {
   creatingProject: false,
   initialized: false,
   isProjectDrawerOpen: false,
+  isSaveAsTemplateDrawerOpen: false,
   filteredCategories: [],
   filteredStatuses: [],
   requestParams: {
@@ -160,6 +162,9 @@ const projectSlice = createSlice({
     toggleDrawer: state => {
       state.isProjectDrawerOpen = !state.isProjectDrawerOpen;
     },
+    toggleSaveAsTemplateDrawer: state => {
+      state.isSaveAsTemplateDrawerOpen = !state.isSaveAsTemplateDrawerOpen;
+    },
     createProject: (state, action: PayloadAction<IProjectViewModel>) => {
       state.creatingProject = true;
     },
@@ -216,6 +221,7 @@ const projectSlice = createSlice({
 
 export const {
   toggleDrawer,
+  toggleSaveAsTemplateDrawer,
   setCategories,
   setFilteredCategories,
   setFilteredStatuses,

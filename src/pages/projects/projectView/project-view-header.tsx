@@ -28,7 +28,8 @@ import { fetchTaskGroups } from '@features/tasks/tasks.slice';
 import ProjectStatusIcon from '@/components/common/project-status-icon/project-status-icon';
 import { formatDate } from '@/utils/timeUtils';
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
-import { toggleDrawer } from '@/features/projects/projectsSlice';
+import { toggleDrawer, toggleSaveAsTemplateDrawer } from '@/features/projects/projectsSlice';
+import SaveProjectAsTemplate from '@/components/save-project-as-template/save-project-as-template';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
@@ -159,8 +160,10 @@ const ProjectViewHeader = () => {
           </Tooltip>
 
           <Tooltip title={'Save as template'} trigger={'hover'}>
-            <Button shape="circle" icon={<SaveOutlined />} />
+            <Button shape="circle" icon={<SaveOutlined />} onClick={() => dispatch(toggleSaveAsTemplateDrawer())} />
           </Tooltip>
+
+          <SaveProjectAsTemplate />
 
           <Tooltip title={'Project settings'} trigger={'hover'}>
             <Button shape="circle" icon={<SettingOutlined />} onClick={handleSettingsClick} />

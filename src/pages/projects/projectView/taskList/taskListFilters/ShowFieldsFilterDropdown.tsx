@@ -52,7 +52,7 @@ const ShowFieldsFilterDropdown = () => {
               >
                 {col.custom_column
                   ? col.name
-                  : t(`${col.key === 'phases' ? 'phasesText' : col.name + 'Text'}`)}
+                  : t(`${col.key === 'phases' ? 'phasesText' : col.key?.replace('_', '').toLowerCase() + 'Text'}`)}
               </Checkbox>
             </Space>
           </List.Item>

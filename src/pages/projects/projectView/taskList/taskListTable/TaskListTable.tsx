@@ -43,6 +43,7 @@ import { SelectionType } from './custom-columns/custom-column-modal/selection-ty
 import { deselectAll, selectTaskIds } from '@/features/projects/bulkActions/bulkActionSlice';
 import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/PriorityDropdown';
+import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -324,6 +325,11 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
                     : t(`${column.key?.replace('_', '').toLowerCase()}Column`)}
                 </th>
               ))}
+              <th className={getColumnStyles('customColumn', true)}>
+                <Flex justify="flex-start" style={{ marginInlineStart: 22 }}>
+                  <AddCustomColumnButton />
+                </Flex>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -371,6 +377,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
                         : renderColumnContent(column.key, task)}
                     </td>
                   ))}
+                  <td className={getColumnStyles('customColumn', false)}> </td>
                 </tr>
 
                 {expandedTasks.includes(task.id || '') && (

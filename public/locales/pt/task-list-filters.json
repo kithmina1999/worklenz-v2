@@ -27,7 +27,14 @@
   "lastUpdatedText": "Última Atualização",
   "reporterText": "Relator",
   "dueTimeText": "Hora de Vencimento",
-
+  "assigneesText": "Atribuições",
+  "timetrackingText": "Rastreamento de Tempo",
+  "startdateText": "Data de Início",
+  "duedateText": "Data de Vencimento",
+  "completeddateText": "Data de Conclusão",
+  "createddateText": "Data de Criação",
+  "lastupdatedText": "Última Atualização",
+  
   "lowText": "Baixa",
   "mediumText": "Média",
   "highText": "Alta",
