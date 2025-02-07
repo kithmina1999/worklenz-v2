@@ -40,10 +40,12 @@ type TaskState = {
   error: string | null;
   taskAssignees: ITaskListMemberFilter[];
   loadingAssignees: boolean;
-  labels: string[];
-  priorities: string[];
   statuses: ITaskStatusViewModel[];
-  members: ITeamMemberViewModel[];
+
+  // filters
+  labels: string[];
+  priorities: string[];  
+  members: string[];
 };
 
 const initialState: TaskState = {
@@ -62,15 +64,18 @@ const initialState: TaskState = {
   error: null,
   taskAssignees: [],
   loadingAssignees: false,
+  statuses: [],
+
+  // filters
   labels: [],
   priorities: [],
-  statuses: [],
   members: [],
 };
 
 export const GROUP_BY_STATUS_VALUE = 'status';
 export const GROUP_BY_PRIORITY_VALUE = 'priority';
 export const GROUP_BY_PHASE_VALUE = 'phase';
+
 
 export const GROUP_BY_OPTIONS: IGroupByOption[] = [
   { label: 'Status', value: GROUP_BY_STATUS_VALUE },
@@ -131,7 +136,7 @@ export const fetchTaskGroups = createAsyncThunk(
         order: '',
         search: state?.taskReducer.search || '',
         statuses: '',
-        members: '',
+        members: state?.taskReducer.members.join(' '),
         projects: '',
         isSubtasksInclude: true,
         labels: state?.taskReducer.labels.join(' '),
@@ -278,9 +283,14 @@ const taskSlice = createSlice({
       state.labels = action.payload;
     },
 
+    setMembers: (state, action: PayloadAction<string[]>) => {
+      state.members = action.payload;
+    },
+
     setPriorities: (state, action: PayloadAction<string[]>) => {
       state.priorities = action.payload;
     },
+
 
     setStatuses: (state, action: PayloadAction<ITaskStatusViewModel[]>) => {
       state.statuses = action.payload;
@@ -523,6 +533,7 @@ export const {
   updateTaskLabel,
   toggleTaskDrawer,
   toggleArchived,
+  setMembers,
   setLabels,
   setPriorities,
   setStatuses,

@@ -1,0 +1,16 @@
+{
+  "title": "Salvar como Template",
+  "templateName": "Nome do Template",
+  "includes": "O que deve ser incluído no template do projeto?",
+  "includesOptions": {
+    "statuses": "Status",
+    "phases": "Fases",
+    "labels": "Rótulos"
+  },
+  "taskIncludes": "O que deve ser incluído no template das tarefas?",
+  "taskIncludesOptions": {
+    "statuses": "Status",
+    "phases": "Fases",
+    "labels": "Rótulos"
+  }
+}

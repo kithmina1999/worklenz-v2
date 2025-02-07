@@ -1,0 +1,16 @@
+{
+  "title": "Guardar como plantilla",
+  "templateName": "Nombre de la plantilla",
+  "includes": "¿Qué debe incluirse en la plantilla desde el proyecto?",
+  "includesOptions": {
+    "statuses": "Estados",
+    "phases": "Fases",
+    "labels": "Etiquetas"
+  },
+  "taskIncludes": "¿Qué debe incluirse en la plantilla desde las tareas?",
+  "taskIncludesOptions": {
+    "statuses": "Estados",
+    "phases": "Fases",
+    "labels": "Etiquetas"
+  }
+}

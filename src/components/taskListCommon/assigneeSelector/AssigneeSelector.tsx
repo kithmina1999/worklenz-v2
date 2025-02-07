@@ -42,6 +42,7 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
   const { projectId } = useAppSelector(state => state.projectReducer);
   const currentSession = useAuthService().getCurrentSession();
   const { socket } = useSocket();
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const { t } = useTranslation('task-list-table');
 
@@ -143,7 +144,7 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
           {filteredMembersData?.length ? (
             filteredMembersData.map(member => (
               <List.Item
-                className="custom-list-item"
+              className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
                 key={member.id}
                 style={{
                   display: 'flex',

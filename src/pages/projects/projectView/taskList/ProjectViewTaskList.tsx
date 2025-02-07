@@ -22,8 +22,10 @@ const ProjectViewTaskList = () => {
     fields,
     search,
     priorities,
+    members,
   } = useAppSelector(state => state.taskReducer);
   const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
+
 
   useEffect(() => {
     if (projectId) {
@@ -33,7 +35,7 @@ const ProjectViewTaskList = () => {
     if (!statusCategories.length) {
       dispatch(fetchStatusesCategories());
     }
-  }, [dispatch, projectId, archived, groupBy, labels, fields, search, priorities]);
+  }, [dispatch, projectId, archived, groupBy, labels, fields, search, priorities, members]);
 
   return (
     <Flex vertical gap={16} style={{ overflowX: 'hidden' }}>

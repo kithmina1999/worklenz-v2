@@ -17,20 +17,22 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { ITaskListMemberFilter } from '@/types/tasks/taskList.types';
 import SingleAvatar from '@components/common/single-avatar/single-avatar';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setMembers } from '@/features/tasks/tasks.slice';
 
 const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
-  const membersInputRef = useRef<InputRef>(null);
 
-  // localization
+  const membersInputRef = useRef<InputRef>(null);
+  const dispatch = useAppDispatch();
+
   const { t } = useTranslation('task-list-filters');
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { taskAssignees, members } = useAppSelector(state => state.taskReducer);
 
-  // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
     return props.members.filter(member =>
       member.name?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -38,8 +40,16 @@ const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
   }, [props.members, searchQuery]);
 
   // handle selected filters count
-  const handleSelectedFiltersCount = (checked: boolean) => {
-    setSelectedCount(prev => (checked ? prev + 1 : prev - 1));
+  const handleSelectedFiltersCount = (memberId: string | undefined, checked: boolean) => {
+    if (!memberId) return;
+    let newMembers = [...members];
+    if (checked) {
+      newMembers.push(memberId);
+      dispatch(setMembers(newMembers));
+    } else {
+      newMembers.splice(newMembers.indexOf(memberId), 1);
+      dispatch(setMembers(newMembers));
+    }
   };
 
   // custom dropdown content
@@ -68,9 +78,11 @@ const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
               >
                 <Checkbox
                   id={member.id}
-                  onChange={e => handleSelectedFiltersCount(e.target.checked)}
+                  checked={members.includes(member.id ?? '')}
+                  onChange={e => handleSelectedFiltersCount(member.id, e.target.checked)}
                 >
                   <div style={{ display: 'flex', gap: 8 }}>
+
                     <div>
                       <SingleAvatar
                         avatarUrl={member.avatar_url}
@@ -123,20 +135,23 @@ const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
         iconPosition="end"
         style={{
           backgroundColor:
-            selectedCount > 0
+            members.length > 0
               ? themeMode === 'dark'
                 ? '#003a5c'
                 : colors.paleBlue
+
               : colors.transparent,
 
-          color: selectedCount > 0 ? (themeMode === 'dark' ? 'white' : colors.darkGray) : 'inherit',
+          color: members.length > 0 ? (themeMode === 'dark' ? 'white' : colors.darkGray) : 'inherit',
         }}
       >
         <Space>
+
           {t('membersText')}
-          {selectedCount > 0 && <Badge size="small" count={selectedCount} color={colors.skyBlue} />}
+          {members.length > 0 && <Badge size="small" count={members.length} color={colors.skyBlue} />}
         </Space>
       </Button>
+
     </Dropdown>
   );
 };
