@@ -6,8 +6,8 @@ import {
   IProjectTemplate,
   IWorklenzTemplate,
 } from '@/types/project-templates/project-templates.types';
-import { toQueryString } from '@/utils/toQueryString';
 import apiClient from '../api-client';
+import { ICustomProjectTemplateCreateRequest } from '@/types/project/projectTemplate.types';
 
 const rootUrl = `${API_BASE_URL}/project-templates`;
 
@@ -33,4 +33,10 @@ export const projectTemplatesApiService = {
     const response = await apiClient.post(`${rootUrl}/setup`, model);
     return response.data;
   },
+
+  createCustomTemplate: async (body: ICustomProjectTemplateCreateRequest): Promise<IServerResponse<IProjectTemplate>> => {
+    const response = await apiClient.post(`${rootUrl}/custom-template`, body);
+    return response.data;
+  },
 };
+

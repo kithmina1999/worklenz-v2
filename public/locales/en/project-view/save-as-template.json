@@ -11,6 +11,17 @@
   "taskIncludesOptions": {
     "statuses": "Statuses",
     "phases": "Phases",
-    "labels": "Labels"
-  }
+    "labels": "Labels",
+    "name": "Name",
+    "priority": "Priority",
+    "status": "Status",
+    "phase": "Phase",
+    "label": "Label",
+    "timeEstimate": "Time Estimate",
+    "description": "Description",
+    "subTasks": "Sub Tasks"
+  },
+  "cancel": "Cancel",
+  "save": "Save",
+  "templateNamePlaceholder": "Enter template name"
 }
