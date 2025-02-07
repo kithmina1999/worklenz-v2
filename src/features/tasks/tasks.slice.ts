@@ -9,7 +9,6 @@ import {
 } from '@/types/tasks/taskList.types';
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import logger from '@/utils/errorLogger';
-import { ITaskLabel } from '@/types/label.type';
 import { ITaskListMemberFilter } from '@/types/tasks/taskListFilters.types';
 import { ITaskAssignee } from '@/types/tasks/task.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
@@ -19,12 +18,12 @@ import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.co
 
 export enum IGroupBy {
   STATUS = 'status',
-  PRIORITY = 'priority',
+  PRIORITY = 'priority', 
   PHASE = 'phase',
-  MEMBERS = 'members',
+  MEMBERS = 'members'
 }
 
-type TaskState = {
+interface ITaskState {
   search: string | null;
   archived: boolean;
   group: IGroupBy;
@@ -41,14 +40,12 @@ type TaskState = {
   taskAssignees: ITaskListMemberFilter[];
   loadingAssignees: boolean;
   statuses: ITaskStatusViewModel[];
-
-  // filters
   labels: string[];
-  priorities: string[];  
+  priorities: string[];
   members: string[];
-};
+}
 
-const initialState: TaskState = {
+const initialState: ITaskState = {
   search: null,
   archived: false,
   group: IGroupBy.STATUS,
@@ -65,17 +62,14 @@ const initialState: TaskState = {
   taskAssignees: [],
   loadingAssignees: false,
   statuses: [],
-
-  // filters
   labels: [],
   priorities: [],
   members: [],
 };
 
-export const GROUP_BY_STATUS_VALUE = 'status';
-export const GROUP_BY_PRIORITY_VALUE = 'priority';
-export const GROUP_BY_PHASE_VALUE = 'phase';
-
+export const GROUP_BY_STATUS_VALUE = IGroupBy.STATUS;
+export const GROUP_BY_PRIORITY_VALUE = IGroupBy.PRIORITY;
+export const GROUP_BY_PHASE_VALUE = IGroupBy.PHASE;
 
 export const GROUP_BY_OPTIONS: IGroupByOption[] = [
   { label: 'Status', value: GROUP_BY_STATUS_VALUE },
@@ -85,7 +79,7 @@ export const GROUP_BY_OPTIONS: IGroupByOption[] = [
 
 export const COLUMN_KEYS = {
   KEY: 'KEY',
-  NAME: 'NAME',
+  NAME: 'NAME', 
   DESCRIPTION: 'DESCRIPTION',
   PROGRESS: 'PROGRESS',
   ASSIGNEES: 'ASSIGNEES',
@@ -102,61 +96,70 @@ export const COLUMN_KEYS = {
   LAST_UPDATED: 'LAST_UPDATED',
   REPORTER: 'REPORTER',
   PHASE: 'PHASE',
-};
+} as const;
 
 export const COLUMN_KEYS_LIST = Object.values(COLUMN_KEYS).map(key => ({
   key,
   show: true,
 }));
 
-export const getCurrentGroup = () => {
-  const key = localStorage.getItem('worklenz.tasklist.group_by');
+const LOCALSTORAGE_GROUP_KEY = 'worklenz.tasklist.group_by';
+
+export const getCurrentGroup = (): IGroupByOption => {
+  const key = localStorage.getItem(LOCALSTORAGE_GROUP_KEY);
   if (key) {
-    const g = GROUP_BY_OPTIONS.find(o => o.value === key);
-    if (g) return g;
+    const group = GROUP_BY_OPTIONS.find(option => option.value === key);
+    if (group) return group;
   }
   return GROUP_BY_OPTIONS[0];
 };
 
-export const setCurrentGroup = (group: IGroupByOption) => {
-  localStorage.setItem('worklenz.tasklist.group_by', group.value);
+export const setCurrentGroup = (group: IGroupByOption): void => {
+  localStorage.setItem(LOCALSTORAGE_GROUP_KEY, group.value);
 };
 
 export const fetchTaskGroups = createAsyncThunk(
   'tasks/fetchTaskGroups',
   async (projectId: string, { rejectWithValue, getState }) => {
     try {
-      const state = getState() as { taskReducer: TaskState };
+      const state = getState() as { taskReducer: ITaskState };
+      const { taskReducer } = state;
+
+      const selectedMembers = taskReducer.taskAssignees
+        .filter(member => member.selected)
+        .map(member => member.id)
+        .join(' ');
 
       const config: ITaskListConfigV2 = {
         id: projectId,
-        archived: state?.taskReducer.archived,
-        group: state?.taskReducer.group,
-        field: state?.taskReducer.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
+        archived: taskReducer.archived,
+        group: taskReducer.group,
+        field: taskReducer.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
         order: '',
-        search: state?.taskReducer.search || '',
+        search: taskReducer.search || '',
         statuses: '',
-        members: state?.taskReducer.members.join(' '),
+        members: selectedMembers,
         projects: '',
         isSubtasksInclude: true,
-        labels: state?.taskReducer.labels.join(' '),
-        priorities: state?.taskReducer.priorities.join(' '),
+        labels: taskReducer.labels.join(' '),
+        priorities: taskReducer.priorities.join(' '),
       };
+
       const response = await tasksApiService.getTaskList(config);
       return response.body;
     } catch (error) {
-      logger.error('Fetch Labels', error);
+      logger.error('Fetch Task Groups', error);
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Failed to fetch labels');
+      return rejectWithValue('Failed to fetch task groups');
     }
   }
 );
 
 export const fetTaskListColumns = createAsyncThunk(
   'tasks/fetTaskListColumns',
-  async (projectId: string, { rejectWithValue }) => {
+  async (projectId: string) => {
     const response = await tasksApiService.fetchTaskListColumns(projectId);
     return response.body;
   }
@@ -178,29 +181,36 @@ export const fetchTaskAssignees = createAsyncThunk(
   }
 );
 
-const getGroupIdByGroupedColumn = (task: IProjectTask) => {
+const getGroupIdByGroupedColumn = (task: IProjectTask): string | null => {
   const groupBy = getCurrentGroup().value;
-  if (groupBy === GROUP_BY_STATUS_VALUE) return task.status as string;
-
-  if (groupBy === GROUP_BY_PRIORITY_VALUE) return task.priority as string;
-
-  if (groupBy === GROUP_BY_PHASE_VALUE) return task.phase_id as string;
-
-  return null;
+  switch (groupBy) {
+    case GROUP_BY_STATUS_VALUE:
+      return task.status as string;
+    case GROUP_BY_PRIORITY_VALUE:
+      return task.priority as string;
+    case GROUP_BY_PHASE_VALUE:
+      return task.phase_id as string;
+    default:
+      return null;
+  }
 };
 
-const deleteTaskFromGroup = (taskGroups: ITaskListGroup[], task: IProjectTask, groupId: string, index: number | null = null) => {
+const deleteTaskFromGroup = (
+  taskGroups: ITaskListGroup[],
+  task: IProjectTask,
+  groupId: string,
+  index: number | null = null
+): void => {
   const group = taskGroups.find(g => g.id === groupId);
   if (!group || !task.id) return;
 
   if (task.is_sub_task) {
     const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
     if (parentTask) {
-      const index = parentTask.sub_tasks?.findIndex(t => t.id === task.id);
-      if (typeof index !== 'undefined' && index !== -1) {
-        if (!parentTask.sub_tasks_count) parentTask.sub_tasks_count = 0;
-        parentTask.sub_tasks_count = Math.max(+parentTask.sub_tasks_count - 1, 0);
-        parentTask.sub_tasks?.splice(index, 1);
+      const subTaskIndex = parentTask.sub_tasks?.findIndex(t => t.id === task.id);
+      if (typeof subTaskIndex !== 'undefined' && subTaskIndex !== -1) {
+        parentTask.sub_tasks_count = Math.max((parentTask.sub_tasks_count || 0) - 1, 0);
+        parentTask.sub_tasks?.splice(subTaskIndex, 1);
       }
     }
   } else {
@@ -211,55 +221,38 @@ const deleteTaskFromGroup = (taskGroups: ITaskListGroup[], task: IProjectTask, g
   }
 };
 
-const addTaskToGroup = (taskGroups: ITaskListGroup[], task: IProjectTask, groupId: string, insert = false) => {
+const addTaskToGroup = (
+  taskGroups: ITaskListGroup[],
+  task: IProjectTask,
+  groupId: string,
+  insert = false
+): void => {
   const group = taskGroups.find(g => g.id === groupId);
-  if (group && task.id) {
-    if (task.parent_task_id) {
+  if (!group || !task.id) return;
 
-      const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
-      if (parentTask) {
-        if (!parentTask.sub_tasks_count) parentTask.sub_tasks_count = 0;
-        parentTask.sub_tasks_count = +parentTask.sub_tasks_count + 1;
-        if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
-        parentTask.sub_tasks.push({...task});
-        console.log('Subtask added:', {
-          parentTaskId: task.parent_task_id,
-          subtaskId: task.id,
-          totalSubtasks: [...(parentTask.sub_tasks || [])].length
-        });
-      }
-    } else {
-      if (insert) {
-        group.tasks.unshift({...task});
-      } else {
-        group.tasks.push({...task});
-      }
-      console.log('Task added:', {
-        groupId,
-        taskId: task.id,
-        position: insert ? 'start' : 'end',
-        totalTasks: [...group.tasks].length
-      });
+  if (task.parent_task_id) {
+    const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
+    if (parentTask) {
+      parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
+      if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
+      parentTask.sub_tasks.push({...task});
     }
+  } else {
+    insert ? group.tasks.unshift({...task}) : group.tasks.push({...task});
   }
 };
 
-const updateTaskGroup = (taskGroups: ITaskListGroup[], task: IProjectTask, insert = true) => {
+const updateTaskGroup = (
+  taskGroups: ITaskListGroup[],
+  task: IProjectTask,
+  insert = true
+): void => {
   if (!task.id) return;
+  
   const groupId = getGroupIdByGroupedColumn(task);
   if (groupId) {
-    console.log('Updating task group:', {
-      taskId: task.id,
-      fromGroup: groupId,
-      currentGroups: taskGroups.map(g => ({
-        id: g.id,
-        taskCount: [...g.tasks].length
-      }))
-    });
-    
     deleteTaskFromGroup(taskGroups, task, groupId);
     addTaskToGroup(taskGroups, {...task}, groupId, insert);
-
   }
 };
 
@@ -283,14 +276,13 @@ const taskSlice = createSlice({
       state.labels = action.payload;
     },
 
-    setMembers: (state, action: PayloadAction<string[]>) => {
-      state.members = action.payload;
+    setMembers: (state, action: PayloadAction<ITaskListMemberFilter[]>) => {
+      state.taskAssignees = action.payload;
     },
 
     setPriorities: (state, action: PayloadAction<string[]>) => {
       state.priorities = action.payload;
     },
-
 
     setStatuses: (state, action: PayloadAction<ITaskStatusViewModel[]>) => {
       state.statuses = action.payload;
@@ -314,11 +306,14 @@ const taskSlice = createSlice({
 
     addTask: (
       state,
-      action: PayloadAction<{ task: IProjectTask; groupId: string; insert?: boolean }>
+      action: PayloadAction<{
+        task: IProjectTask;
+        groupId: string;
+        insert?: boolean;
+      }>
     ) => {
       const { task, groupId, insert = false } = action.payload;
       const group = state.taskGroups.find(g => g.id === groupId);
-
       if (!group || !task.id) return;
 
       if (task.parent_task_id) {
@@ -329,12 +324,17 @@ const taskSlice = createSlice({
           parentTask.sub_tasks.push(task);
         }
       } else {
-        insert ? group.tasks.push(task) : group.tasks.unshift(task);
-        console.log('addTask', group.tasks);
+        insert ? group.tasks.unshift(task) : group.tasks.push(task);
       }
     },
 
-    deleteTask: (state, action: PayloadAction<{ taskId: string; index?: number }>) => {
+    deleteTask: (
+      state,
+      action: PayloadAction<{
+        taskId: string;
+        index?: number;
+      }>
+    ) => {
       const { taskId, index } = action.payload;
 
       for (const group of state.taskGroups) {
@@ -342,7 +342,6 @@ const taskSlice = createSlice({
         if (taskIndex === -1) continue;
 
         const task = group.tasks[taskIndex];
-
         if (task.is_sub_task) {
           const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
           if (parentTask?.sub_tasks) {
@@ -369,7 +368,10 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { taskId, progress, totalTasksCount, completedCount } = action.payload;
-      const group = state.taskGroups.find(group => group.tasks.some(task => task.id === taskId));
+      const group = state.taskGroups.find(group => 
+        group.tasks.some(task => task.id === taskId)
+      );
+
       if (group) {
         const task = group.tasks.find(task => task.id === taskId);
         if (task) {
@@ -382,7 +384,11 @@ const taskSlice = createSlice({
 
     updateTaskAssignees: (
       state,
-      action: PayloadAction<{ groupId: string; taskId: string; assignees: ITeamMemberViewModel[] }>
+      action: PayloadAction<{
+        groupId: string;
+        taskId: string;
+        assignees: ITeamMemberViewModel[];
+      }>
     ) => {
       const { groupId, taskId, assignees } = action.payload;
       const group = state.taskGroups.find(group => group.id === groupId);
@@ -394,7 +400,10 @@ const taskSlice = createSlice({
       }
     },
 
-    updateTaskLabel: (state, action: PayloadAction<ILabelsChangeResponse>) => {
+    updateTaskLabel: (
+      state,
+      action: PayloadAction<ILabelsChangeResponse>
+    ) => {
       const label = action.payload;
       state.taskGroups.forEach(group => {
         const task = group.tasks.find(task => task.id === label.id);
@@ -405,7 +414,10 @@ const taskSlice = createSlice({
       });
     },
 
-    updateTaskStatus: (state, action: PayloadAction<ITaskListStatusChangeResponse>) => {
+    updateTaskStatus: (
+      state,
+      action: PayloadAction<ITaskListStatusChangeResponse>
+    ) => {
       const {
         id,
         status_id,
@@ -414,7 +426,9 @@ const taskSlice = createSlice({
         statusCategory,
       } = action.payload;
 
-      const group = state.taskGroups.find(group => group.tasks.some(task => task.id === id));
+      const group = state.taskGroups.find(group => 
+        group.tasks.some(task => task.id === id)
+      );
 
       if (group) {
         const task = group.tasks.find(task => task.id === id);
@@ -423,9 +437,8 @@ const taskSlice = createSlice({
           task.complete_ratio = +complete_ratio;
           task.status = status_id;
           task.status_category = statusCategory;
-        }
-        if (state.group === GROUP_BY_STATUS_VALUE) {
-          if (!task?.is_sub_task) {
+
+          if (state.group === GROUP_BY_STATUS_VALUE && !task.is_sub_task) {
             updateTaskGroup(state.taskGroups, task as IProjectTask, false);
           }
         }
@@ -434,43 +447,25 @@ const taskSlice = createSlice({
 
     updateTaskGroup: (
       state,
-      action: PayloadAction<{ task: IProjectTask; isSubtasksIncluded: boolean }>
+      action: PayloadAction<{
+        task: IProjectTask;
+        isSubtasksIncluded: boolean;
+      }>
     ) => {
       const { task } = action.payload;
-      state.taskGroups = state.taskGroups.map(taskGroup => {
-        console.log('taskGroup', taskGroup);
-        // if (group. === GROUP_BY_STATUS_VALUE) {
-        //   if (taskGroup.id === task.status) {
-        //     const taskIndex = taskGroup.tasks.findIndex(t => t.id === task.id);
-        //     if (taskIndex >= 0) {
-        //       taskGroup.tasks[taskIndex] = task;
-        //     } else {
-        //       taskGroup.tasks.push(task);
-        //     }
-        //   }
-        // }
-        // if (taskGroup.id === GROUP_BY_PRIORITY_VALUE) {
-        //   if (taskGroup.id === task.priority) {
-        //     const taskIndex = taskGroup.tasks.findIndex(t => t.id === task.id);
-        //     if (taskIndex >= 0) {
-        //       taskGroup.tasks[taskIndex] = task;
-        //     } else {
-        //       taskGroup.tasks.push(task);
-        //     }
-        //   }
-        // }
-        // if (taskGroup.id === GROUP_BY_PHASE_VALUE) {
-        //   if (taskGroup.id === task.phase_id) {
-        //     const taskIndex = taskGroup.tasks.findIndex(t => t.id === task.id);
-        //     if (taskIndex >= 0) {
-        //       taskGroup.tasks[taskIndex] = task;
-        //     } else {
-        //       taskGroup.tasks.push(task);
-        //     }
-        //   }
-        // }
-        return taskGroup;
-      });
+      const groupId = getGroupIdByGroupedColumn(task);
+      
+      if (groupId) {
+        const group = state.taskGroups.find(g => g.id === groupId);
+        if (group) {
+          const taskIndex = group.tasks.findIndex(t => t.id === task.id);
+          if (taskIndex >= 0) {
+            group.tasks[taskIndex] = task;
+          } else {
+            group.tasks.push(task);
+          }
+        }
+      }
     },
 
     toggleColumnVisibility: (state, action: PayloadAction<string>) => {
