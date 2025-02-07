@@ -18,7 +18,6 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 
-import { toggleDrawer } from '@features/projects/projectsSlice';
 import { fetchClients } from '@/features/settings/client/clientSlice';
 import {
   useCreateProjectMutation,
@@ -46,6 +45,7 @@ import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse
 import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 import logger from '@/utils/errorLogger';
+import { setProjectData, toggleProjectDrawer } from '@/features/project/project-drawer.slice';
 
 const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useAppDispatch();
@@ -59,10 +59,11 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
 
   // Selectors
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
-  const { project, projectId, projectLoading } = useAppSelector(state => state.projectReducer);
-  const { requestParams, isProjectDrawerOpen } = useAppSelector(state => state.projectsReducer);
+  const { requestParams } = useAppSelector(state => state.projectsReducer);
+  const { isProjectDrawerOpen, projectId, projectLoading, project } = useAppSelector(state => state.projectDrawerReducer);
   const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
   const { projectHealths } = useAppSelector(state => state.projectHealthReducer);
+
   const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
 
   // API Hooks
@@ -110,7 +111,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         const response = await updateProject({ id: projectId, project: projectModel });
         if (response?.data?.done) {
           form.resetFields();
-          dispatch(toggleDrawer());
+          dispatch(toggleProjectDrawer());
           refetchProjects();
         } else {
           notification.error({
@@ -122,7 +123,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         const response = await createProject(projectModel);
         if (response?.data?.done) {
           form.resetFields();
-          dispatch(toggleDrawer());
+          dispatch(toggleProjectDrawer());
           navigate(`/worklenz/projects/${response.data.body.id}`);
         } else {
           notification.error({
@@ -157,12 +158,11 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
     setEditMode(false);
     form.resetFields();
     setSelectedProjectManager(null);
-    dispatch(setProject({} as IProjectViewModel));
   };
 
   const handleDrawerClose = () => {
     resetForm();
-    setTimeout(() => dispatch(toggleDrawer()), 300);
+    setTimeout(() => dispatch(toggleProjectDrawer()), 300);
     onClose();
   };
 
@@ -173,8 +173,9 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
       const res = await deleteProject(projectId);
       if (res?.data?.done) {
         dispatch(setProject({} as IProjectViewModel));
+        dispatch(setProjectData({} as IProjectViewModel));
         dispatch(setProjectId(null));
-        dispatch(toggleDrawer());
+        dispatch(toggleProjectDrawer());
         navigate('/worklenz/projects');
         refetchProjects();
       }

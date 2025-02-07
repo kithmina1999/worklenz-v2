@@ -27,6 +27,7 @@ import bulkActionReducer from '@features/projects/bulkActions/bulkActionSlice';
 import projectInsightsReducer from '@features/projects/insights/project-insights.slice';
 import taskListCustomColumnsReducer from '@features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 import boardReducer from '@features/board/board-slice';
+import projectDrawerReducer from '@features/project/project-drawer.slice';
 
 // Project Lookups
 import projectCategoriesReducer from '@features/projects/lookups/projectCategories/projectCategoriesSlice';
@@ -107,6 +108,7 @@ export const store = configureStore({
     projectInsightsReducer: projectInsightsReducer,
     taskListCustomColumnsReducer: taskListCustomColumnsReducer,
     boardReducer: boardReducer,
+    projectDrawerReducer: projectDrawerReducer,
 
     // Project Lookups
     projectCategoriesReducer: projectCategoriesReducer,

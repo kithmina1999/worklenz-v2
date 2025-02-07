@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { IGroupByOption, ITaskListColumn, ITaskListGroup } from '@/types/tasks/taskList.types';
+import { ITaskListColumn, ITaskListGroup } from '@/types/tasks/taskList.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { ITaskPrioritiesGetResponse } from '@/types/apiModels/taskPrioritiesGetResponse.types';

@@ -23,13 +23,14 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { SocketEvents } from '@/shared/socket-events';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
-import { getProject, setProject, setProjectId } from '@features/project/project.slice';
+import { getProject, setProject } from '@features/project/project.slice';
 import { fetchTaskGroups } from '@features/tasks/tasks.slice';
 import ProjectStatusIcon from '@/components/common/project-status-icon/project-status-icon';
 import { formatDate } from '@/utils/timeUtils';
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
-import { toggleDrawer, toggleSaveAsTemplateDrawer } from '@/features/projects/projectsSlice';
+import { toggleSaveAsTemplateDrawer } from '@/features/projects/projectsSlice';
 import SaveProjectAsTemplate from '@/components/save-project-as-template/save-project-as-template';
+import { fetchProjectData, toggleProjectDrawer, setProjectId } from '@/features/project/project-drawer.slice';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
@@ -67,14 +68,10 @@ const ProjectViewHeader = () => {
   const handleSettingsClick = () => {
     if (selectedProject?.id) {
       dispatch(setProjectId(selectedProject.id));
-      dispatch(getProject(selectedProject.id));
-      dispatch(toggleDrawer());
+      dispatch(fetchProjectData(selectedProject.id));
+      dispatch(toggleProjectDrawer());
     }
-  };
 
-  const handleDrawerClose = () => {
-    if (!selectedProject?.id) return;
-    dispatch(getProject(selectedProject?.id));
   };
 
   // create task button items
@@ -189,7 +186,7 @@ const ProjectViewHeader = () => {
           >
             <EditOutlined /> Create Task
           </Dropdown.Button>
-          <ProjectDrawer onClose={handleDrawerClose} />
+          <ProjectDrawer onClose={() => {}} />
         </Flex>
       }
     />
