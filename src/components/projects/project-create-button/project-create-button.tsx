@@ -1,12 +1,11 @@
 import { Button, Drawer, Dropdown } from 'antd';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleDrawer } from '@/features/projects/projectsSlice';
 import { DownOutlined, EditOutlined, ImportOutlined } from '@ant-design/icons';
 import TemplateDrawer from '@/components/common/template-drawer/template-drawer';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import { setProject, setProjectId } from '@/features/project/project.slice';
+import { setProjectData, setProjectId, toggleProjectDrawer } from '@/features/project/project-drawer.slice';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
 interface CreateProjectButtonProps {
@@ -51,9 +50,9 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
 
   const handleCreateProject = () => {
     dispatch(setProjectId(null));
-    dispatch(setProject({} as IProjectViewModel));
+    dispatch(setProjectData({} as IProjectViewModel));
     setTimeout(() => {
-      dispatch(toggleDrawer());
+      dispatch(toggleProjectDrawer());
     }, 300);
   };
 
