@@ -48,7 +48,7 @@ export const OrganizationStep: React.FC<Props> = ({
         <Input
           placeholder={organizationNamePlaceholder}
           value={organizationName}
-          onChange={e => dispatch(setOrganizationName(e.target.value.replace(/^\s+/, '')))}
+          onChange={e => dispatch(setOrganizationName(e.target.value))}
           onPressEnter={onPressEnter}
           ref={inputRef}
         />
