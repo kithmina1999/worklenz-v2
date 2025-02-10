@@ -95,7 +95,7 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
           <Input
             placeholder={t('projectStepPlaceholder')}
             value={projectName}
-            onChange={e => dispatch(setProjectName(e.target.value.replace(/^\s+/, '')))}
+            onChange={e => dispatch(setProjectName(e.target.value))}
             onPressEnter={onPressEnter}
             ref={inputRef}
           />
