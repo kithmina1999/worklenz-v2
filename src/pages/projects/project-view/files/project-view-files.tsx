@@ -9,8 +9,8 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useState } from 'react';
-import { filesData, FilesDataType } from './files-date';
+import { useEffect, useState } from 'react';
+import { filesData } from './files-date';
 import { colors } from '@/styles/colors';
 import {
   AppstoreOutlined,
@@ -21,31 +21,121 @@ import {
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import fileIcon from '@/assets/icons/file-icon.png';
 import { durationDateFormat } from '@utils/durationDateFormat';
 import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
+import { DEFAULT_PAGE_SIZE, IconsMap } from '@/shared/constants';
+import {
+  IProjectAttachmentsViewModel,
+  ITaskAttachmentViewModel,
+} from '@/types/tasks/task-attachment-view-model';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { attachmentsApiService } from '@/api/attachments/attachments.api.service';
+import logger from '@/utils/errorLogger';
 
 const ProjectViewFiles = () => {
-  // get currently hover row
-  const [hoverRow, setHoverRow] = useState<string | null>(null);
-
-  // localization
   const { t } = useTranslation('project-view-files');
+  const { projectId } = useAppSelector(state => state.projectReducer);
+  const [attachments, setAttachments] = useState<IProjectAttachmentsViewModel>({});
+  const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
-  // table columns
-  const columns: TableProps['columns'] = [
+  const [paginationConfig, setPaginationConfig] = useState({
+    total: 0,
+    pageIndex: 1,
+    showSizeChanger: true,
+    defaultPageSize: DEFAULT_PAGE_SIZE,
+  });
+
+  const fetchAttachments = async () => {
+    if (!projectId) return;
+    try {
+      setLoading(true);
+      const response = await attachmentsApiService.getProjectAttachments(
+        projectId,
+        paginationConfig.pageIndex,
+        paginationConfig.defaultPageSize
+      );
+      if (response.done) {
+        setAttachments(response.body || {});
+        setPaginationConfig(prev => ({ ...prev, total: response.body?.total || 0 }));
+      }
+    } catch (error) {
+      logger.error('Error fetching project attachments', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getFileTypeIcon = (type: string | undefined) => {
+    if (!type) return IconsMap['search'];
+    return IconsMap[type as string] || IconsMap['search'];
+  };
+
+  const downloadAttachment = async (id: string | undefined, filename: string | undefined) => {
+    if (!id || !filename) return;
+    try {
+      setDownloading(true);
+
+      const response = await attachmentsApiService.downloadAttachment(id, filename);
+
+      if (response.done) {
+        const link = document.createElement('a');
+        link.href = response.body || '';
+        link.download = filename;
+        link.click();
+        link.remove();
+      }
+    } catch (error) {
+      logger.error('Error downloading attachment', error);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const deleteAttachment = async (id: string | undefined) => {
+    if (!id) return;
+    try {
+      const response = await attachmentsApiService.deleteAttachment(id);
+      if (response.done) {
+        fetchAttachments();
+      }
+    } catch (error) {
+      logger.error('Error deleting attachment', error);
+    }
+  };
+
+  const openAttachment = (url: string | undefined) => {
+    if (!url) return;
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.style.display = 'none';
+    a.click();
+  };
+
+  useEffect(() => {
+    fetchAttachments();
+  }, [paginationConfig.pageIndex, projectId]);
+
+  const columns: TableProps<ITaskAttachmentViewModel>['columns'] = [
     {
       key: 'fileName',
       title: t('nameColumn'),
-      render: (record: FilesDataType) => (
-        <Flex gap={4} align="center">
-          <img src={fileIcon} alt={t('fileIconAlt')} style={{ width: '100%', maxWidth: 25 }} />
-          <Typography.Text
-            style={{
-              color: hoverRow === record.fileId ? colors.skyBlue : 'inherit',
-            }}
-          >
-            {record.fileName}
+      render: (record: ITaskAttachmentViewModel) => (
+        <Flex
+          gap={4}
+          align="center"
+          style={{ cursor: 'pointer' }}
+          onClick={() => openAttachment(record.url)}
+        >
+          <img
+            src={`/file-types/${getFileTypeIcon(record.type)}`}
+            alt={t('fileIconAlt')}
+            style={{ width: '100%', maxWidth: 25 }}
+          />
+          <Typography.Text>
+            [{record.task_key}] {record.name}
           </Typography.Text>
         </Flex>
       ),
@@ -53,25 +143,17 @@ const ProjectViewFiles = () => {
     {
       key: 'attachedTask',
       title: t('attachedTaskColumn'),
-      render: (record: FilesDataType) => (
-        <Typography.Text
-          style={{
-            color: hoverRow === record.fileId ? colors.skyBlue : 'inherit',
-          }}
-        >
-          {record.attachedTask}
+      render: (record: ITaskAttachmentViewModel) => (
+        <Typography.Text style={{ cursor: 'pointer' }} onClick={() => openAttachment(record.url)}>
+          {record.task_name}
         </Typography.Text>
       ),
     },
     {
       key: 'size',
       title: t('sizeColumn'),
-      render: (record: FilesDataType) => (
-        <Typography.Text
-          style={{
-            color: hoverRow === record.fileId ? colors.skyBlue : 'inherit',
-          }}
-        >
+      render: (record: ITaskAttachmentViewModel) => (
+        <Typography.Text style={{ cursor: 'pointer' }} onClick={() => openAttachment(record.url)}>
           {record.size}
         </Typography.Text>
       ),
@@ -79,54 +161,48 @@ const ProjectViewFiles = () => {
     {
       key: 'uploadedBy',
       title: t('uploadedByColumn'),
-      render: (record: FilesDataType) => (
-        <Typography.Text
-          style={{
-            color: hoverRow === record.fileId ? colors.skyBlue : 'inherit',
-          }}
-        >
-          {record.uploadedBy}
+      render: (record: ITaskAttachmentViewModel) => (
+        <Typography.Text style={{ cursor: 'pointer' }} onClick={() => openAttachment(record.url)}>
+          {record.uploader_name}
         </Typography.Text>
       ),
     },
     {
       key: 'uploadedAt',
       title: t('uploadedAtColumn'),
-      render: (record: FilesDataType) => (
-        <Typography.Text
-          style={{
-            color: hoverRow === record.fileId ? colors.skyBlue : 'inherit',
-          }}
-        >
-          <Tooltip title="Nov 25,2024,10.45.54 AM">
-            {durationDateFormat(record.uploadedDate)}
-          </Tooltip>
+      render: (record: ITaskAttachmentViewModel) => (
+        <Typography.Text style={{ cursor: 'pointer' }} onClick={() => openAttachment(record.url)}>
+          <Tooltip title={record.created_at}>{durationDateFormat(record.created_at)}</Tooltip>
         </Typography.Text>
       ),
     },
     {
       key: 'actionBtns',
       width: 80,
-      render: (record: FilesDataType) =>
-        hoverRow === record.fileId && (
-          <Flex gap={8} style={{ padding: 0 }}>
-            <Popconfirm
-              title={t('deleteConfirmationTitle')}
-              icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
-              okText={t('deleteConfirmationOk')}
-              cancelText={t('deleteConfirmationCancel')}
-              onConfirm={() => console.log('File deleted')}
-            >
-              <Tooltip title="Delete">
-                <Button shape="default" icon={<DeleteOutlined />} size="small" />
-              </Tooltip>
-            </Popconfirm>
-
-            <Tooltip title="Download">
-              <Button size="small" icon={<CloudDownloadOutlined />} />
+      render: (record: ITaskAttachmentViewModel) => (
+        <Flex gap={8} style={{ padding: 0 }}>
+          <Popconfirm
+            title={t('deleteConfirmationTitle')}
+            icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
+            okText={t('deleteConfirmationOk')}
+            cancelText={t('deleteConfirmationCancel')}
+            onConfirm={() => deleteAttachment(record.id)}
+          >
+            <Tooltip title="Delete">
+              <Button shape="default" icon={<DeleteOutlined />} size="small" />
             </Tooltip>
-          </Flex>
-        ),
+          </Popconfirm>
+
+          <Tooltip title="Download">
+            <Button
+              size="small"
+              icon={<CloudDownloadOutlined />}
+              onClick={() => downloadAttachment(record.id, record.name)}
+              loading={downloading}
+            />
+          </Tooltip>
+        </Flex>
+      ),
     },
   ];
 
@@ -169,24 +245,24 @@ const ProjectViewFiles = () => {
           text={t('emptyText')}
         />
       ) : (
-        <Table
+        <Table<ITaskAttachmentViewModel>
           className="custom-two-colors-row-table"
-          dataSource={filesData}
+          dataSource={attachments.data}
           columns={columns}
-          rowKey={record => record.fileId}
+          rowKey={record => record.id || ''}
+          loading={loading}
           pagination={{
-            showSizeChanger: true,
-            defaultPageSize: 20,
-          }}
-          onRow={record => {
-            return {
-              onMouseEnter: () => setHoverRow(record.fileId),
-              onMouseLeave: () => setHoverRow(null),
-              style: {
-                cursor: 'pointer',
-                height: 42,
-              },
-            };
+            showSizeChanger: paginationConfig.showSizeChanger,
+            defaultPageSize: paginationConfig.defaultPageSize,
+
+            total: paginationConfig.total,
+            current: paginationConfig.pageIndex,
+            onChange: (page, pageSize) =>
+              setPaginationConfig(prev => ({
+                ...prev,
+                pageIndex: page,
+                defaultPageSize: pageSize,
+              })),
           }}
         />
       )}
