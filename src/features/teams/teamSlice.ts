@@ -3,6 +3,7 @@ import { teamsApiService } from '@/api/teams/teams.api.service';
 import logger from '@/utils/errorLogger';
 import { ITeam, ITeamGetResponse, ITeamState } from '@/types/teams/team.type';
 import { API_BASE_URL } from '@/shared/constants';
+import { profileSettingsApiService } from '@/api/settings/profile/profile-settings.api.service';
 
 const initialState: ITeamState = {
   teamsList: [],
@@ -51,6 +52,27 @@ export const setActiveTeam = createAsyncThunk(
   }
 );
 
+// Create async thunk for editing team name
+export const editTeamName = createAsyncThunk(
+  `${API_BASE_URL}/teams/name`,
+  async ({ id, name }: { id: string; name: string }, { rejectWithValue }) => {
+    try {
+      const teamsResponse = await profileSettingsApiService.updateTeamName(id, { name });
+      return teamsResponse;
+    } catch (error) {
+      logger.error('Edit Team Name', error);
+
+
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to edit team name');
+    }
+  }
+);
+
+// Initialization thunk
+
 // Initialization thunk
 export const initializeTeams = createAsyncThunk(
   'team/initialize',
@@ -84,12 +106,6 @@ const teamSlice = createSlice({
     deleteTeam: (state, action: PayloadAction<string>) => {
       state.teamsList = state.teamsList.filter(team => team.id !== action.payload);
     },
-    editTeamName: (state, action: PayloadAction<ITeam>) => {
-      const index = state.teamsList.findIndex(team => team.id === action.payload.id);
-      if (index >= 0) {
-        state.teamsList[index] = action.payload;
-      }
-    },
     toggleUpdateTeamNameModal: state => {
       state.ui.updateTitleNameModal
         ? (state.ui.updateTitleNameModal = false)
@@ -120,7 +136,6 @@ export const {
   toggleSettingDrawer,
   updateTeam,
   deleteTeam,
-  editTeamName,
   toggleUpdateTeamNameModal,
 } = teamSlice.actions;
 export default teamSlice.reducer;
