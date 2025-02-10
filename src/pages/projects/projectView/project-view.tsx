@@ -12,7 +12,6 @@ import { tabItems } from '@/lib/project/projectViewConstants';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import ProjectViewHeader from './project-view-header';
 import './project-view.css';
-import TaskDrawer from '@components/task-drawer/task-drawer';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
 const StatusDrawer = React.lazy(
@@ -21,6 +20,7 @@ const StatusDrawer = React.lazy(
 const ProjectMemberDrawer = React.lazy(
   () => import('@features/projects/singleProject/members/ProjectMemberDrawer')
 );
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 const ProjectView = () => {
   const location = useLocation();
