@@ -4,10 +4,18 @@ import Navbar from '../features/navbar/Navbar';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { useMediaQuery } from 'react-responsive';
 import { colors } from '../styles/colors';
+import { verifyAuthentication } from '@/features/auth/authSlice';
+import { useEffect } from 'react';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 const MainLayout = () => {
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    void dispatch(verifyAuthentication())
+  }, [dispatch]);
 
   const headerStyles = {
     zIndex: 999,

@@ -189,3 +189,12 @@ export enum IPaddlePlans {
   ANNUAL = "ANNUAL",
   MONTHLY = "MONTHLY",
 }
+
+export enum ISUBSCRIPTION_TYPE {
+  LIFE_TIME_DEAL = "LIFE_TIME_DEAL",
+  PADDLE = "PADDLE",
+  TRIAL = "TRIAL",
+  CUSTOM = "CUSTOM",
+  FREE = "FREE",
+  CREDIT = "CREDIT",
+}

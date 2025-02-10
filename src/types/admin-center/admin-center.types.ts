@@ -1,3 +1,5 @@
+import { ISUBSCRIPTION_TYPE } from "@/shared/constants";
+
 export interface IOrganization {
   name?: string;
   owner_name?: string;
@@ -83,6 +85,7 @@ export interface IBillingAccountInfo {
   total_seats?: number;
   total_used?: number;
   is_lkr_billing?: boolean;
+  subscription_type?: ISUBSCRIPTION_TYPE;
 }
 
 export interface IPricingPlans {

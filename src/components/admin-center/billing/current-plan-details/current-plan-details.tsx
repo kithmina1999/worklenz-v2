@@ -21,7 +21,7 @@ import { calculateTimeGap } from '@/utils/calculate-time-gap';
 import { formatDate } from '@/utils/timeUtils';
 import UpgradePlansLKR from '../drawers/upgrade-plans-lkr/upgrade-plans-lkr';
 import UpgradePlans from '../drawers/upgrade-plans/upgrade-plans';
-import { SUBSCRIPTION_STATUS } from '@/shared/constants';
+import { ISUBSCRIPTION_TYPE, SUBSCRIPTION_STATUS } from '@/shared/constants';
 
 const CurrentPlanDetails = () => {
   const dispatch = useAppDispatch();
@@ -220,11 +220,12 @@ const CurrentPlanDetails = () => {
     >
       <Flex vertical>
         <div style={{ marginBottom: '14px' }}>
-          {billingInfo?.is_ltd_user && renderLtdDetails()}
-          {billingInfo?.status === SUBSCRIPTION_STATUS.TRIALING && renderTrialDetails()}
-          {billingInfo?.status === SUBSCRIPTION_STATUS.FREE && renderFreePlan()}
-          {billingInfo?.status === SUBSCRIPTION_STATUS.ACTIVE && renderPaddleSubscriptionInfo()}
+          {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.LIFE_TIME_DEAL && renderLtdDetails()}
+          {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.TRIAL && renderTrialDetails()}
+          {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.FREE && renderFreePlan()}
+          {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.PADDLE && renderPaddleSubscriptionInfo()}
         </div>
+
         {shouldShowRedeemButton() && (
           <>
             <Button
