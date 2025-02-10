@@ -171,7 +171,6 @@ const ClientsSettings: React.FC = () => {
         rowKey={record => record.id}
         onRow={record => ({
           onMouseEnter: () => setHoverRow(record.id),
-          onMouseLeave: () => setHoverRow(null),
         })}
         pagination={{
           showSizeChanger: true,

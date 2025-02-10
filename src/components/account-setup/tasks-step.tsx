@@ -40,9 +40,10 @@ export const TasksStep: React.FC<Props> = ({ onEnter, styles, isDarkMode }) => {
     dispatch(setTasks(tasks.map(task => (task.id === id ? { ...task, value } : task))));
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    e.preventDefault();
-    addTask();
+  const handleKeyPress = (e: React.KeyboardEvent, value: String) => {
+    if (!value.trim()) return;
+      e.preventDefault();
+      addTask();
   };
 
   useEffect(() => {
@@ -85,8 +86,8 @@ export const TasksStep: React.FC<Props> = ({ onEnter, styles, isDarkMode }) => {
                 <Input
                   placeholder="Your Task"
                   value={task.value}
-                  onChange={e => updateTask(task.id, e.target.value)}
-                  onPressEnter={e => handleKeyPress(e)}
+                  onChange={e => updateTask(task.id, e.target.value.replace(/^\s+/, ''))}
+                  onPressEnter={e => handleKeyPress(e, e.target.value)}
                   ref={el => (inputRefs.current[index] = el)}
                 />
                 <Button

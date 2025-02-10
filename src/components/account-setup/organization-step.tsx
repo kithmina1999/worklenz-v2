@@ -29,7 +29,7 @@ export const OrganizationStep: React.FC<Props> = ({
   }, []);
 
   const onPressEnter = () => {
-    if (!organizationName) return;
+    if (!organizationName.trim()) return;
     onEnter();
   };
 
@@ -48,7 +48,7 @@ export const OrganizationStep: React.FC<Props> = ({
         <Input
           placeholder={organizationNamePlaceholder}
           value={organizationName}
-          onChange={e => dispatch(setOrganizationName(e.target.value))}
+          onChange={e => dispatch(setOrganizationName(e.target.value.replace(/^\s+/, '')))}
           onPressEnter={onPressEnter}
           ref={inputRef}
         />
