@@ -104,4 +104,12 @@ export const projectsApiService = {
     const response = await apiClient.get<IServerResponse<IProjectViewModel>>(`${url}`);
     return response.data;
   },
+
+  updateDefaultTab: async (body: { project_id: string; default_view: string }): Promise<IServerResponse<any>> => {
+    const url = `${rootUrl}/update-pinned-view`;
+    const response = await apiClient.put<IServerResponse<IProjectViewModel>>(`${url}`, body);
+    return response.data;
+  },
+
 };
+
