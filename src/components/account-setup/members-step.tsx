@@ -56,7 +56,8 @@ const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
     );
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent, value: String) => {
+    if (!value.trim()) return;
     e.preventDefault();
     addEmail();
   };
@@ -131,7 +132,7 @@ const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
                     placeholder={t('emailPlaceholder')}
                     value={teamMember.value}
                     onChange={e => updateEmail(teamMember.id, e.target.value)}
-                    onPressEnter={e => handleKeyPress(e)}
+                    onPressEnter={e => handleKeyPress(e, e.target.value)}
                     ref={el => (inputRefs.current[index] = el)}
                     status={teamMember.value && !validateEmail(teamMember.value) ? 'error' : ''}
                     id={`member-${index}`}
