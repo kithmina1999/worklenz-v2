@@ -178,12 +178,12 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
       PRIORITY: () => <PriorityDropdown task={task} teamId={selectedProject?.team_id || ''} />,
       TIME_TRACKING: () => <TaskListTimeTrackerCell task={task} />,
       ESTIMATION: () => <TaskListEstimationCell />,
-      START_DATE: () => <TaskListStartDateCell startDate={task.start_date || null} />,
-
-      DUE_DATE: () => <TaskListDueDateCell dueDate={task.end_date || null} />,
+      START_DATE: () => <TaskListStartDateCell task={task} />,
+      DUE_DATE: () => <TaskListDueDateCell task={task} />,
       DUE_TIME: () => <TaskListDueTimeCell />,
       COMPLETED_DATE: () => <TaskListCompletedDateCell completedDate={task.completed_at || null} />,
       CREATED_DATE: () => <TaskListCreatedDateCell createdDate={task.created_at || null} />,
+
       LAST_UPDATED: () => <TaskListLastUpdatedCell lastUpdated={task.updated_at || null} />,
       REPORTER: () => <TaskListReporterCell task={task} />,
     };

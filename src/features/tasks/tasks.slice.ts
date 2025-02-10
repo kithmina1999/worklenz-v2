@@ -461,6 +461,39 @@ const taskSlice = createSlice({
       }
     },
 
+    updateTaskEndDate: (
+      state,
+      action: PayloadAction<{
+        task: IProjectTask;
+      }>
+    ) => {
+      const { task } = action.payload;
+      const group = state.taskGroups.find(group => group.tasks.some(t => t.id === task.id));
+      if (group) {
+        const taskIndex = group.tasks.findIndex(t => t.id === task.id);
+        if (taskIndex >= 0) {
+          group.tasks[taskIndex].end_date = task.end_date;
+        }
+      }
+    },
+
+    updateTaskStartDate: (
+      state,
+      action: PayloadAction<{
+        task: IProjectTask;
+      }>
+    ) => {
+      const { task } = action.payload;
+      const group = state.taskGroups.find(group => group.tasks.some(t => t.id === task.id));
+      if (group) {
+        const taskIndex = group.tasks.findIndex(t => t.id === task.id);
+        if (taskIndex >= 0) {
+          group.tasks[taskIndex].start_date = task.start_date;
+        }
+      }
+
+    },
+
     updateTaskGroup: (
       state,
       action: PayloadAction<{
@@ -566,6 +599,9 @@ export const {
   setShowTaskDrawer,
   toggleColumnVisibility,
   updateTaskStatus,
+  updateTaskEndDate,  
+  updateTaskStartDate,
 } = taskSlice.actions;
+
 
 export default taskSlice.reducer;
