@@ -126,7 +126,6 @@ const CategoriesSettings = () => {
         onRow={record => {
           return {
             onMouseEnter: () => setHoverRow(record.categoryId),
-            onMouseLeave: () => setHoverRow(null),
             style: {
               cursor: 'pointer',
               height: 36,
