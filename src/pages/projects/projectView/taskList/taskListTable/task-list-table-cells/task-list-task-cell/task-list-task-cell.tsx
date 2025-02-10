@@ -10,8 +10,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import './task-list-task-cell.css';
-import { setShowTaskDrawer } from '@/features/tasks/tasks.slice';
-import { setSelectedTaskId } from '@/features/board/board-slice';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/tasks/tasks.slice';
 
 type TaskListTaskCellProps = {
   task: IProjectTask;

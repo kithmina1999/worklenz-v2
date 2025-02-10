@@ -20,13 +20,14 @@ import CustomAvatar from '../../CustomAvatar';
 import { colors } from '../../../styles/colors';
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { ITaskAssignee } from '@/types/tasks/task.types';
 
 interface AssigneeSelectorProps {
-  taskId: string | null;
-  selectedMembers: string[];
+  taskId: string | undefined | null;
+  currentAssignees: ITaskAssignee[] | string[];
 }
 
-const AssigneeSelector = ({ taskId, selectedMembers }: AssigneeSelectorProps) => {
+const AssigneeSelector = ({ taskId, currentAssignees }: AssigneeSelectorProps) => {
   const membersInputRef = useRef<InputRef>(null);
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');

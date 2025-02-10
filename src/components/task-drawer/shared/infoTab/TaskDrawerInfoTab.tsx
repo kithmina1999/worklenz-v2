@@ -1,5 +1,5 @@
 import { Button, Collapse, CollapseProps, Flex, Tooltip, Typography, Upload } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoadingOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import DescriptionEditor from './DescriptionEditor';
 import SubTaskTable from './SubTaskTable';
@@ -7,20 +7,25 @@ import DependenciesTable from './DependenciesTable';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import TaskDetailsForm from './TaskDetailsForm';
 import InfoTabFooter from './InfoTabFooter';
+import { fetchTask } from '@/features/tasks/tasks.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
-const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
+const TaskDrawerInfoTab = () => {
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [refreshSubTask, setRefreshSubTask] = useState<boolean>(false);
-
-  const themeMode = useAppSelector(state => state.themeReducer.mode);
-
-  const selectedTask = useAppSelector(state => state.taskReducer.tasks).find(
-    task => task.id === taskId
+  const { projectId } = useAppSelector(state => state.projectReducer);
+  const { taskFormViewModel, loadingTask, selectedTaskId } = useAppSelector(
+    state => state.taskReducer,
   );
 
   const handleRefresh = () => {
     setRefreshSubTask(true);
     setTimeout(() => setRefreshSubTask(false), 500);
+  };
+
+  const fetchTaskData = () => {
+    if (!loadingTask) dispatch(fetchTask({ taskId: selectedTaskId || '', projectId: projectId || '' }));
   };
 
   const panelStyle: React.CSSProperties = {
@@ -32,14 +37,14 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
     {
       key: 'details',
       label: <Typography.Text strong>Details</Typography.Text>,
-      children: <TaskDetailsForm selectedTask={selectedTask || null} />,
+      children: <TaskDetailsForm taskFormViewModel={taskFormViewModel || null} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
     {
       key: 'description',
       label: <Typography.Text strong>Description</Typography.Text>,
-      children: <DescriptionEditor description={selectedTask?.description || null} />,
+      children: <DescriptionEditor description={taskFormViewModel?.task?.description || null} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
@@ -55,7 +60,7 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
           />
         </Tooltip>
       ),
-      children: <SubTaskTable datasource={selectedTask?.sub_tasks || null} />,
+      children: <SubTaskTable datasource={taskFormViewModel?.task?.sub_tasks || null} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
@@ -96,6 +101,10 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
       className: 'custom-task-drawer-info-collapse',
     },
   ];
+
+  useEffect(() => {
+    fetchTaskData();
+  }, [selectedTaskId]);
 
   return (
     <Flex vertical justify="space-between" style={{ height: '78vh' }}>

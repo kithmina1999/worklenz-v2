@@ -10,7 +10,7 @@ import {
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import logger from '@/utils/errorLogger';
 import { ITaskListMemberFilter } from '@/types/tasks/taskListFilters.types';
-import { ITaskAssignee } from '@/types/tasks/task.types';
+import { ITaskAssignee, ITaskFormViewModel } from '@/types/tasks/task.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
@@ -33,8 +33,6 @@ interface ITaskState {
   taskGroups: ITaskListGroup[];
   loadingColumns: boolean;
   columns: ITaskListColumn[];
-  selectedTaskId: string | null;
-  showTaskDrawer: boolean;
   loadingGroups: boolean;
   error: string | null;
   taskAssignees: ITaskListMemberFilter[];
@@ -43,6 +41,12 @@ interface ITaskState {
   labels: string[];
   priorities: string[];
   members: string[];
+
+  // task drawer
+  selectedTaskId: string | null;
+  showTaskDrawer: boolean;
+  taskFormViewModel: ITaskFormViewModel | null;
+  loadingTask: boolean;
 }
 
 const initialState: ITaskState = {
@@ -54,8 +58,6 @@ const initialState: ITaskState = {
   tasks: [],
   loadingColumns: false,
   columns: [],
-  selectedTaskId: null,
-  showTaskDrawer: false,
   taskGroups: [],
   loadingGroups: false,
   error: null,
@@ -65,6 +67,12 @@ const initialState: ITaskState = {
   labels: [],
   priorities: [],
   members: [],
+
+  // task drawer
+  selectedTaskId: null,
+  showTaskDrawer: false,
+  taskFormViewModel: null,
+  loadingTask: false,
 };
 
 export const GROUP_BY_STATUS_VALUE = IGroupBy.STATUS;
@@ -178,6 +186,14 @@ export const fetchTaskAssignees = createAsyncThunk(
       }
       return rejectWithValue('Failed to fetch task assignees');
     }
+  }
+);
+
+export const fetchTask = createAsyncThunk(
+  'tasks/fetchTask',
+  async ({taskId, projectId}: {taskId: string, projectId: string}, { rejectWithValue }) => {
+    const response = await tasksApiService.getFormViewModel(taskId, projectId);
+    return response.body;
   }
 );
 
@@ -300,7 +316,7 @@ const taskSlice = createSlice({
       state.showTaskDrawer = action.payload;
     },
 
-    setSelectedTaskId: (state, action: PayloadAction<string>) => {
+    setSelectedTaskId: (state, action: PayloadAction<string | null>) => {
       state.selectedTaskId = action.payload;
     },
 
@@ -515,6 +531,18 @@ const taskSlice = createSlice({
           pinned: true,
         });
         state.columns = action.payload;
+      })
+      .addCase(fetchTask.pending, state => {
+        state.loadingTask = true;
+        state.error = null;
+      })
+      .addCase(fetchTask.fulfilled, (state, action) => {
+        state.loadingTask = false;
+        state.taskFormViewModel = action.payload;
+      })
+      .addCase(fetchTask.rejected, (state, action) => {
+        state.loadingTask = false;
+        state.error = action.error.message || 'Failed to fetch task';
       });
   },
 });
@@ -534,6 +562,7 @@ export const {
   setStatuses,
   setFields,
   setSearch,
+  setSelectedTaskId,
   setShowTaskDrawer,
   toggleColumnVisibility,
   updateTaskStatus,

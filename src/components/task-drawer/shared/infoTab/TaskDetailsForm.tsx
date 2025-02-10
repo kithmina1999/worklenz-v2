@@ -11,112 +11,55 @@ import {
   ConfigProvider,
   Flex,
 } from 'antd';
-import AssigneeSelector from '@components/task-list-common/assigneeSelector/AssigneeSelector';
+import { useTranslation } from 'react-i18next';
 import LabelsSelector from '@components/task-list-common/labelsSelector/labels-selector';
-import { DoubleLeftOutlined, MinusOutlined, PauseOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
-import { getPriorityColor } from '@/utils/getPriorityColors';
-import { useAppSelector } from '@/hooks/useAppSelector';
+
 import NotifyMemberSelector from './NotifyMemberSelector';
 import { simpleDateFormat } from '@/utils/simpleDateFormat';
-import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-
+import { ITaskFormViewModel } from '@/types/tasks/task.types';
+import AssigneeSelector from '@/components/task-list-common/assigneeSelector/AssigneeSelector';
+import TaskDrawerPhaseSelector from './details/task-drawer-phase-selector/task-drawer-phase-selector';
+import TaskDrawerKey from './details/task-drawer-key/task-drawer-key';
+import TaskDrawerLabels from './details/task-drawer-labels/task-drawer-labels';
 type TaskDetailsFormProps = {
-  selectedTask?: IProjectTask | null;
+  taskFormViewModel?: ITaskFormViewModel | null;
 };
 
-const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
+const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => {
+  const { t } = useTranslation('task-drawer');
   const [isShowStartDate, setIsShowStartDate] = useState<boolean>(false);
   const [form] = Form.useForm();
-  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // Initialize form values
   useEffect(() => {
-    if (selectedTask) {
+    if (taskFormViewModel) {
       form.setFieldsValue({
-        taskId: selectedTask.id,
-        phase: selectedTask.phase_id,
-        assignees: selectedTask.assignees,
-        dueDate: selectedTask.end_date ? simpleDateFormat(selectedTask.end_date) : null,
-        hours: 0,
-        minutes: 0,
-        priority: selectedTask.priority || 'medium',
-        labels: selectedTask.labels || [],
-        billable: false,
+
+        taskId: taskFormViewModel.task?.id,
+        phase: taskFormViewModel.task?.phase_id,
+        assignees: taskFormViewModel.task?.assignees,
+        dueDate: taskFormViewModel.task?.end_date
+          ? simpleDateFormat(taskFormViewModel.task.end_date)
+          : null,
+        hours: taskFormViewModel.task?.total_hours || 0,
+        minutes: taskFormViewModel.task?.total_minutes || 0,
+        priority: taskFormViewModel.task?.priority || 'medium',
+        labels: taskFormViewModel.task?.labels || [],
+        billable: taskFormViewModel.task?.billable || false,
         notify: [],
       });
     } else {
       form.resetFields();
     }
-  }, [selectedTask, form]);
-
-  // Define options for selectors
-  const phaseMenuItems = [
-    { key: '1', value: '1', label: 'Phase 1' },
-    { key: '2', value: '2', label: 'Phase 2' },
-  ];
+  }, [taskFormViewModel, form]);
 
   // Priority options with icons
-  const priorityMenuItems = [
-    {
-      key: 'low',
-      value: 'low',
-      label: (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: '12px',
-          }}
-        >
-          Low
-          <MinusOutlined style={{ color: getPriorityColor('low', themeMode) }} />
-        </div>
-      ),
-    },
-    {
-      key: 'medium',
-      value: 'medium',
-      label: (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: '12px',
-          }}
-        >
-          Medium
-          <PauseOutlined
-            style={{
-              color: getPriorityColor('medium', themeMode),
-              rotate: '90deg',
-            }}
-          />
-        </div>
-      ),
-    },
-    {
-      key: 'high',
-      value: 'high',
-      label: (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: '12px',
-          }}
-        >
-          High
-          <DoubleLeftOutlined
-            style={{
-              color: getPriorityColor('high', themeMode),
-              rotate: '90deg',
-            }}
-          />
-        </div>
-      ),
-    },
-  ];
+  const priorityMenuItems = taskFormViewModel?.priorities?.map(priority => ({
+    key: priority.id,
+    value: priority.id,
+    label: priority.name,
+  }));
 
   // Handle form submission
   const handleSubmit = () => {
@@ -146,21 +89,17 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
         }}
         onFinish={handleSubmit}
       >
-        <Form.Item name="taskId" label="Task Key">
-          <Tag>{selectedTask ? selectedTask.id : 'NEW-TASK'}</Tag>
-        </Form.Item>
-
-        <Form.Item name="phase" label="Phase">
-          <Select
-            placeholder="Select Phase"
-            options={phaseMenuItems}
-            style={{ width: 'fit-content' }}
-            dropdownStyle={{ width: 'fit-content' }}
-          />
-        </Form.Item>
+        <TaskDrawerKey
+          taskKey={taskFormViewModel?.task?.task_key || 'NEW-TASK'}
+          label={t('task-key')}
+        />
+        <TaskDrawerPhaseSelector phases={taskFormViewModel?.phases || []} />
 
         <Form.Item name="assignees" label="Assignees">
-          <AssigneeSelector taskId={selectedTask ? selectedTask.id : null} />
+          <AssigneeSelector
+            taskId={taskFormViewModel ? taskFormViewModel.task?.id : null}
+            currentAssignees={taskFormViewModel?.task?.assignees || []}
+          />
         </Form.Item>
 
         <Form.Item name="dueDate" label="Due Date">
@@ -217,21 +156,22 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
           <Select options={priorityMenuItems} style={{ width: 'fit-content' }} />
         </Form.Item>
 
-        <Form.Item name="labels" label="Labels">
-          <LabelsSelector taskId={selectedTask ? selectedTask.id : 'NEW-TASK'} />
-        </Form.Item>
+        <TaskDrawerLabels
+          labels={taskFormViewModel?.task?.labels || []}
+          taskId={taskFormViewModel?.task?.id || null}
+        />
 
         <Form.Item name="billable" label="Billable">
           <Switch defaultChecked={false} />
         </Form.Item>
 
-        <Form.Item name="notify" label={selectedTask ? 'Notify' : 'When done, notify'}>
+        <Form.Item name="notify" label={taskFormViewModel ? 'Notify' : 'When done, notify'}>
           <NotifyMemberSelector />
         </Form.Item>
 
         {/* <Form.Item wrapperCol={{ span: 24 }}>
           <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-            {selectedTask ? 'Update Task' : 'Create Task'}
+            {taskFormViewModel ? 'Update Task' : 'Create Task'}
           </Button>
         </Form.Item> */}
       </Form>

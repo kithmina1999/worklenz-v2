@@ -5,18 +5,16 @@ import { colors } from '@/styles/colors';
 import { EllipsisOutlined } from '@ant-design/icons';
 
 type TaskDrawerHeaderProps = {
-  taskName: string;
-  setTaskName: (name: string) => void;
+  name: string;
   inputRef: React.RefObject<InputRef | null>;
 };
 
-const TaskDrawerHeader = ({ taskName, setTaskName, inputRef }: TaskDrawerHeaderProps) => {
-  const [characterLength, setCharacterLength] = useState<number>(taskName.length);
+const TaskDrawerHeader = ({ name, inputRef }: TaskDrawerHeaderProps) => {
+  const [characterLength, setCharacterLength] = useState<number>(name.length);
   const [isCharacterLengthShowing, setIsCharacterLengthShowing] = useState<boolean>(false);
 
   // function to set task name
   const onTaskNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTaskName(e.currentTarget.value);
     setCharacterLength(e.currentTarget.value.length);
   };
 
@@ -40,7 +38,7 @@ const TaskDrawerHeader = ({ taskName, setTaskName, inputRef }: TaskDrawerHeaderP
         <Input
           ref={inputRef}
           size="large"
-          value={taskName}
+          value={name}
           onChange={e => onTaskNameChange(e)}
           onFocus={() => setIsCharacterLengthShowing(true)}
           onBlur={() => setIsCharacterLengthShowing(false)}

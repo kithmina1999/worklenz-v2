@@ -4,17 +4,12 @@ import TaskDrawerInfoTab from './infoTab/TaskDrawerInfoTab';
 import TaskDrawerTimeLog from './timeLog/TaskDrawerTimeLog';
 import TaskDrawerActivityLog from './activityLog/TaskDrawerActivityLog';
 
-interface TaskDrawerTabsProps {
-  drawerType: 'create' | 'update';
-  taskId?: string | null;
-}
-
-const TaskDrawerTabs = ({ drawerType = 'create', taskId = null }: TaskDrawerTabsProps) => {
+const TaskDrawerTabs = () => {
   const tabItems: TabsProps['items'] = [
     {
       key: 'info',
       label: 'Info',
-      children: <TaskDrawerInfoTab taskId={taskId} />,
+      children: <TaskDrawerInfoTab />,
     },
     { key: 'timeLog', label: 'Time Log', children: <TaskDrawerTimeLog /> },
     {

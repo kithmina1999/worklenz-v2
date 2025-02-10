@@ -13,8 +13,10 @@ import {
 import { PageHeader } from '@ant-design/pro-components';
 import { Button, Dropdown, Flex, Tag, Tooltip, Typography } from 'antd';
 import { useState } from 'react';
-import ProjectMemberInviteButton from '@features/projects/singleProject/members/ProjectMemberInviteButton';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+
+import ProjectMemberInviteButton from '@features/projects/singleProject/members/ProjectMemberInviteButton';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleCreateTaskDrawer } from '@features/tasks/taskSlice';
@@ -24,16 +26,25 @@ import { SocketEvents } from '@/shared/socket-events';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
 import { getProject, setProject } from '@features/project/project.slice';
-import { fetchTaskGroups } from '@features/tasks/tasks.slice';
+import { fetchTaskGroups, setShowTaskDrawer } from '@features/tasks/tasks.slice';
 import ProjectStatusIcon from '@/components/common/project-status-icon/project-status-icon';
 import { formatDate } from '@/utils/timeUtils';
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 import { toggleSaveAsTemplateDrawer } from '@/features/projects/projectsSlice';
 import SaveProjectAsTemplate from '@/components/save-project-as-template/save-project-as-template';
-import { fetchProjectData, toggleProjectDrawer, setProjectId } from '@/features/project/project-drawer.slice';
+import {
+  fetchProjectData,
+  toggleProjectDrawer,
+  setProjectId,
+} from '@/features/project/project-drawer.slice';
+import { setSelectedTaskId } from '@/features/board/board-slice';
+import React from 'react';
+
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('project-view');
 
   const currentSession = useAuthService().getCurrentSession();
   const { socket } = useSocket();
@@ -71,7 +82,11 @@ const ProjectViewHeader = () => {
       dispatch(fetchProjectData(selectedProject.id));
       dispatch(toggleProjectDrawer());
     }
+  };
 
+  const handleCreateTask = () => {
+    dispatch(setSelectedTaskId(''));
+    dispatch(setShowTaskDrawer(true));
   };
 
   // create task button items
@@ -91,11 +106,13 @@ const ProjectViewHeader = () => {
       className="site-page-header"
       title={
         <Flex gap={8} align="center">
-          <ArrowLeftOutlined style={{ fontSize: 16 }} onClick={() => navigate('/worklenz/projects')} />
+          <ArrowLeftOutlined
+            style={{ fontSize: 16 }}
+            onClick={() => navigate('/worklenz/projects')}
+          />
           <Typography.Title level={4} style={{ marginBlockEnd: 0, marginInlineStart: 12 }}>
             {selectedProject?.name}
           </Typography.Title>
-
 
           {/* attributes thats appear only if available  */}
           {selectedProject?.category_id && (
@@ -157,7 +174,11 @@ const ProjectViewHeader = () => {
           </Tooltip>
 
           <Tooltip title={'Save as template'} trigger={'hover'}>
-            <Button shape="circle" icon={<SaveOutlined />} onClick={() => dispatch(toggleSaveAsTemplateDrawer())} />
+            <Button
+              shape="circle"
+              icon={<SaveOutlined />}
+              onClick={() => dispatch(toggleSaveAsTemplateDrawer())}
+            />
           </Tooltip>
 
           <SaveProjectAsTemplate />
@@ -182,11 +203,12 @@ const ProjectViewHeader = () => {
             type="primary"
             icon={<DownOutlined />}
             menu={{ items }}
-            onClick={() => dispatch(toggleCreateTaskDrawer())}
+            onClick={handleCreateTask}
           >
             <EditOutlined /> Create Task
           </Dropdown.Button>
           <ProjectDrawer onClose={() => {}} />
+          <TaskDrawer />
         </Flex>
       }
     />
