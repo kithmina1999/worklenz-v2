@@ -33,7 +33,7 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
   };
 
   const handleTemplateSelect = (templateId: string) => {
-    handleTemplateDrawerClose();
+    // handleTemplateDrawerClose();
   };
 
   const dropdownItems = [
