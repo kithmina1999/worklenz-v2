@@ -1,5 +1,5 @@
 import { Calendar } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { Dayjs } from 'dayjs';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { selectedDate } from '../../../features/date/dateSlice';
@@ -15,6 +15,10 @@ const HomeCalendar = () => {
   const onSelect = (newValue: Dayjs) => {
     dispatch(setHomeTasksConfig({ ...homeTasksConfig, selected_date: newValue }));
   };
+
+  useEffect(() => {
+    console.log('homeTasksConfig', homeTasksConfig);
+  }, [homeTasksConfig]);
 
   return (
     <Calendar
