@@ -13,7 +13,7 @@ const bulkActionSlice = createSlice({
   initialState,
   reducers: {
     selectTaskIds: (state, action: PayloadAction<string[]>) => {
-      state.selectedTaskIdsList.push(...action.payload);
+      state.selectedTaskIdsList = action.payload;
     },
     deselectAll: state => {
       state.selectedTaskIdsList = [];

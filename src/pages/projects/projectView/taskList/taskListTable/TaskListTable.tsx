@@ -51,7 +51,7 @@ interface TaskListTableProps {
 }
 
 const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  // const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [expandedTasks, setExpandedTasks] = useState<string[]>([]);
   const [isSelectAll, setIsSelectAll] = useState(false);
@@ -65,6 +65,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
   const selectedProject = useSelectedProject();
   const columnList = useAppSelector(state => state.taskReducer.columns);
   const visibleColumns = columnList.filter(column => column.pinned);
+  const selectedTaskIdsList = useAppSelector(state => state.bulkActionReducer.selectedTaskIdsList);
 
   const isDarkMode = themeMode === 'dark';
   const customBorderColor = isDarkMode ? 'border-[#303030]' : '';
@@ -83,10 +84,10 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
       .filter(Boolean) as string[];
 
     if (isSelectAll) {
-      setSelectedRows([]);
+      // setSelectedRows([]);
       dispatch(deselectAll());
     } else {
-      setSelectedRows(allTaskIds);
+      // setSelectedRows(allTaskIds);
       dispatch(selectTaskIds(allTaskIds));
     }
     setIsSelectAll(!isSelectAll);
@@ -94,18 +95,21 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
 
   const toggleRowSelection = (task: IProjectTask) => {
     if (!task.id) return;
+    const taskIdsSet = new Set(selectedTaskIdsList);
+    if (taskIdsSet.has(task.id)) {
+        taskIdsSet.delete(task.id);
+    } else {
+        taskIdsSet.add(task.id);
+    }
+    const taskIds = Array.from(taskIdsSet);
 
-    setSelectedRows(prevSelectedRows => {
-      if (!task.id) return prevSelectedRows;
-      return prevSelectedRows.includes(task.id)
-        ? prevSelectedRows.filter(id => id !== task.id)
-        : [...prevSelectedRows, task.id];
-    });
+    dispatch(selectTaskIds(taskIds));
   };
 
   const selectOneRow = (task: IProjectTask) => {
     if (!task.id) return;
-    setSelectedRows([task.id]);
+    // setSelectedRows([task.id]);
+    dispatch(selectTaskIds([task.id]));
   };
 
   const handleContextMenu = (e: React.MouseEvent, task: IProjectTask) => {
@@ -291,7 +295,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
 
   const getRowBackgroundColor = (taskId: string | undefined) => {
     if (!taskId) return isDarkMode ? '#181818' : '#fff';
-    return selectedRows.includes(taskId)
+    return selectedTaskIdsList.includes(taskId)
       ? isDarkMode
         ? '#000'
         : '#dceeff'
@@ -343,7 +347,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
                     className={getColumnStyles('selector', false)}
                     style={{
                       width: 56,
-                      backgroundColor: selectedRows.includes(task.id || '')
+                      backgroundColor: selectedTaskIdsList.includes(task.id || '')
                         ? isDarkMode
                           ? colors.skyBlue
                           : '#dceeff'
@@ -355,7 +359,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
                     <Flex gap={8} align="center">
                       <HolderOutlined />
                       <Checkbox
-                        checked={selectedRows.includes(task.id || '')}
+                        checked={selectedTaskIdsList.includes(task.id || '')}
                         onChange={() => toggleRowSelection(task)}
                       />
                     </Flex>
@@ -397,7 +401,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
                         >
                           <Flex style={{ marginInlineStart: 22 }}>
                             <Checkbox
-                              checked={selectedRows.includes(subtask.id || '')}
+                              checked={selectedTaskIdsList.includes(subtask.id || '')}
                               onChange={() => toggleRowSelection(subtask)}
                             />
                           </Flex>
@@ -433,7 +437,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
       <TaskContextMenu
         visible={contextMenuVisible}
         position={contextMenuPosition}
-        selectedTask={selectedRows[0]}
+        selectedTask={selectedTaskIdsList[0]}
         onClose={() => setContextMenuVisible(false)}
       />
     </div>
