@@ -11,7 +11,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AddFavouriteProjectButton from './add-favourite-project-button';
@@ -38,6 +38,10 @@ const RecentAndFavouriteProjectList = () => {
     error: projectsError,
     refetch,
   } = useGetProjectsQuery({ view: getActiveProjectsFilter() });
+
+  useEffect(() => {
+    refetch();
+  }, [projectSegment, refetch]);
 
   const handleSegmentChange = useCallback(
     (value: 'Recent' | 'Favourites') => {
