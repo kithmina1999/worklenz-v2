@@ -26,6 +26,7 @@ import { useAuthService } from '@/hooks/useAuth';
 import { SocketEvents } from '@/shared/socket-events';
 import { useSocket } from '@/socket/socketContext';
 import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 
 interface LabelsSelectorProps {
   task: IProjectTask;
@@ -45,8 +46,10 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   const currentSession = useAuthService().getCurrentSession();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
-  const handleLabelsChange = (labels: ILabelsChangeResponse) => {
-    dispatch(updateTaskLabel(labels));
+  const handleLabelsChange = async (labels: ILabelsChangeResponse) => {
+    await dispatch(updateTaskLabel(labels));
+    await dispatch(fetchLabels());
+    setSearchQuery('');
   };
 
   const handleLabelChange = (label: ITaskLabel) => {
@@ -67,6 +70,7 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
       parent_task: task.parent_task_id,
       team_id: currentSession?.team_id,
     };
+    socket?.emit(SocketEvents.CREATE_LABEL.toString(), JSON.stringify(labelData));
   };
 
   useEffect(() => {
@@ -105,7 +109,6 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
             const isLabel = filteredLabelData.findIndex(
               label => label.name?.toLowerCase() === searchQuery.toLowerCase()
             );
-
             if (isLabel === -1) {
               if (e.key === 'Enter') {
                 handleCreateLabel();

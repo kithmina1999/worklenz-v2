@@ -11,11 +11,11 @@ interface TaskListLabelsCellProps {
 const TaskListLabelsCell = ({ task }: TaskListLabelsCellProps) => {
   return (
     <Flex>
-      {task.labels?.map(label => (
+      {task.labels?.map((label, index) => (
         label.end && label.names && label.name ? (
-          <CustomNumberLabel key={label.id} labelList={label.names ?? []} namesString={label.name} />
+          <CustomNumberLabel key={`${label.id}-${index}`} labelList={label.names ?? []} namesString={label.name} />
         ) : (
-          <CustomColordLabel key={label.id} label={label} />
+          <CustomColordLabel key={`${label.id}-${index}`} label={label} />
         )
       ))}
       <LabelsSelector task={task} />
