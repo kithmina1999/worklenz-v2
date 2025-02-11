@@ -12,10 +12,18 @@ const MainLayout = () => {
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const verifyAuthStatus = async () => {
+    const session = await dispatch(verifyAuthentication()).unwrap();
+    if (!session.user.setup_completed) {
+      navigate('/worklenz/setup');
+    }
+  };
 
   useEffect(() => {
-    void dispatch(verifyAuthentication())
-  }, [dispatch]);
+    void verifyAuthStatus();
+  }, [dispatch, navigate]);
 
   const headerStyles = {
     zIndex: 999,
