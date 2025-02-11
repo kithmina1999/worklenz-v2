@@ -15,6 +15,7 @@ interface CreateProjectButtonProps {
 const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) => {
   const dispatch = useAppDispatch();
   const [isTemplateDrawerOpen, setIsTemplateDrawerOpen] = useState(false);
+  const [currentTemplateId, setCurrentTemplateId] = useState<string>('');
   const [currentPath, setCurrentPath] = useState<string>('');
   const location = useLocation();
   const { t } = useTranslation('create-first-project-form');
@@ -33,7 +34,7 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
   };
 
   const handleTemplateSelect = (templateId: string) => {
-    // handleTemplateDrawerClose();
+    setCurrentTemplateId(templateId);
   };
 
   const dropdownItems = [
