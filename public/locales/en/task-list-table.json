@@ -1,0 +1,46 @@
+{
+  "keyColumn": "Key",
+  "taskColumn": "Task",
+  "descriptionColumn": "Description",
+  "progressColumn": "Progress",
+  "membersColumn": "Members",
+  "assigneesColumn": "Assignees",
+  "labelsColumn": "Labels",
+  "phasesColumn": "Phases",
+  "statusColumn": "Status",
+  "priorityColumn": "Priority",
+  "timeTrackingColumn": "Time Tracking",
+  "timetrackingColumn": "Time Tracking",
+  "estimationColumn": "Estimation",
+  "startDateColumn": "Start Date",
+  "dueDateColumn": "Due Date",
+  "duedateColumn": "Due Date",
+  "completedDateColumn": "Completed Date",
+  "createdDateColumn": "Created Date",
+  "lastUpdatedColumn": "Last Updated",
+  "reporterColumn": "Reporter",
+  "dueTimeColumn": "Due Time",
+
+  "todoSelectorText": "To Do",
+  "doingSelectorText": "Doing",
+  "doneSelectorText": "Done",
+
+  "lowSelectorText": "Low",
+  "mediumSelectorText": "Medium",
+  "highSelectorText": "High",
+
+  "selectText": "Select",
+  "labelsSelectorInputTip": "Hit enter to create!",
+
+  "addTaskText": "+ Add Task",
+  "addSubTaskText": "+ Add Sub Task",
+  "addTaskInputPlaceholder": "Type your task and hit enter",
+
+  "openButton": "Open",
+  "okButton": "Ok",
+
+  "noLabelsFound": "No labels found",
+  "searchInputPlaceholder": "Search or create",
+  "assigneeSelectorInviteButton": "Invite a new member by email",
+  "labelInputPlaceholder": "Search or create"
+}
