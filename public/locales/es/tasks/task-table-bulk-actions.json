@@ -6,7 +6,12 @@
     "assignToMe": "Asignar a mí",
     "changeAssignees": "Cambiar asignados",
     "archive": "Archivar",
+    "unarchive": "Desarchivar",
     "delete": "Eliminar",
     "moreOptions": "Más opciones",
-    "deselectAll": "Deseleccionar todo"
+    "deselectAll": "Deseleccionar todo",
+    "status": "Estado",
+    "priority": "Prioridad",
+    "phase": "Fase",
+    "member": "Miembro"
 }

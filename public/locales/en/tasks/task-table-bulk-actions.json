@@ -6,7 +6,12 @@
     "assignToMe": "Assign to me",
     "changeAssignees": "Change Assignees",
     "archive": "Archive",
+    "unarchive": "Unarchive",
     "delete": "Delete",
     "moreOptions": "More options",
-    "deselectAll": "Deselect all"
+    "deselectAll": "Deselect all",
+    "status": "Status",
+    "priority": "Priority",
+    "phase": "Phase",
+    "member": "Member"
 }

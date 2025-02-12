@@ -341,7 +341,7 @@ const taskSlice = createSlice({
           parentTask.sub_tasks.push(task);
         }
       } else {
-        insert ? group.tasks.unshift(task) : group.tasks.push(task);
+        insert ? group.tasks.push(task) : group.tasks.unshift(task);
       }
     },
 
