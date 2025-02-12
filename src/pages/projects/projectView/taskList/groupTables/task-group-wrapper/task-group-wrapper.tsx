@@ -6,6 +6,7 @@ import BulkTasksActionContainer from '@features/projects/bulkActions/BulkTasksAc
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { deselectAll } from '@features/projects/bulkActions/bulkActionSlice';
 import { ITaskListGroup } from '@/types/tasks/taskList.types';
+import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -33,8 +34,10 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
         />
       ))}
 
+      {selectedTaskIdsList.length > 0 && <TaskListBulkActionsBar />}
+
       {/* bulk action container ==> used tailwind to recreate the animation */}
-      {createPortal(
+      {/* {createPortal(
         <div
           className={`absolute bottom-0 left-1/2 z-20 -translate-x-1/2 ${selectedTaskIdsList.length > 0 ? 'overflow-visible' : 'h-[1px] overflow-hidden'}`}
         >
@@ -48,7 +51,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
           </div>
         </div>,
         document.body
-      )}
+      )} */}
     </Flex>
   );
 };

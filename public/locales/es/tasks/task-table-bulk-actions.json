@@ -1,0 +1,12 @@
+{
+    "taskSelected": "Tarea seleccionada",
+    "tasksSelected": "Tareas seleccionadas",
+    "changeStatus": "Cambiar estado/ prioridad/ fases",
+    "changeLabel": "Cambiar etiqueta",
+    "assignToMe": "Asignar a mí",
+    "changeAssignees": "Cambiar asignados",
+    "archive": "Archivar",
+    "delete": "Eliminar",
+    "moreOptions": "Más opciones",
+    "deselectAll": "Deseleccionar todo"
+}

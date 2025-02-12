@@ -1,0 +1,12 @@
+{
+    "taskSelected": "task selected",
+    "tasksSelected": "tasks selected",
+    "changeStatus": "Change Status/ Prioriy/ Phases",
+    "changeLabel": "Change Label",
+    "assignToMe": "Assign to me",
+    "changeAssignees": "Change Assignees",
+    "archive": "Archive",
+    "delete": "Delete",
+    "moreOptions": "More options",
+    "deselectAll": "Deselect all"
+}
