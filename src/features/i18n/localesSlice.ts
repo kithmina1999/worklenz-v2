@@ -1,41 +1,75 @@
-import { createSlice } from '@reduxjs/toolkit'
-import i18n from './i18n'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import i18n from '../../i18n';
 
-type LanguageType = 'en' | 'si'
+export enum Language {
+  EN = 'en',
+  ES = 'es',
+  PT = 'pt',
+}
+
+export type ILanguageType = `${Language}`;
 
 type LocalesState = {
-    lng: LanguageType
-}
+  lng: ILanguageType;
+};
 
-// fuction for get the current language from the local storage
-const getLanguageFromLocalStorage = () => {
-    const savedLng = localStorage.getItem('i18nextLng')
-    return savedLng === 'en'
-        ? (savedLng as 'en')
-        : savedLng === 'si'
-            ? (savedLng as 'si')
-            : 'en'
-}
-// fuction for save the current language to the local storage
-const saveLanguageInLocalStorage = (lng: LanguageType) => {
-    localStorage.setItem('i18nextLng', lng)
-}
+const STORAGE_KEY = 'i18nextLng';
+
+/**
+ * Gets the user's browser language and returns it if supported, otherwise returns English
+ * @returns The detected supported language or English as fallback
+ */
+const getDefaultLanguage = (): ILanguageType => {
+  const browserLang = navigator.language.split('-')[0];
+  if (Object.values(Language).includes(browserLang as Language)) {
+    return browserLang as ILanguageType;
+  }
+  return Language.EN;
+};
+
+const DEFAULT_LANGUAGE: ILanguageType = getDefaultLanguage();
+
+/**
+ * Gets the current language from local storage
+ * @returns The stored language or default language if not found
+ */
+const getLanguageFromLocalStorage = (): ILanguageType => {
+  const savedLng = localStorage.getItem(STORAGE_KEY);
+  if (Object.values(Language).includes(savedLng as Language)) {
+    return savedLng as ILanguageType;
+  }
+  return DEFAULT_LANGUAGE;
+};
+
+/**
+ * Saves the current language to local storage
+ * @param lng Language to save
+ */
+const saveLanguageInLocalStorage = (lng: ILanguageType): void => {
+  localStorage.setItem(STORAGE_KEY, lng);
+};
 
 const initialState: LocalesState = {
-    lng: getLanguageFromLocalStorage(),
-}
+  lng: getLanguageFromLocalStorage(),
+};
 
 const localesSlice = createSlice({
-    name: 'localesReducer',
-    initialState,
-    reducers: {
-        toggleLng: (state) => {
-            state.lng = state.lng === 'en' ? 'si' : 'en'
-            saveLanguageInLocalStorage(state.lng)
-            i18n.changeLanguage(getLanguageFromLocalStorage())
-        },
+  name: 'localesReducer',
+  initialState,
+  reducers: {
+    toggleLng: state => {
+      const newLang: ILanguageType = state.lng === Language.EN ? Language.ES : Language.EN;
+      state.lng = newLang;
+      saveLanguageInLocalStorage(newLang);
+      i18n.changeLanguage(newLang);
     },
-})
+    setLanguage: (state, action: PayloadAction<ILanguageType>) => {
+      state.lng = action.payload;
+      saveLanguageInLocalStorage(action.payload);
+      i18n.changeLanguage(action.payload);
+    },
+  },
+});
 
-export const { toggleLng } = localesSlice.actions
-export default localesSlice.reducer
+export const { toggleLng, setLanguage } = localesSlice.actions;
+export default localesSlice.reducer;

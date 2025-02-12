@@ -1,41 +1,52 @@
-import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from 'react-router-dom'
+// Core dependencies
+import React, { Suspense, useEffect } from 'react';
+import { RouterProvider } from 'react-router-dom';
+import i18next from 'i18next';
 
-import LoginPage from './pages/auth/LoginPage'
-import SignupPage from './pages/auth/SignupPage'
-import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
-import AuthLayout from './layouts/AuthLayout'
-import ThemeWrapper from './features/theme/ThemeWrapper'
-import PreferenceSelector from './components/PreferenceSelector'
-import NotFoundPage from './pages/NotFoundPage'
+// Components
+import ThemeWrapper from './features/theme/ThemeWrapper';
+import PreferenceSelector from './components/PreferenceSelector';
+import { SocketProvider } from './socket/socketContext';
 
-const App = () => {
-    const router = createBrowserRouter(
-        createRoutesFromElements(
-            <Route path="/">
-                {/* Default redirect to login page */}
-                <Route index element={<Navigate to="/auth/login" replace />} />
+// Routes
+import router from './app/routes';
 
-                {/* auth routes */}
-                <Route path={'/auth'} element={<AuthLayout />}>
-                    <Route path="/auth/login" element={<LoginPage />} />
-                    <Route path="/auth/signup" element={<SignupPage />} />
-                    <Route
-                        path="/auth/forgot-password"
-                        element={<ForgotPasswordPage />}
-                    />
-                </Route>
+// Hooks & Utils
+import { useAppSelector } from './hooks/useAppSelector';
+import { initMixpanel } from './utils/mixpanelInit';
 
-                {/* not found pages */}
-                <Route path="*" element={<NotFoundPage />} />
-            </Route>,
-        ),
-    )
-    return (
+// Types & Constants
+import { Language } from './features/i18n/localesSlice';
+import logger from './utils/errorLogger';
+import { SuspenseFallback } from './components/suspense-fallback/suspense-fallback';
+import { Spin } from 'antd';
+
+const App: React.FC = () => {
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const language = useAppSelector(state => state.localesReducer.lng);
+
+  initMixpanel(import.meta.env.VITE_MIXPANEL_TOKEN as string);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', themeMode);
+  }, [themeMode]);
+
+  useEffect(() => {
+    i18next.changeLanguage(language || Language.EN, err => {
+      if (err) return logger.error('Error changing language', err);
+    });
+  }, [language]);
+
+  return (
+    <Suspense fallback={<SuspenseFallback />}>
+      <SocketProvider>
         <ThemeWrapper>
-            <RouterProvider router={router} />
-            <PreferenceSelector />
+          <RouterProvider router={router} future={{ v7_startTransition: true }} />
+          <PreferenceSelector />
         </ThemeWrapper>
-    )
-}
+      </SocketProvider>
+    </Suspense>
+  );
+};
 
-export default App
+export default App;
