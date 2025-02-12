@@ -21,7 +21,7 @@ import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 // Constants & Utils
 import { colors } from '@/styles/colors';
 import { tabItems } from '@/lib/project/projectViewConstants';
-import { getFromLocalStorage, saveToLocalStorage } from '@utils/localStorageFunctions';
+import { getJSONFromLocalStorage, saveJSONToLocalStorage } from '@utils/localStorageFunctions';
 
 // Styles
 import './project-view.css';
@@ -67,7 +67,7 @@ const ProjectView = () => {
   const pinToDefaultTab = (itemKey: string) => {
     setPinnedTab(itemKey);
 
-    saveToLocalStorage('pinnedTab', itemKey);
+    saveJSONToLocalStorage('pinnedTab', itemKey);
     navigate(`${location.pathname}?tab=${activeTab}&pinned_tab=${itemKey}`);
   };
 
@@ -95,7 +95,7 @@ const ProjectView = () => {
                   boxShadow: 'none',
                 }}
                 icon={
-                  getFromLocalStorage('pinnedTab') === item.key ? (
+                  getJSONFromLocalStorage('pinnedTab') === item.key ? (
                     <PushpinFilled
                       style={{
                         color: colors.skyBlue,

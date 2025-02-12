@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getFromLocalStorage, saveToLocalStorage } from '../utils/localStorageFunctions';
+import { getJSONFromLocalStorage, saveJSONToLocalStorage } from '../utils/localStorageFunctions';
 import { Button, ConfigProvider, Tooltip } from 'antd';
 import { PushpinFilled, PushpinOutlined } from '@ant-design/icons';
 import { colors } from '../styles/colors';
@@ -7,7 +7,7 @@ import { navRoutes, NavRoutesType } from '../features/navbar/navRoutes';
 
 // this component pin the given path to navbar
 const PinRouteToNavbarButton = ({ name, path }: NavRoutesType) => {
-  const navRoutesList: NavRoutesType[] = getFromLocalStorage('navRoutes') || navRoutes;
+  const navRoutesList: NavRoutesType[] = getJSONFromLocalStorage('navRoutes') || navRoutes;
 
   const [isPinned, setIsPinned] = useState(
     // this function check the current name is available in local storage's navRoutes list if it's available then isPinned state will be true
@@ -27,7 +27,7 @@ const PinRouteToNavbarButton = ({ name, path }: NavRoutesType) => {
     }
 
     setIsPinned(prev => !prev);
-    saveToLocalStorage('navRoutes', newNavRoutesList);
+    saveJSONToLocalStorage('navRoutes', newNavRoutesList);
   };
 
   return (

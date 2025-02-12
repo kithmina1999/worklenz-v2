@@ -9,7 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import SearchDropdown from '../../../projects/project-view/taskList/taskListFilters/SearchDropdown';
 import { useSelectedProject } from '../../../../hooks/useSelectedProject';
 import { useTranslation } from 'react-i18next';
-import { toggleDrawer as togglePhaseDrawer } from '../../../../features/projects/singleProject/phase/phaseSlice';
+import { toggleDrawer as togglePhaseDrawer } from '../../../../features/projects/singleProject/phase/phases.slice';
 import { toggleDrawer } from '../../../../features/projects/status/StatusSlice';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 import React from 'react';

@@ -1,10 +1,7 @@
 import { useAppSelector } from '@/hooks/useAppSelector';
 import Flex from 'antd/es/flex';
 import TaskListTableWrapper from '@/pages/projects/projectView/taskList/taskListTable/TaskListTableWrapper';
-import { createPortal } from 'react-dom';
-import BulkTasksActionContainer from '@features/projects/bulkActions/BulkTasksActionContainer';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { deselectAll } from '@features/projects/bulkActions/bulkActionSlice';
 import { ITaskListGroup } from '@/types/tasks/taskList.types';
 import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
 
