@@ -5,6 +5,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { ITaskListGroup } from '@/types/tasks/taskList.types';
 import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
 import { createPortal } from 'react-dom';
+import TaskTemplateDrawer from '@/features/settings/taskTemplates/TaskTemplateDrawer';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -36,6 +37,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
       {/* bulk action container ==> used tailwind to recreate the animation */}
       {createPortal(<TaskListBulkActionsBar />, document.body, 'bulk-action-container')}
+      <TaskTemplateDrawer />
     </Flex>
   );
 };

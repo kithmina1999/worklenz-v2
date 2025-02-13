@@ -40,6 +40,9 @@ import { ITaskPhase } from '@/types/tasks/taskPhase.types';
 import './task-list-bulk-actions-bar.css';
 import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { ITeamMembersViewModel } from '@/types/teamMembers/teamMembersViewModel.types';
+import { toggleTaskTemplateDrawer } from '@/features/settings/taskTemplates/taskTemplateSlice';
+import TaskTemplateDrawer from '@/features/settings/taskTemplates/TaskTemplateDrawer';
+import { createPortal } from 'react-dom';
 
 const TaskListBulkActionsBar = () => {
   const dispatch = useAppDispatch();
@@ -490,6 +493,7 @@ const TaskListBulkActionsBar = () => {
                 {
                   key: '1',
                   label: 'Create Task Template',
+                  onClick: () => dispatch(toggleTaskTemplateDrawer()),
                 },
               ]
             }}
