@@ -1,42 +1,32 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CaretDownFilled } from '@ant-design/icons';
-import ConfigProvider from 'antd/es/config-provider';
-import Flex from 'antd/es/flex';
-import Select from 'antd/es/select';
-
+import { ConfigProvider, Flex, Select } from 'antd/es';
 import { colors } from '@/styles/colors';
 import ConfigPhaseButton from '@features/projects/singleProject/phase/ConfigPhaseButton';
-import { useSelectedProject } from '@/hooks/useSelectedProject';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import CreateStatusButton from '@/components/project-task-filters/create-status-button/create-status-button';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { IGroupBy } from '@features/tasks/tasks.slice';
-import { setGroup } from '@features/tasks/tasks.slice';
+import { IGroupBy, GROUP_BY_OPTIONS, setCurrentGroup, setGroup } from '@features/tasks/tasks.slice';
 
 const GroupByFilterDropdown = () => {
   const { t } = useTranslation('task-list-filters');
   const dispatch = useAppDispatch();
   const { group: groupBy } = useAppSelector(state => state.taskReducer);
-  const selectedProject = useSelectedProject();
-  const phaseList = useAppSelector(state => state.phaseReducer.phaseList);
-
-  const phase = useMemo(
-    () => phaseList.find(phase => phase.projectId === selectedProject?.id) || null,
-    [phaseList, selectedProject?.id]
-  );
+  const { project } = useAppSelector(state => state.projectReducer);
 
   const groupDropdownMenuItems = useMemo(
     () => [
-      { key: IGroupBy.STATUS, value: IGroupBy.STATUS, label: t('statusText') },
-      { key: IGroupBy.PRIORITY, value: IGroupBy.PRIORITY, label: t('priorityText') },
-      { key: IGroupBy.PHASE, value: IGroupBy.PHASE, label: phase ? phase?.phase : t('phaseText') },
-      { key: IGroupBy.MEMBERS, value: IGroupBy.MEMBERS, label: t('memberText') },
+      { value: IGroupBy.STATUS, label: t('statusText') },
+      { value: IGroupBy.PRIORITY, label: t('priorityText') },
+      { value: IGroupBy.PHASE, label: project?.phase_label || t('phaseText') },
+      { value: IGroupBy.MEMBERS, label: t('memberText') },
     ],
-    [t, phase]
+    [t, project]
   );
 
   const handleChange = (value: IGroupBy) => {
+    setCurrentGroup(value);
     dispatch(setGroup(value));
   };
 

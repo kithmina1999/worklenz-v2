@@ -20,7 +20,7 @@ import projectReducer from '@features/project/project.slice';
 import projectsReducer from '@features/projects/projectsSlice';
 import projectMemberReducer from '@features/projects/singleProject/members/projectMembersSlice';
 import projectViewTaskListColumnsReducer from '@features/projects/singleProject/taskListColumns/taskColumnsSlice';
-import phaseReducer from '@features/projects/singleProject/phase/phaseSlice';
+import phaseReducer from '@/features/projects/singleProject/phase/phases.slice';
 import updatesReducer from '../features/projects/singleProject/updates/updatesSlice';
 import statusReducer from '@features/projects/status/StatusSlice';
 import bulkActionReducer from '@features/projects/bulkActions/bulkActionSlice';

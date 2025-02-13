@@ -1,11 +1,11 @@
 import { useAppSelector } from '@/hooks/useAppSelector';
 import Flex from 'antd/es/flex';
 import TaskListTableWrapper from '@/pages/projects/projectView/taskList/taskListTable/TaskListTableWrapper';
-import { createPortal } from 'react-dom';
-import BulkTasksActionContainer from '@features/projects/bulkActions/BulkTasksActionContainer';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { deselectAll } from '@features/projects/bulkActions/bulkActionSlice';
 import { ITaskListGroup } from '@/types/tasks/taskList.types';
+import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
+import { createPortal } from 'react-dom';
+import TaskTemplateDrawer from '@/features/settings/taskTemplates/TaskTemplateDrawer';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -33,22 +33,11 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
         />
       ))}
 
+      {/* {selectedTaskIdsList.length > 0 && <TaskListBulkActionsBar />} */}
+
       {/* bulk action container ==> used tailwind to recreate the animation */}
-      {createPortal(
-        <div
-          className={`absolute bottom-0 left-1/2 z-20 -translate-x-1/2 ${selectedTaskIdsList.length > 0 ? 'overflow-visible' : 'h-[1px] overflow-hidden'}`}
-        >
-          <div
-            className={`${selectedTaskIdsList.length > 0 ? 'bottom-4' : 'bottom-0'} absolute left-1/2 z-[999] -translate-x-1/2 transition-all duration-300`}
-          >
-            <BulkTasksActionContainer
-              selectedTaskIds={selectedTaskIdsList}
-              closeContainer={() => dispatch(deselectAll())}
-            />
-          </div>
-        </div>,
-        document.body
-      )}
+      {createPortal(<TaskListBulkActionsBar />, document.body, 'bulk-action-container')}
+      <TaskTemplateDrawer />
     </Flex>
   );
 };

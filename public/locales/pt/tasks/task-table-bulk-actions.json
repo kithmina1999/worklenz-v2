@@ -1,0 +1,17 @@
+{
+    "taskSelected": "Tarefa selecionada",
+    "tasksSelected": "Tarefas selecionadas",
+    "changeStatus": "Alterar Status/ Prioridade/ Fases",
+    "changeLabel": "Alterar Etiqueta",
+    "assignToMe": "Atribuir a mim",
+    "changeAssignees": "Alterar Assignados",
+    "archive": "Arquivar",
+    "unarchive": "Desarquivar",
+    "delete": "Deletar",
+    "moreOptions": "Mais opções",
+    "deselectAll": "Desmarcar todas",
+    "status": "Status",
+    "priority": "Prioridade",
+    "phase": "Fase",
+    "member": "Membro"
+}

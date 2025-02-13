@@ -23,6 +23,32 @@ export enum IGroupBy {
   MEMBERS = 'members'
 }
 
+export const GROUP_BY_STATUS_VALUE = IGroupBy.STATUS;
+export const GROUP_BY_PRIORITY_VALUE = IGroupBy.PRIORITY;
+export const GROUP_BY_PHASE_VALUE = IGroupBy.PHASE;
+
+export const GROUP_BY_OPTIONS: IGroupByOption[] = [
+  { label: 'Status', value: GROUP_BY_STATUS_VALUE },
+  { label: 'Priority', value: GROUP_BY_PRIORITY_VALUE },
+  { label: 'Phase', value: GROUP_BY_PHASE_VALUE },
+];
+
+const LOCALSTORAGE_GROUP_KEY = 'worklenz.tasklist.group_by';
+
+export const getCurrentGroup = (): IGroupByOption => {
+  const key = localStorage.getItem(LOCALSTORAGE_GROUP_KEY);
+  if (key) {
+    const group = GROUP_BY_OPTIONS.find(option => option.value === key);
+    if (group) return group;
+  }
+  setCurrentGroup(GROUP_BY_STATUS_VALUE);
+  return GROUP_BY_OPTIONS[0];
+};
+
+export const setCurrentGroup = (group: IGroupBy): void => {
+  localStorage.setItem(LOCALSTORAGE_GROUP_KEY, group);
+};
+
 interface ITaskState {
   search: string | null;
   archived: boolean;
@@ -52,7 +78,7 @@ interface ITaskState {
 const initialState: ITaskState = {
   search: null,
   archived: false,
-  group: IGroupBy.STATUS,
+  group: getCurrentGroup().value as IGroupBy,
   isSubtasksInclude: false,
   fields: [],
   tasks: [],
@@ -74,16 +100,6 @@ const initialState: ITaskState = {
   taskFormViewModel: null,
   loadingTask: false,
 };
-
-export const GROUP_BY_STATUS_VALUE = IGroupBy.STATUS;
-export const GROUP_BY_PRIORITY_VALUE = IGroupBy.PRIORITY;
-export const GROUP_BY_PHASE_VALUE = IGroupBy.PHASE;
-
-export const GROUP_BY_OPTIONS: IGroupByOption[] = [
-  { label: 'Status', value: GROUP_BY_STATUS_VALUE },
-  { label: 'Priority', value: GROUP_BY_PRIORITY_VALUE },
-  { label: 'Phase', value: GROUP_BY_PHASE_VALUE },
-];
 
 export const COLUMN_KEYS = {
   KEY: 'KEY',
@@ -110,21 +126,6 @@ export const COLUMN_KEYS_LIST = Object.values(COLUMN_KEYS).map(key => ({
   key,
   show: true,
 }));
-
-const LOCALSTORAGE_GROUP_KEY = 'worklenz.tasklist.group_by';
-
-export const getCurrentGroup = (): IGroupByOption => {
-  const key = localStorage.getItem(LOCALSTORAGE_GROUP_KEY);
-  if (key) {
-    const group = GROUP_BY_OPTIONS.find(option => option.value === key);
-    if (group) return group;
-  }
-  return GROUP_BY_OPTIONS[0];
-};
-
-export const setCurrentGroup = (group: IGroupByOption): void => {
-  localStorage.setItem(LOCALSTORAGE_GROUP_KEY, group.value);
-};
 
 export const fetchTaskGroups = createAsyncThunk(
   'tasks/fetchTaskGroups',
@@ -254,7 +255,7 @@ const addTaskToGroup = (
       parentTask.sub_tasks.push({...task});
     }
   } else {
-    insert ? group.tasks.unshift({...task}) : group.tasks.push({...task});
+    insert ? group.tasks.push({...task}) : group.tasks.unshift({...task});
   }
 };
 
@@ -340,7 +341,7 @@ const taskSlice = createSlice({
           parentTask.sub_tasks.push(task);
         }
       } else {
-        insert ? group.tasks.unshift(task) : group.tasks.push(task);
+        insert ? group.tasks.push(task) : group.tasks.unshift(task);
       }
     },
 
