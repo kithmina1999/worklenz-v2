@@ -227,7 +227,11 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         </Skeleton>
       </div>
       {/* Content Area */}
-      <div className="temp-details" style={{ flex: 1 }}>
+      <div className="temp-details" style={{
+        flex: 1,
+        maxHeight: 'calc(100vh - 200px)',
+        padding: '16px',
+      }}>
         <Title level={4}>Details</Title>
         <Skeleton loading={loadingSelectedTemplate} active>
           {selectedTemplate?.image_url && (
