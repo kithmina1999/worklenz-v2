@@ -41,7 +41,7 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
     if(!currentTemplateId || currentTemplateId === '') return;
     setCreateProjectLoading(true);
     // console.log(currentTemplateId);
-    setCreateProjectLoading(false);
+    // setCreateProjectLoading(false);
   };
   
   const dropdownItems = [
