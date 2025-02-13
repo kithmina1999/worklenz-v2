@@ -1,40 +1,25 @@
 import { Button, Drawer, Flex, Input, Typography } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import { addPhaseOption, toggleDrawer } from './phaseSlice';
-import { useSelectedProject } from '../../../../hooks/useSelectedProject';
+import { addPhaseOption, fetchPhasesByProjectId, toggleDrawer } from './phases.slice';
 import { Divider } from 'antd/lib';
 import { PlusOutlined } from '@ant-design/icons';
+import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PhaseOptionItem from './PhaseOptionItem';
-import { PhaseOption } from '../../../../types/phase.types';
-import { nanoid } from '@reduxjs/toolkit';
 
 const PhaseDrawer = () => {
-  // get drawer state from phase slice
+  const { t } = useTranslation('phases-drawer');
   const isDrawerOpen = useAppSelector(state => state.phaseReducer.isPhaseDrawerOpen);
   const dispatch = useAppDispatch();
+  const { projectId } = useParams();
+  const [phaseName, setPhaseName] = useState<string>('');
+  const { phaseList, loadingPhases } = useAppSelector(state => state.phaseReducer);
 
-  // get currently selected project from useSelectedProject hook
-  const selectedProject = useSelectedProject();
-
-  // get phase data from phase reducer
-  const phase =
-    useAppSelector(state => state.phaseReducer.phaseList).find(
-      phase => phase.projectId === selectedProject?.projectId
-    ) || null;
-
-  const [phaseName, setPhaseName] = useState<string>(phase ? phase?.phase : 'Phase');
-
-  // handle add option
   const handleAddOptions = () => {
-    const newPhaseOption: PhaseOption = {
-      optionId: nanoid(),
-      optionName: 'Untitiled Phase  1',
-      optionColor: '#fbc84c',
-    };
-
-    dispatch(addPhaseOption({ phaseId: phase?.phaseId || '', option: newPhaseOption }));
+    dispatch(addPhaseOption({ projectId: projectId || '' }));
+    dispatch(fetchPhasesByProjectId(projectId || ''));
   };
 
   return (
@@ -43,14 +28,14 @@ const PhaseDrawer = () => {
       onClose={() => dispatch(toggleDrawer())}
       title={
         <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-          Configure phases
+          {t('configurePhases')}
         </Typography.Text>
       }
     >
       <Flex vertical gap={8}>
-        <Typography.Text>Phase Label :</Typography.Text>
+        <Typography.Text>{t('phaseLabel')}</Typography.Text>
         <Input
-          placeholder="Enter a name for label"
+          placeholder={t('enterPhaseName')}
           value={phaseName}
           onChange={e => setPhaseName(e.currentTarget.value)}
         />
@@ -60,23 +45,22 @@ const PhaseDrawer = () => {
 
       <Flex vertical gap={16}>
         <Flex align="center" justify="space-between">
-          <Typography.Text>Phase Options :</Typography.Text>
+          <Typography.Text>{t('phaseOptions')}</Typography.Text>
 
           <Button type="primary" icon={<PlusOutlined />} onClick={handleAddOptions}>
-            Add Option
+            {t('addOption')}
           </Button>
         </Flex>
 
         <Flex vertical gap={16}>
-          {phase
-            ? phase.phaseOptions.map(option => (
-                <PhaseOptionItem
-                  key={option.optionId}
-                  option={option}
-                  phaseId={phase.phaseId || null}
-                />
-              ))
-            : null}
+          {phaseList.map(option => (
+            <PhaseOptionItem
+              key={option.id}
+              option={option}
+              projectId={projectId || ''}
+              t={t}
+            />
+          ))}
         </Flex>
       </Flex>
     </Drawer>

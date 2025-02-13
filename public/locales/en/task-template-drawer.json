@@ -1,4 +1,5 @@
 {
+  "createTaskTemplate": "Create Task Template",
   "title": "Edit Task Template",
   "cancelText": "Cancel",
   "saveText": "Save",

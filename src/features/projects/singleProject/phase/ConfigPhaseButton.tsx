@@ -2,7 +2,7 @@ import { SettingOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 import React from 'react';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import { toggleDrawer } from './phaseSlice';
+import { toggleDrawer } from './phases.slice';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { colors } from '../../../../styles/colors';
 import { useTranslation } from 'react-i18next';

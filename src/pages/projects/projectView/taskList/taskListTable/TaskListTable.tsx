@@ -40,7 +40,7 @@ import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { CustomFieldsTypes } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 import { SelectionType } from './custom-columns/custom-column-modal/selection-type-column/selection-type-column';
-import { deselectAll, selectTaskIds } from '@/features/projects/bulkActions/bulkActionSlice';
+import { deselectAll, selectTaskIds, selectTasks } from '@/features/projects/bulkActions/bulkActionSlice';
 import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/PriorityDropdown';
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
@@ -96,20 +96,28 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
   const toggleRowSelection = (task: IProjectTask) => {
     if (!task.id) return;
     const taskIdsSet = new Set(selectedTaskIdsList);
+    const selectedTasksSet = new Set(selectedTaskIdsList.map(id => taskList?.find(t => t.id === id)).filter(Boolean));
+
     if (taskIdsSet.has(task.id)) {
         taskIdsSet.delete(task.id);
+        selectedTasksSet.delete(task);
     } else {
         taskIdsSet.add(task.id);
+        selectedTasksSet.add(task);
     }
+
     const taskIds = Array.from(taskIdsSet);
+    const selectedTasks = Array.from(selectedTasksSet) as IProjectTask[];
 
     dispatch(selectTaskIds(taskIds));
+    dispatch(selectTasks(selectedTasks));
   };
 
   const selectOneRow = (task: IProjectTask) => {
     if (!task.id) return;
     // setSelectedRows([task.id]);
     dispatch(selectTaskIds([task.id]));
+    dispatch(selectTasks([task]));
   };
 
   const handleContextMenu = (e: React.MouseEvent, task: IProjectTask) => {

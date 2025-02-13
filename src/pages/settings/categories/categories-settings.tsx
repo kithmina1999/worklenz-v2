@@ -65,7 +65,7 @@ const CategoriesSettings = () => {
     {
       key: 'category',
       title: t('categoryColumn'),
-      render: (record: CategoryType) => <CustomColorsCategoryTag category={record} />,
+      render: (record: IProjectCategory) => <CustomColorsCategoryTag category={record} />,
     },
     {
       key: 'associatedTask',
@@ -75,14 +75,14 @@ const CategoriesSettings = () => {
     {
       key: 'actionBtns',
       width: 60,
-      render: (record: CategoryType) =>
-        hoverRow === record.categoryId && (
+      render: (record: IProjectCategory) =>
+        hoverRow === record.id && (
           <Popconfirm
             title={t('deleteConfirmationTitle')}
             icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
             okText={t('deleteConfirmationOk')}
             cancelText={t('deleteConfirmationCancel')}
-            onConfirm={() => dispatch(deleteCategory(record.categoryId))}
+            onConfirm={() => record.id && dispatch(deleteCategory(record.id))}
           >
             <Tooltip title="Delete">
               <Button shape="default" icon={<DeleteOutlined />} size="small" />
