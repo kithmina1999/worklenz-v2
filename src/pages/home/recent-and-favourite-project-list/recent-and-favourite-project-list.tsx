@@ -32,6 +32,12 @@ const RecentAndFavouriteProjectList = () => {
     localStorage.setItem(MY_PROJECTS_FILTER_KEY, value.toString());
   }, []);
 
+  // Initialize projectSegment from localStorage on component mount
+  useEffect(() => {
+    const filterValue = getActiveProjectsFilter();
+    setProjectSegment(filterValue === 0 ? 'Recent' : 'Favourites');
+  }, [getActiveProjectsFilter]);
+
   const {
     data: projectsData,
     isFetching: projectsIsFetching,
@@ -39,6 +45,7 @@ const RecentAndFavouriteProjectList = () => {
     refetch,
   } = useGetProjectsQuery({ view: getActiveProjectsFilter() });
 
+  // Refetch data when projectSegment changes
   useEffect(() => {
     refetch();
   }, [projectSegment, refetch]);
@@ -105,7 +112,7 @@ const RecentAndFavouriteProjectList = () => {
       </Tooltip>
       <Segmented<'Recent' | 'Favourites'>
         options={['Recent', 'Favourites']}
-        defaultValue={projectSegment}
+        defaultValue={getActiveProjectsFilter() === 0 ? 'Recent' : 'Favourites'}
         onChange={handleSegmentChange}
       />
     </Flex>
