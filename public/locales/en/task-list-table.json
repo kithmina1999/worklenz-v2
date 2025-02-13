@@ -7,6 +7,7 @@
   "assigneesColumn": "Assignees",
   "labelsColumn": "Labels",
   "phasesColumn": "Phases",
+  "phaseColumn": "Phase",
   "statusColumn": "Status",
   "priorityColumn": "Priority",
   "timeTrackingColumn": "Time Tracking",

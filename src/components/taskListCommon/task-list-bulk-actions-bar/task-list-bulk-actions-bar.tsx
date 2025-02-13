@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge, Checkbox, Dropdown, Flex, Tooltip, Button, Typography, Divider, Empty, Input, List } from 'antd';
+import { Badge, Checkbox, Dropdown, Flex, Tooltip, Button, Typography, InputRef } from 'antd';
 import {
-  RetweetOutlined,InputRef, 
+  RetweetOutlined,
   TagsOutlined,
   UserAddOutlined,
   UsergroupAddOutlined,
@@ -46,7 +46,7 @@ const TaskListBulkActionsBar = () => {
   const { t } = useTranslation('tasks/task-table-bulk-actions');
   const { trackMixpanelEvent } = useMixpanelTracking();
 
-  // State
+  // loading state
   const [loading, setLoading] = useState(false);
   const [updatingLabels, setUpdatingLabels] = useState(false);
   const [updatingAssignToMe, setUpdatingAssignToMe] = useState(false);
@@ -68,13 +68,14 @@ const TaskListBulkActionsBar = () => {
   const membersInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [teamMembers, setTeamMembers] = useState<ITeamMembersViewModel>({ data: [], total: 0 });
+  const [assigneeDropdownOpen, setAssigneeDropdownOpen] = useState(false);
 
   const filteredMembersData = useMemo(() => {
     return teamMembers?.data?.filter(member =>
       member.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [teamMembers, searchQuery]);
-  
+
   // Handlers
   const handleChangeStatus = async (status: ITaskStatus) => {
     if (!status.id || !projectId) return;
@@ -274,79 +275,114 @@ const TaskListBulkActionsBar = () => {
   };
 
   const getAssigneesMenu = () => {
-    return members?.data?.map(member => ({
-      key: member.id,
-      label: (
-        <Flex vertical>
-          <Input
-            ref={membersInputRef}
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.currentTarget.value)}
-            placeholder={t('searchInputPlaceholder')}
-          />
-
-          <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
-            {filteredMembersData?.length ? (
-              filteredMembersData.map(member => (
-                <List.Item
-                  className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
-                  key={member.id}
-                  style={{
-                    display: 'flex',
-                    gap: 8,
-                    justifyContent: 'flex-start',
-                    padding: '4px 8px',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                  // onClick={e => handleMemberChange(null, member.id || '')}
-                >
-                  <Checkbox
-                    id={member.id}
-                    // checked={checkMemberSelected(member.id || '')}
-                    // onChange={e => handleMemberChange(e, member.id || '')}
-                  />
-                  <div>
-                    <SingleAvatar
-                      avatarUrl={member.avatar_url}
-                      name={member.name}
-                      email={member.email}
-                    />
-                  </div>
-                  <Flex vertical>
-                    {member.name}
-
-                    <Typography.Text
-                      style={{
-                        fontSize: 12,
-                        color: colors.lightGray,
-                      }}
-                    >
-                      {member.email}
-                    </Typography.Text>
-                  </Flex>
-                </List.Item>
-              ))
-            ) : (
-              <Empty />
-            )}
-          </List>
-
-          <Divider style={{ marginBlock: 0 }} />
-
-          <Divider style={{ marginBlock: 8 }} />
-
+    return [
+      ...(members?.data?.map(member => ({
+        key: member.id,
+        label: (
+          <Flex align="center" justify="space-between" gap={8}>
+            <Checkbox onChange={e => e.stopPropagation()}>
+              <Flex align="center">
+                <SingleAvatar
+                  avatarUrl={member.avatar_url}
+                  name={member.name}
+                  email={member.email}
+                />
+                <Flex vertical>
+                  <Typography.Text>{member.name}</Typography.Text>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    {member.email}
+                  </Typography.Text>
+                </Flex>
+              </Flex>
+            </Checkbox>
+          </Flex>
+        ),
+      })) || []),
+      {
+        key: 'apply',
+        label: (
           <Button
             type="primary"
-            style={{ alignSelf: 'flex-end' }}
             size="small"
-            onClick={handleChangeAssignees}
+            style={{ width: '100%' }}
+            onClick={() => setAssigneeDropdownOpen(false)}
           >
-            {t('okButton')}
+            Apply
           </Button>
-        </Flex>
-      ),
-    }));
+        ),
+      },
+    ];
+
+    // return (
+    //   <Flex vertical>
+    //     <Input
+    //       ref={membersInputRef}
+    //       value={searchQuery}
+    //       onChange={e => setSearchQuery(e.currentTarget.value)}
+    //       placeholder={t('searchInputPlaceholder')}
+    //     />
+
+    //     <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
+    //       {filteredMembersData?.length ? (
+    //         filteredMembersData.map(member => (
+    //           <List.Item
+    //             className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
+    //             key={member.id}
+    //             style={{
+    //               display: 'flex',
+    //               gap: 8,
+    //               justifyContent: 'flex-start',
+    //               padding: '4px 8px',
+    //               border: 'none',
+    //               cursor: 'pointer',
+    //             }}
+    //             // onClick={e => handleMemberChange(null, member.id || '')}
+    //           >
+    //             <Checkbox
+    //               id={member.id}
+    //               // checked={checkMemberSelected(member.id || '')}
+    //               // onChange={e => handleMemberChange(e, member.id || '')}
+    //             />
+    //             <div>
+    //               <SingleAvatar
+    //                 avatarUrl={member.avatar_url}
+    //                 name={member.name}
+    //                 email={member.email}
+    //               />
+    //             </div>
+    //             <Flex vertical>
+    //               {member.name}
+
+    //               <Typography.Text
+    //                 style={{
+    //                   fontSize: 12,
+    //                   color: colors.lightGray,
+    //                 }}
+    //               >
+    //                 {member.email}
+    //               </Typography.Text>
+    //             </Flex>
+    //           </List.Item>
+    //         ))
+    //       ) : (
+    //         <Empty />
+    //       )}
+    //     </List>
+
+    //     <Divider style={{ marginBlock: 0 }} />
+
+    //     <Divider style={{ marginBlock: 8 }} />
+
+    //     <Button
+    //       type="primary"
+    //       style={{ alignSelf: 'flex-end' }}
+    //       size="small"
+    //       onClick={handleChangeAssignees}
+    //     >
+    //       {t('okButton')}
+    //     </Button>
+    //   </Flex>
+    // );
   };
 
   const buttonStyle = { background: colors.transparent, color: colors.white };
@@ -354,7 +390,9 @@ const TaskListBulkActionsBar = () => {
   return (
     <div className={`bulk-actions ${selectedTaskIdsList.length > 0 ? 'open' : ''}`}>
       <Flex className="bulk-actions-inner" align="center" justify="center" gap={12}>
-        <Flex>{getLabel()}</Flex>
+        <Flex>
+          <span style={{ fontSize: 14, fontWeight: 500 }}>{getLabel()}</span>
+        </Flex>
 
         <Flex align="center">
           <Tooltip title={t('changeStatus')}>
@@ -384,7 +422,12 @@ const TaskListBulkActionsBar = () => {
               arrow
               trigger={['click']}
             >
-              <Button icon={<TagsOutlined />} className="borderless-icon-btn" style={buttonStyle} />
+              <Button
+                icon={<TagsOutlined />}
+                className="borderless-icon-btn"
+                style={buttonStyle}
+                loading={updatingLabels}
+              />
             </Dropdown>
           </Tooltip>
 
@@ -394,11 +437,14 @@ const TaskListBulkActionsBar = () => {
               className="borderless-icon-btn"
               style={buttonStyle}
               onClick={() => handleAssignToMe()}
+              loading={updatingAssignToMe}
             />
           </Tooltip>
 
           <Tooltip title={t('changeAssignees')}>
             <Dropdown
+              open={assigneeDropdownOpen}
+              onOpenChange={value => setAssigneeDropdownOpen(value)}
               menu={{
                 items: getAssigneesMenu(),
                 style: { maxHeight: '200px', overflow: 'auto' },
@@ -412,6 +458,7 @@ const TaskListBulkActionsBar = () => {
                 icon={<UsergroupAddOutlined />}
                 className="borderless-icon-btn"
                 style={buttonStyle}
+                loading={updatingAssignees}
               />
             </Dropdown>
           </Tooltip>
@@ -436,7 +483,19 @@ const TaskListBulkActionsBar = () => {
         </Flex>
 
         <Tooltip title={t('moreOptions')}>
-          <Button icon={<MoreOutlined />} className="borderless-icon-btn" style={buttonStyle} />
+          <Dropdown
+            trigger={['click']}
+            menu={{
+              items: [
+                {
+                  key: '1',
+                  label: 'Create Task Template',
+                },
+              ]
+            }}
+          >
+            <Button icon={<MoreOutlined />} className="borderless-icon-btn" style={buttonStyle} />
+          </Dropdown>
         </Tooltip>
 
         <Tooltip title={t('deselectAll')}>

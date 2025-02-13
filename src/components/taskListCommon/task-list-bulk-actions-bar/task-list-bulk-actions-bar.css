@@ -5,13 +5,12 @@
     bottom: 30px;
     left: 0;
     right: 0;
-    min-width: 420px;
-    width: auto;
-    max-width: 450px;
+    width: fit-content;
     margin: auto;
     height: 50px;
     display: flex;
     align-items: center;
+    justify-content: center;
     border-radius: 25px;
     padding: 0 25px;
     box-shadow: 0 0 0 1px #edeae9, 0 5px 20px 0 rgba(109, 110, 111, 0.08);
