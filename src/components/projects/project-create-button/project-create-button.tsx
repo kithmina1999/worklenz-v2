@@ -4,9 +4,10 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { DownOutlined, EditOutlined, ImportOutlined } from '@ant-design/icons';
 import TemplateDrawer from '@/components/common/template-drawer/template-drawer';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { setProjectData, setProjectId, toggleProjectDrawer } from '@/features/project/project-drawer.slice';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
+import { projectTemplatesApiService } from '@/api/project-templates/project-templates.api.service';
 
 interface CreateProjectButtonProps {
   className?: string;
@@ -14,7 +15,10 @@ interface CreateProjectButtonProps {
 
 const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [isTemplateDrawerOpen, setIsTemplateDrawerOpen] = useState(false);
+  const [currentTemplateId, setCurrentTemplateId] = useState<string>('');
+  const [projectImporting, setProjectImporting] = useState(false);
   const [currentPath, setCurrentPath] = useState<string>('');
   const location = useLocation();
   const { t } = useTranslation('create-first-project-form');
@@ -33,9 +37,25 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
   };
 
   const handleTemplateSelect = (templateId: string) => {
-    handleTemplateDrawerClose();
+    setCurrentTemplateId(templateId);
   };
-
+  const setCreatedProjectTemplate = async() => {
+    if(!currentTemplateId || currentTemplateId === "") return;
+    try{
+      setProjectImporting(true);
+      // Create project from template
+      const res = await projectTemplatesApiService.createFromTemplate({ template_id: currentTemplateId });
+      if(res.done){
+        navigate(`/worklenz/projects/${res.body.project_id}`);
+      }
+    }catch(e){
+      console.error(e);
+    }finally{ 
+      setProjectImporting(false); 
+      handleTemplateDrawerClose();
+      }
+  };
+  
   const dropdownItems = [
     {
       key: 'template',
@@ -78,7 +98,7 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
             <Button className="mr-2" onClick={handleTemplateDrawerClose}>
               {t('cancel')}
             </Button>
-            <Button type="primary">{t('create')}</Button>
+            <Button type="primary" loading={projectImporting} onClick={setCreatedProjectTemplate}>{t('create')}</Button>
           </div>
         }
       >

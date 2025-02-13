@@ -90,6 +90,15 @@ const ProjectList: React.FC = () => {
 
   const filters = useMemo(() => Object.values(IProjectFilter), []);
 
+  useEffect(() => {
+    const filterIndex = getFilterIndex();
+    dispatch(setRequestParams({ filter: filterIndex }));
+  }, [dispatch, getFilterIndex]);
+  
+  useEffect(() => {
+    refetchProjects();
+  }, [requestParams, refetchProjects]);
+  
   const handleTableChange = useCallback(
     (
       newPagination: TablePaginationConfig,
