@@ -4,41 +4,36 @@ import { Link, useLocation } from 'react-router-dom';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { settingsItems } from '@/lib/settings/settings-constants';
+import { useAuthService } from '@/hooks/useAuth';
 
 const SettingSidebar: React.FC = () => {
   const location = useLocation();
   const { t } = useTranslation('settings/sidebar');
+  const currentSession = useAuthService().getCurrentSession();
 
-  type MenuItem = Required<MenuProps>['items'][number];
-  // import menu items from settings sidebar constants
-  const menuItems = settingsItems;
-
-  // function for get the active menu item
   const getCurrentActiveKey = () => {
-    // this one return the stirng after worklenz/
-    const afterWorklenzString = location.pathname.split('/worklenz/settings/')[1];
-
-    // this one return the stirng after worklenz/ **pathKey** /
-    const pathKey = afterWorklenzString.split('/')[0];
-
-    return pathKey;
+    const pathParts = location.pathname.split('/worklenz/settings/');
+    if (pathParts.length < 2) return '';
+    return pathParts[1].split('/')[0];
   };
 
-  // menu items
-  const items: MenuItem[] = [
-    ...menuItems.map(item => ({
+  const items: Required<MenuProps>['items'] = settingsItems.map(item => {
+    if (currentSession?.is_google && item.key === 'change-password') {
+      return undefined;
+    }
+    return {
       key: item.key,
       label: (
-        <Flex gap={8} justify="space-between">
-          <Flex gap={8}>
-            {item.icon}
-            <Link to={`/worklenz/settings/${item.endpoint}`}>{t(item.name)}</Link>
-          </Flex>
+      <Flex gap={8} justify="space-between" align="center">
+        <Flex gap={8} align="center">
+          {item.icon}
+          <Link to={`/worklenz/settings/${item.endpoint}`}>{t(item.name)}</Link>
+        </Flex>
           <RightOutlined style={{ fontSize: 12 }} />
         </Flex>
       ),
-    })),
-  ];
+    };
+  });
 
   return (
     <ConfigProvider
@@ -57,7 +52,10 @@ const SettingSidebar: React.FC = () => {
         items={items}
         selectedKeys={[getCurrentActiveKey()]}
         mode="vertical"
-        style={{ border: 'none', width: '100%' }}
+        style={{ 
+          border: 'none', 
+          width: '100%',
+        }}
       />
     </ConfigProvider>
   );

@@ -22,7 +22,7 @@ export const projectTemplatesApiService = {
     return response.data;
   },
 
-  getCustomTemplates: async (): Promise<IServerResponse<IProjectTemplate[]>> => {
+  getCustomTemplates: async (): Promise<IServerResponse<IWorklenzTemplate[]>> => {
     const response = await apiClient.get(`${rootUrl}/custom-templates`);
     return response.data;
   },
@@ -36,6 +36,11 @@ export const projectTemplatesApiService = {
 
   createCustomTemplate: async (body: ICustomProjectTemplateCreateRequest): Promise<IServerResponse<IProjectTemplate>> => {
     const response = await apiClient.post(`${rootUrl}/custom-template`, body);
+    return response.data;
+  },
+
+  deleteCustomTemplate: async (id: string): Promise<IServerResponse<void>> => {
+    const response = await apiClient.delete(`${rootUrl}/${id}`);
     return response.data;
   },
 };
