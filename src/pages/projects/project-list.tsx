@@ -50,7 +50,7 @@ import {
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
-import { setProjectId } from '@/features/project/project.slice';
+import { setProjectId, setStatuses } from '@/features/project/project.slice';
 import { setProject } from '@/features/project/project.slice';
 
 const ProjectList: React.FC = () => {
@@ -106,11 +106,11 @@ const ProjectList: React.FC = () => {
       sorter: SorterResult<IProjectViewModel> | SorterResult<IProjectViewModel>[]
     ) => {
       const newParams: Partial<typeof requestParams> = {};
-
       if (!filters?.status_id) {
         newParams.statuses = null;
         dispatch(setFilteredStatuses([]));
       } else {
+        // dispatch(setFilteredStatuses(filters.status_id as Array<string>));
         newParams.statuses = filters.status_id.join(' ');
       }
 
@@ -118,6 +118,7 @@ const ProjectList: React.FC = () => {
         newParams.categories = null;
         dispatch(setFilteredCategories([]));
       } else {
+        // dispatch(setFilteredCategories(filters.category_id as Array<string>));
         newParams.categories = filters.category_id.join(' ');
       }
 

@@ -79,7 +79,7 @@ const TableColumns = ({
           categories.map(category => ({ id: category.id || '', name: category.name || '' }))
         ),
         filteredValue: filteredCategories,
-        onFilter: onCategoryFilterChange,
+        onFilter: (value, record) => record.name.includes(value as string),
         filterMultiple: true,
         render: (text: string, record: IProjectViewModel) => (
           <CategoryCell key={record.id} t={t} record={record} />
@@ -95,7 +95,7 @@ const TableColumns = ({
         ),
         filterMultiple: true,
         filteredValue: filteredStatuses,
-        onFilter: onStatusFilterChange,
+        onFilter: (value, record) => record.name.includes(value as string),
         sorter: true,
       },
       {
@@ -134,7 +134,6 @@ const TableColumns = ({
     ],
     [t, categories, statuses, filteredCategories]
   );
-
   return columns as ColumnsType<IProjectViewModel>;
 };
 
