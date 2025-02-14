@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
-  DatePicker,
   Tooltip,
   Tag,
-  Avatar,
   Progress,
   Typography,
   Dropdown,
@@ -29,18 +27,28 @@ import {
 } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
-import { themeWiseColor } from '../../../../../../utils/themeWiseColor';
+
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { themeWiseColor } from '@/utils/themeWiseColor';
 import BoardSubTaskCard from '../board-sub-task-card/board-sub-task-card';
-import CustomAvatarGroup from '../../../../../../components/board/custom-avatar-group';
-import CustomDueDatePicker from '../../../../../../components/board/custom-due-date-picker';
-import { colors } from '../../../../../../styles/colors';
-import { deleteBoardTask, setSelectedTaskId } from '../../../../../../features/board/board-slice';
-import { toggleUpdateTaskDrawer } from '../../../../../../features/tasks/taskSlice';
+import CustomAvatarGroup from '@/components/board/custom-avatar-group';
+import CustomDueDatePicker from '@/components/board/custom-due-date-picker';
+import { colors } from '@/styles/colors';
+import {
+  deleteBoardTask,
+  setSelectedTaskId,
+} from '@features/board/board-slice';
+import { toggleUpdateTaskDrawer } from '@features/tasks/taskSlice';
 import BoardCreateSubtaskCard from '../board-sub-task-card/board-create-sub-task-card';
 
-const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }) => {
+const BoardViewTaskCard = ({
+  task,
+  sectionId,
+}: {
+  task: any;
+  sectionId: string;
+}) => {
   const [isSubTaskShow, setIsSubTaskShow] = useState(false);
   const [showNewSubtaskCard, setShowNewSubtaskCard] = useState(false);
   const [dueDate, setDueDate] = useState<Dayjs | null>(
@@ -51,7 +59,7 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
   const { t } = useTranslation('kanbanBoard');
 
   //   get theme details from theme reducer
-  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
@@ -65,7 +73,8 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
     {
       label: (
         <span>
-          <UserAddOutlined /> <Typography.Text>{t('assignToMe')}</Typography.Text>
+          <UserAddOutlined />{' '}
+          <Typography.Text>{t('assignToMe')}</Typography.Text>
         </span>
       ),
       key: '1',
@@ -82,10 +91,14 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
       label: (
         <Popconfirm
           title={t('deleteConfirmationTitle')}
-          icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
+          icon={
+            <ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />
+          }
           okText={t('deleteConfirmationOk')}
           cancelText={t('deleteConfirmationCancel')}
-          onConfirm={() => dispatch(deleteBoardTask({ sectionId: sectionId, taskId: task.id }))}
+          onConfirm={() =>
+            dispatch(deleteBoardTask({ sectionId: sectionId, taskId: task.id }))
+          }
         >
           <Flex gap={8} align="center">
             <DeleteOutlined />
@@ -119,20 +132,30 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
             {task?.labels?.length ? (
               <>
                 {task?.labels.slice(0, 2).map((label: any) => (
-                  <Tag key={label.id} style={{ marginRight: '4px' }} color={label?.color_code}>
-                    <span style={{ color: themeMode === 'dark' ? '#383838' : '' }}>
+                  <Tag
+                    key={label.id}
+                    style={{ marginRight: '4px' }}
+                    color={label?.color_code}
+                  >
+                    <span
+                      style={{ color: themeMode === 'dark' ? '#383838' : '' }}
+                    >
                       {label.name}
                     </span>
                   </Tag>
                 ))}
-                {task.labels?.length > 2 && <Tag>+ {task.labels.length - 2}</Tag>}
+                {task.labels?.length > 2 && (
+                  <Tag>+ {task.labels.length - 2}</Tag>
+                )}
               </>
             ) : (
               ''
             )}
           </Flex>
 
-          <Tooltip title={` ${task?.completed_sub_tasks} / ${task?.sub_tasks_count + 1}`}>
+          <Tooltip
+            title={` ${task?.completed_sub_tasks} / ${task?.sub_tasks_count + 1}`}
+          >
             <Progress type="circle" percent={task?.progress} size={26} />
           </Tooltip>
         </Flex>
@@ -163,7 +186,9 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
               }}
             />
           )}
-          <Typography.Text style={{ fontWeight: 500 }}>{task.name}</Typography.Text>
+          <Typography.Text style={{ fontWeight: 500 }}>
+            {task.name}
+          </Typography.Text>
         </Flex>
 
         <Flex vertical gap={8}>
@@ -178,14 +203,17 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
             <CustomAvatarGroup assignees={task?.assignees} />
 
             <Flex gap={4} align="center">
-              <CustomDueDatePicker dueDate={dueDate} onDateChange={setDueDate} />
+              <CustomDueDatePicker
+                dueDate={dueDate}
+                onDateChange={setDueDate}
+              />
 
               {/* Subtask Section */}
 
               <Button
-                onClick={e => {
+                onClick={(e) => {
                   e.stopPropagation();
-                  setIsSubTaskShow(prev => !prev);
+                  setIsSubTaskShow((prev) => !prev);
                 }}
                 size="small"
                 style={{
@@ -199,7 +227,11 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
                     display: 'flex',
                     alignItems: 'center',
                     margin: 0,
-                    backgroundColor: themeWiseColor('white', '#1e1e1e', themeMode),
+                    backgroundColor: themeWiseColor(
+                      'white',
+                      '#1e1e1e',
+                      themeMode
+                    ),
                   }}
                 >
                   <ForkOutlined rotate={90} />
@@ -215,7 +247,9 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
               <Divider style={{ marginBlock: 0 }} />
               <List>
                 {task?.sub_tasks &&
-                  task?.sub_tasks.map((subtask: any) => <BoardSubTaskCard subtask={subtask} />)}
+                  task?.sub_tasks.map((subtask: any) => (
+                    <BoardSubTaskCard subtask={subtask} />
+                  ))}
 
                 {showNewSubtaskCard && (
                   <BoardCreateSubtaskCard
@@ -233,7 +267,7 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
                   boxShadow: 'none',
                 }}
                 icon={<PlusOutlined />}
-                onClick={e => {
+                onClick={(e) => {
                   e.stopPropagation();
                   setShowNewSubtaskCard(true);
                 }}

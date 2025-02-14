@@ -26,6 +26,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import JobTitleDrawer from './job-titles-drawer';
+import logger from '@/utils/errorLogger';
 
 interface PaginationType {
   current: number;
@@ -93,9 +94,14 @@ const JobTitlesSettings = () => {
   };
 
   const deleteJobTitle = async (id: string) => {
-    const res = await jobTitlesApiService.deleteJobTitle(id);
-    if (res.done) {
-      getJobTitles();
+    if (!id) return;
+    try {
+      const res = await jobTitlesApiService.deleteJobTitle(id);
+      if (res.done) {
+        getJobTitles();
+      }
+    } catch (error) {
+      logger.error('Failed to delete job title:', error);
     }
   };
 
