@@ -18,16 +18,20 @@ import { colors } from '@/styles/colors';
 import NotifyMemberSelector from './NotifyMemberSelector';
 import { simpleDateFormat } from '@/utils/simpleDateFormat';
 import { ITaskFormViewModel } from '@/types/tasks/task.types';
-import AssigneeSelector from '@/components/task-list-common/assigneeSelector/AssigneeSelector';
+// import AssigneeSelector from '@/components/task-list-common/assigneeSelector/AssigneeSelector';
 import TaskDrawerPhaseSelector from './details/task-drawer-phase-selector/task-drawer-phase-selector';
 import TaskDrawerKey from './details/task-drawer-key/task-drawer-key';
 import TaskDrawerLabels from './details/task-drawer-labels/task-drawer-labels';
+import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import Avatars from '@/components/avatars/avatars';
+
 type TaskDetailsFormProps = {
   taskFormViewModel?: ITaskFormViewModel | null;
 };
 
 const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => {
-  const { t } = useTranslation('task-drawer');
+  const { t } = useTranslation('task-drawer/task-drawer-info-tab');
   const [isShowStartDate, setIsShowStartDate] = useState<boolean>(false);
   const [form] = Form.useForm();
 
@@ -35,7 +39,6 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
   useEffect(() => {
     if (taskFormViewModel) {
       form.setFieldsValue({
-
         taskId: taskFormViewModel.task?.id,
         phase: taskFormViewModel.task?.phase_id,
         assignees: taskFormViewModel.task?.assignees,
@@ -91,43 +94,46 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
       >
         <TaskDrawerKey
           taskKey={taskFormViewModel?.task?.task_key || 'NEW-TASK'}
-          label={t('task-key')}
+          label={t('details.task-key')}
         />
         <TaskDrawerPhaseSelector phases={taskFormViewModel?.phases || []} />
 
         <Form.Item name="assignees" label="Assignees">
-          <AssigneeSelector
-            taskId={taskFormViewModel ? taskFormViewModel.task?.id : null}
-            currentAssignees={taskFormViewModel?.task?.assignees || []}
-          />
+          <Flex gap={4} align="center">
+            <Avatars members={taskFormViewModel?.task?.names || []} />
+            <AssigneeSelector
+              task={(taskFormViewModel?.task as IProjectTask) || null}
+              groupId={null}
+            />
+          </Flex>
         </Form.Item>
 
         <Form.Item name="dueDate" label="Due Date">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {isShowStartDate && (
               <>
-                <DatePicker placeholder="Start Date" />
+                <DatePicker placeholder={t('details.start-date')} />
                 <Typography.Text>-</Typography.Text>
               </>
             )}
-            <DatePicker placeholder="End Date" />
+            <DatePicker placeholder={t('details.end-date')} />
             <Button
               type="text"
               onClick={() => setIsShowStartDate(prev => !prev)}
               style={{ color: isShowStartDate ? 'red' : colors.skyBlue }}
             >
-              {isShowStartDate ? 'Hide Start Date' : 'Show Start Date'}
+              {isShowStartDate ? t('details.hide-start-date') : t('details.show-start-date')}
             </Button>
           </div>
         </Form.Item>
 
-        <Form.Item name="timeEstimation" label="Time Estimation">
+        <Form.Item name="timeEstimation" label={t('details.time-estimation')}>
           <Flex gap={8}>
             <Form.Item
               name="hours"
               label={
                 <Typography.Text style={{ color: colors.lightGray, fontSize: 12 }}>
-                  Hours
+                  {t('details.hours')}
                 </Typography.Text>
               }
               style={{ marginBottom: 36 }}
@@ -140,7 +146,7 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
               name="minutes"
               label={
                 <Typography.Text style={{ color: colors.lightGray, fontSize: 12 }}>
-                  Minutes
+                  {t('details.minutes')}
                 </Typography.Text>
               }
               style={{ marginBottom: 36 }}
@@ -152,7 +158,7 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
           </Flex>
         </Form.Item>
 
-        <Form.Item name="priority" label="Priority">
+        <Form.Item name="priority" label={t('details.priority')}>
           <Select options={priorityMenuItems} style={{ width: 'fit-content' }} />
         </Form.Item>
 
@@ -161,11 +167,11 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
           taskId={taskFormViewModel?.task?.id || null}
         />
 
-        <Form.Item name="billable" label="Billable">
+        <Form.Item name="billable" label={t('details.billable')}>
           <Switch defaultChecked={false} />
         </Form.Item>
 
-        <Form.Item name="notify" label={taskFormViewModel ? 'Notify' : 'When done, notify'}>
+        <Form.Item name="notify" label={t('details.notify')}>
           <NotifyMemberSelector />
         </Form.Item>
 

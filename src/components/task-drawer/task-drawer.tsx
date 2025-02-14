@@ -13,7 +13,6 @@ import TaskDrawerTabs from './shared/TaskDrawerTabs';
 const TaskDrawer = () => {
   const { showTaskDrawer, taskFormViewModel } = useAppSelector(state => state.taskReducer);
 
-  // auto focused when open the drawer
   const taskNameInputRef = useRef<InputRef>(null);
 
   useEffect(() => {

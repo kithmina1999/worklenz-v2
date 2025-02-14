@@ -18,6 +18,7 @@ import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuse
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
 import { fetchProjects } from '@/features/home-page/home-page.slice';
+import { createPortal } from 'react-dom';
 
 const DESKTOP_MIN_WIDTH = 1024;
 const TASK_LIST_MIN_WIDTH = 500;
@@ -82,7 +83,7 @@ const HomePage = () => {
 
       <MainContent />
 
-      <ProjectDrawer onClose={() => {}} />
+      {createPortal(<ProjectDrawer onClose={() => {}} />, document.body, 'project-drawer')}
     </div>
   );
 };

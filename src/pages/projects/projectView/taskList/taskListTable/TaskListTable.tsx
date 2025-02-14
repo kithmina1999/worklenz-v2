@@ -36,14 +36,17 @@ import TaskListReporterCell from './task-list-table-cells/task-list-reporter-cel
 import TaskListDueTimeCell from './task-list-table-cells/task-list-due-time-cell/task-list-due-time-cell';
 import PhaseDropdown from '@/components/taskListCommon/phaseDropdown/PhaseDropdown';
 import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
-import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { CustomFieldsTypes } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
-import { SelectionType } from './custom-columns/custom-column-modal/selection-type-column/selection-type-column';
-import { deselectAll, selectTaskIds, selectTasks } from '@/features/projects/bulkActions/bulkActionSlice';
+import {
+  deselectAll,
+  selectTaskIds,
+  selectTasks,
+} from '@/features/projects/bulkActions/bulkActionSlice';
 import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/PriorityDropdown';
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
+import { createPortal } from 'react-dom';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -96,14 +99,16 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
   const toggleRowSelection = (task: IProjectTask) => {
     if (!task.id) return;
     const taskIdsSet = new Set(selectedTaskIdsList);
-    const selectedTasksSet = new Set(selectedTaskIdsList.map(id => taskList?.find(t => t.id === id)).filter(Boolean));
+    const selectedTasksSet = new Set(
+      selectedTaskIdsList.map(id => taskList?.find(t => t.id === id)).filter(Boolean)
+    );
 
     if (taskIdsSet.has(task.id)) {
-        taskIdsSet.delete(task.id);
-        selectedTasksSet.delete(task);
+      taskIdsSet.delete(task.id);
+      selectedTasksSet.delete(task);
     } else {
-        taskIdsSet.add(task.id);
-        selectedTasksSet.add(task);
+      taskIdsSet.add(task.id);
+      selectedTasksSet.add(task);
     }
 
     const taskIds = Array.from(taskIdsSet);
@@ -442,12 +447,16 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
 
       <AddTaskListRow groupId={tableId} />
 
-      <TaskContextMenu
-        visible={contextMenuVisible}
-        position={contextMenuPosition}
-        selectedTask={selectedTaskIdsList[0]}
-        onClose={() => setContextMenuVisible(false)}
-      />
+      {createPortal(
+        <TaskContextMenu
+          visible={contextMenuVisible}
+          position={contextMenuPosition}
+          selectedTask={selectedTaskIdsList[0]}
+          onClose={() => setContextMenuVisible(false)}
+        />,
+        document.body,
+        'task-context-menu'
+      )}
     </div>
   );
 };

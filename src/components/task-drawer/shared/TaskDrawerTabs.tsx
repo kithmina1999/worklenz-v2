@@ -11,7 +11,11 @@ const TaskDrawerTabs = () => {
       label: 'Info',
       children: <TaskDrawerInfoTab />,
     },
-    { key: 'timeLog', label: 'Time Log', children: <TaskDrawerTimeLog /> },
+    {
+      key: 'timeLog',
+      label: 'Time Log',
+      children: <TaskDrawerTimeLog />,
+    },
     {
       key: 'activityLog',
       label: 'Activity Log',
