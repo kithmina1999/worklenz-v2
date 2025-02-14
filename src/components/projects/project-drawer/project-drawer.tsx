@@ -200,7 +200,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
     <Drawer
       title={
         <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-          {editMode ? t('editProject') : t('createProject')}
+          {projectId ? t('editProject') : t('createProject')}
         </Typography.Text>
       }
       open={isProjectDrawerOpen}

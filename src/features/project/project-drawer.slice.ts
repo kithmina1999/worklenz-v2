@@ -50,8 +50,8 @@ const projectDrawerSlice = createSlice({
         state.projectLoading = true;
       })
       .addCase(fetchProjectData.fulfilled, (state, action) => {
-        state.projectLoading = false;
         state.project = action.payload;
+        state.projectLoading = false;
       })
       .addCase(fetchProjectData.rejected, state => {
         state.projectLoading = false;
