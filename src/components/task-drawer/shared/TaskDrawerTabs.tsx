@@ -2,7 +2,7 @@ import Tabs, { TabsProps } from 'antd/es/tabs';
 
 import TaskDrawerInfoTab from './infoTab/TaskDrawerInfoTab';
 import TaskDrawerTimeLog from './timeLog/TaskDrawerTimeLog';
-import TaskDrawerActivityLog from './activityLog/TaskDrawerActivityLog';
+import TaskDrawerActivityLog from './activity-log/task-drawer-activity-log';
 
 const TaskDrawerTabs = () => {
   const tabItems: TabsProps['items'] = [
@@ -23,7 +23,7 @@ const TaskDrawerTabs = () => {
     },
   ];
 
-  return <Tabs type="card" items={tabItems} />;
+  return <Tabs type="card" items={tabItems} destroyInactiveTabPane />;
 };
 
 export default TaskDrawerTabs;

@@ -14,6 +14,7 @@ const TaskDrawerInfoTab = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [refreshSubTask, setRefreshSubTask] = useState<boolean>(false);
+  
   const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskFormViewModel, loadingTask, selectedTaskId } = useAppSelector(
     state => state.taskReducer,
@@ -25,7 +26,9 @@ const TaskDrawerInfoTab = () => {
   };
 
   const fetchTaskData = () => {
-    if (!loadingTask) dispatch(fetchTask({ taskId: selectedTaskId || '', projectId: projectId || '' }));
+    if (!loadingTask && selectedTaskId && projectId) {
+      dispatch(fetchTask({ taskId: selectedTaskId, projectId }));
+    }
   };
 
   const panelStyle: React.CSSProperties = {
@@ -37,14 +40,14 @@ const TaskDrawerInfoTab = () => {
     {
       key: 'details',
       label: <Typography.Text strong>Details</Typography.Text>,
-      children: <TaskDetailsForm taskFormViewModel={taskFormViewModel || null} />,
+      children: <TaskDetailsForm taskFormViewModel={taskFormViewModel} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
     {
       key: 'description',
       label: <Typography.Text strong>Description</Typography.Text>,
-      children: <DescriptionEditor description={taskFormViewModel?.task?.description || null} />,
+      children: <DescriptionEditor description={taskFormViewModel?.task?.description} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
@@ -52,15 +55,15 @@ const TaskDrawerInfoTab = () => {
       key: 'subTasks',
       label: <Typography.Text strong>Sub Tasks</Typography.Text>,
       extra: (
-        <Tooltip title={'Refresh project'} trigger={'hover'}>
+        <Tooltip title={'Refresh sub tasks'} trigger={'hover'}>
           <Button
             shape="circle"
             icon={<ReloadOutlined spin={refreshSubTask} />}
-            onClick={() => handleRefresh()}
+            onClick={handleRefresh}
           />
         </Tooltip>
       ),
-      children: <SubTaskTable datasource={taskFormViewModel?.task?.sub_tasks || null} />,
+      children: <SubTaskTable datasource={taskFormViewModel?.task?.sub_tasks} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
@@ -76,7 +79,7 @@ const TaskDrawerInfoTab = () => {
       label: <Typography.Text strong>Attachments (0)</Typography.Text>,
       children: (
         <Upload
-          name="avatar"
+          name="attachment"
           listType="picture-card"
           className="avatar-uploader"
           showUploadList={false}
@@ -104,7 +107,7 @@ const TaskDrawerInfoTab = () => {
 
   useEffect(() => {
     fetchTaskData();
-  }, [selectedTaskId]);
+  }, [selectedTaskId, projectId]);
 
   return (
     <Flex vertical justify="space-between" style={{ height: '78vh' }}>
@@ -121,7 +124,6 @@ const TaskDrawerInfoTab = () => {
           'comments',
         ]}
       />
-
       <InfoTabFooter />
     </Flex>
   );

@@ -32,6 +32,7 @@ const TaskDrawer = () => {
       onClose={handleOnClose}
       width={720}
       style={{ justifyContent: 'space-between' }}
+      destroyOnClose
       title={
         <TaskDrawerHeader
           name={taskFormViewModel?.task?.name || 'Untitled Task'}

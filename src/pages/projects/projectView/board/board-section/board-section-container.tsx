@@ -22,8 +22,6 @@ const BoardSectionCardContainer = ({
       ))}
 
       {group !== 'priority' && <BoardCreateSectionCard />}
-
-      {createPortal(<TaskDrawer />, document.body, 'task-drawer')}
     </Flex>
   );
 };

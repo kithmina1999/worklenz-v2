@@ -1,11 +1,13 @@
-import { Button, Card, Dropdown, Flex, Input, InputRef, MenuProps } from 'antd';
+import { Button, Dropdown, Flex, Input, InputRef, MenuProps } from 'antd';
 import React, { ChangeEvent, useState } from 'react';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { useAuthService } from '@/hooks/useAuth';
-import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
 import TaskDrawerStatusDropdown from '../task-drawer-status-dropdown/task-drawer-status-dropdown';
+import { tasksApiService } from '@/api/tasks/tasks.api.service';
+import { setShowTaskDrawer } from '@/features/tasks/tasks.slice';
+import { setSelectedTaskId } from '@/features/tasks/tasks.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 type TaskDrawerHeaderProps = {
   name: string;
@@ -13,20 +15,23 @@ type TaskDrawerHeaderProps = {
 };
 
 const TaskDrawerHeader = ({ name, inputRef }: TaskDrawerHeaderProps) => {
+  const dispatch = useAppDispatch();
   const [characterLength, setCharacterLength] = useState<number>(name.length);
   const [isTaskNameFocused, setTaskNameFocused] = useState<boolean>(false);
-  const { taskFormViewModel, selectedTaskId } = useAppSelector(
-    state => state.taskReducer
-  );
+  const { taskFormViewModel, selectedTaskId } = useAppSelector(state => state.taskReducer);
   const currentSession = useAuthService().getCurrentSession();
 
   const onTaskNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCharacterLength(e.currentTarget.value.length);
   };
 
-  const handleDeleteTask = () => {
+  const handleDeleteTask = async () => {
     if (!selectedTaskId) return;
-    console.log('delete task ', selectedTaskId);
+    const res = await tasksApiService.deleteTask(selectedTaskId);
+    if (res.done) {
+      dispatch(setShowTaskDrawer(false));
+      dispatch(setSelectedTaskId(null));
+    }
   };
 
   const deletTaskDropdownItems: MenuProps['items'] = [
