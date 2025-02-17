@@ -26,6 +26,7 @@ export interface IProjectTask {
   status?: string;
   status_id?: string;
   status_color?: string;
+  status_color_dark?: string;
   priority?: string;
   start_date?: string;
   end_date?: string;

@@ -59,4 +59,9 @@ export const tasksApiService = {
     const response = await apiClient.get(`${rootUrl}/info${q}`);
     return response.data;
   },
+
+  deleteTask: async (taskId: string): Promise<IServerResponse<void>> => {
+    const response = await apiClient.delete(`${rootUrl}/${taskId}`);
+    return response.data;
+  },
 };

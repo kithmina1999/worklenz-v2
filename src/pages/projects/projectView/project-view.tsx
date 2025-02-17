@@ -12,6 +12,7 @@ import { tabItems } from '@/lib/project/projectViewConstants';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import ProjectViewHeader from './project-view-header';
 import './project-view.css';
+import { createPortal } from 'react-dom';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
 const StatusDrawer = React.lazy(
@@ -151,10 +152,10 @@ const ProjectView = () => {
         }
       />
 
-      <ProjectMemberDrawer />
-      <PhaseDrawer />
-      <StatusDrawer />
-      <TaskDrawer />
+      {createPortal(<ProjectMemberDrawer />, document.body, 'project-member-drawer')}
+      {createPortal(<PhaseDrawer />, document.body, 'phase-drawer')}
+      {createPortal(<StatusDrawer />, document.body, 'status-drawer')}
+      {createPortal(<TaskDrawer />, document.body, 'task-drawer')}
     </div>
   );
 };

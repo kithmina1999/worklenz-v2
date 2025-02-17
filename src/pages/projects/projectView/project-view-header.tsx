@@ -208,7 +208,6 @@ const ProjectViewHeader = () => {
             <EditOutlined /> Create Task
           </Dropdown.Button>
           <ProjectDrawer onClose={() => {}} />
-          <TaskDrawer />
         </Flex>
       }
     />

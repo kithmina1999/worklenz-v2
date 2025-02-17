@@ -37,7 +37,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
       {/* bulk action container ==> used tailwind to recreate the animation */}
       {createPortal(<TaskListBulkActionsBar />, document.body, 'bulk-action-container')}
-      <TaskTemplateDrawer />
+      <TaskTemplateDrawer showDrawer={false} selectedTemplateId={''} onClose={() => {}} />
     </Flex>
   );
 };

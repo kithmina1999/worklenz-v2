@@ -8,7 +8,7 @@ import {
   toggleRedeemCodeDrawer,
 } from '@features/admin-center/admin-center.slice';
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
-
+import logger from '@/utils/errorLogger';
 const RedeemCodeDrawer: React.FC = () => {
   const [form] = Form.useForm();
   const { t } = useTranslation('admin-center/current-bill');
@@ -30,7 +30,7 @@ const RedeemCodeDrawer: React.FC = () => {
         dispatch(fetchBillingInfo());
       }
     } catch (error) {
-      console.log(error);
+      logger.error('Error redeeming code', error);
     } finally {
       setIsLoading(false);
     }

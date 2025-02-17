@@ -63,13 +63,10 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
     () =>
       statusList.map(status => ({
         value: status.id,
-        label: (
-          <Flex gap={8} align="center">
-            <Badge color={status.color_code} text={status.name} />
-          </Flex>
-        ),
+        label: status.name,
+        color: themeMode === 'dark' ? status.color_code_dark : status.color_code,
       })),
-    [statusList]
+    [statusList, themeMode]
   );
 
   return (
@@ -80,12 +77,20 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
           value={task.status}
           onChange={handleStatusChange}
           dropdownStyle={{ borderRadius: 8, minWidth: 150, maxWidth: 200 }}
-          style={{ backgroundColor: task.status_color, borderRadius: 16, height: 22 }}
-          labelRender={value => {
-            const status = statusList.find(status => status.id === value.value);
-            return status ? <span style={{ fontSize: 13 }}>{status.name}</span> : '';
+          style={{
+            backgroundColor: themeMode === 'dark' ? task.status_color_dark : task.status_color,
+            borderRadius: 16,
+            height: 22,
+          }}
+          labelRender={status => {
+            return status ? <span style={{ fontSize: 13 }}>{status.label}</span> : '';
           }}
           options={options}
+          optionRender={(option) => (
+            <Flex align="center" style={{ backgroundColor: option.data.color }}>
+              {option.label}
+            </Flex>
+          )}
         />
       )}
     </>

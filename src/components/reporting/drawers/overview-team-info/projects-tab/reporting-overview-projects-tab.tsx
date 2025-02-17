@@ -2,7 +2,7 @@ import { Flex, PaginationProps, Skeleton } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import CustomSearchbar from '@components/CustomSearchbar';
 import { useTranslation } from 'react-i18next';
-import ProjectsReportsTable from '@/pages/reporting/projectsReports/projectsReportsTable/projects-reports-table';
+import ProjectsReportsTable from '@/pages/reporting/projects-reports/projects-reports-table/projects-reports-table';
 import { IRPTProject } from '@/types/reporting/reporting.types';
 import logger from '@/utils/errorLogger';
 import { reportingApiService } from '@/api/reporting/reporting.api.service';

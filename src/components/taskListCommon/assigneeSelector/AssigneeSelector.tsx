@@ -30,11 +30,10 @@ import { updateTaskAssignees } from '@/features/tasks/tasks.slice';
 
 interface AssigneeSelectorProps {
   task: IProjectTask;
-  showDropdown: boolean;
-  groupId: string;
+  groupId: string | null;
 }
 
-const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps) => {
+const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
   const membersInputRef = useRef<InputRef>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -107,7 +106,7 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
       selected: true,
     }));
     dispatch(
-      updateTaskAssignees({ groupId: groupId, taskId: data.id, assignees: updatedAssignees })
+      updateTaskAssignees({ groupId: groupId || '', taskId: data.id, assignees: updatedAssignees })
     );
   };
 
@@ -115,6 +114,7 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
     socket?.on(
       SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(),
       (data: ITaskAssigneesUpdateResponse) => {
+        console.log(data);
         if (data) handleQuickAssigneesUpdate(data);
       }
     );
@@ -129,6 +129,7 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
     const assignees = task?.assignees?.map(assignee => assignee.team_member_id);
     return assignees?.includes(memberId);
   };
+  
 
   const membersDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 8 } }}>

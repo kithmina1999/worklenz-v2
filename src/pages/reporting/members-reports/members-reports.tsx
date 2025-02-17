@@ -1,33 +1,24 @@
 import { Button, Card, Checkbox, Dropdown, Flex, Skeleton, Space, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
-import MembersReportsTable from './membersReportsTable.tsx/MembersReportsTable';
+import MembersReportsTable from './members-reports-table/members-reports-table';
 import TimeWiseFilter from './TimeWiseFilter';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { fetchMembersData } from '@features/reporting/membersReports/membersReportsSlice';
 import { useTranslation } from 'react-i18next';
 import CustomSearchbar from '@components/CustomSearchbar';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import CustomPageHeader from '../page-header/custom-page-header';
+import { fetchMembersData } from '@/features/reporting/membersReports/membersReportsSlice';
 
 const MembersReports = () => {
-  const [searchQuery, setSearhQuery] = useState<string>('');
-
+  const { t } = useTranslation('reporting-members');
+  const dispatch = useAppDispatch();
   useDocumentTitle('Reporting - Members');
 
-  // localization
-  const { t } = useTranslation('reporting-members');
+  const [searchQuery, setSearhQuery] = useState<string>('');
 
-  const dispatch = useAppDispatch();
-
-  // get members list and loading state from members repors reducer
   const { membersList, isLoading } = useAppSelector(state => state.membersReportsReducer);
-
-  // load data from members reports reducer
-  useEffect(() => {
-    dispatch(fetchMembersData());
-  }, [dispatch]);
 
   return (
     <Flex vertical>
@@ -36,8 +27,9 @@ const MembersReports = () => {
         children={
           <Space>
             <Button>
-              <Checkbox />
-              <Typography.Text>{t('includeArchivedButton')}</Typography.Text>
+              <Checkbox>
+                <Typography.Text>{t('includeArchivedButton')}</Typography.Text>
+              </Checkbox>
             </Button>
 
             <TimeWiseFilter />
@@ -63,7 +55,7 @@ const MembersReports = () => {
           </Flex>
         }
       >
-        {isLoading ? <Skeleton /> : <MembersReportsTable membersList={membersList} />}
+        {isLoading ? <Skeleton /> : <MembersReportsTable />}
       </Card>
     </Flex>
   );

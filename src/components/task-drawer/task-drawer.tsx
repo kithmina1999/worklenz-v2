@@ -13,7 +13,6 @@ import TaskDrawerTabs from './shared/TaskDrawerTabs';
 const TaskDrawer = () => {
   const { showTaskDrawer, taskFormViewModel } = useAppSelector(state => state.taskReducer);
 
-  // auto focused when open the drawer
   const taskNameInputRef = useRef<InputRef>(null);
 
   useEffect(() => {
@@ -33,6 +32,7 @@ const TaskDrawer = () => {
       onClose={handleOnClose}
       width={720}
       style={{ justifyContent: 'space-between' }}
+      destroyOnClose
       title={
         <TaskDrawerHeader
           name={taskFormViewModel?.task?.name || 'Untitled Task'}
