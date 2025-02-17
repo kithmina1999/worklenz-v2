@@ -29,6 +29,7 @@ import './project-view.css';
 import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import React from 'react';
+import { createPortal } from 'react-dom';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
 const StatusDrawer = React.lazy(
@@ -151,20 +152,13 @@ const ProjectView = () => {
           />
         </div>
 
-        {/* Right-side content */}
         <ProjectViewExtra />
       </div>
-      {/* drawers  */}
-      {/* add project members drawer */}
+
       <ProjectMemberDrawer />
-      {/* create task drawer  */}
-      <TaskDrawer />
-      {/* phase drawer  */}
+      {createPortal(<TaskDrawer />, document.body, 'task-drawer')}
       <PhaseDrawer />
-      {/* status drawer  */}
       <StatusDrawer />
-      {/* update task drawer  */}
-      {/* <UpdateTaskDrawer taskId={'SP-1'} /> */}
     </div>
   );
 };

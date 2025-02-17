@@ -74,6 +74,7 @@ export interface ITaskViewModel extends ITask {
   sub_tasks_count?: number;
   is_sub_task?: boolean;
   status_color?: string;
+  status_color_dark?: string;
   attachments_count?: number;
   complete_ratio?: number;
   names?: InlineMember[];

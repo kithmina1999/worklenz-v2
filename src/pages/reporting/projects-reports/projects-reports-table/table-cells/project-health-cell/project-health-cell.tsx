@@ -12,7 +12,7 @@ type HealthStatusDataType = {
   color: string;
 };
 
-const ProjectHealthCell = () => {
+const ProjectHealthCell = ({ health }: { health: string }) => {
   const [projectHealth, setProjectHealth] = useState<HealthStatusDataType | null>(
     healthStatusData[0] || null
   );

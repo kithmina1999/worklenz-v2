@@ -1,35 +1,40 @@
+import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
+import { setSelectedProjectHealths } from '@/features/reporting/projectReports/projectReportsSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { IProjectHealth } from '@/types/project/projectHealth.types';
 import { CaretDownFilled } from '@ant-design/icons';
 import { Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const ProjectHealthFilterDropdown = () => {
-  // state to track dropdown open status
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // localization
+  const dispatch = useAppDispatch();
   const { t } = useTranslation('reporting-projects-filters');
 
-  // projectHealth dropdown items
-  type ProjectHealthFieldsType = {
-    key: string;
-    label: string;
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const { projectHealths, loading: projectHealthsLoading } = useAppSelector(
+    state => state.projectHealthReducer
+  );
+  const { mode: themeMode } = useAppSelector(state => state.themeReducer);
+
+  const handleHealthChange = (health: IProjectHealth) => {
+    dispatch(setSelectedProjectHealths(health));
   };
 
-  const projectHealthFieldsList: ProjectHealthFieldsType[] = [
-    { key: 'notSet', label: t('notSetText') },
-    { key: 'needsAttention', label: t('needsAttentionText') },
-    { key: 'atRisk', label: t('atRiskText') },
-    { key: 'good', label: t('goodText') },
-  ];
+  useEffect(() => {
+    if (!projectHealths.length && !projectHealthsLoading) dispatch(fetchProjectHealth());
+  }, [dispatch, projectHealths, projectHealthsLoading]);
 
   // custom dropdown content
   const projectHealthDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 0 } }}>
       <List style={{ padding: 0 }}>
-        {projectHealthFieldsList.map(item => (
+        {projectHealths.map(item => (
           <List.Item
-            className="custom-list-item"
-            key={item.key}
+            className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
+            key={item.id}
             style={{
               display: 'flex',
               gap: 8,
@@ -38,8 +43,9 @@ const ProjectHealthFilterDropdown = () => {
             }}
           >
             <Space>
-              <Checkbox id={item.key} />
-              {item.label}
+              <Checkbox id={item.id} onChange={() => handleHealthChange(item)}>
+                {item.name}
+              </Checkbox>
             </Space>
           </List.Item>
         ))}
@@ -57,6 +63,7 @@ const ProjectHealthFilterDropdown = () => {
       <Button
         icon={<CaretDownFilled />}
         iconPosition="end"
+        loading={projectHealthsLoading}
         className={`transition-colors duration-300 ${
           isDropdownOpen
             ? 'border-[#1890ff] text-[#1890ff]'

@@ -12,7 +12,13 @@ import { themeWiseColor } from '@utils/themeWiseColor';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
 import { useTranslation } from 'react-i18next';
 
-const ProjectCategoryCell = ({ id, name, color_code }: IProjectCategory) => {
+interface ProjectCategoryCellProps {
+  id: string;
+  name: string;
+  color_code: string;
+}
+
+const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps) => {
   const [projectCategory, setProjectCategory] = useState<IProjectCategory>({
     id,
     name,

@@ -20,10 +20,10 @@ const EstimatedVsActualCell = ({
   estimatedTime,
   estimatedTimeString,
 }: EstimatedVsActualCellProps) => {
-  // localization
   const { t } = useTranslation('reporting-projects');
 
   const options: ChartOptions<'bar'> = {
+    indexAxis: 'y',
     scales: {
       x: {
         display: false,
@@ -64,7 +64,6 @@ const EstimatedVsActualCell = ({
       {actualTime || estimatedTime ? (
         <div style={{ position: 'relative', width: '100%', maxWidth: '200px' }}>
           <Bar options={options} data={graphData} style={{ maxHeight: 39 }} />
-          {/* Text labels inside the bars */}
           <Typography.Text
             style={{
               position: 'absolute',

@@ -14,21 +14,17 @@ type MembersReportsDrawerProps = {
 };
 
 const MembersReportsDrawer = ({ memberId }: MembersReportsDrawerProps) => {
-  // localization
   const { t } = useTranslation('reporting-members-drawer');
 
   const dispatch = useAppDispatch();
 
-  // get drawer open state and member list from the reducer
   const isDrawerOpen = useAppSelector(
     state => state.membersReportsReducer.isMembersReportsDrawerOpen
   );
   const { membersList } = useAppSelector(state => state.membersReportsReducer);
 
-  // find the selected member based on memberId
-  const selectedMember = membersList.find(member => member.id === memberId);
+  const selectedMember = membersList?.find(member => member.id === memberId);
 
-  // function to handle drawer close
   const handleClose = () => {
     dispatch(toggleMembersReportsDrawer());
   };
@@ -66,10 +62,7 @@ const MembersReportsDrawer = ({ memberId }: MembersReportsDrawerProps) => {
       }
     >
       {selectedMember && <MembersReportsDrawerTabs memberId={selectedMember.id} />}
-
-      {/* members overview tasks stats drawer  */}
       {selectedMember && <MembersOverviewTasksStatsDrawer memberId={selectedMember.id} />}
-      {/* members overview projects stats drawer  */}
       {selectedMember && <MembersOverviewProjectsStatsDrawer memberId={selectedMember.id} />}
     </Drawer>
   );

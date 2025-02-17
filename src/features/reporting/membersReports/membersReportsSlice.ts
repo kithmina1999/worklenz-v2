@@ -1,3 +1,4 @@
+import { reportingMembersApiService } from '@/api/reporting/reporting-members.api.service';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type MembersReportsState = {
@@ -5,27 +6,55 @@ type MembersReportsState = {
   isMembersOverviewTasksStatsDrawerOpen: boolean;
   isMembersOverviewProjectsStatsDrawerOpen: boolean;
   activeTab: 'overview' | 'timeLogs' | 'activityLogs' | 'tasks';
+  total: number;
   membersList: any[];
   isLoading: boolean;
   error: string | null;
-};
 
-// async thunk for fetching members data
-export const fetchMembersData = createAsyncThunk('membersReports/fetchMembersData', async () => {
-  const response = await fetch('/reportingMockData/membersReports/members.json');
-  if (!response.ok) throw new Error(`Response error: ${response.status}`);
-  return await response.json();
-});
+  // filters
+  archived: boolean;
+  searchQuery: string;
+  index: number;
+  pageSize: number;
+  field: string;
+  order: string;
+};
 
 const initialState: MembersReportsState = {
   isMembersReportsDrawerOpen: false,
   isMembersOverviewTasksStatsDrawerOpen: false,
   isMembersOverviewProjectsStatsDrawerOpen: false,
   activeTab: 'overview',
+  total: 0,
   membersList: [],
   isLoading: false,
   error: null,
+
+  // filters
+  archived: false,
+  searchQuery: '',
+  index: 1,
+  pageSize: 10,
+  field: 'name',
+  order: 'asc',
 };
+
+export const fetchMembersData = createAsyncThunk(
+  'membersReports/fetchMembersData',
+  async (_, { getState }) => {
+    const state = (getState() as any).membersReportsReducer;
+    const body = {
+      index: state.index,
+      size: state.pageSize,
+      field: state.field,
+      order: state.order,
+      search: state.searchQuery,
+      archived: state.archived,
+    };
+    const response = await reportingMembersApiService.getMembers(body);
+    return response.body;
+  }
+);
 
 const membersReportsSlice = createSlice({
   name: 'membersReportsReducer',
@@ -47,6 +76,24 @@ const membersReportsSlice = createSlice({
     ) => {
       state.activeTab = action.payload;
     },
+    setArchived: (state, action) => {
+      state.archived = action.payload;
+    },
+    setSearchQuery: (state, action) => {
+      state.searchQuery = action.payload;
+    },
+    setIndex: (state, action) => {
+      state.index = action.payload;
+    },
+    setPageSize: (state, action) => {
+      state.pageSize = action.payload;
+    },
+    setField: (state, action) => {
+      state.field = action.payload;
+    },
+    setOrder: (state, action) => {
+      state.order = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
@@ -56,7 +103,8 @@ const membersReportsSlice = createSlice({
       })
       .addCase(fetchMembersData.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.membersList = action.payload;
+        state.membersList = action.payload.members || [];
+        state.total = action.payload.total || 0;
       })
       .addCase(fetchMembersData.rejected, (state, action) => {
         state.isLoading = false;
@@ -70,5 +118,11 @@ export const {
   toggleMembersOverviewTasksStatsDrawer,
   toggleMembersOverviewProjectsStatsDrawer,
   setMemberReportingDrawerActiveTab,
+  setArchived,
+  setSearchQuery,
+  setIndex,
+  setPageSize,
+  setField,
+  setOrder,
 } = membersReportsSlice.actions;
 export default membersReportsSlice.reducer;

@@ -420,3 +420,17 @@ export interface IMemberTaskStatGroup {
   color_code: string;
   tasks: IProjectTask[];
 }
+
+export interface IGetProjectsRequestBody {
+  index: number;
+  size: number;
+  field: string;
+  order: string;
+  search: string | null;
+  filter: string;
+  statuses: string[];
+  healths: string[];
+  categories: string[];
+  project_managers: string[];
+  archived: boolean;
+}

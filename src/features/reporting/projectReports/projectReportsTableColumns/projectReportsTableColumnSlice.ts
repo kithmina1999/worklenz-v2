@@ -5,7 +5,7 @@ type ColumnsVisibilityState = {
 };
 
 const initialState: ColumnsVisibilityState = {
-  project: true,
+  name: true,
   estimatedVsActual: true,
   tasksProgress: true,
   lastActivity: true,

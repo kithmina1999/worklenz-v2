@@ -1,5 +1,5 @@
 import { Drawer, Typography, Flex, Button, Dropdown } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 import { toggleProjectReportsDrawer } from '../projectReportsSlice';
@@ -7,14 +7,15 @@ import { BankOutlined, DownOutlined } from '@ant-design/icons';
 import ProjectReportsDrawerTabs from './ProjectReportsDrawerTabs';
 import { colors } from '../../../../styles/colors';
 import { useTranslation } from 'react-i18next';
+import { IRPTProject } from '@/types/reporting/reporting.types';
 
 type ProjectReportsDrawerProps = {
   projectId: string | null;
 };
 
 const ProjectReportsDrawer = ({ projectId }: ProjectReportsDrawerProps) => {
-  // localization
   const { t } = useTranslation('reporting-projects-drawer');
+  const [selectedProject, setSelectedProject] = useState<IRPTProject | null>(null);
 
   const dispatch = useAppDispatch();
 
@@ -23,9 +24,6 @@ const ProjectReportsDrawer = ({ projectId }: ProjectReportsDrawerProps) => {
     state => state.projectReportsReducer.isProjectReportsDrawerOpen
   );
   const { projectList } = useAppSelector(state => state.projectReportsReducer);
-
-  // find the selected project based on projectId
-  const selectedProject = projectList.find(project => project.id === projectId);
 
   // function to handle drawer close
   const handleClose = () => {
@@ -37,6 +35,7 @@ const ProjectReportsDrawer = ({ projectId }: ProjectReportsDrawerProps) => {
       open={isDrawerOpen}
       onClose={handleClose}
       width={900}
+      afterOpenChange={() => console.log('afterOpenChange', projectId)}
       title={
         selectedProject && (
           <Flex align="center" justify="space-between">

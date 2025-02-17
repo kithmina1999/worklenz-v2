@@ -1,51 +1,25 @@
+import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
+import { setSelectedProjectCategories } from '@/features/reporting/projectReports/projectReportsSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { IProjectCategoryViewModel } from '@/types/project/projectCategory.types';
 import { CaretDownFilled } from '@ant-design/icons';
 import { Badge, Button, Card, Checkbox, Dropdown, Empty, Flex, Input, InputRef, List } from 'antd';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const ProjectCategoriesFilterDropdown = () => {
-  // state to track dropdown open status
+  const { t } = useTranslation('reporting-projects-filters');
+  const dispatch = useAppDispatch();
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const categoryInputRef = useRef<InputRef>(null);
-  // this is for get the current string that type on search bar
+  const { mode: themeMode } = useAppSelector(state => state.themeReducer);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const { projectCategories, loading: projectCategoriesLoading } = useAppSelector(
+    state => state.projectCategoriesReducer
+  );
 
-  // localization
-  const { t } = useTranslation('reporting-projects-filters');
-
-  // mock category list------------> Temperory
-  type CategoryType = {
-    categoryId: string;
-    categoryName: string;
-    categoryColor: string;
-  };
-
-  const categoryList: CategoryType[] = [
-    {
-      categoryId: 'category1',
-      categoryName: 'Development',
-      categoryColor: '#dcbfe3',
-    },
-    {
-      categoryId: 'category2',
-      categoryName: 'Testing',
-      categoryColor: '#dcbfe3',
-    },
-    {
-      categoryId: 'category3',
-      categoryName: 'Management',
-      categoryColor: '#dcbfe3',
-    },
-  ];
-
-  // used useMemo hook for re render the list when searching
-  const filteredCategoryData = useMemo(() => {
-    return categoryList.filter(category =>
-      category.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [categoryList, searchQuery]);
-
-  // function to focus category input
   const handleCategoryDropdownOpen = (open: boolean) => {
     setIsDropdownOpen(open);
 
@@ -56,7 +30,23 @@ const ProjectCategoriesFilterDropdown = () => {
     }
   };
 
-  // custom dropdown content
+  // Add filtered categories memo
+  const filteredCategories = useMemo(() => {
+    if (!searchQuery.trim()) return projectCategories;
+
+    return projectCategories.filter(category =>
+      category.name?.toLowerCase().includes(searchQuery.toLowerCase().trim())
+    );
+  }, [projectCategories, searchQuery]);
+
+  const handleCategoryChange = (category: IProjectCategoryViewModel) => {
+    dispatch(setSelectedProjectCategories(category));
+  };
+
+  useEffect(() => {
+    if (!projectCategoriesLoading) dispatch(fetchProjectCategories());
+  }, [dispatch]);
+
   const projectCategoryDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 8, width: 260 } }}>
       <Flex vertical gap={8}>
@@ -68,11 +58,11 @@ const ProjectCategoriesFilterDropdown = () => {
         />
 
         <List style={{ padding: 0 }}>
-          {filteredCategoryData.length ? (
-            filteredCategoryData.map(category => (
+          {filteredCategories.length ? (
+            filteredCategories.map(category => (
               <List.Item
-                className="custom-list-item"
-                key={category.categoryId}
+                className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
+                key={category.id}
                 style={{
                   display: 'flex',
                   justifyContent: 'flex-start',
@@ -81,12 +71,12 @@ const ProjectCategoriesFilterDropdown = () => {
                   border: 'none',
                 }}
               >
-                <Checkbox id={category.categoryId} />
-
-                <Flex gap={8}>
-                  <Badge color={category.categoryColor} />
-                  {category.categoryName}
-                </Flex>
+                <Checkbox id={category.id} onChange={() => handleCategoryChange(category)}>
+                  <Flex gap={8}>
+                    <Badge color={category.color_code} />
+                    {category.name}
+                  </Flex>
+                </Checkbox>
               </List.Item>
             ))
           ) : (
@@ -107,6 +97,7 @@ const ProjectCategoriesFilterDropdown = () => {
       <Button
         icon={<CaretDownFilled />}
         iconPosition="end"
+        loading={projectCategoriesLoading}
         className={`transition-colors duration-300 ${
           isDropdownOpen
             ? 'border-[#1890ff] text-[#1890ff]'

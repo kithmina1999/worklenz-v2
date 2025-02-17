@@ -1,47 +1,32 @@
+import { fetchProjectManagers } from '@/features/projects/projectsSlice';
+import { setSelectedProjectManagers } from '@/features/reporting/projectReports/projectReportsSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { IProjectManager } from '@/types/project/projectManager.types';
 import { CaretDownFilled } from '@ant-design/icons';
 import { Button, Card, Checkbox, Dropdown, Empty, Flex, Input, InputRef, List } from 'antd';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const ProjectManagersFilterDropdown = () => {
-  // state to track dropdown open status
+  const dispatch = useAppDispatch();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const projectManagerInputRef = useRef<InputRef>(null);
-  // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // localization
+  const { projectManagers, projectManagersLoading } = useAppSelector(
+    state => state.projectsReducer
+  );
+  const { mode: themeMode } = useAppSelector(state => state.themeReducer);
+
   const { t } = useTranslation('reporting-projects-filters');
 
-  // mock projectManager list------------> Temperory
-  type ProjectManagerType = {
-    projectManagerId: string;
-    projectManagerName: string;
-  };
-
-  const projectManagerList: ProjectManagerType[] = [
-    {
-      projectManagerId: 'projectManager1',
-      projectManagerName: 'Amal Perera',
-    },
-    {
-      projectManagerId: 'projectManager2',
-      projectManagerName: 'Raveesha Dilanks',
-    },
-    {
-      projectManagerId: 'projectManager3',
-      projectManagerName: 'Sachintha Prasad',
-    },
-  ];
-
-  // used useMemo hook for re render the list when searching
   const filteredProjectManagerData = useMemo(() => {
-    return projectManagerList.filter(projectManager =>
-      projectManager.projectManagerName.toLowerCase().includes(searchQuery.toLowerCase())
+    return projectManagers.filter(projectManager =>
+      projectManager.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [projectManagerList, searchQuery]);
+  }, [projectManagers, searchQuery]);
 
-  // function to focus projectManager input
   const handleProjectManagerDropdownOpen = (open: boolean) => {
     setIsDropdownOpen(open);
 
@@ -52,7 +37,14 @@ const ProjectManagersFilterDropdown = () => {
     }
   };
 
-  // custom dropdown content
+  const handleProjectManagerChange = (projectManager: IProjectManager) => {
+    dispatch(setSelectedProjectManagers(projectManager));
+  };
+
+  useEffect(() => {
+    if (!projectManagersLoading) dispatch(fetchProjectManagers());
+  }, [dispatch]); 
+  
   const projectManagerDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 8, width: 260 } }}>
       <Flex vertical gap={8}>
@@ -63,12 +55,12 @@ const ProjectManagersFilterDropdown = () => {
           placeholder={t('searchByNamePlaceholder')}
         />
 
-        <List style={{ padding: 0 }}>
+        <List style={{ padding: 0 }} loading={projectManagersLoading}>
           {filteredProjectManagerData.length ? (
             filteredProjectManagerData.map(projectManager => (
               <List.Item
-                className="custom-list-item"
-                key={projectManager.projectManagerId}
+                className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
+                key={projectManager.id}
                 style={{
                   display: 'flex',
                   justifyContent: 'flex-start',
@@ -77,8 +69,12 @@ const ProjectManagersFilterDropdown = () => {
                   border: 'none',
                 }}
               >
-                <Checkbox id={projectManager.projectManagerId} />
-                {projectManager.projectManagerName}
+                <Checkbox
+                  id={projectManager.id}
+                  onChange={() => handleProjectManagerChange(projectManager)}
+                >
+                  {projectManager.name}
+                </Checkbox>
               </List.Item>
             ))
           ) : (
@@ -99,6 +95,7 @@ const ProjectManagersFilterDropdown = () => {
       <Button
         icon={<CaretDownFilled />}
         iconPosition="end"
+        loading={projectManagersLoading}
         className={`transition-colors duration-300 ${
           isDropdownOpen
             ? 'border-[#1890ff] text-[#1890ff]'

@@ -66,7 +66,6 @@ const UpgradePlans = () => {
   const switchToFreePlan = async () => {
     const teamId = currentSession?.team_id;
     if (!teamId) return;
-    console.log('teamId', teamId);
 
     try {
       setSwitchingToFreePlan(true);
