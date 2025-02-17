@@ -63,7 +63,7 @@ const TableColumns = ({
         filters: createFilters(
           projectCategories.map(category => ({ id: category.id || '', name: category.name || '' }))
         ),
-        filteredValue: filteredInfo.category_id || [],
+        filteredValue: filteredInfo.category_id || filteredCategories || [],
         filterMultiple: true,
         render: (text: string, record: IProjectViewModel) => (
           <CategoryCell key={record.id} t={t} record={record} />
