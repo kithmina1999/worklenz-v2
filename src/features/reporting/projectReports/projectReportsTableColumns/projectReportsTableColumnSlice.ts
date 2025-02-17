@@ -1,24 +1,31 @@
+import { PROJECT_LIST_COLUMNS } from '@/shared/constants';
+import { getJSONFromLocalStorage, saveJSONToLocalStorage, saveToLocalStorage } from '@/utils/localStorageFunctions';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type ColumnsVisibilityState = {
   [key: string]: boolean;
 };
 
-const initialState: ColumnsVisibilityState = {
-  name: true,
-  estimatedVsActual: true,
-  tasksProgress: true,
-  lastActivity: true,
-  status: true,
-  dates: true,
-  daysLeft: true,
-  projectHealth: true,
-  category: true,
-  projectUpdate: true,
-  client: true,
-  team: true,
-  projectManager: true,
+const getInitialState = () => {
+  const savedState = getJSONFromLocalStorage(PROJECT_LIST_COLUMNS);
+  return savedState || {
+    name: true,
+    projectHealth: true,
+    category: true,
+    projectUpdate: true,
+    client: true,
+    team: true,
+    projectManager: true,
+    estimatedVsActual: true,
+    tasksProgress: true,
+    lastActivity: true,
+    status: true,
+    dates: true,
+    daysLeft: true,
+  };
 };
+
+const initialState: ColumnsVisibilityState = getInitialState();
 
 const projectReportsTableColumnsSlice = createSlice({
   name: 'projectReportsTableColumns',
@@ -29,6 +36,7 @@ const projectReportsTableColumnsSlice = createSlice({
       if (columnKey in state) {
         state[columnKey] = !state[columnKey];
       }
+      saveJSONToLocalStorage(PROJECT_LIST_COLUMNS, state);
     },
   },
 });

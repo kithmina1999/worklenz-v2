@@ -24,8 +24,8 @@ const ProjectHealthFilterDropdown = () => {
   };
 
   useEffect(() => {
-    if (!projectHealths.length && !projectHealthsLoading) dispatch(fetchProjectHealth());
-  }, [dispatch, projectHealths, projectHealthsLoading]);
+    if (!projectHealthsLoading) dispatch(fetchProjectHealth());
+  }, [dispatch]);
 
   // custom dropdown content
   const projectHealthDropdownContent = (

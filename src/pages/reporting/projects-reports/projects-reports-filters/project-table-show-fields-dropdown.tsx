@@ -17,43 +17,27 @@ const ProjectTableShowFieldsDropdown = () => {
     key => key !== 'project' && key !== 'projectManager'
   );
 
-  const showFieldsDropdownContent = (
-    <Card
-      className="custom-card"
-      style={{ height: 300, overflowY: 'scroll' }}
-      styles={{ body: { padding: 0 } }}
-    >
-      <List style={{ padding: 0 }}>
-        {columnKeys.map(key => (
-          <List.Item
-            key={key}
-            className="custom-list-item"
-            style={{
-              display: 'flex',
-              gap: 8,
-              padding: '4px 8px',
-              border: 'none',
-            }}
+  // Replace the showFieldsDropdownContent with a menu items structure
+  const menuItems = {
+    items: columnKeys.map(key => ({
+      key,
+      label: (
+        <Space>
+          <Checkbox
+            checked={columnsVisibility[key]}
+            onClick={() => dispatch(toggleColumnHidden(key))}
           >
-            <Space>
-              <Checkbox
-                checked={columnsVisibility[key]}
-                onClick={() => dispatch(toggleColumnHidden(key))}
-              />
-              {t(`${key}Text`)}
-            </Space>
-          </List.Item>
-        ))}
-      </List>
-    </Card>
-  );
+            {t(`${key}Text`)}
+          </Checkbox>
+        </Space>
+      ),
+    })),
+  };
 
   return (
     <Dropdown
-      overlay={showFieldsDropdownContent}
-      overlayClassName="custom-dropdown"
+      menu={menuItems}
       trigger={['click']}
-      dropdownRender={() => showFieldsDropdownContent}
       onOpenChange={open => setIsDropdownOpen(open)}
     >
       <Button
