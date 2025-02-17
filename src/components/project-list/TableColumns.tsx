@@ -37,19 +37,6 @@ const TableColumns = ({
   const { filteredCategories, filteredStatuses } = useAppSelector(
     state => state.projectsReducer
   );
-
-  const onCategoryFilterChange = (value: string, record: IProjectViewModel) => {
-    if (!filteredCategories.includes(value)) {
-      dispatch(setFilteredCategories([...filteredCategories, value]));
-    }
-  };
-
-  const onStatusFilterChange = (value: string, record: IProjectViewModel) => {
-    if (!filteredStatuses.includes(value)) {
-      dispatch(setFilteredStatuses([...filteredStatuses, value]));
-    }
-  };
-
   const columns = useMemo(
     () => [
       {
