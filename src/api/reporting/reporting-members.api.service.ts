@@ -4,7 +4,7 @@ import apiClient from '../api-client';
 import { API_BASE_URL } from '@/shared/constants';
 import { toQueryString } from '@/utils/toQueryString';
 
-const rootUrl = `${API_BASE_URL}/reporting/projects`;
+const rootUrl = `${API_BASE_URL}/reporting/members`;
 
 export const reportingMembersApiService = {
   getMembers: async (

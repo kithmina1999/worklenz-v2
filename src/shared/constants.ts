@@ -1,9 +1,11 @@
+import { IRPTDuration } from '@/types/reporting/reporting.types';
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
   StopOutlined,
 } from '@ant-design/icons';
+import dayjs from 'dayjs';
 
 export const AvatarNamesMap: { [x: string]: string } = {
   A: '#154c9b',
@@ -226,3 +228,52 @@ export const IconsMap: { [x: string]: string; } = {
   xml: "xml.png",
   zip: "zip.png",
 }
+
+export const durations: IRPTDuration[] = [
+  {
+    key: YESTERDAY,
+    label: 'yesterdayText',
+    dates: dayjs().subtract(1, 'day').format('MMM DD, YYYY'),
+  },
+  {
+    key: LAST_WEEK,
+    label: 'lastSevenDaysText',
+    dates:
+      dayjs().subtract(7, 'day').format('MMM DD, YYYY') + ' - ' + dayjs().format('MMM DD, YYYY'),
+  },
+  {
+    key: PREV_WEEK,
+    label: 'lastWeekText',
+    dates:
+      dayjs().startOf('week').subtract(1, 'week').format('MMM DD, YYYY') +
+      ' - ' +
+      dayjs().endOf('week').subtract(1, 'week').format('MMM DD, YYYY'),
+  },
+  {
+    key: LAST_MONTH,
+    label: 'lastThirtyDaysText',
+    dates:
+      dayjs().subtract(30, 'day').format('MMM DD, YYYY') + ' - ' + dayjs().format('MMM DD, YYYY'),
+  },
+  {
+    key: PREV_MONTH,
+    label: 'lastMonthText',
+    dates:
+      dayjs().startOf('month').subtract(1, 'month').format('MMM DD, YYYY') +
+      ' - ' +
+      dayjs().endOf('month').subtract(1, 'month').format('MMM DD, YYYY'),
+  },
+  {
+    key: LAST_QUARTER,
+    label: 'lastThreeMonthsText',
+    dates:
+      dayjs().subtract(3, 'month').format('MMM DD, YYYY') +
+      ' - ' +
+      dayjs().format('MMM DD, YYYY'),
+  },
+  {
+    key: ALL_TIME,
+    label: 'allTimeText',
+    dates: '',
+  },
+];

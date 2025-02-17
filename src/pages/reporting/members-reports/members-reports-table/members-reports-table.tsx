@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { ConfigProvider, Table, TableColumnsType } from 'antd';
-import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import CustomTableTitle from '../../../../components/CustomTableTitle';
+import { useTranslation } from 'react-i18next';
+
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import CustomTableTitle from '@/components/CustomTableTitle';
 import TasksProgressCell from './tablesCells/tasksProgressCell/TasksProgressCell';
 import MemberCell from './tablesCells/memberCell/MemberCell';
-import MembersReportsDrawer from '../../../../features/reporting/membersReports/membersReportsDrawer/MembersReportsDrawer';
-import { fetchMembersData, toggleMembersReportsDrawer } from '../../../../features/reporting/membersReports/membersReportsSlice';
-import { useTranslation } from 'react-i18next';
+import { fetchMembersData, toggleMembersReportsDrawer } from '@/features/reporting/membersReports/membersReportsSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
 
 const MembersReportsTable = () => {
@@ -14,7 +14,7 @@ const MembersReportsTable = () => {
   const dispatch = useAppDispatch();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const { membersList, isLoading, total } = useAppSelector(state => state.membersReportsReducer);
+  const { membersList, isLoading, total, archived, searchQuery } = useAppSelector(state => state.membersReportsReducer);
 
   // function to handle drawer toggle
   const handleDrawerOpen = (id: string) => {
@@ -36,7 +36,10 @@ const MembersReportsTable = () => {
     {
       key: 'tasksProgress',
       title: <CustomTableTitle title={t('tasksProgressColumn')} />,
-      render: record => <TasksProgressCell tasksStat={record.tasks_stat} />,
+      render: record => {
+        const { todo, doing, done } = record.tasks_stat;
+        return (todo || doing || done) ? <TasksProgressCell tasksStat={record.tasks_stat} /> : '-';
+      },
     },
     {
       key: 'tasksAssigned',
@@ -90,7 +93,7 @@ const MembersReportsTable = () => {
 
   useEffect(() => {
     if (!isLoading) dispatch(fetchMembersData());
-  }, [dispatch]);
+  }, [dispatch, archived, searchQuery]);
 
   return (
     <ConfigProvider
@@ -108,6 +111,7 @@ const MembersReportsTable = () => {
         dataSource={membersList}
         pagination={{ showSizeChanger: true, defaultPageSize: 10, total: total }}
         scroll={{ x: 'max-content' }}
+        loading={isLoading}
         onRow={record => {
           return {
             style: { height: 48, cursor: 'pointer' },
