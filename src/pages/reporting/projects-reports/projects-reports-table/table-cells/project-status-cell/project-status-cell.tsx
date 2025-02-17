@@ -7,6 +7,8 @@ import { useEffect } from 'react';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setProjectStatus } from '@/features/reporting/projectReports/project-reports-slice';
+import logger from '@/utils/errorLogger';
 
 interface ProjectStatusCellProps {
   currentStatus: string;
@@ -36,21 +38,48 @@ const ProjectStatusCell = ({ currentStatus, projectId }: ProjectStatusCellProps)
   ];
 
   const handleStatusChange = (value: string) => {
-    socket?.emit(SocketEvents.PROJECT_STATUS_CHANGE.toString(), {
-      project_id: projectId,
-      status_id: value,
-    });
+    try {
+      if (!value || !projectId) {
+        throw new Error('Invalid status value or project ID');
+      }
+
+      if (!socket) {
+        throw new Error('Socket connection not available');
+      }
+
+      socket.emit(
+        SocketEvents.PROJECT_STATUS_CHANGE.toString(),
+        JSON.stringify({
+          project_id: projectId,
+          status_id: value,
+        })
+      );
+    } catch (error) {
+      logger.error('Error changing project status:', error);
+    }
   };
 
   const handleStatusChangeResponse = (data: any) => {
-    console.log('projectStatusUpdated', data);
+    try {
+      if (!data || !data.id) {
+        throw new Error('Invalid status change response data');
+      }
+      dispatch(setProjectStatus(data));
+    } catch (error) {
+      logger.error('Error handling status change response:', error);
+    }
   };
 
   useEffect(() => {
-    socket?.on(SocketEvents.PROJECT_STATUS_CHANGE.toString(), handleStatusChangeResponse);
+    if (!socket) {
+      logger.warning('Socket connection not available for status updates');
+      return;
+    }
+
+    socket.on(SocketEvents.PROJECT_STATUS_CHANGE.toString(), handleStatusChangeResponse);
 
     return () => {
-      socket?.removeListener(
+      socket.removeListener(
         SocketEvents.PROJECT_STATUS_CHANGE.toString(),
         handleStatusChangeResponse
       );

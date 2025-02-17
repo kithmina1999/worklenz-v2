@@ -338,6 +338,7 @@ export interface IRPTProject extends IRPTOverviewProject {
   comment?: string;
   project_health: string;
   health_color: string;
+  health_name: string;
   estimated_time_string?: string;
   actual_time_string?: string;
   project_manager: ITeamMemberViewModel;

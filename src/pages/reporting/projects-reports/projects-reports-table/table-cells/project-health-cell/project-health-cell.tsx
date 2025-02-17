@@ -1,34 +1,35 @@
 import { Badge, Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd';
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import './project-health-cell.css';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectHealth } from '@/types/project/projectHealth.types';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
+import { setProjectHealth } from '@/features/reporting/projectReports/project-reports-slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 interface HealthStatusDataType {
   value: string;
   label: string;
   color: string;
-};
+  projectId: string;
+}
 
-const ProjectHealthCell = ({ value, label, color }: HealthStatusDataType) => {
+const ProjectHealthCell = ({ value, label, color, projectId }: HealthStatusDataType) => {
+  const { t } = useTranslation('reporting-projects');
+  const dispatch = useAppDispatch();
+  const { socket, connected } = useSocket();
   const { projectHealths } = useAppSelector(state => state.projectHealthReducer);
 
-  const [projectHealth, setProjectHealth] = useState<IProjectHealth | null>(() => {
-    const initialHealth = projectHealths.find(status => status.id === value);
-    return initialHealth || {
-      color_code: color,
-      id: value,
-      name: label,
-    };
-  });
+  const projectHealth = projectHealths.find(status => status.id === value) || {
+    color_code: color,
+    id: value,
+    name: label,
+  };
 
-  // localization
-  const { t } = useTranslation('reporting-projects');
-
-  // health selection options
   const healthOptions = projectHealths.map(status => ({
     key: status.id,
     value: status.id,
@@ -39,12 +40,17 @@ const ProjectHealthCell = ({ value, label, color }: HealthStatusDataType) => {
     ),
   }));
 
-  // handle health status select
+  const handleHealthChangeResponse = (data: IProjectHealth) => {
+    dispatch(setProjectHealth(data));
+  };
+
   const onClick: MenuProps['onClick'] = e => {
-    const selectedStatus = projectHealths.find(status => status.id === e.key);
-    if (selectedStatus) {
-      setProjectHealth(selectedStatus);
-    }
+    if (!e.key || !projectId) return;
+
+    socket?.emit(SocketEvents.PROJECT_HEALTH_CHANGE.toString(), JSON.stringify({
+      project_id: projectId,
+      health_id: e.key,
+    }));
   };
 
   // dropdown items
@@ -58,6 +64,19 @@ const ProjectHealthCell = ({ value, label, color }: HealthStatusDataType) => {
       ),
     },
   ];
+
+  useEffect(() => {
+    if (socket && connected) {
+      socket.on(SocketEvents.PROJECT_HEALTH_CHANGE.toString(), handleHealthChangeResponse);
+
+      return () => {
+        socket.removeListener(
+          SocketEvents.PROJECT_HEALTH_CHANGE.toString(),
+          handleHealthChangeResponse
+        );
+      };
+    }
+  }, [socket, connected]);
 
   return (
     <Dropdown
