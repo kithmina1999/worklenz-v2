@@ -18,8 +18,10 @@ import ProjectUpdateCell from '@/pages/reporting/projects-reports/projects-repor
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   fetchProjectData,
+  setIndex,
+  setPageSize,
   toggleProjectReportsDrawer,
-} from '@features/reporting/projectReports/projectReportsSlice';
+} from '@/features/reporting/projectReports/project-reports-slice';
 import { ExpandAltOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import CustomTableTitle from '@/components/CustomTableTitle';
@@ -27,15 +29,16 @@ import { useTranslation } from 'react-i18next';
 import { IRPTProject } from '@/types/reporting/reporting.types';
 import { createPortal } from 'react-dom';
 import ProjectReportsDrawer from '@/features/reporting/projectReports/projectReportsDrawer/ProjectReportsDrawer';
-import { setPageSize } from '@/features/reporting/membersReports/membersReportsSlice';
-import { setIndex } from '@/features/reporting/membersReports/membersReportsSlice';
+import { PAGE_SIZE_OPTIONS } from '@/shared/constants';
 
 const ProjectsReportsTable = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('reporting-projects');
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const { projectList, isLoading, total, index } = useAppSelector(state => state.projectReportsReducer);
+  const { projectList, isLoading, total, index, pageSize } = useAppSelector(
+    state => state.projectReportsReducer
+  );
   const {
     searchQuery,
     selectedProjectStatuses,
@@ -93,9 +96,9 @@ const ProjectsReportsTable = () => {
       title: <CustomTableTitle title={t('estimatedVsActualColumn')} />,
       render: record => (
         <EstimatedVsActualCell
-          actualTime={record.actual_time}
+          actualTime={record.actual_time || 0}
           actualTimeString={record.actual_time_string}
-          estimatedTime={record.estimated_time}
+          estimatedTime={record.estimated_time * 60 || 0}
           estimatedTimeString={record.estimated_time_string}
         />
       ),
@@ -188,7 +191,7 @@ const ProjectsReportsTable = () => {
   const visibleColumns = columns.filter(col => columnsVisibility[col.key as string]);
 
   const handleTableChange = (pagination: PaginationProps, filters: any, sorter: any) => {
-    console.log('pagination', pagination.current);
+    console.log('pagination', pagination);
     dispatch(setIndex(pagination.current));
     dispatch(setPageSize(pagination.pageSize));
   };
@@ -203,6 +206,7 @@ const ProjectsReportsTable = () => {
     selectedProjectManagers,
     archived,
     index,
+    pageSize,
   ]);
 
   return (
@@ -219,16 +223,22 @@ const ProjectsReportsTable = () => {
       <Table
         columns={visibleColumns}
         dataSource={projectList}
-        pagination={{ showSizeChanger: true, defaultPageSize: 10, total: total, current: index }}
+        pagination={{
+          showSizeChanger: true,
+          defaultPageSize: 10,
+          total: total,
+          current: index,
+          pageSizeOptions: PAGE_SIZE_OPTIONS,
+        }}
         scroll={{ x: 'max-content' }}
         loading={isLoading}
+        onChange={handleTableChange}
         onRow={record => {
           return {
             style: { height: 56, cursor: 'pointer' },
             className: 'group even:bg-[#4e4e4e10]',
           };
         }}
-        onChange={handleTableChange}
       />
       {createPortal(<ProjectReportsDrawer projectId={selectedId} />, document.body)}
     </ConfigProvider>

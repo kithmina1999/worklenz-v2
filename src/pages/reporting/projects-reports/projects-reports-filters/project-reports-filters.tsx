@@ -8,7 +8,7 @@ import ProjectTableShowFieldsDropdown from './project-table-show-fields-dropdown
 import CustomSearchbar from '@/components/CustomSearchbar';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setSearchQuery } from '@/features/reporting/projectReports/projectReportsSlice';
+import { setSearchQuery } from '@/features/reporting/projectReports/project-reports-slice';
 
 const ProjectsReportsFilters = () => {
   const dispatch = useAppDispatch();

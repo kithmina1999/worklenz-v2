@@ -1,5 +1,5 @@
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
-import { setSelectedProjectHealths } from '@/features/reporting/projectReports/projectReportsSlice';
+import { setSelectedProjectHealths } from '@/features/reporting/projectReports/project-reports-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectHealth } from '@/types/project/projectHealth.types';
@@ -24,8 +24,8 @@ const ProjectHealthFilterDropdown = () => {
   };
 
   useEffect(() => {
-    if (!projectHealths.length && !projectHealthsLoading) dispatch(fetchProjectHealth());
-  }, [dispatch, projectHealths, projectHealthsLoading]);
+    if (!projectHealthsLoading) dispatch(fetchProjectHealth());
+  }, [dispatch]);
 
   // custom dropdown content
   const projectHealthDropdownContent = (
