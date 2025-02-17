@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { MoreOutlined } from '@ant-design/icons';
 import { Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
-import { useAppSelector } from '../../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import { toggleColumnHidden } from '../../../../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { toggleColumnHidden } from '@/features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
 import { useTranslation } from 'react-i18next';
 
 const ProjectTableShowFieldsDropdown = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // localization
   const { t } = useTranslation('reporting-projects-filters');
 
   const columnsVisibility = useAppSelector(state => state.projectReportsTableColumnsReducer);
@@ -18,7 +17,6 @@ const ProjectTableShowFieldsDropdown = () => {
     key => key !== 'project' && key !== 'projectManager'
   );
 
-  // custom dropdown content
   const showFieldsDropdownContent = (
     <Card
       className="custom-card"

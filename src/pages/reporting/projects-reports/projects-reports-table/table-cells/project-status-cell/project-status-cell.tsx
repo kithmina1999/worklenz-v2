@@ -4,8 +4,13 @@ import { ConfigProvider, Select, Typography } from 'antd';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { toCamelCase } from '@/utils/toCamelCase';
+import { IProjectStatus } from '@/types/project/projectStatus.types';
 
-const ProjectStatusCell = ({ status }: { status: string }) => {
+interface ProjectStatusCellProps {
+  currentStatus: string;
+}
+
+const ProjectStatusCell = ({ currentStatus }: ProjectStatusCellProps) => {
   // localization
   const { t } = useTranslation('reporting-projects');
 
@@ -40,7 +45,7 @@ const ProjectStatusCell = ({ status }: { status: string }) => {
     >
       <Select
         options={statusOptions}
-        defaultValue={toCamelCase(status)}
+        defaultValue={toCamelCase(currentStatus)}
         style={{ width: 'fit-content' }}
       />
     </ConfigProvider>

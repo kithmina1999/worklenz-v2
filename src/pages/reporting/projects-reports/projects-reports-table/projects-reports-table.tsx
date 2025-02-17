@@ -1,51 +1,52 @@
-import React, { memo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, ConfigProvider, Flex, PaginationProps, Table, TableColumnsType } from 'antd';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import './project-report-table.css';
-import ProjectCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-cell/project-cell';
-import EstimatedVsActualCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/estimated-vs-actual-cell/estimated-vs-actual-cell';
-import TasksProgressCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/tasks-progress-cell/tasks-progress-cell';
-import LastActivityCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/last-activity-cell/last-activity-cell';
-import ProjectStatusCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-status-cell/project-status-cell';
-import ProjectClientCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-client-cell/project-client-cell';
-import ProjectTeamCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-team-cell/project-team-cell';
-import ProjectManagerCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-manager-cell/project-manager-cell';
-import ProjectDatesCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-dates-cell/project-dates-cell';
-import ProjectHealthCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-health-cell/project-health-cell';
-import ProjectCategoryCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-category-cell/project-category-cell';
-import ProjectDaysLeftAndOverdueCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-days-left-and-overdue-cell/project-days-left-and-overdue-cell';
-import ProjectUpdateCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-update-cell/project-update-cell';
-import ProjectReportsDrawer from '@features/reporting/projectReports/projectReportsDrawer/ProjectReportsDrawer';
+import ProjectCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-cell/project-cell';
+import EstimatedVsActualCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/estimated-vs-actual-cell/estimated-vs-actual-cell';
+import TasksProgressCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/tasks-progress-cell/tasks-progress-cell';
+import LastActivityCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/last-activity-cell/last-activity-cell';
+import ProjectStatusCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-status-cell/project-status-cell';
+import ProjectClientCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-client-cell/project-client-cell';
+import ProjectTeamCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-team-cell/project-team-cell';
+import ProjectManagerCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-manager-cell/project-manager-cell';
+import ProjectDatesCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-dates-cell/project-dates-cell';
+import ProjectHealthCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-health-cell/project-health-cell';
+import ProjectCategoryCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-category-cell/project-category-cell';
+import ProjectDaysLeftAndOverdueCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-days-left-and-overdue-cell/project-days-left-and-overdue-cell';
+import ProjectUpdateCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-update-cell/project-update-cell';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleProjectReportsDrawer } from '@features/reporting/projectReports/projectReportsSlice';
+import {
+  fetchProjectData,
+  toggleProjectReportsDrawer,
+} from '@features/reporting/projectReports/projectReportsSlice';
 import { ExpandAltOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import CustomTableTitle from '@/components/CustomTableTitle';
 import { useTranslation } from 'react-i18next';
+import { IRPTProject } from '@/types/reporting/reporting.types';
+import { createPortal } from 'react-dom';
+import ProjectReportsDrawer from '@/features/reporting/projectReports/projectReportsDrawer/ProjectReportsDrawer';
+import { setPageSize } from '@/features/reporting/membersReports/membersReportsSlice';
+import { setIndex } from '@/features/reporting/membersReports/membersReportsSlice';
 
-type ProjectReportsTableProps = {
-  projectList: any[];
-  loading: boolean;
-  pagination: PaginationProps;
-  setPagination: (pagination: PaginationProps) => void;
-};
-
-const ProjectsReportsTable = ({
-  projectList,
-  loading = false,
-  pagination,
-  setPagination,
-}: ProjectReportsTableProps) => {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  // localization
+const ProjectsReportsTable = () => {
+  const dispatch = useAppDispatch();
   const { t } = useTranslation('reporting-projects');
 
-  const dispatch = useAppDispatch();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { projectList, isLoading, total, index } = useAppSelector(state => state.projectReportsReducer);
+  const {
+    searchQuery,
+    selectedProjectStatuses,
+    selectedProjectHealths,
+    selectedProjectCategories,
+    selectedProjectManagers,
+    archived,
+  } = useAppSelector(state => state.projectReportsReducer);
 
   const columnsVisibility = useAppSelector(state => state.projectReportsTableColumnsReducer);
 
-  // function to handle drawer toggle
   const handleDrawerOpen = (id: string) => {
     setSelectedId(id);
     dispatch(toggleProjectReportsDrawer());
@@ -53,7 +54,7 @@ const ProjectsReportsTable = ({
 
   const columns: TableColumnsType = [
     {
-      key: 'project',
+      key: 'name',
       title: <CustomTableTitle title={t('projectColumn')} />,
       width: 300,
       onCell: record => {
@@ -69,7 +70,6 @@ const ProjectsReportsTable = ({
             projectColor={record.color_code}
           />
 
-          {/* used tailwind class to display this button only if hover the row  */}
           <Button
             className="hidden group-hover:flex"
             type="text"
@@ -85,7 +85,7 @@ const ProjectsReportsTable = ({
           </Button>
         </Flex>
       ),
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      sorter: true,
       fixed: 'left' as const,
     },
     {
@@ -116,7 +116,7 @@ const ProjectsReportsTable = ({
     {
       key: 'status',
       title: <CustomTableTitle title={t('statusColumn')} />,
-      render: record => <ProjectStatusCell status={record.status_name} />,
+      render: record => <ProjectStatusCell currentStatus={record.status_name} />,
       sorter: (a, b) => a.status_name.localeCompare(b.status_name),
       width: 200,
     },
@@ -124,7 +124,11 @@ const ProjectsReportsTable = ({
       key: 'dates',
       title: <CustomTableTitle title={t('datesColumn')} />,
       render: record => (
-        <ProjectDatesCell startDate={record.start_date} endDate={record.end_date} />
+        <ProjectDatesCell
+          projectId={record.id}
+          startDate={record.start_date}
+          endDate={record.end_date}
+        />
       ),
       width: 275,
     },
@@ -137,17 +141,17 @@ const ProjectsReportsTable = ({
     {
       key: 'projectHealth',
       title: <CustomTableTitle title={t('projectHealthColumn')} />,
-      render: record => <ProjectHealthCell />,
+      render: record => <ProjectHealthCell health={record.project_health} />,
       width: 200,
     },
     {
       key: 'category',
       title: <CustomTableTitle title="Category" />,
-      render: record => (
+      render: (record: IRPTProject) => (
         <ProjectCategoryCell
-          categoryId={record.category_id}
-          categoryName={record.category_name}
-          categoryColor={record.category_color}
+          id={record.category_id || ''}
+          name={record.category_name || ''}
+          color_code={record.category_color || ''}
         />
       ),
       width: 200,
@@ -183,6 +187,24 @@ const ProjectsReportsTable = ({
   // filter columns based on the `hidden` state from Redux
   const visibleColumns = columns.filter(col => columnsVisibility[col.key as string]);
 
+  const handleTableChange = (pagination: PaginationProps, filters: any, sorter: any) => {
+    console.log('pagination', pagination.current);
+    dispatch(setIndex(pagination.current));
+    dispatch(setPageSize(pagination.pageSize));
+  };
+
+  useEffect(() => {
+    if (!isLoading) dispatch(fetchProjectData());
+  }, [
+    searchQuery,
+    selectedProjectStatuses,
+    selectedProjectHealths,
+    selectedProjectCategories,
+    selectedProjectManagers,
+    archived,
+    index,
+  ]);
+
   return (
     <ConfigProvider
       theme={{
@@ -197,20 +219,20 @@ const ProjectsReportsTable = ({
       <Table
         columns={visibleColumns}
         dataSource={projectList}
-        pagination={{ showSizeChanger: true, defaultPageSize: 10 }}
+        pagination={{ showSizeChanger: true, defaultPageSize: 10, total: total, current: index }}
         scroll={{ x: 'max-content' }}
-        loading={loading}
+        loading={isLoading}
         onRow={record => {
           return {
             style: { height: 56, cursor: 'pointer' },
             className: 'group even:bg-[#4e4e4e10]',
           };
         }}
+        onChange={handleTableChange}
       />
-
-      <ProjectReportsDrawer projectId={selectedId} />
+      {createPortal(<ProjectReportsDrawer projectId={selectedId} />, document.body)}
     </ConfigProvider>
   );
 };
 
-export default memo(ProjectsReportsTable);
+export default ProjectsReportsTable;

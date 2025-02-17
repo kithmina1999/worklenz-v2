@@ -1,24 +1,20 @@
-import React, { memo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ConfigProvider, Table, TableColumnsType } from 'antd';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 import CustomTableTitle from '../../../../components/CustomTableTitle';
 import TasksProgressCell from './tablesCells/tasksProgressCell/TasksProgressCell';
 import MemberCell from './tablesCells/memberCell/MemberCell';
 import MembersReportsDrawer from '../../../../features/reporting/membersReports/membersReportsDrawer/MembersReportsDrawer';
-import { toggleMembersReportsDrawer } from '../../../../features/reporting/membersReports/membersReportsSlice';
+import { fetchMembersData, toggleMembersReportsDrawer } from '../../../../features/reporting/membersReports/membersReportsSlice';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
-type MembersReportsTableProps = {
-  membersList: any[];
-};
-
-const MembersReportsTable = ({ membersList }: MembersReportsTableProps) => {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  // localization
+const MembersReportsTable = () => {
   const { t } = useTranslation('reporting-members');
-
   const dispatch = useAppDispatch();
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { membersList, isLoading, total } = useAppSelector(state => state.membersReportsReducer);
 
   // function to handle drawer toggle
   const handleDrawerOpen = (id: string) => {
@@ -92,6 +88,10 @@ const MembersReportsTable = ({ membersList }: MembersReportsTableProps) => {
     },
   ];
 
+  useEffect(() => {
+    if (!isLoading) dispatch(fetchMembersData());
+  }, [dispatch]);
+
   return (
     <ConfigProvider
       theme={{
@@ -106,7 +106,7 @@ const MembersReportsTable = ({ membersList }: MembersReportsTableProps) => {
       <Table
         columns={columns}
         dataSource={membersList}
-        pagination={{ showSizeChanger: true, defaultPageSize: 10 }}
+        pagination={{ showSizeChanger: true, defaultPageSize: 10, total: total }}
         scroll={{ x: 'max-content' }}
         onRow={record => {
           return {
@@ -116,9 +116,9 @@ const MembersReportsTable = ({ membersList }: MembersReportsTableProps) => {
         }}
       />
 
-      <MembersReportsDrawer memberId={selectedId} />
+      {/* <MembersReportsDrawer memberId={selectedId} /> */}
     </ConfigProvider>
   );
 };
 
-export default memo(MembersReportsTable);
+export default MembersReportsTable;

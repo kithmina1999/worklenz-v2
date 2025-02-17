@@ -6,6 +6,7 @@ import { toQueryString } from '@/utils/toQueryString';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { ITeamMemberOverviewGetResponse } from '@/types/project/project-insights.types';
 import { IProjectMembersViewModel } from '@/types/projectMember.types';
+import { IProjectManager } from '@/types/project/projectManager.types';
 
 const rootUrl = `${API_BASE_URL}/projects`;
 
@@ -111,5 +112,10 @@ export const projectsApiService = {
     return response.data;
   },
 
+  getProjectManagers: async (): Promise<IServerResponse<IProjectManager[]>> => {
+    const url = `${API_BASE_URL}/project-managers`;
+    const response = await apiClient.get<IServerResponse<IProjectManager[]>>(`${url}`);
+    return response.data;
+  },
 };
 

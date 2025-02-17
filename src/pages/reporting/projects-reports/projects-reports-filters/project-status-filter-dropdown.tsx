@@ -1,39 +1,39 @@
+import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
+import { setSelectedProjectStatuses } from '@/features/reporting/projectReports/projectReportsSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { CaretDownFilled } from '@ant-design/icons';
 import { Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const ProjectStatusFilterDropdown = () => {
-  // state to track dropdown open status
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // localization
+  const dispatch = useAppDispatch();
   const { t } = useTranslation('reporting-projects-filters');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // projectStatus dropdown items
-  type ProjectStatusFieldsType = {
-    key: string;
-    label: string;
+  const { projectStatuses, loading: projectStatusesLoading } = useAppSelector(
+    state => state.projectStatusesReducer
+  );
+  const { mode: themeMode } = useAppSelector(state => state.themeReducer);
+
+  useEffect(() => {
+    if (!projectStatusesLoading) dispatch(fetchProjectStatuses());
+  }, [dispatch]);
+
+  const handleProjectStatusClick = (status: IProjectStatus) => {
+    dispatch(setSelectedProjectStatuses(status));
   };
-
-  const projectStatusFieldsList: ProjectStatusFieldsType[] = [
-    { key: 'cancelled', label: t('cancelledText') },
-    { key: 'blocked', label: t('blockedText') },
-    { key: 'onHold', label: t('onHoldText') },
-    { key: 'proposed', label: t('proposedText') },
-    { key: 'inPlanning', label: t('inPlanningText') },
-    { key: 'inProgress', label: t('inProgressText') },
-    { key: 'completed', label: t('completedText') },
-    { key: 'continuous', label: t('continuousText') },
-  ];
 
   // custom dropdown content
   const projectStatusDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 0 } }}>
       <List style={{ padding: 0 }}>
-        {projectStatusFieldsList.map(item => (
+        {projectStatuses.map(item => (
           <List.Item
-            className="custom-list-item"
-            key={item.key}
+            className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
+            key={item.id}
             style={{
               display: 'flex',
               gap: 8,
@@ -42,8 +42,13 @@ const ProjectStatusFilterDropdown = () => {
             }}
           >
             <Space>
-              <Checkbox id={item.key} />
-              {item.label}
+              <Checkbox
+                id={item.id}
+                key={item.id}
+                onChange={e => handleProjectStatusClick(item)}
+              >
+                {item.name}
+              </Checkbox>
             </Space>
           </List.Item>
         ))}
@@ -62,6 +67,7 @@ const ProjectStatusFilterDropdown = () => {
         type="default"
         icon={<CaretDownFilled />}
         iconPosition="end"
+        loading={projectStatusesLoading}
         className={`transition-colors duration-300 ${
           isDropdownOpen
             ? 'border-[#1890ff] text-[#1890ff]'
