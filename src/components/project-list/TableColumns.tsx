@@ -13,7 +13,6 @@ import { CategoryCell } from './project-list-table/project-list-category/project
 import { ProgressListProgress } from './project-list-table/project-list-progress/progress-list-progress';
 import { ProjectListUpdatedAt } from './project-list-table/project-list-updated-at/project-list-updated';
 import { ProjectNameCell } from './project-list-table/project-name/project-name-cell';
-import { setFilteredCategories, setFilteredStatuses } from '@/features/projects/projectsSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
 
 const createFilters = (items: { id: string; name: string }[]) =>
