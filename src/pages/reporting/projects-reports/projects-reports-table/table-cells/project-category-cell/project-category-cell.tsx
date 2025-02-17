@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { DownOutlined } from '@ant-design/icons';
 import { Badge, Card, Dropdown, Flex, Input, InputRef, Menu, MenuProps, Typography } from 'antd';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import './project-category-cell.css';
@@ -11,6 +11,8 @@ import { addCategory } from '@features/settings/categories/categoriesSlice';
 import { themeWiseColor } from '@utils/themeWiseColor';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
 import { useTranslation } from 'react-i18next';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
 
 interface ProjectCategoryCellProps {
   id: string;
@@ -19,31 +21,27 @@ interface ProjectCategoryCellProps {
 }
 
 const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps) => {
-  const [projectCategory, setProjectCategory] = useState<IProjectCategory>({
-    id,
-    name,
-    color_code,
-  });
-
-  const categoryInputRef = useRef<InputRef>(null);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-
-  // localization
+  const dispatch = useAppDispatch();
   const { t } = useTranslation('reporting-projects');
-
-  //   get theme from theme slice
-  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const categoryInputRef = useRef<InputRef>(null);
+  const { socket, connected } = useSocket();
+  const [selectedCategory, setSelectedCategory] = useState<IProjectCategory>({ id, name, color_code });
 
   // get categories list from the categories reducer
-  const categoriesList = useAppSelector(state => state.categoriesReducer.categoriesList);
-  const dispatch = useAppDispatch();
+  const { projectCategories, loading: projectCategoriesLoading } = useAppSelector(
+    state => state.projectCategoriesReducer
+  );  
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+ 
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
 
   // filter categories based on search query
   const filteredCategoriesData = useMemo(() => {
-    return categoriesList.filter(category =>
+    return projectCategories.filter(category =>
       category.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [categoriesList, searchQuery]);
+  }, [projectCategories, searchQuery]);
 
   // category selection options
   const categoryOptions = filteredCategoriesData.map(category => ({
@@ -57,9 +55,12 @@ const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps)
 
   // handle category select
   const onClick: MenuProps['onClick'] = e => {
-    const selectedCategory = filteredCategoriesData.find(category => category.id === e.key);
-    if (selectedCategory) {
-      setProjectCategory(selectedCategory);
+    const newCategory = filteredCategoriesData.find(category => category.id === e.key);
+    if (newCategory) {
+      setSelectedCategory(newCategory);
+      if (connected && socket) {
+        socket.emit(SocketEvents.PROJECT_CATEGORY_CHANGE.toString(), newCategory);
+      }
     }
   };
 
@@ -112,7 +113,10 @@ const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps)
     },
   ];
 
-  // function to focus the category input when the dropdown is opened
+  const handleCategoryChangeResponse = (data: IProjectCategory) => {
+    setSelectedCategory(data);
+  };
+
   const handleCategoryDropdownOpen = (open: boolean) => {
     if (open) {
       setTimeout(() => {
@@ -120,6 +124,19 @@ const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps)
       }, 0);
     }
   };
+
+  useEffect(() => {
+    if (connected && socket) {
+      socket.on(SocketEvents.PROJECT_CATEGORY_CHANGE.toString(), handleCategoryChangeResponse);
+
+      return () => {
+        socket.removeListener(
+          SocketEvents.PROJECT_CATEGORY_CHANGE.toString(),
+          handleCategoryChangeResponse
+        );
+      };
+    }
+  }, [connected, socket]);
 
   return (
     <Dropdown
@@ -139,15 +156,15 @@ const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps)
           textTransform: 'capitalize',
           fontSize: 13,
           height: 22,
-          backgroundColor: projectCategory.id ? projectCategory.color_code : colors.transparent,
-          color: projectCategory.id
+          backgroundColor: selectedCategory.id ? selectedCategory.color_code : colors.transparent,
+          color: selectedCategory.id
             ? themeWiseColor(colors.white, colors.darkGray, themeMode)
             : themeWiseColor(colors.darkGray, colors.white, themeMode),
-          border: projectCategory.id ? 'none' : `1px solid ${colors.deepLightGray}`,
+          border: selectedCategory.id ? 'none' : `1px solid ${colors.deepLightGray}`,
           cursor: 'pointer',
         }}
       >
-        {projectCategory.id ? projectCategory.name : t('setCategoryText')}
+        {selectedCategory.id ? selectedCategory.name : t('setCategoryText')}
 
         <DownOutlined />
       </Flex>
