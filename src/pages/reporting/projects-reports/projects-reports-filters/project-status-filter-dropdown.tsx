@@ -1,5 +1,5 @@
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
-import { setSelectedProjectStatuses } from '@/features/reporting/projectReports/projectReportsSlice';
+import { setSelectedProjectStatuses } from '@/features/reporting/projectReports/project-reports-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectStatus } from '@/types/project/projectStatus.types';

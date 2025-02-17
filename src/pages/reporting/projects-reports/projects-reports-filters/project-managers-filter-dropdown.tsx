@@ -1,5 +1,5 @@
 import { fetchProjectManagers } from '@/features/projects/projectsSlice';
-import { setSelectedProjectManagers } from '@/features/reporting/projectReports/projectReportsSlice';
+import { setSelectedProjectManagers } from '@/features/reporting/projectReports/project-reports-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectManager } from '@/types/project/projectManager.types';

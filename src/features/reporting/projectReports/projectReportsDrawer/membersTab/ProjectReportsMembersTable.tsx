@@ -2,7 +2,7 @@ import { Progress, Table, TableColumnsType } from 'antd';
 import React from 'react';
 import CustomTableTitle from '../../../../../components/CustomTableTitle';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleProjectReportsMembersTaskDrawer } from '../../projectReportsSlice';
+import { toggleProjectReportsMembersTaskDrawer } from '../../project-reports-slice';
 import { useTranslation } from 'react-i18next';
 
 type ProjectReportsMembersTableProps = {

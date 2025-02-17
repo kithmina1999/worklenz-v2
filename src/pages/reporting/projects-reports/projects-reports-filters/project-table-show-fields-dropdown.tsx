@@ -3,7 +3,7 @@ import { MoreOutlined } from '@ant-design/icons';
 import { Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleColumnHidden } from '@/features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
+import { toggleColumnHidden } from '@/features/reporting/projectReports/project-reports-table-column-slice/project-reports-table-column-slice';
 import { useTranslation } from 'react-i18next';
 
 const ProjectTableShowFieldsDropdown = () => {

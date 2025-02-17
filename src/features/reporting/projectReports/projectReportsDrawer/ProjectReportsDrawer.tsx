@@ -2,7 +2,7 @@ import { Drawer, Typography, Flex, Button, Dropdown } from 'antd';
 import React, { useState } from 'react';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import { toggleProjectReportsDrawer } from '../projectReportsSlice';
+import { toggleProjectReportsDrawer } from '../project-reports-slice';
 import { BankOutlined, DownOutlined } from '@ant-design/icons';
 import ProjectReportsDrawerTabs from './ProjectReportsDrawerTabs';
 import { colors } from '../../../../styles/colors';

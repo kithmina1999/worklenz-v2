@@ -6,7 +6,7 @@ import ProjectsReportsFilters from './projects-reports-filters/project-reports-f
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
-import { setArchived } from '@/features/reporting/projectReports/projectReportsSlice';
+import { setArchived } from '@/features/reporting/projectReports/project-reports-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 const ProjectsReports = () => {

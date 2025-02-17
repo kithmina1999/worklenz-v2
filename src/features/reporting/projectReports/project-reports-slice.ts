@@ -142,6 +142,18 @@ const projectReportsSlice = createSlice({
         project.end_date = action.payload.end_date;
       }
     },
+    setIndex: (state, action) => {
+      state.index = action.payload;
+    },
+    setPageSize: (state, action) => {
+      state.pageSize = action.payload;
+    },
+    setField: (state, action) => {
+      state.field = action.payload;
+    },
+    setOrder: (state, action) => {
+      state.order = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
@@ -170,5 +182,11 @@ export const {
   setSelectedProjectCategories,
   setSelectedProjectManagers,
   setArchived,
+  setProjectStartDate,
+  setProjectEndDate,
+  setIndex,
+  setPageSize,
+  setField,
+  setOrder,
 } = projectReportsSlice.actions;
 export default projectReportsSlice.reducer;

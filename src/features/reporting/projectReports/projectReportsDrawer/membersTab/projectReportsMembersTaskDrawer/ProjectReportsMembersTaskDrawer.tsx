@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { FileOutlined } from '@ant-design/icons';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { toggleProjectReportsMembersTaskDrawer } from '../../../projectReportsSlice';
+import { toggleProjectReportsMembersTaskDrawer } from '../../../project-reports-slice';
 import { colors } from '@/styles/colors';
 import ProjectReportsMembersTasksTable from './ProjectReportsMembersTaskTable';
 import CustomSearchbar from '@/components/CustomSearchbar';
