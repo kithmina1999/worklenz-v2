@@ -17,6 +17,7 @@ import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 import { getUserSession } from '@/utils/session-helper';
 import './project-view-updates.css';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { DeleteOutlined } from '@ant-design/icons';
 
 const MAX_COMMENT_LENGTH = 2000;
 
@@ -95,6 +96,9 @@ const ProjectViewUpdates = () => {
       console.error('Failed to add comment:', error);
     } finally {
       setIsSubmitting(false);
+      setCommentValue('');
+
+
     }
   };
 
@@ -186,17 +190,12 @@ const ProjectViewUpdates = () => {
                 }}
               >
                 <Button
-                  style={{
-                    width: 'fit-content',
-                    border: 'none',
-                    padding: 0,
-                    fontSize: 13,
-                    height: 24,
-                  }}
+                  icon={<DeleteOutlined />}
+                  shape="circle"
+                  type="text"
+                  size='small'
                   onClick={() => handleDeleteComment(comment.id)}
-                >
-                  {t('deleteButton')}
-                </Button>
+                />
               </ConfigProvider>
             </Flex>
           </Flex>
