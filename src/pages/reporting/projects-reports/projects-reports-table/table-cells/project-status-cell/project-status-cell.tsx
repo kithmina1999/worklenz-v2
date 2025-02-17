@@ -1,37 +1,61 @@
-import React from 'react';
-import { statusData } from '@/lib/project/projectConstants';
 import { ConfigProvider, Select, Typography } from 'antd';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
-import { toCamelCase } from '@/utils/toCamelCase';
-import { IProjectStatus } from '@/types/project/projectStatus.types';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { getStatusIcon } from '@/utils/projectUtils';
+import { useEffect } from 'react';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 interface ProjectStatusCellProps {
   currentStatus: string;
+  projectId: string;
 }
 
-const ProjectStatusCell = ({ currentStatus }: ProjectStatusCellProps) => {
-  // localization
+const ProjectStatusCell = ({ currentStatus, projectId }: ProjectStatusCellProps) => {
   const { t } = useTranslation('reporting-projects');
+  const dispatch = useAppDispatch();
+  const { socket } = useSocket();
+  const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
 
-  // status selection options
   const statusOptions = [
-    ...statusData.map((status, index) => ({
+    ...projectStatuses.map((status, index) => ({
       key: index,
-      value: status.value,
+      value: status.id,
       label: (
         <Typography.Text
           style={{ display: 'flex', alignItems: 'center', gap: 4 }}
           className="group-hover:text-[#1890ff]"
         >
-          {status.icon}
-          {t(`${status.value}Text`)}
+          {getStatusIcon(status.icon || '', status.color_code || '')}
+          {t(`${status.name}`)}
         </Typography.Text>
       ),
     })),
   ];
 
-  //   in this status data that get from the lib/project/projectConstants --> the value attribute is in camel case but in the props which is used as default value it came as the actual status name thats why this function is used
+  const handleStatusChange = (value: string) => {
+    socket?.emit(SocketEvents.PROJECT_STATUS_CHANGE.toString(), {
+      project_id: projectId,
+      status_id: value,
+    });
+  };
+
+  const handleStatusChangeResponse = (data: any) => {
+    console.log('projectStatusUpdated', data);
+  };
+
+  useEffect(() => {
+    socket?.on(SocketEvents.PROJECT_STATUS_CHANGE.toString(), handleStatusChangeResponse);
+
+    return () => {
+      socket?.removeListener(
+        SocketEvents.PROJECT_STATUS_CHANGE.toString(),
+        handleStatusChangeResponse
+      );
+    };
+  }, [socket]);
 
   return (
     <ConfigProvider
@@ -44,9 +68,10 @@ const ProjectStatusCell = ({ currentStatus }: ProjectStatusCellProps) => {
       }}
     >
       <Select
+        variant="borderless"
         options={statusOptions}
-        defaultValue={toCamelCase(currentStatus)}
-        style={{ width: 'fit-content' }}
+        defaultValue={currentStatus}
+        onChange={handleStatusChange}
       />
     </ConfigProvider>
   );
