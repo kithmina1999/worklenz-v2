@@ -119,8 +119,9 @@ const ProjectsReportsTable = () => {
     {
       key: 'status',
       title: <CustomTableTitle title={t('statusColumn')} />,
-      render: record => <ProjectStatusCell currentStatus={record.status_name} />,
-      sorter: (a, b) => a.status_name.localeCompare(b.status_name),
+      render: record => (
+        <ProjectStatusCell currentStatus={record.status_id} projectId={record.id} />
+      ),
       width: 200,
     },
     {
@@ -144,7 +145,14 @@ const ProjectsReportsTable = () => {
     {
       key: 'projectHealth',
       title: <CustomTableTitle title={t('projectHealthColumn')} />,
-      render: record => <ProjectHealthCell health={record.project_health} />,
+      render: (record: IRPTProject) => (
+        <ProjectHealthCell
+          value={record.project_health}
+          label={record.health_name}
+          color={record.health_color}
+          projectId={record.id}
+        />
+      ),
       width: 200,
     },
     {
@@ -191,7 +199,6 @@ const ProjectsReportsTable = () => {
   const visibleColumns = columns.filter(col => columnsVisibility[col.key as string]);
 
   const handleTableChange = (pagination: PaginationProps, filters: any, sorter: any) => {
-    console.log('pagination', pagination);
     dispatch(setIndex(pagination.current));
     dispatch(setPageSize(pagination.pageSize));
   };

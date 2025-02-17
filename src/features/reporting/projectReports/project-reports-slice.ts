@@ -130,18 +130,6 @@ const projectReportsSlice = createSlice({
     setArchived: (state, action) => {
       state.archived = action.payload;
     },
-    setProjectStartDate: (state, action) => {
-      const project = state.projectList.find(p => p.id === action.payload.project_id);
-      if (project) {
-        project.start_date = action.payload.start_date;
-      }
-    },
-    setProjectEndDate: (state, action) => {
-      const project = state.projectList.find(p => p.id === action.payload.project_id);
-      if (project) {
-        project.end_date = action.payload.end_date;
-      }
-    },
     setIndex: (state, action) => {
       state.index = action.payload;
     },
@@ -153,6 +141,36 @@ const projectReportsSlice = createSlice({
     },
     setOrder: (state, action) => {
       state.order = action.payload;
+    },
+    setProjectHealth: (state, action) => {
+      const health = action.payload;
+      const project = state.projectList.find(p => p.id === health.id);
+      if (project) {
+        project.project_health = health.id;
+        project.health_name = health.name;
+        project.health_color = health.color_code;
+      }
+    },
+    setProjectStatus: (state, action) => {
+      const status = action.payload;
+      const project = state.projectList.find(p => p.id === status.id);
+      if (project) {
+        project.status_id = status.id;
+        project.status_name = status.name;
+        project.status_color = status.color_code;
+      }
+    },
+    setProjectStartDate: (state, action) => {
+      const project = state.projectList.find(p => p.id === action.payload.id);
+      if (project) {
+        project.start_date = action.payload.start_date;
+      }
+    },
+    setProjectEndDate: (state, action) => {
+      const project = state.projectList.find(p => p.id === action.payload.id);
+      if (project) {
+        project.end_date = action.payload.end_date;
+      }
     },
   },
   extraReducers: builder => {
@@ -188,5 +206,7 @@ export const {
   setPageSize,
   setField,
   setOrder,
+  setProjectHealth,
+  setProjectStatus,
 } = projectReportsSlice.actions;
 export default projectReportsSlice.reducer;
