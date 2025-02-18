@@ -39,8 +39,8 @@ import {
   deleteBoardTask,
   setSelectedTaskId,
 } from '@features/board/board-slice';
-import { toggleUpdateTaskDrawer } from '@features/tasks/taskSlice';
 import BoardCreateSubtaskCard from '../board-sub-task-card/board-create-sub-task-card';
+import { toggleTaskDrawer } from '@/features/tasks/tasks.slice';
 
 const BoardViewTaskCard = ({
   task,
@@ -56,7 +56,7 @@ const BoardViewTaskCard = ({
   );
 
   // localization
-  const { t } = useTranslation('kanbanBoard');
+  const { t } = useTranslation('kanban-board');
 
   //   get theme details from theme reducer
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
@@ -66,7 +66,7 @@ const BoardViewTaskCard = ({
   // function to onClick card
   const handleCardClick = (id: string) => {
     dispatch(setSelectedTaskId(id));
-    dispatch(toggleUpdateTaskDrawer());
+    dispatch(toggleTaskDrawer());
   };
 
   const items: MenuProps['items'] = [

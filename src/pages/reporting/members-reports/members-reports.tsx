@@ -22,7 +22,9 @@ const MembersReports = () => {
   const dispatch = useAppDispatch();
   useDocumentTitle('Reporting - Members');
 
-  const { archived, searchQuery } = useAppSelector(state => state.membersReportsReducer);
+  const { archived, searchQuery, duration, dateRange } = useAppSelector(
+    state => state.membersReportsReducer,
+  );
 
   const handleExport = () => {
     console.log('export');
@@ -43,6 +45,8 @@ const MembersReports = () => {
             <TimeWiseFilter
               setDuration={duration => dispatch(setDuration(duration))}
               setDateRange={dateRange => dispatch(setDateRange(dateRange))}
+              duration={duration}
+              dateRange={dateRange}
             />
 
             <Dropdown

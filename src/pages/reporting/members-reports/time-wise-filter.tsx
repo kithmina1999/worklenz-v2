@@ -9,16 +9,21 @@ import { durations } from '@/shared/constants';
 
 interface ITimeWiseFilterProps {
   duration: string;
+  dateRange: string;
   setDuration: (duration: string) => void;
   setDateRange: (dateRange: string) => void;
 }
 
-const TimeWiseFilter = ({ duration, setDuration, setDateRange }: ITimeWiseFilterProps) => {
+const TimeWiseFilter = ({ duration, dateRange, setDuration, setDateRange }: ITimeWiseFilterProps) => {
   const { t } = useTranslation('reporting-members');
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedTimeFrame, setSelectedTimeFrame] = useState<string>('lastSevenDaysText');
-  const [customRange, setCustomRange] = useState<[string, string] | null>(null);
+  const [selectedTimeFrame, setSelectedTimeFrame] = useState<string>(
+    durations.find(item => item.key === duration)?.label || 'lastSevenDaysText',
+  );
+  const [customRange, setCustomRange] = useState<[string, string] | null>(
+    dateRange ? [dateRange.split('-')[0], dateRange.split('-')[1]] : null,
+  );
   const { mode: themeMode } = useAppSelector(state => state.themeReducer);
 
   // custom dropdown content

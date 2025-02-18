@@ -1,14 +1,23 @@
 {
   "rename": "Renomear",
-  "delete": "Deletar",
+  "delete": "Excluir",
   "addTask": "Adicionar Tarefa",
-  "changeCategory": "Mudar Categoria",
+  "addSectionButton": "Adicionar Seção",
+  "changeCategory": "Alterar categoria",
 
-  "dueDate": "Data de Vencimento",
+  "deleteTooltip": "Excluir",
+  "deleteConfirmationTitle": "Tem certeza?",
+  "deleteConfirmationOk": "Sim",
+  "deleteConfirmationCancel": "Cancelar",
+
+  "dueDate": "Data de vencimento",
   "cancel": "Cancelar",
 
   "today": "Hoje",
   "tomorrow": "Amanhã",
   "assignToMe": "Atribuir a mim",
-  "archive": "Arquivar"
+  "archive": "Arquivar",
+
+  "newTaskNamePlaceholder": "Escreva um nome de tarefa",
+  "newSubtaskNamePlaceholder": "Escreva um nome de subtarefa"
 }

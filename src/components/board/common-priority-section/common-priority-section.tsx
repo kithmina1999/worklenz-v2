@@ -56,7 +56,7 @@ const CommonPrioritySection: React.FC<CommonPrioritySectionProps> = ({
   const inputRef = useRef<InputRef>(null);
   const [isLoading, setIsLoading] = useState(false);
   const taskCardRef = useRef<HTMLDivElement>(null);
-  const { t } = useTranslation('kanbanBoard');
+  const { t } = useTranslation('kanban-board');
 
   const handleAddTaskClick = () => {
     dispatch(setTaskCardDisabled({ status, position: 'bottom', disabled: false }));
