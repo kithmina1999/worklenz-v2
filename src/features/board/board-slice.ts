@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import {
   IGroupByOption,
-  ILabelsChangeResponse,
   ITaskListColumn,
   ITaskListConfigV2,
   ITaskListGroup,
@@ -10,11 +9,9 @@ import {
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import logger from '@/utils/errorLogger';
 import { ITaskListMemberFilter } from '@/types/tasks/taskListFilters.types';
-import { ITaskAssignee, ITaskFormViewModel } from '@/types/tasks/task.types';
-import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
+import { ITaskFormViewModel } from '@/types/tasks/task.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
-import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.component';
 
 export enum IGroupBy {
   STATUS = 'status',

@@ -36,7 +36,7 @@ import projectHealthReducer from '@features/projects/lookups/projectHealth/proje
 
 // Tasks
 import taskReducer from '@features/tasks/tasks.slice';
-import createCardReducer from '@features/board/createCardSlice';
+import createCardReducer from '@/features/board/create-card.slice';
 import priorityReducer from '@features/taskAttributes/taskPrioritySlice';
 import taskLabelsReducer from '@features/taskAttributes/taskLabelSlice';
 import taskStatusReducer from '@features/taskAttributes/taskStatusSlice';
@@ -46,7 +46,7 @@ import memberReducer from '@features/settings/member/memberSlice';
 import clientReducer from '@features/settings/client/clientSlice';
 import jobReducer from '@features/settings/job/jobSlice';
 import teamReducer from '@features/teams/teamSlice';
-import billingReducer from '@features/adminCenter/billing/billingSlice';
+import billingReducer from '@/features/admin-center/billing/billing.slice';
 import categoriesReducer from '@features/settings/categories/categoriesSlice';
 import labelReducer from '@features/settings/label/labelSlice';
 
