@@ -1,11 +1,13 @@
+import { useState } from 'react';
 import { Button, Drawer, Form, Input, List, Typography } from 'antd';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
+
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { taskTemplatesApiService } from '@/api/task-templates/task-templates.api.service';
 import logger from '@/utils/errorLogger';
-import { useState } from 'react';
 import { ITaskTemplateGetResponse } from '@/types/settings/task-templates.types';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { setSelectedTasks } from '@/features/project/project.slice';
 
 interface TaskTemplateDrawerProps {
   showDrawer: boolean;
@@ -26,8 +28,11 @@ const TaskTemplateDrawer = ({
   const [creatingTemplate, setCreatingTemplate] = useState(false);
   const [updatingTemplate, setUpdatingTemplate] = useState(false);
 
+  const { selectedTasks } = useAppSelector(state => state.bulkActionReducer);
+  
   const onCloseDrawer = () => {
     form.resetFields();
+    setTemplateData({});
     onClose();
   };
 
@@ -54,7 +59,7 @@ const TaskTemplateDrawer = ({
       fetchTemplateData();
       return;
     }
-    setTemplateData({});
+    setTemplateData({ tasks: selectedTasks });
   };
 
   const handleRemoveTask = (index: number) => {
@@ -67,14 +72,17 @@ const TaskTemplateDrawer = ({
   };
 
   const createTemplate = async () => {
+    const values = form.getFieldsValue();
+    if (!values.name || !templateData.tasks) return;
     try {
       setCreatingTemplate(true);
       const res = await taskTemplatesApiService.createTemplate({
-        name: templateData.name || '',
+        name: values.name || '',
         tasks: templateData.tasks || [],
       });
       if (res.done) {
         onCloseDrawer();
+        dispatch(setSelectedTasks([]));
       }
     } catch (error) {
       logger.error('Failed to create template:', error);
@@ -84,7 +92,7 @@ const TaskTemplateDrawer = ({
   };
 
   const updateTemplate = async () => {
-    if (!selectedTemplateId) return;
+    if (!selectedTemplateId || !templateData.name || !templateData.tasks) return;
     const values = form.getFieldsValue();
     try {
       setUpdatingTemplate(true);
@@ -94,6 +102,7 @@ const TaskTemplateDrawer = ({
       });
       if (res.done) {
         onCloseDrawer();
+        dispatch(setSelectedTasks([]));
       }
     } catch (error) {
       logger.error('Failed to update template:', error);
@@ -117,6 +126,7 @@ const TaskTemplateDrawer = ({
       open={showDrawer}
       onClose={onCloseDrawer}
       afterOpenChange={afterOpenChange}
+      destroyOnClose={true}
       footer={
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'right' }}>
           <Button onClick={onCloseDrawer}>{t('cancelButton')}</Button>

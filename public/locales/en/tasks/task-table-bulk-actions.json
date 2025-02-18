@@ -13,5 +13,6 @@
     "status": "Status",
     "priority": "Priority",
     "phase": "Phase",
-    "member": "Member"
+    "member": "Member",
+    "createTaskTemplate": "Create Task Template"
 }

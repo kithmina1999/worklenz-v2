@@ -47,6 +47,7 @@ import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusD
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/PriorityDropdown';
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
 import { createPortal } from 'react-dom';
+import { setSelectedTasks } from '@/features/project/project.slice';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -85,13 +86,12 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
     const allTaskIds = taskList
       .flatMap(task => [task.id, ...(task.sub_tasks?.map(subtask => subtask.id) || [])])
       .filter(Boolean) as string[];
-
+    console.log('isSelectAll', isSelectAll);
     if (isSelectAll) {
-      // setSelectedRows([]);
       dispatch(deselectAll());
     } else {
-      // setSelectedRows(allTaskIds);
       dispatch(selectTaskIds(allTaskIds));
+      dispatch(selectTasks(taskList));
     }
     setIsSelectAll(!isSelectAll);
   };

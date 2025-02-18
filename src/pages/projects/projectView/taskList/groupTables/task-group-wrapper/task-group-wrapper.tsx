@@ -5,7 +5,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { ITaskListGroup } from '@/types/tasks/taskList.types';
 import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
 import { createPortal } from 'react-dom';
-import TaskTemplateDrawer from '@/features/settings/taskTemplates/TaskTemplateDrawer';
+import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
