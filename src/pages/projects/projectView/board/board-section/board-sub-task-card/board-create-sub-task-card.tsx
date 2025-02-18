@@ -23,7 +23,7 @@ const BoardCreateSubtaskCard = ({
   const cardRef = useRef<HTMLDivElement>(null);
 
   //   localization
-  const { t } = useTranslation('kanbanBoard');
+  const { t } = useTranslation('kanban-board');
 
   //   get theme details from theme reducer
   const themeMode = useAppSelector(state => state.themeReducer.mode);

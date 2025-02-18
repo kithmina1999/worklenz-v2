@@ -1,4 +1,5 @@
 import { reportingMembersApiService } from '@/api/reporting/reporting-members.api.service';
+import { durations } from '@/shared/constants';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type MembersReportsState = {
@@ -18,6 +19,8 @@ type MembersReportsState = {
   pageSize: number;
   field: string;
   order: string;
+  duration: string;
+  dateRange: string;
 };
 
 const initialState: MembersReportsState = {
@@ -37,6 +40,8 @@ const initialState: MembersReportsState = {
   pageSize: 10,
   field: 'name',
   order: 'asc',
+  duration: durations[1].key,
+  dateRange: '',
 };
 
 export const fetchMembersData = createAsyncThunk(
@@ -50,6 +55,8 @@ export const fetchMembersData = createAsyncThunk(
       order: state.order,
       search: state.searchQuery,
       archived: state.archived,
+      duration: state.duration,
+      dateRange: state.dateRange,
     };
     const response = await reportingMembersApiService.getMembers(body);
     return response.body;
@@ -94,6 +101,12 @@ const membersReportsSlice = createSlice({
     setOrder: (state, action) => {
       state.order = action.payload;
     },
+    setDuration: (state, action) => {
+      state.duration = action.payload;
+    },
+    setDateRange: (state, action) => {
+      state.dateRange = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
@@ -124,5 +137,7 @@ export const {
   setPageSize,
   setField,
   setOrder,
+  setDuration,
+  setDateRange,
 } = membersReportsSlice.actions;
 export default membersReportsSlice.reducer;

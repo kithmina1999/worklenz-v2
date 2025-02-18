@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Button, ConfigProvider, Flex, PaginationProps, Table, TableColumnsType } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { createPortal } from 'react-dom';
+import { ExpandAltOutlined } from '@ant-design/icons';
+
 import { useAppSelector } from '@/hooks/useAppSelector';
-import './project-report-table.css';
 import ProjectCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-cell/project-cell';
 import EstimatedVsActualCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/estimated-vs-actual-cell/estimated-vs-actual-cell';
 import TasksProgressCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/tasks-progress-cell/tasks-progress-cell';
@@ -22,14 +25,12 @@ import {
   setPageSize,
   toggleProjectReportsDrawer,
 } from '@/features/reporting/projectReports/project-reports-slice';
-import { ExpandAltOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import CustomTableTitle from '@/components/CustomTableTitle';
-import { useTranslation } from 'react-i18next';
 import { IRPTProject } from '@/types/reporting/reporting.types';
-import { createPortal } from 'react-dom';
 import ProjectReportsDrawer from '@/features/reporting/projectReports/projectReportsDrawer/ProjectReportsDrawer';
 import { PAGE_SIZE_OPTIONS } from '@/shared/constants';
+import './project-report-table.css';
 
 const ProjectsReportsTable = () => {
   const dispatch = useAppDispatch();

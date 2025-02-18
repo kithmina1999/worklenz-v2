@@ -2,23 +2,33 @@ import { Button, Card, Checkbox, Dropdown, Flex, Skeleton, Space, Typography } f
 import { useEffect, useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import MembersReportsTable from './members-reports-table/members-reports-table';
-import TimeWiseFilter from './TimeWiseFilter';
+import TimeWiseFilter from './time-wise-filter';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import CustomSearchbar from '@components/CustomSearchbar';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import CustomPageHeader from '../page-header/custom-page-header';
-import { fetchMembersData } from '@/features/reporting/membersReports/membersReportsSlice';
+import {
+  fetchMembersData,
+  setArchived,
+  setDuration,
+  setDateRange,
+  setSearchQuery,
+} from '@/features/reporting/membersReports/membersReportsSlice';
 
 const MembersReports = () => {
   const { t } = useTranslation('reporting-members');
   const dispatch = useAppDispatch();
   useDocumentTitle('Reporting - Members');
 
-  const [searchQuery, setSearhQuery] = useState<string>('');
+  const { archived, searchQuery, duration, dateRange } = useAppSelector(
+    state => state.membersReportsReducer,
+  );
 
-  const { membersList, isLoading } = useAppSelector(state => state.membersReportsReducer);
+  const handleExport = () => {
+    console.log('export');
+  };
 
   return (
     <Flex vertical>
@@ -27,14 +37,21 @@ const MembersReports = () => {
         children={
           <Space>
             <Button>
-              <Checkbox>
+              <Checkbox checked={archived} onChange={() => dispatch(setArchived(!archived))}>
                 <Typography.Text>{t('includeArchivedButton')}</Typography.Text>
               </Checkbox>
             </Button>
 
-            <TimeWiseFilter />
+            <TimeWiseFilter
+              setDuration={duration => dispatch(setDuration(duration))}
+              setDateRange={dateRange => dispatch(setDateRange(dateRange))}
+              duration={duration}
+              dateRange={dateRange}
+            />
 
-            <Dropdown menu={{ items: [{ key: '1', label: t('excelButton') }] }}>
+            <Dropdown
+              menu={{ items: [{ key: '1', label: t('excelButton') }], onClick: handleExport }}
+            >
               <Button type="primary" icon={<DownOutlined />} iconPosition="end">
                 {t('exportButton')}
               </Button>
@@ -46,16 +63,15 @@ const MembersReports = () => {
       <Card
         title={
           <Flex justify="flex-end">
-            {/* searchbar  */}
             <CustomSearchbar
               placeholderText={t('searchByNameInputPlaceholder')}
               searchQuery={searchQuery}
-              setSearchQuery={setSearhQuery}
+              setSearchQuery={query => dispatch(setSearchQuery(query))}
             />
           </Flex>
         }
       >
-        {isLoading ? <Skeleton /> : <MembersReportsTable />}
+        <MembersReportsTable />
       </Card>
     </Flex>
   );

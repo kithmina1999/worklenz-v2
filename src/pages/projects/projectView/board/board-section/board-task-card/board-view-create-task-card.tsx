@@ -25,20 +25,16 @@ const BoardViewCreateTaskCard = ({
   sectionId,
   setShowNewCard,
 }: BoardViewCreateTaskCardProps) => {
+  const { t } = useTranslation('kanban-board');
+  const dispatch = useAppDispatch();
+
   const [newTaskName, setNewTaskName] = useState<string>('');
   const [dueDate, setDueDate] = useState<Dayjs | null>(null);
 
   const cardRef = useRef<HTMLDivElement>(null);
 
-  //   localization
-  const { t } = useTranslation('kanbanBoard');
-
-  //   get theme details from theme reducer
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
-  const dispatch = useAppDispatch();
-
-  // function to add task card to the top
   const handleAddTaskToTheTop = () => {
     if (newTaskName.trim()) {
       dispatch(
@@ -56,7 +52,6 @@ const BoardViewCreateTaskCard = ({
     }
   };
 
-  // function to add task card to the bottom
   const handleAddTaskToTheBottom = () => {
     if (newTaskName.trim()) {
       dispatch(
