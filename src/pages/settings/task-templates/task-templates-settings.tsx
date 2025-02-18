@@ -1,17 +1,12 @@
 import { Button, Card, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatDistanceToNowStrict } from 'date-fns';
 import './task-templates-settings.css';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import {
-  setSelectedTemplate,
-  toggleTaskTemplateDrawer,
-} from '../../../features/settings/taskTemplates/taskTemplateSlice';
-import TaskTemplateDrawer from '../../../features/settings/taskTemplates/TaskTemplateDrawer';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { ITaskTemplatesGetResponse } from '@/types/settings/task-templates.types';
 import logger from '@/utils/errorLogger';
 import { taskTemplatesApiService } from '@/api/task-templates/task-templates.api.service';

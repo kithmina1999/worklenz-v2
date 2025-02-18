@@ -41,8 +41,9 @@ import './task-list-bulk-actions-bar.css';
 import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { ITeamMembersViewModel } from '@/types/teamMembers/teamMembersViewModel.types';
 import { toggleTaskTemplateDrawer } from '@/features/settings/taskTemplates/taskTemplateSlice';
-import TaskTemplateDrawer from '@/features/settings/taskTemplates/TaskTemplateDrawer';
+import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
 import { createPortal } from 'react-dom';
+import { setSelectedTasks } from '@/features/project/project.slice';
 
 const TaskListBulkActionsBar = () => {
   const dispatch = useAppDispatch();
@@ -72,7 +73,7 @@ const TaskListBulkActionsBar = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [teamMembers, setTeamMembers] = useState<ITeamMembersViewModel>({ data: [], total: 0 });
   const [assigneeDropdownOpen, setAssigneeDropdownOpen] = useState(false);
-
+  const [showDrawer, setShowDrawer] = useState(false);
   const filteredMembersData = useMemo(() => {
     return teamMembers?.data?.filter(member =>
       member.name?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -492,10 +493,10 @@ const TaskListBulkActionsBar = () => {
               items: [
                 {
                   key: '1',
-                  label: 'Create Task Template',
-                  onClick: () => dispatch(toggleTaskTemplateDrawer()),
+                  label: t('createTaskTemplate'),
+                  onClick: () => setShowDrawer(true),
                 },
-              ]
+              ],
             }}
           >
             <Button icon={<MoreOutlined />} className="borderless-icon-btn" style={buttonStyle} />
@@ -510,6 +511,18 @@ const TaskListBulkActionsBar = () => {
             style={buttonStyle}
           />
         </Tooltip>
+        {createPortal(
+          <TaskTemplateDrawer
+            showDrawer={showDrawer}
+            selectedTemplateId={null}
+            onClose={() => {
+              setShowDrawer(false);
+              dispatch(deselectAll());
+            }}
+          />,
+          document.body,
+          'create-task-template'
+        )}
       </Flex>
     </div>
   );

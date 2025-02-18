@@ -13,5 +13,6 @@
     "status": "Status",
     "priority": "Prioridade",
     "phase": "Fase",
-    "member": "Membro"
+    "member": "Membro",
+    "createTaskTemplate": "Criar Modelo de Tarefa"
 }

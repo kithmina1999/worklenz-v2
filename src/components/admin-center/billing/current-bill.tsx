@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import {
   toggleDrawer,
   toggleUpgradeModal,
-} from '@features/adminCenter/billing/billingSlice';
+} from '@/features/admin-center/billing/billing.slice';
 import { fetchBillingInfo, fetchFreePlanSettings } from '@/features/admin-center/admin-center.slice';
 import RedeemCodeDrawer from './drawers/redeem-code-drawer/redeem-code-drawer';
 import CurrentPlanDetails from './current-plan-details/current-plan-details';

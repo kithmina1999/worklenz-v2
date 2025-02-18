@@ -12,20 +12,18 @@ import {
 } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
 import { Button, Dropdown, Flex, Tag, Tooltip, Typography } from 'antd';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import ProjectMemberInviteButton from '@features/projects/singleProject/members/ProjectMemberInviteButton';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleCreateTaskDrawer } from '@features/tasks/taskSlice';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { SocketEvents } from '@/shared/socket-events';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
-import { getProject, setProject } from '@features/project/project.slice';
+import { setProject, setImportTaskTemplateDrawerOpen } from '@features/project/project.slice';
 import { fetchTaskGroups, setShowTaskDrawer } from '@features/tasks/tasks.slice';
 import ProjectStatusIcon from '@/components/common/project-status-icon/project-status-icon';
 import { formatDate } from '@/utils/timeUtils';
@@ -39,8 +37,8 @@ import {
 } from '@/features/project/project-drawer.slice';
 import { setSelectedTaskId } from '@/features/board/board-slice';
 import React from 'react';
-
-const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
+import { createPortal } from 'react-dom';
+import ImportTaskTemplate from '@/components/task-templates/import-task-template';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
@@ -89,12 +87,16 @@ const ProjectViewHeader = () => {
     dispatch(setShowTaskDrawer(true));
   };
 
+  const handleImportTaskTemplate = () => {
+    dispatch(setImportTaskTemplateDrawerOpen(true));
+  };
+
   // create task button items
   const items = [
     {
       key: '1',
       label: (
-        <div style={{ width: '100%', margin: 0, padding: 0 }}>
+        <div style={{ width: '100%', margin: 0, padding: 0 }} onClick={handleImportTaskTemplate}>
           <ImportOutlined /> Import task
         </div>
       ),
@@ -207,7 +209,8 @@ const ProjectViewHeader = () => {
           >
             <EditOutlined /> Create Task
           </Dropdown.Button>
-          <ProjectDrawer onClose={() => {}} />
+          {createPortal(<ProjectDrawer onClose={() => {}} />, document.body, 'project-drawer')}
+          {createPortal(<ImportTaskTemplate />, document.body, 'import-task-template')}
         </Flex>
       }
     />

@@ -13,5 +13,6 @@
     "status": "Estado",
     "priority": "Prioridad",
     "phase": "Fase",
-    "member": "Miembro"
+    "member": "Miembro",
+    "createTaskTemplate": "Crear plantilla de tarea"
 }
