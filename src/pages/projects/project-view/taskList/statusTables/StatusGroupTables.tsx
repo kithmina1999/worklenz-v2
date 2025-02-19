@@ -32,7 +32,7 @@ const StatusGroupTables = ({ group }: { group: ITaskListGroup }) => {
 
   return (
     <Flex gap={24} vertical>
-      {group.tasks.map(status => (
+      {group?.tasks?.map(status => (
         <TaskListTableWrapper
           key={status.id}
           taskList={group.tasks}

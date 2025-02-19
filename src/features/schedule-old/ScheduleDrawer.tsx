@@ -1,9 +1,8 @@
 import { Avatar, Drawer, Tabs, TabsProps } from 'antd';
-import React from 'react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { toggleScheduleDrawer } from './scheduleSlice';
-import { avatarNamesMap } from '../../shared/constants';
+import { AvatarNamesMap } from '../../shared/constants';
 import WithStartAndEndDates from '../../components/schedule-old/tabs/withStartAndEndDates/WithStartAndEndDates';
 import { useTranslation } from 'react-i18next';
 
@@ -30,7 +29,7 @@ const ScheduleDrawer = () => {
       width={1000}
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Avatar style={{ backgroundColor: avatarNamesMap['R'] }}>R</Avatar>
+          <Avatar style={{ backgroundColor: AvatarNamesMap['R'] }}>R</Avatar>
           <span>Raveesha Dilanka</span>
         </div>
       }

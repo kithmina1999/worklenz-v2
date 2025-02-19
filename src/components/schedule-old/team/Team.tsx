@@ -6,9 +6,9 @@ import { CaretDownOutlined, CaretRightFilled } from '@ant-design/icons';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import './Team.css';
 import { useDispatch } from 'react-redux';
-import { toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
-import ProjectTimelineModal from '../../../features/schedule/ProjectTimelineModal';
-import ScheduleDrawer from '../../../features/schedule/ScheduleDrawer';
+import { toggleScheduleDrawer } from '../../../features/schedule-old/scheduleSlice';
+import ProjectTimelineModal from '../../../features/schedule-old/ProjectTimelineModal';
+import ScheduleDrawer from '../../../features/schedule-old/ScheduleDrawer';
 import { useTranslation } from 'react-i18next';
 
 interface GanttChartProps {
