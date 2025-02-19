@@ -4,6 +4,7 @@ import { ITaskLogViewModel } from '@/types/tasks/task-log-view.types';
 import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 import { calculateTimeGap } from '@/utils/calculate-time-gap';
+import './time-log-item.css';
 
 type TimeLogItemProps = {
   log: ITaskLogViewModel;
