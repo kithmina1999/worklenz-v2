@@ -1,7 +1,6 @@
 import { DownloadOutlined, PlayCircleFilled, PlusOutlined } from '@ant-design/icons';
 import { Button, Divider, Flex, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { colors } from '@/styles/colors';
+import { useEffect, useState } from 'react';
 import EmptyListPlaceholder from '@/components/EmptyListPlaceholder';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -9,7 +8,6 @@ import TimeLogForm from './TimeLogForm';
 import TimeLogList from './TimeLogList';
 import { taskTimeLogsApiService } from '@/api/tasks/task-time-logs.api.service';
 import { ITaskLogViewModel } from '@/types/tasks/task-log-view.types';
-import { formatDuration, intervalToDuration } from 'date-fns';
 import TaskTimer from '@/components/taskListCommon/task-timer/task-timer';
 import { useTaskTimer } from '@/hooks/useTaskTimer';
 
@@ -30,12 +28,15 @@ const TaskDrawerTimeLog = () => {
   const buildTotalTimeText = (timeLoggedList: ITaskLogViewModel[]) => {
     let totalLogged = 0;
     for (const element of timeLoggedList) {
-      const duration = intervalToDuration({ start: 0, end: (element.time_spent || 0) * 1000 });
-      element.time_spent_text = formatDuration(duration);
-      totalLogged += parseFloat((element.time_spent || 0).toString());
+      const timeSpentInSeconds = Number(element.time_spent || '0');
+      const minutes = Math.floor(timeSpentInSeconds / 60);
+      const seconds = timeSpentInSeconds % 60;
+      element.time_spent_text = `${minutes}m ${seconds}s`;
+      totalLogged += timeSpentInSeconds;
     }
-    const totalDuration = intervalToDuration({ start: 0, end: totalLogged * 1000 });
-    setTotalTimeText(`${totalDuration.minutes || 0}m ${totalDuration.seconds || 0}s`);
+    const totalMinutes = Math.floor(totalLogged / 60);
+    const totalSeconds = totalLogged % 60;
+    setTotalTimeText(`${totalMinutes}m ${totalSeconds}s`);
   };
 
   const fetchTimeLoggedList = async () => {
