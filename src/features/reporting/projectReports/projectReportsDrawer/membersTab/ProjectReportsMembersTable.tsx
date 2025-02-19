@@ -2,21 +2,26 @@ import { Progress, Table, TableColumnsType } from 'antd';
 import React from 'react';
 import CustomTableTitle from '../../../../../components/CustomTableTitle';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleProjectReportsMembersTaskDrawer } from '../../project-reports-slice';
+import { setSelectedMember, toggleProjectReportsMembersTaskDrawer } from '../../project-reports-slice';
 import { useTranslation } from 'react-i18next';
+import ProjectReportsMembersTaskDrawer from './projectReportsMembersTaskDrawer/ProjectReportsMembersTaskDrawer';
+import { createPortal } from 'react-dom';
+import { IRPTOverviewProjectMember } from '@/types/reporting/reporting.types';
 
 type ProjectReportsMembersTableProps = {
   membersData: any[];
+  loading: boolean;
 };
 
-const ProjectReportsMembersTable = ({ membersData }: ProjectReportsMembersTableProps) => {
+const ProjectReportsMembersTable = ({ membersData, loading }: ProjectReportsMembersTableProps) => {
   // localization
   const { t } = useTranslation('reporting-projects-drawer');
 
   const dispatch = useAppDispatch();
 
   // function to handle task drawer open
-  const handleProjectReportsMembersTaskDrawer = () => {
+  const handleProjectReportsMembersTaskDrawer = (record: IRPTOverviewProjectMember) => {
+    dispatch(setSelectedMember(record));
     dispatch(toggleProjectReportsMembersTaskDrawer());
   };
 
@@ -24,9 +29,9 @@ const ProjectReportsMembersTable = ({ membersData }: ProjectReportsMembersTableP
     {
       key: 'name',
       title: <CustomTableTitle title={t('nameColumn')} />,
-      onCell: record => {
+      onCell: (record: any) => {
         return {
-          onClick: handleProjectReportsMembersTaskDrawer,
+          onClick: () => handleProjectReportsMembersTaskDrawer(record as IRPTOverviewProjectMember),
         };
       },
       dataIndex: 'name',
@@ -88,18 +93,22 @@ const ProjectReportsMembersTable = ({ membersData }: ProjectReportsMembersTableP
   ];
 
   return (
-    <Table
-      columns={columns}
-      dataSource={membersData}
-      pagination={false}
-      scroll={{ x: 'max-content' }}
-      onRow={record => {
-        return {
-          style: { height: 38, cursor: 'pointer' },
-          className: 'group even:bg-[#4e4e4e10]',
-        };
-      }}
-    />
+    <>
+      <Table
+        columns={columns}
+        dataSource={membersData}
+        pagination={false}
+        scroll={{ x: 'max-content' }}
+        loading={loading}
+        onRow={record => {
+          return {
+            style: { height: 38, cursor: 'pointer' },
+            className: 'group even:bg-[#4e4e4e10]',
+          };
+        }}
+      />
+      {createPortal(<ProjectReportsMembersTaskDrawer />, document.body, 'project-reports-members-task-drawer')}
+    </>
   );
 };
 

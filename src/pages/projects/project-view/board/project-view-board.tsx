@@ -8,17 +8,13 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 
-import { useAppSelector } from '../../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import TaskListFilters from '../taskList/taskListFilters/TaskListFilters';
 import { Button, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { useMediaQuery } from 'react-responsive';
-import { toggleDrawer } from '../../../../features/projects/status/StatusSlice';
+import { toggleDrawer } from '@/features/projects/status/StatusSlice';
 import KanbanGroup from '@/components/board/kanban-group/kanban-group';
-import { ITaskListConfigV2 } from '@/types/tasks/taskList.types';
-import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
-import { fetchTaskGroups } from '@/features/tasks/taskSlice';
 
 const ProjectViewBoard: React.FC = () => {
   const dispatch = useDispatch();

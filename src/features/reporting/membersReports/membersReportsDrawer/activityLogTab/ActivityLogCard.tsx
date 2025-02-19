@@ -4,7 +4,7 @@ import { simpleDateFormat } from '@/utils/simpleDateFormat';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { colors } from '../../../../../styles/colors';
 import { useTranslation } from 'react-i18next';
-import { toggleTaskDrawer } from '@/features/tasks/tasks.slice';
+import { setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 
 type TaskStatus = {
   name: string;
@@ -46,7 +46,7 @@ const ActivityLogCard = ({ data, setSelectedTaskId }: ActivityLogCardProps) => {
 
   const handleUpdateTaskDrawer = (id: string) => {
     setSelectedTaskId(id);
-    dispatch(toggleTaskDrawer());
+    dispatch(setShowTaskDrawer(true));
   };
 
   // this function format the attribute type

@@ -5,9 +5,8 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAuthService } from '@/hooks/useAuth';
 import TaskDrawerStatusDropdown from '../task-drawer-status-dropdown/task-drawer-status-dropdown';
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
-import { setShowTaskDrawer } from '@/features/tasks/tasks.slice';
-import { setSelectedTaskId } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 
 type TaskDrawerHeaderProps = {
   name: string;
@@ -18,7 +17,7 @@ const TaskDrawerHeader = ({ name, inputRef }: TaskDrawerHeaderProps) => {
   const dispatch = useAppDispatch();
   const [characterLength, setCharacterLength] = useState<number>(name.length);
   const [isTaskNameFocused, setTaskNameFocused] = useState<boolean>(false);
-  const { taskFormViewModel, selectedTaskId } = useAppSelector(state => state.taskReducer);
+  const { taskFormViewModel, selectedTaskId } = useAppSelector(state => state.taskDrawerReducer);
   const currentSession = useAuthService().getCurrentSession();
 
   const onTaskNameChange = (e: ChangeEvent<HTMLInputElement>) => {

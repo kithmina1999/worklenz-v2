@@ -24,7 +24,7 @@ import { SocketEvents } from '@/shared/socket-events';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
 import { setProject, setImportTaskTemplateDrawerOpen } from '@features/project/project.slice';
-import { fetchTaskGroups, setShowTaskDrawer } from '@features/tasks/tasks.slice';
+import { fetchTaskGroups } from '@features/tasks/tasks.slice';
 import ProjectStatusIcon from '@/components/common/project-status-icon/project-status-icon';
 import { formatDate } from '@/utils/timeUtils';
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
@@ -35,10 +35,9 @@ import {
   toggleProjectDrawer,
   setProjectId,
 } from '@/features/project/project-drawer.slice';
-import { setSelectedTaskId } from '@/features/board/board-slice';
-import React from 'react';
 import { createPortal } from 'react-dom';
 import ImportTaskTemplate from '@/components/task-templates/import-task-template';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
@@ -83,7 +82,7 @@ const ProjectViewHeader = () => {
   };
 
   const handleCreateTask = () => {
-    dispatch(setSelectedTaskId(''));
+    dispatch(setSelectedTaskId(null));
     dispatch(setShowTaskDrawer(true));
   };
 

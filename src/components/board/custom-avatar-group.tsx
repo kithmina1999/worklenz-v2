@@ -1,10 +1,16 @@
-import { Avatar, Button, Flex, Tooltip } from 'antd';
-import React from 'react';
+import { Button, Flex } from 'antd';
 import AddMembersDropdown from '@/components/add-members-dropdown/add-members-dropdown';
-import CustomAvatar from '../CustomAvatar';
+import Avatars from '../avatars/avatars';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import AssigneeSelector from '../taskListCommon/assigneeSelector/AssigneeSelector';
 
-const CustomAvatarGroup = ({ assignees }: { assignees: any[] | null }) => {
-  return assignees ? (
+type CustomAvatarGroupProps = {
+  task: IProjectTask;
+  sectionId: string;
+};
+
+const CustomAvatarGroup = ({ task, sectionId }: CustomAvatarGroupProps) => {
+  return task.assignees ? (
     <Flex
       gap={4}
       align="center"
@@ -13,17 +19,7 @@ const CustomAvatarGroup = ({ assignees }: { assignees: any[] | null }) => {
         cursor: 'pointer',
       }}
     >
-      <Avatar.Group>
-        {assignees.map((assignee: any) =>
-          assignee?.avatar_url ? (
-            <Tooltip key={assignee.id} title={assignee?.name}>
-              <Avatar src={assignee.avatar_url} style={{ width: 26, height: 26 }} />
-            </Tooltip>
-          ) : (
-            <CustomAvatar key={assignee.id} avatarName={assignee?.name} size={26} />
-          )
-        )}
-      </Avatar.Group>
+      <Avatars members={task.names || []} />
       <Button
         shape="circle"
         type="dashed"
@@ -36,7 +32,7 @@ const CustomAvatarGroup = ({ assignees }: { assignees: any[] | null }) => {
         }}
         onClick={e => e.stopPropagation()}
       >
-        <AddMembersDropdown />
+        <AssigneeSelector showDropdown={false} task={task} groupId={sectionId} />
       </Button>
     </Flex>
   ) : (

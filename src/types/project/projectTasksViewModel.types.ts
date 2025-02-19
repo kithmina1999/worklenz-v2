@@ -70,7 +70,7 @@ export interface IProjectTask {
   completed_count?: number;
   priority_value?: number;
   is_overdue?: boolean;
-  timer_start_time?: number;
+  timer_start_time?: number | null;
   description?: string;
   completed_at?: string;
   created_at?: string;

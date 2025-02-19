@@ -14,10 +14,10 @@ const TaskDrawerInfoTab = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [refreshSubTask, setRefreshSubTask] = useState<boolean>(false);
-  
+
   const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskFormViewModel, loadingTask, selectedTaskId } = useAppSelector(
-    state => state.taskReducer,
+    state => state.taskDrawerReducer,
   );
 
   const handleRefresh = () => {
@@ -47,7 +47,7 @@ const TaskDrawerInfoTab = () => {
     {
       key: 'description',
       label: <Typography.Text strong>Description</Typography.Text>,
-      children: <DescriptionEditor description={taskFormViewModel?.task?.description} />,
+      children: <DescriptionEditor description={taskFormViewModel?.task?.description || null} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },

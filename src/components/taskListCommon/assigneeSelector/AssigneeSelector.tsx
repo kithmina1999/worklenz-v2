@@ -108,6 +108,7 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
     dispatch(
       updateTaskAssignees({ groupId: groupId || '', taskId: data.id, assignees: updatedAssignees })
     );
+    
   };
 
   useEffect(() => {

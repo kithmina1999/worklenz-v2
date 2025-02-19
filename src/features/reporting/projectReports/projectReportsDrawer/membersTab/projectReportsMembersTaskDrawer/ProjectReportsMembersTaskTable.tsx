@@ -1,21 +1,22 @@
+import { useTranslation } from 'react-i18next';
+import React from 'react';
+import { createPortal } from 'react-dom';
 import { Badge, Flex, Table, TableColumnsType, Tag, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { DoubleRightOutlined } from '@ant-design/icons';
+
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleTaskDrawer } from '@features/tasks/tasks.slice';
+import { setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 import CustomTableTitle from '@components/CustomTableTitle';
 import { colors } from '@/styles/colors';
-import { useTranslation } from 'react-i18next';
+
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 type ProjectReportsMembersTasksTableProps = {
   tasksData: any[];
-  setSeletedTaskId: (id: string) => void;
 };
 
-const ProjectReportsMembersTasksTable = ({
-  tasksData,
-  setSeletedTaskId,
-}: ProjectReportsMembersTasksTableProps) => {
+const ProjectReportsMembersTasksTable = ({ tasksData }: ProjectReportsMembersTasksTableProps) => {
   // localization
   const { t } = useTranslation('reporting-projects-drawer');
 
@@ -23,8 +24,7 @@ const ProjectReportsMembersTasksTable = ({
 
   // function to handle task drawer open
   const handleUpdateTaskDrawer = (id: string) => {
-    setSeletedTaskId(id);
-    dispatch(toggleTaskDrawer());
+    dispatch(setShowTaskDrawer(true));
   };
 
   const columns: TableColumnsType = [
@@ -124,18 +124,21 @@ const ProjectReportsMembersTasksTable = ({
   ];
 
   return (
-    <Table
-      columns={columns}
-      dataSource={tasksData}
-      pagination={false}
-      scroll={{ x: 'max-content' }}
-      onRow={record => {
-        return {
-          style: { height: 38, cursor: 'pointer' },
-          className: 'group even:bg-[#4e4e4e10]',
-        };
-      }}
-    />
+    <>
+      <Table
+        columns={columns}
+        dataSource={tasksData}
+        pagination={false}
+        scroll={{ x: 'max-content' }}
+        onRow={record => {
+          return {
+            style: { height: 38, cursor: 'pointer' },
+            className: 'group even:bg-[#4e4e4e10]',
+          };
+        }}
+      />
+      {createPortal(<TaskDrawer />, document.body, 'task-drawer')}
+    </>
   );
 };
 

@@ -4,14 +4,14 @@ import { InputRef } from 'antd/es/input';
 import { useEffect, useRef, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setSelectedTaskId, setShowTaskDrawer } from '@/features/tasks/tasks.slice';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 
 import './task-drawer.css';
 import TaskDrawerHeader from './shared/TaskDrawerHeader';
 import TaskDrawerTabs from './shared/TaskDrawerTabs';
 
 const TaskDrawer = () => {
-  const { showTaskDrawer, taskFormViewModel } = useAppSelector(state => state.taskReducer);
+  const { showTaskDrawer, taskFormViewModel } = useAppSelector(state => state.taskDrawerReducer);
 
   const taskNameInputRef = useRef<InputRef>(null);
 

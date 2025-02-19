@@ -1,10 +1,10 @@
 import { Tabs } from 'antd';
 import { TabsProps } from 'antd/lib';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import ProjectReportsOverviewTab from './overviewTab/ProjectReportsOverviewTab';
 import ProjectReportsMembersTab from './membersTab/ProjectReportsMembersTab';
 import ProjectReportsTasksTab from './tasksTab/ProjectReportsTasksTab';
-import { useTranslation } from 'react-i18next';
 
 type ProjectReportsDrawerProps = {
   projectId?: string | null;
@@ -32,7 +32,7 @@ const ProjectReportsDrawerTabs = ({ projectId = null }: ProjectReportsDrawerProp
     },
   ];
 
-  return <Tabs type="card" items={tabItems} />;
+  return <Tabs type="card" items={tabItems} destroyInactiveTabPane />;
 };
 
 export default ProjectReportsDrawerTabs;

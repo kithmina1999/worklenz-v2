@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleTaskDrawer } from '@/features/tasks/tasks.slice';
+import { setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
@@ -42,7 +42,7 @@ const TaskRowName = React.memo(
 
     const handleSelectTask = useCallback(() => {
       setSelectedTaskId(task.id || '');
-      dispatch(toggleTaskDrawer());
+      dispatch(setShowTaskDrawer(true));
     }, [dispatch, setSelectedTaskId, task.id]);
 
     // render the toggle arrow icon for tasks with subtasks

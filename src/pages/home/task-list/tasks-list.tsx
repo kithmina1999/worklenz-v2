@@ -27,7 +27,7 @@ import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
 import { colors } from '@/styles/colors';
 import { setHomeTasksConfig } from '@/features/home-page/home-page.slice';
 import { IMyTask } from '@/types/home/my-tasks.types';
-import { setSelectedTaskId, toggleTaskDrawer } from '@/features/tasks/tasks.slice';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 import { useGetMyTasksQuery } from '@/api/home-page/home-page.api.service';
 import { IHomeTasksModel } from '@/types/home/home-page.types';
 import { useSocket } from '@/socket/socketContext';
@@ -127,7 +127,7 @@ const TasksList: React.FC = React.memo(() => {
                   type="text"
                   icon={<ExpandAltOutlined />}
                   onClick={() => {
-                    dispatch(toggleTaskDrawer());
+                    dispatch(setShowTaskDrawer(true));
                     dispatch(setSelectedTaskId(record.id || null));
                   }}
                   style={{
