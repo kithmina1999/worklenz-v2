@@ -67,6 +67,7 @@ interface ITaskState {
   labels: string[];
   priorities: string[];
   members: string[];
+  activeTimers: { [taskId: string]: number | null };
 }
 
 const initialState: ITaskState = {
@@ -87,6 +88,7 @@ const initialState: ITaskState = {
   labels: [],
   priorities: [],
   members: [],
+  activeTimers: {},
 };
 
 export const COLUMN_KEYS = {
@@ -509,16 +511,7 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { taskId, timeTracking } = action.payload;
-      const group = state.taskGroups.find(group => 
-        group.tasks.some(task => task.id === taskId)
-      );
-
-      if (group) {
-        const task = group.tasks.find(task => task.id === taskId);
-        if (task) {
-          task.timer_start_time = timeTracking;
-        }
-      }
+      state.activeTimers[taskId] = timeTracking;
     },
   },
 
