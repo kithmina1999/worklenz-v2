@@ -1,38 +1,58 @@
-import { Button, Card, Dropdown, Flex, Input, InputRef, MenuProps } from 'antd';
+import { Button, Dropdown, Flex, Input, InputRef, MenuProps } from 'antd';
 import React, { ChangeEvent, useState } from 'react';
-import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
-import { colors } from '@/styles/colors';
 import { EllipsisOutlined } from '@ant-design/icons';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAuthService } from '@/hooks/useAuth';
+import TaskDrawerStatusDropdown from '../task-drawer-status-dropdown/task-drawer-status-dropdown';
+import { tasksApiService } from '@/api/tasks/tasks.api.service';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 
 type TaskDrawerHeaderProps = {
-  taskName: string;
-  setTaskName: (name: string) => void;
+  name: string;
   inputRef: React.RefObject<InputRef | null>;
 };
 
-const TaskDrawerHeader = ({ taskName, setTaskName, inputRef }: TaskDrawerHeaderProps) => {
-  const [characterLength, setCharacterLength] = useState<number>(taskName.length);
-  const [isCharacterLengthShowing, setIsCharacterLengthShowing] = useState<boolean>(false);
+const TaskDrawerHeader = ({ name, inputRef }: TaskDrawerHeaderProps) => {
+  const dispatch = useAppDispatch();
+  const [characterLength, setCharacterLength] = useState<number>(name.length);
+  const [isTaskNameFocused, setTaskNameFocused] = useState<boolean>(false);
+  const { taskFormViewModel, selectedTaskId } = useAppSelector(state => state.taskDrawerReducer);
+  const currentSession = useAuthService().getCurrentSession();
 
-  // function to set task name
   const onTaskNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTaskName(e.currentTarget.value);
     setCharacterLength(e.currentTarget.value.length);
   };
 
-  // delete task dropdown items
+  const handleDeleteTask = async () => {
+    if (!selectedTaskId) return;
+    const res = await tasksApiService.deleteTask(selectedTaskId);
+    if (res.done) {
+      dispatch(setShowTaskDrawer(false));
+      dispatch(setSelectedTaskId(null));
+    }
+  };
+
   const deletTaskDropdownItems: MenuProps['items'] = [
     {
       key: '1',
       label: (
-        <Card className="delete-task-dropdown-card" bordered={false}>
-          <Button type="text" className="delete-task-button">
+        <Flex gap={8} align="center">
+          <Button type="text" danger onClick={handleDeleteTask}>
             Delete Task
           </Button>
-        </Card>
+        </Flex>
       ),
     },
   ];
+
+  const handleInputFocus = () => {
+    setTaskNameFocused(true);
+  };
+
+  const handleInputBlur = () => {
+    setTaskNameFocused(false);
+  };
 
   return (
     <Flex gap={12} align="center" style={{ marginBlockEnd: 6 }}>
@@ -40,28 +60,25 @@ const TaskDrawerHeader = ({ taskName, setTaskName, inputRef }: TaskDrawerHeaderP
         <Input
           ref={inputRef}
           size="large"
-          value={taskName}
+          value={name}
           onChange={e => onTaskNameChange(e)}
-          onFocus={() => setIsCharacterLengthShowing(true)}
-          onBlur={() => setIsCharacterLengthShowing(false)}
+          onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
           placeholder="Type your Task"
-          style={{ width: '100%' }}
+          style={{ width: '100%', border: 'none' }}
+          showCount={false}
+          maxLength={250}
         />
-        {isCharacterLengthShowing && (
-          <span
-            style={{
-              position: 'absolute',
-              bottom: -20,
-              right: 0,
-              color: colors.lightGray,
-              fontSize: 11.2,
-            }}
-          >{`${characterLength}/250`}</span>
-        )}
       </Flex>
-      {/* <StatusDropdown currentStatus="todo"/> */}
+
+      <TaskDrawerStatusDropdown
+        statuses={taskFormViewModel?.statuses ?? []}
+        task={taskFormViewModel?.task ?? {}}
+        teamId={currentSession?.team_id ?? ''}
+      />
+
       <Dropdown overlayClassName={'delete-task-dropdown'} menu={{ items: deletTaskDropdownItems }}>
-        <Button icon={<EllipsisOutlined />} className="borderless-icon-btn" />
+        <Button type="text" icon={<EllipsisOutlined />} />
       </Dropdown>
     </Flex>
   );

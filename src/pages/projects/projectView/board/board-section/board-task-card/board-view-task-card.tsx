@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
-  DatePicker,
   Tooltip,
   Tag,
-  Avatar,
   Progress,
   Typography,
   Dropdown,
@@ -29,54 +27,134 @@ import {
 } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
-import { themeWiseColor } from '../../../../../../utils/themeWiseColor';
-import BoardSubTaskCard from '../board-sub-task-card/board-sub-task-card';
-import CustomAvatarGroup from '../../../../../../components/board/custom-avatar-group';
-import CustomDueDatePicker from '../../../../../../components/board/custom-due-date-picker';
-import { colors } from '../../../../../../styles/colors';
-import { deleteBoardTask, setSelectedTaskId } from '../../../../../../features/board/board-slice';
-import { toggleUpdateTaskDrawer } from '../../../../../../features/tasks/taskSlice';
-import BoardCreateSubtaskCard from '../board-sub-task-card/board-create-sub-task-card';
 
-const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }) => {
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { themeWiseColor } from '@/utils/themeWiseColor';
+import BoardSubTaskCard from '../board-sub-task-card/board-sub-task-card';
+import CustomAvatarGroup from '@/components/board/custom-avatar-group';
+import CustomDueDatePicker from '@/components/board/custom-due-date-picker';
+import { colors } from '@/styles/colors';
+import { deleteBoardTask, updateTaskAssignee } from '@features/board/board-slice';
+import BoardCreateSubtaskCard from '../board-sub-task-card/board-create-sub-task-card';
+import { setShowTaskDrawer, setSelectedTaskId } from '@/features/task-drawer/task-drawer.slice';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { IBulkAssignRequest } from '@/types/tasks/bulk-action-bar.types';
+import { taskListBulkActionsApiService } from '@/api/tasks/task-list-bulk-actions.api.service';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
+import {
+  evt_project_task_list_context_menu_archive,
+  evt_project_task_list_context_menu_assign_me,
+  evt_project_task_list_context_menu_delete,
+} from '@/shared/worklenz-analytics-events';
+
+const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId: string }) => {
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation('kanban-board');
+  const { trackMixpanelEvent } = useMixpanelTracking();
+
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const projectId = useAppSelector(state => state.projectReducer.projectId);
   const [isSubTaskShow, setIsSubTaskShow] = useState(false);
   const [showNewSubtaskCard, setShowNewSubtaskCard] = useState(false);
   const [dueDate, setDueDate] = useState<Dayjs | null>(
     task?.end_date ? dayjs(task?.end_date) : null
   );
-
-  // localization
-  const { t } = useTranslation('kanbanBoard');
-
-  //   get theme details from theme reducer
-  const themeMode = useAppSelector(state => state.themeReducer.mode);
-
-  const dispatch = useAppDispatch();
-
-  // function to onClick card
+  const [updatingAssignToMe, setUpdatingAssignToMe] = useState(false);
   const handleCardClick = (id: string) => {
     dispatch(setSelectedTaskId(id));
-    dispatch(toggleUpdateTaskDrawer());
+    dispatch(setShowTaskDrawer(true));
+  };
+
+  const handleAssignToMe = async (task: IProjectTask) => {
+    if (!projectId || !task.id) return;
+
+    try {
+      setUpdatingAssignToMe(true);
+      const body: IBulkAssignRequest = {
+        tasks: [task.id],
+        project_id: projectId,
+      };
+      const res = await taskListBulkActionsApiService.assignToMe(body);
+      if (res.done) {
+        trackMixpanelEvent(evt_project_task_list_context_menu_assign_me);
+        dispatch(
+          updateTaskAssignee({
+            body: res.body,
+            sectionId,
+            taskId: task.id,
+          })
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setUpdatingAssignToMe(false);
+    }
+  };
+
+  const handleArchive = async (task: IProjectTask) => {
+    if (!projectId || !task.id) return;
+
+    try {
+      const res = await taskListBulkActionsApiService.archiveTasks(
+        {
+          tasks: [task.id],
+          project_id: projectId,
+        },
+        false
+      );
+
+      if (res.done) {
+        trackMixpanelEvent(evt_project_task_list_context_menu_archive);
+        dispatch(deleteBoardTask({ sectionId, taskId: task.id }));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async (task: IProjectTask) => {
+    if (!projectId || !task.id) return;
+
+    try {
+      const res = await taskListBulkActionsApiService.deleteTasks({ tasks: [task.id] }, projectId);
+
+      if (res.done) {
+        trackMixpanelEvent(evt_project_task_list_context_menu_delete);
+        dispatch(deleteBoardTask({ sectionId, taskId: task.id }));
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const items: MenuProps['items'] = [
     {
       label: (
         <span>
-          <UserAddOutlined /> <Typography.Text>{t('assignToMe')}</Typography.Text>
+          <UserAddOutlined />
+          &nbsp;
+          <Typography.Text>{t('assignToMe')}</Typography.Text>
         </span>
       ),
       key: '1',
+      onClick: () => {
+        handleAssignToMe(task);
+      },
     },
     {
       label: (
         <span>
-          <InboxOutlined /> <Typography.Text>{t('archive')}</Typography.Text>
+          <InboxOutlined />
+          &nbsp;
+          <Typography.Text>{t('archive')}</Typography.Text>
         </span>
       ),
       key: '2',
+      onClick: () => {
+        handleArchive(task);
+      },
     },
     {
       label: (
@@ -85,12 +163,11 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
           icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
           okText={t('deleteConfirmationOk')}
           cancelText={t('deleteConfirmationCancel')}
-          onConfirm={() => dispatch(deleteBoardTask({ sectionId: sectionId, taskId: task.id }))}
+          onConfirm={() => handleDelete(task)}
         >
-          <Flex gap={8} align="center">
-            <DeleteOutlined />
-            {t('delete')}
-          </Flex>
+          <DeleteOutlined />
+          &nbsp;
+          {t('delete')}
         </Popconfirm>
       ),
       key: '3',
@@ -111,7 +188,7 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
           overflow: 'hidden',
         }}
         className={`group outline-1 ${themeWiseColor('outline-[#edeae9]', 'outline-[#6a696a]', themeMode)} hover:outline`}
-        onClick={() => handleCardClick(task.id)}
+        onClick={() => handleCardClick(task.id || '')}
       >
         {/* Labels and Progress */}
         <Flex align="center" justify="space-between">
@@ -132,7 +209,7 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
             )}
           </Flex>
 
-          <Tooltip title={` ${task?.completed_sub_tasks} / ${task?.sub_tasks_count + 1}`}>
+          <Tooltip title={` ${task?.completed_count} / ${task?.sub_tasks_count ?? 0 + 1}`}>
             <Progress type="circle" percent={task?.progress} size={26} />
           </Tooltip>
         </Flex>
@@ -174,8 +251,7 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: any; sectionId: string }
               marginBlock: 8,
             }}
           >
-            {/* assignees from custom compnent */}
-            <CustomAvatarGroup assignees={task?.assignees} />
+            <CustomAvatarGroup task={task} sectionId={sectionId} />
 
             <Flex gap={4} align="center">
               <CustomDueDatePicker dueDate={dueDate} onDateChange={setDueDate} />

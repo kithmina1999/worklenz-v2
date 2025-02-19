@@ -24,7 +24,6 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
   // Selectors
   const priorities = useAppSelector(state => state.priorityReducer.priorities);
   const labels = useAppSelector(state => state.taskLabelsReducer.labels);
-  const members = useAppSelector(state => state.memberReducer.membersList);
 
   // Fetch initial data
   useEffect(() => {
@@ -52,7 +51,7 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
         {/* labels dropdown  */}
         <LabelsFilterDropdown labels={labels} />
         {/* members dropdown  */}
-        <MembersFilterDropdown members={members} />
+        <MembersFilterDropdown />
         {/* group by dropdown */}
         {<GroupByFilterDropdown position={position} />}
       </Flex>

@@ -15,7 +15,7 @@ import SwitchTeamButton from './switchTeam/SwitchTeamButton';
 import UpgradePlanButton from './upgradePlan/UpgradePlanButton';
 
 import { useResponsive } from '@/hooks/useResponsive';
-import { getFromLocalStorage } from '@/utils/localStorageFunctions';
+import { getJSONFromLocalStorage } from '@/utils/localStorageFunctions';
 import { navRoutes, NavRoutesType } from './navRoutes';
 import { useAuthService } from '@/hooks/useAuth';
 
@@ -30,22 +30,23 @@ const Navbar = () => {
   const [navRoutesList, setNavRoutesList] = useState<NavRoutesType[]>(navRoutes);
 
   useEffect(() => {
-    const storedNavRoutesList: NavRoutesType[] = getFromLocalStorage('navRoutes') || navRoutes;
+    const storedNavRoutesList: NavRoutesType[] = getJSONFromLocalStorage('navRoutes') || navRoutes;
     setNavRoutesList(storedNavRoutesList);
   }, []);
 
-  type MenuItem = Required<MenuProps>['items'][number];
   const navlinkItems = useMemo(
     () =>
-      navRoutesList.map((route, index) => ({
-        key: route.path.split('/').pop() || index,
-        label: (
-          <Link to={route.path} style={{ fontWeight: 600 }}>
-            {t(route.name)}
-          </Link>
-        ),
-      })),
-    [navRoutesList, t]
+      navRoutesList
+        .filter((route) => !route.adminOnly || isOwnerOrAdmin)
+        .map((route, index) => ({
+          key: route.path.split('/').pop() || index,
+          label: (
+            <Link to={route.path} style={{ fontWeight: 600 }}>
+              {t(route.name)}
+            </Link>
+          ),
+        })),
+    [navRoutesList, t, isOwnerOrAdmin]
   );
 
   useEffect(() => {

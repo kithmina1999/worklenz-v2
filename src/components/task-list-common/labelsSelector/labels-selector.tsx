@@ -22,7 +22,12 @@ import { addLabel } from '@features/settings/label/labelSlice';
 import { useTranslation } from 'react-i18next';
 import { ITaskLabel } from '@/types/label.type';
 
-const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
+interface LabelsSelectorProps {
+  taskId: string | null;
+  labels: ITaskLabel[];
+}
+
+const LabelsSelector = ({ taskId, labels }: LabelsSelectorProps) => {
   const labelInputRef = useRef<InputRef>(null);
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -30,21 +35,19 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
   // localization
   const { t } = useTranslation('task-list-table');
 
-  // get label list from label reducer
-  const labelList = useAppSelector(state => state.labelReducer.labelList);
   const dispatch = useAppDispatch();
 
   // get task list from redux and find the selected task
   const selectedTask = useAppSelector(state => state.taskReducer.tasks).find(
-    task => task.taskId === taskId
+    task => task.id === taskId
   );
 
   // used useMemo hook for re-render the list when searching
   const filteredLabelData = useMemo(() => {
-    return labelList.filter(label =>
-      label.labelName.toLowerCase().includes(searchQuery.toLowerCase())
+    return labels.filter(label =>
+      label.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [labelList, searchQuery]);
+  }, [labels, searchQuery]);
 
   const handleCreateLabel = (name: string) => {
     if (name.length > 0) {
@@ -73,7 +76,7 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
           placeholder={t('searchInputPlaceholder')}
           onKeyDown={e => {
             const isLabel = filteredLabelData.findIndex(
-              label => label.labelName.toLowerCase === searchQuery.toLowerCase
+              label => label.name?.toLowerCase() === searchQuery.toLowerCase()
             );
 
             if (isLabel === -1) {
@@ -89,7 +92,7 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
             filteredLabelData.map(label => (
               <List.Item
                 className="custom-list-item"
-                key={label.labelId}
+                key={label.id}
                 style={{
                   display: 'flex',
                   justifyContent: 'flex-start',
@@ -99,11 +102,11 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
                 }}
               >
                 <Checkbox
-                  id={label.labelId}
+                  id={label.id}
                   checked={
                     selectedTask?.labels
                       ? selectedTask?.labels.some(
-                          existingLabel => existingLabel.labelId === label.labelId
+                          existingLabel => existingLabel.id === label.id
                         )
                       : false
                   }
@@ -111,8 +114,8 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
                 />
 
                 <Flex gap={8}>
-                  <Badge color={label.labelColor} />
-                  {label.labelName}
+                  <Badge color={label.color_code} />
+                  {label.name}
                 </Flex>
               </List.Item>
             ))

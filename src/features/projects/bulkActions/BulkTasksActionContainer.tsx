@@ -9,7 +9,6 @@ import {
   UsergroupAddOutlined,
 } from '@ant-design/icons';
 import { Button, Flex, Tooltip, Typography } from 'antd';
-import React from 'react';
 import { colors } from '../../../styles/colors';
 
 type BulkTasksActionProps = {
@@ -25,11 +24,20 @@ const BulkTasksActionContainer = ({ selectedTaskIds, closeContainer }: BulkTasks
       align="center"
       justify="space-between"
       style={{
-        width: 450,
+        position: 'fixed',
+        left: 0,
+        right: 0,
+        height: '50px',
+        display: 'flex',
+        alignItems: 'center',
+        zIndex: 2,
+        width: 'auto',
         marginInline: 24,
         background: '#252628',
         padding: '8px 24px',
         borderRadius: '120px',
+        bottom: '30px',
+        minWidth: '420px',
       }}
     >
       <Typography.Text

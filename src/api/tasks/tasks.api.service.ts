@@ -8,6 +8,7 @@ import { API_BASE_URL } from '@/shared/constants';
 import { IServerResponse } from '@/types/common.types';
 import { toQueryString } from '@/utils/toQueryString';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
+import { ITaskFormViewModel } from '@/types/tasks/task.types';
 
 const rootUrl = `${API_BASE_URL}/tasks`;
 
@@ -44,6 +45,23 @@ export const tasksApiService = {
 
   fetchTaskListColumns: async (projectId: string): Promise<IServerResponse<ITaskListColumn[]>> => {
     const response = await apiClient.get(`${rootUrl}/list/columns/${projectId}`);
+    return response.data;
+  },
+
+  getFormViewModel: async (
+    taskId: string | null,
+    projectId: string | null
+  ): Promise<IServerResponse<ITaskFormViewModel>> => {
+    const params = [];
+    if (taskId) params.push(`task_id=${taskId}`);
+    if (projectId) params.push(`project_id=${projectId}`);
+    const q = params.length ? `?${params.join('&')}` : '';
+    const response = await apiClient.get(`${rootUrl}/info${q}`);
+    return response.data;
+  },
+
+  deleteTask: async (taskId: string): Promise<IServerResponse<void>> => {
+    const response = await apiClient.delete(`${rootUrl}/${taskId}`);
     return response.data;
   },
 };

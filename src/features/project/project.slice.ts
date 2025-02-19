@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { IGroupByOption, ITaskListColumn, ITaskListGroup } from '@/types/tasks/taskList.types';
+import { ITaskListColumn, ITaskListGroup } from '@/types/tasks/taskList.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { ITaskPrioritiesGetResponse } from '@/types/apiModels/taskPrioritiesGetResponse.types';
@@ -25,6 +25,8 @@ interface TaskListState {
   selectedTasks: IProjectTask[];
   isLoading: boolean;
   error: string | null;
+  importTaskTemplateDrawerOpen: boolean;
+  createTaskTemplateDrawerOpen: boolean;
 }
 
 const initialState: TaskListState = {
@@ -43,6 +45,8 @@ const initialState: TaskListState = {
   selectedTasks: [],
   isLoading: false,
   error: null,
+  importTaskTemplateDrawerOpen: false,
+  createTaskTemplateDrawerOpen: false,
 };
 
 export const getProject = createAsyncThunk(
@@ -97,6 +101,12 @@ const projectSlice = createSlice({
     },
     setActiveMembers: (state, action: PayloadAction<[]>) => {
       state.activeMembers = action.payload;
+    },
+    setImportTaskTemplateDrawerOpen: (state, action: PayloadAction<boolean>) => {
+      state.importTaskTemplateDrawerOpen = action.payload;
+    },
+    setCreateTaskTemplateDrawerOpen: (state, action: PayloadAction<boolean>) => {
+      state.createTaskTemplateDrawerOpen = action.payload;
     },
     addTask: (
       state,
@@ -186,6 +196,8 @@ export const {
   addTask,
   deleteTask,
   reset,
+  setImportTaskTemplateDrawerOpen,
+  setCreateTaskTemplateDrawerOpen,
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

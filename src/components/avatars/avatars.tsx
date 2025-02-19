@@ -13,7 +13,7 @@ const renderAvatar = (member: InlineMember, index: number) => (
   >
     {member.avatar_url ? (
       <Avatar src={member.avatar_url} size={28} key={member.team_member_id || index} />
-    ) : (
+    ) : ( 
       <Avatar
         size={28}
         key={member.team_member_id || index}
@@ -22,7 +22,7 @@ const renderAvatar = (member: InlineMember, index: number) => (
           fontSize: '14px',
         }}
       >
-        {member.end && member.names ? member.name : member.name.charAt(0).toUpperCase()}
+        {member.end && member.names ? member.name : member.name?.charAt(0).toUpperCase()}
       </Avatar>
     )}
   </Tooltip>

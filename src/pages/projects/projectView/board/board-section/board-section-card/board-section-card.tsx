@@ -1,30 +1,77 @@
 import { Button, Flex } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
-import { themeWiseColor } from '../../../../../../utils/themeWiseColor';
+
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { themeWiseColor } from '@/utils/themeWiseColor';
 import BoardSectionCardHeader from './board-section-card-header';
 import { PlusOutlined } from '@ant-design/icons';
 import BoardViewTaskCard from '../board-task-card/board-view-task-card';
 import BoardViewCreateTaskCard from '../board-task-card/board-view-create-task-card';
+import { ITaskListGroup } from '@/types/tasks/taskList.types';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { DEFAULT_TASK_NAME } from '@/shared/constants';
+import { ITaskCreateRequest } from '@/types/tasks/task-create-request.types';
+import { taskListBulkActionsApiService } from '@/api/tasks/task-list-bulk-actions.api.service';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { fetchTaskGroups } from '@/features/board/board-slice';
+import logger from '@/utils/errorLogger';
 
-const BoardSectionCard = ({ datasource }: { datasource: any }) => {
-  const [name, setName] = useState<string>(datasource.name);
+interface IBoardSectionCardProps {
+  taskGroup: ITaskListGroup;
+}
+
+const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation('kanban-board');
+  const scrollContainerRef = useRef<any>(null);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { projectId } = useAppSelector(state => state.projectReducer);
+  const { team_id: teamId, id: reporterId } = useAppSelector(state => state.userReducer);
+  const { socket } = useSocket();
+
+  const [name, setName] = useState<string>(taskGroup.name);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isHover, setIsHover] = useState<boolean>(false);
   const [showNewCardTop, setShowNewCardTop] = useState<boolean>(false);
   const [showNewCardBottom, setShowNewCardBottom] = useState<boolean>(false);
+  const [creatingTempTask, setCreatingTempTask] = useState<boolean>(false);
 
-  //   localization
-  const { t } = useTranslation('kanbanBoard');
+  const getInstantTask = async ({task_id, group_id, task}: {task_id: string, group_id: string, task: IProjectTask}) => {
+    try {
+    } catch (error) {
+      logger.error('Error creating instant task', error);
+    }
+  };
 
-  //   get theme data from theme reducer
-  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const createTempTask = async () => {
+    if (creatingTempTask || !projectId) return;
+    setCreatingTempTask(true);
 
-  // ref for the scrollable container
-  const scrollContainerRef = useRef<any>(null);
+    const body: ITaskCreateRequest = {
+      name: DEFAULT_TASK_NAME,
+      project_id: projectId,
+      team_id: teamId,
+      reporter_id: reporterId,
+      status_id: taskGroup.id,
+    };
 
-  // useEffect to scroll to the bottom whenever a new card is added
+    socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(body));
+    socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
+      setCreatingTempTask(false);
+      if (task && task.id) {
+        dispatch(fetchTaskGroups(projectId));
+      }
+    });
+  };
+
+  const handleAddTaskToBottom = () => {
+    createTempTask();
+    setShowNewCardBottom(true);
+  };
+
   useEffect(() => {
     if (showNewCardBottom && scrollContainerRef.current) {
       const timeout = setTimeout(() => {
@@ -33,7 +80,7 @@ const BoardSectionCard = ({ datasource }: { datasource: any }) => {
 
       return () => clearTimeout(timeout);
     }
-  }, [datasource.tasks, showNewCardBottom]);
+  }, [taskGroup.tasks, showNewCardBottom]);
 
   return (
     <Flex
@@ -50,12 +97,12 @@ const BoardSectionCard = ({ datasource }: { datasource: any }) => {
       className="h-[600px] max-h-[600px] overflow-y-scroll"
     >
       <BoardSectionCardHeader
-        id={datasource.id}
+        id={taskGroup.id}
         name={name}
-        tasksCount={datasource?.total_tasks_count || datasource?.tasks.length}
+        tasksCount={taskGroup?.tasks.length}
         isLoading={isLoading}
         setName={setName}
-        colorCode={themeWiseColor(datasource?.color_code, datasource?.color_code_dark, themeMode)}
+        colorCode={themeWiseColor(taskGroup?.color_code, taskGroup?.color_code_dark, themeMode)}
         onHoverChange={setIsHover}
         setShowNewCard={setShowNewCardTop}
       />
@@ -66,12 +113,12 @@ const BoardSectionCard = ({ datasource }: { datasource: any }) => {
         ref={scrollContainerRef}
         style={{
           borderRadius: 6,
-          height: datasource?.tasks.length <= 0 ? 600 : 'auto',
-          maxHeight: datasource?.tasks.length <= 0 ? 600 : 'auto',
+          height: taskGroup?.tasks.length <= 0 ? 600 : 'auto',
+          maxHeight: taskGroup?.tasks.length <= 0 ? 600 : 'auto',
           overflowY: 'scroll',
-          padding: datasource?.tasks.length <= 0 ? 8 : 1,
+          padding: taskGroup?.tasks.length <= 0 ? 8 : 1,
           background:
-            datasource?.tasks.length <= 0 && !showNewCardTop && !showNewCardBottom
+            taskGroup?.tasks.length <= 0 && !showNewCardTop && !showNewCardBottom
               ? themeWiseColor(
                   'linear-gradient( 180deg, #fafafa, rgba(245, 243, 243, 0))',
                   'linear-gradient( 180deg, #2a2b2d, rgba(42, 43, 45, 0))',
@@ -84,19 +131,19 @@ const BoardSectionCard = ({ datasource }: { datasource: any }) => {
           {showNewCardTop && (
             <BoardViewCreateTaskCard
               position="top"
-              sectionId={datasource.id}
+              sectionId={taskGroup.id}
               setShowNewCard={setShowNewCardTop}
             />
           )}
 
-          {datasource.tasks.map((task: any) => (
-            <BoardViewTaskCard sectionId={datasource.id} task={task} />
+          {taskGroup.tasks.map((task: any) => (
+            <BoardViewTaskCard sectionId={taskGroup.id} task={task} />
           ))}
 
           {showNewCardBottom && (
             <BoardViewCreateTaskCard
               position="bottom"
-              sectionId={datasource.id}
+              sectionId={taskGroup.id}
               setShowNewCard={setShowNewCardBottom}
             />
           )}
@@ -111,7 +158,7 @@ const BoardSectionCard = ({ datasource }: { datasource: any }) => {
             boxShadow: 'none',
           }}
           icon={<PlusOutlined />}
-          onClick={() => setShowNewCardBottom(true)}
+          onClick={handleAddTaskToBottom}
         >
           {t('addTask')}
         </Button>

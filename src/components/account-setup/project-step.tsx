@@ -75,7 +75,7 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
   };
 
   const onPressEnter = () => {
-    if (!projectName) return;
+    if (!projectName.trim()) return;
     onEnter();
   };
 

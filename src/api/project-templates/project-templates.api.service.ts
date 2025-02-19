@@ -6,8 +6,8 @@ import {
   IProjectTemplate,
   IWorklenzTemplate,
 } from '@/types/project-templates/project-templates.types';
-import { toQueryString } from '@/utils/toQueryString';
 import apiClient from '../api-client';
+import { ICustomProjectTemplateCreateRequest } from '@/types/project/projectTemplate.types';
 
 const rootUrl = `${API_BASE_URL}/project-templates`;
 
@@ -22,7 +22,7 @@ export const projectTemplatesApiService = {
     return response.data;
   },
 
-  getCustomTemplates: async (): Promise<IServerResponse<IProjectTemplate[]>> => {
+  getCustomTemplates: async (): Promise<IServerResponse<IWorklenzTemplate[]>> => {
     const response = await apiClient.get(`${rootUrl}/custom-templates`);
     return response.data;
   },
@@ -33,4 +33,20 @@ export const projectTemplatesApiService = {
     const response = await apiClient.post(`${rootUrl}/setup`, model);
     return response.data;
   },
+
+  createCustomTemplate: async (body: ICustomProjectTemplateCreateRequest): Promise<IServerResponse<IProjectTemplate>> => {
+    const response = await apiClient.post(`${rootUrl}/custom-template`, body);
+    return response.data;
+  },
+
+  deleteCustomTemplate: async (id: string): Promise<IServerResponse<void>> => {
+    const response = await apiClient.delete(`${rootUrl}/${id}`);
+    return response.data;
+  },
+
+  createFromTemplate: async (body: { template_id: string }): Promise<IServerResponse<IProjectTemplate>> => {
+    const response = await apiClient.post(`${rootUrl}/import-template`, body);
+    return response.data;
+  },
 };
+

@@ -16,10 +16,11 @@ import {
   IBillingTransaction,
   IBillingChargesResponse,
   IStorageInfo,
+  IFreePlanSettings,
+  IBillingAccountStorage,
 } from '@/types/admin-center/admin-center.types';
 import { IClient } from '@/types/client.types';
 import { toQueryString } from '@/utils/toQueryString';
-import search from 'antd/es/transfer/search';
 
 const rootUrl = `${API_BASE_URL}/admin-center`;
 
@@ -191,6 +192,11 @@ export const adminCenterApiService = {
     return response.data;
   },
 
+  async getFreePlanSettings(): Promise<IServerResponse<IFreePlanSettings>> {
+    const response = await apiClient.get<IServerResponse<IFreePlanSettings>>(`${rootUrl}/billing/free-plan`);
+    return response.data;
+  },
+
   async upgradePlan(plan: string): Promise<IServerResponse<IUpgradeSubscriptionPlanResponse>> {
     const response = await apiClient.get<IServerResponse<IUpgradeSubscriptionPlanResponse>>(`${rootUrl}/billing/upgrade-plan${toQueryString({plan})}`);
     return response.data;
@@ -225,4 +231,23 @@ export const adminCenterApiService = {
     const response = await apiClient.get<IServerResponse<any>>(`${rootUrl}/billing/cancel-plan`);
     return response.data;
   },
+
+  async redeemCode(code: string): Promise<IServerResponse<IUpgradeSubscriptionPlanResponse>> {
+    const response = await apiClient.post<IServerResponse<IUpgradeSubscriptionPlanResponse>>(`${rootUrl}/billing/redeem`, {
+      code,
+    });
+    return response.data;
+  },
+
+  async getAccountStorage(): Promise<IServerResponse<IBillingAccountStorage>> {
+    const response = await apiClient.get<IServerResponse<IBillingAccountStorage>>(`${rootUrl}/billing/account-storage`);
+    return response.data;
+  },
+
+  async switchToFreePlan(teamId: string): Promise<IServerResponse<any>> {
+    const response = await apiClient.get<IServerResponse<any>>(`${rootUrl}/billing/switch-to-free-plan/${teamId}`);
+    return response.data;
+  },
+
 };
+

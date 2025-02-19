@@ -2,12 +2,12 @@ import { createSlice } from '@reduxjs/toolkit';
 
 interface taskTemplateState {
   isTaskTemplateDrawerOpen: boolean;
-  selectedTemplate: string;
+  selectedTemplate: string | null;
 }
 
 const initialState: taskTemplateState = {
   isTaskTemplateDrawerOpen: false,
-  selectedTemplate: '',
+  selectedTemplate: null,
 };
 
 const taskTemplateSlice = createSlice({

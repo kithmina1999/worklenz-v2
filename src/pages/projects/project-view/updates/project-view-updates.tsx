@@ -1,7 +1,9 @@
 import { Button, ConfigProvider, Flex, Form, Mentions, Space, Tooltip, Typography } from 'antd';
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '@/hooks/useAppSelector';
+import DOMPurify from 'dompurify';
+import { useParams } from 'react-router-dom';
+
 import CustomAvatar from '@components/CustomAvatar';
 import { colors } from '@/styles/colors';
 import {
@@ -9,11 +11,13 @@ import {
   IMentionMemberViewModel,
 } from '@/types/project/projectComments.types';
 import { projectsApiService } from '@/api/projects/projects.api.service';
-import { useParams } from 'react-router-dom';
 import { projectCommentsApiService } from '@/api/projects/comments/project-comments.api.service';
 import { IProjectUpdateCommentViewModel } from '@/types/project/project.types';
 import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 import { getUserSession } from '@/utils/session-helper';
+import './project-view-updates.css';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { DeleteOutlined } from '@ant-design/icons';
 
 const MAX_COMMENT_LENGTH = 2000;
 
@@ -26,6 +30,8 @@ const ProjectViewUpdates = () => {
   const [comments, setComments] = useState<IProjectUpdateCommentViewModel[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [commentValue, setCommentValue] = useState<string>('');
+  const theme = useAppSelector(state => state.themeReducer.mode);
 
   const { t } = useTranslation('project-view-updates');
   const [form] = Form.useForm();
@@ -62,17 +68,23 @@ const ProjectViewUpdates = () => {
 
     try {
       setIsSubmitting(true);
-      const values = await form.validateFields();
-      const commentContent = values.comment;
+      
+      if (!commentValue) {
+        console.error('Comment content is empty');
+        return;
+      }
+
+      const mentionRegex = /@\[([^\]]+)\]\(([^)]+)\)/g;
+      const mentions = Array.from(commentValue.matchAll(mentionRegex)).map(match => ({
+        id: match[2],
+        name: match[1],
+      }));
 
       const body = {
         project_id: projectId,
         team_id: getUserSession()?.team_id,
-        content: commentContent.trim(),
-        mentions: selectedMembers.map(member => ({
-          id: member.id,
-          name: member.name,
-        })),
+        content: commentValue.trim(),
+        mentions: mentions,
       };
 
       const res = await projectCommentsApiService.createProjectComment(body);
@@ -84,6 +96,9 @@ const ProjectViewUpdates = () => {
       console.error('Failed to add comment:', error);
     } finally {
       setIsSubmitting(false);
+      setCommentValue('');
+
+
     }
   };
 
@@ -115,8 +130,14 @@ const ProjectViewUpdates = () => {
   }, []);
 
   const handleCommentChange = useCallback((value: string) => {
-    setCharacterLength(value.trim().length);
-  }, []);
+    const updatedValue = value.replace(/@\[([^\]]+)\]/g, (match, id) => {
+      const member = members.find(m => m.id === id);
+      return member ? `@[${member.name}](${id})` : match;
+    });
+    
+    setCommentValue(updatedValue);
+    setCharacterLength(updatedValue.trim().length);
+  }, [members]);
 
   const handleDeleteComment = useCallback(
     async (commentId: string | undefined) => {
@@ -150,11 +171,15 @@ const ProjectViewUpdates = () => {
                   </Typography.Text>
                 </Tooltip>
               </Space>
-              <Typography.Paragraph style={{ margin: '8px 0' }}>
-                {comment.content}
+              <Typography.Paragraph 
+                style={{ margin: '8px 0' }}
+                ellipsis={{ rows: 3, expandable: true }}
+              >
+                <div className={`mentions-${theme === 'dark' ? 'dark' : 'light'}`} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.content || '') }} />
               </Typography.Paragraph>
               <ConfigProvider
                 wave={{ disabled: true }}
+
                 theme={{
                   components: {
                     Button: {
@@ -165,26 +190,22 @@ const ProjectViewUpdates = () => {
                 }}
               >
                 <Button
-                  style={{
-                    width: 'fit-content',
-                    border: 'none',
-                    padding: 0,
-                    fontSize: 13,
-                    height: 24,
-                  }}
+                  icon={<DeleteOutlined />}
+                  shape="circle"
+                  type="text"
+                  size='small'
                   onClick={() => handleDeleteComment(comment.id)}
-                >
-                  {t('deleteButton')}
-                </Button>
+                />
               </ConfigProvider>
             </Flex>
           </Flex>
         ))}
       </Flex>
 
-      <Form form={form} onFinish={handleAddComment}>
-        <Form.Item name="comment">
+      <Form onFinish={handleAddComment}>
+        <Form.Item>
           <Mentions
+            value={commentValue}
             placeholder={t('inputPlaceholder')}
             loading={isLoading}
             options={mentionsOptions}

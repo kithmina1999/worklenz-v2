@@ -1,9 +1,11 @@
+import { projectMembersApiService } from '@/api/project-members/project-members.api.service';
 import { projectsApiService } from '@/api/projects/projects.api.service';
 import { IMentionMemberViewModel } from '@/types/project/projectComments.types';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ProjectMembersState {
   membersList: IMentionMemberViewModel[];
+  currentMembersList: IMentionMemberViewModel[];
   isDrawerOpen: boolean;
   isLoading: boolean;
   error: string | null;
@@ -11,6 +13,7 @@ interface ProjectMembersState {
 
 const initialState: ProjectMembersState = {
   membersList: [],
+  currentMembersList: [],
   isDrawerOpen: false,
   isLoading: false,
   error: null,
@@ -42,18 +45,54 @@ const getProjectMembers = createAsyncThunk(
   }
 );
 
+const getAllProjectMembers = createAsyncThunk(
+  'projectMembers/getAllProjectMembers',
+  async (projectId: string) => {
+    const response = await projectMembersApiService.getByProjectId(projectId);
+    return response.body;
+  }
+);
+
+const deleteProjectMember = createAsyncThunk(
+  'projectMembers/deleteProjectMember',
+  async (params: { memberId: string; projectId: string }) => {
+    const { memberId, projectId } = params;
+    const response = await projectMembersApiService.deleteProjectMember(memberId, projectId);
+    return response;
+  }
+);
+
+const addProjectMember = createAsyncThunk(
+  'projectMembers/addProjectMember',
+  async (params: { memberId: string; projectId: string }) => {
+    const { memberId, projectId } = params;
+    const response = await projectMembersApiService.createProjectMember({
+      project_id: projectId,
+      team_member_id: memberId,
+    });
+    return response;
+  }
+);
+
+const createByEmail = createAsyncThunk(
+  'projectMembers/createByEmail',
+  async (params: { email: string; projectId: string }) => {
+    const { email, projectId } = params;
+    const response = await projectMembersApiService.createByEmail({
+      project_id: projectId,
+      email: email,
+    });
+    return response;
+  }
+);
+
 const projectMembersSlice = createSlice({
   name: 'projectMembers',
+
   initialState,
   reducers: {
     toggleProjectMemberDrawer: state => {
       state.isDrawerOpen = !state.isDrawerOpen;
-    },
-    addProjectMember: (state, action: PayloadAction<IMentionMemberViewModel>) => {
-      state.membersList.push(action.payload);
-    },
-    setProjectMembers: (state, action: PayloadAction<IMentionMemberViewModel[]>) => {
-      state.membersList = action.payload;
     },
   },
   extraReducers: builder => {
@@ -71,11 +110,45 @@ const projectMembersSlice = createSlice({
         state.membersList = [];
         state.isLoading = false;
         state.error = action.error.message || 'Failed to fetch members';
+      })
+      .addCase(getAllProjectMembers.pending, state => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getAllProjectMembers.fulfilled, (state, action) => {
+        state.currentMembersList = action.payload as IMentionMemberViewModel[];
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(getAllProjectMembers.rejected, (state, action) => {
+        state.currentMembersList = [];
+        state.isLoading = false;
+        state.error = action.error.message || 'Failed to fetch members';
+      })
+      .addCase(deleteProjectMember.pending, state => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteProjectMember.fulfilled, (state, action) => {
+        state.currentMembersList = state.currentMembersList.filter(
+          member => member.id !== action.payload.body.id
+        );
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(deleteProjectMember.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || 'Failed to delete member';
       });
   },
 });
 
-export const { toggleProjectMemberDrawer, addProjectMember, setProjectMembers } =
-  projectMembersSlice.actions;
-export { getProjectMembers };
+export const { toggleProjectMemberDrawer } = projectMembersSlice.actions;
+export {
+  getProjectMembers,
+  getAllProjectMembers,
+  deleteProjectMember,
+  addProjectMember,
+  createByEmail,
+};
 export default projectMembersSlice.reducer;

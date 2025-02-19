@@ -145,13 +145,6 @@ const initialState: projectViewTaskListColumnsState = {
       width: 150,
       isVisible: false,
     },
-    {
-      key: 'customColumn',
-      name: 'customColumn',
-      columnHeader: React.createElement(AddCustomColumnButton),
-      width: 80,
-      isVisible: true,
-    },
   ],
 };
 

@@ -1,91 +1,208 @@
-import { Drawer, Flex, Form, Select, Typography } from 'antd';
+import { Drawer, Flex, Form, Select, Typography, List, Button, AutoComplete } from 'antd/es';
+import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleProjectMemberDrawer } from './projectMembersSlice';
-import { colors } from '@/styles/colors';
-import CustomAvatar from '@/components/CustomAvatar';
-import { nanoid } from '@reduxjs/toolkit';
+import {
+  addProjectMember,
+  createByEmail,
+  deleteProjectMember,
+  getAllProjectMembers,
+  toggleProjectMemberDrawer,
+} from './projectMembersSlice';
 import SingleAvatar from '@/components/common/single-avatar/single-avatar';
+import { DeleteOutlined, MailOutlined } from '@ant-design/icons';
+import { getTeamMembers } from '@/features/team-members/team-members.slice';
+import logger from '@/utils/errorLogger';
+import { validateEmail } from '@/utils/validateEmail';
 
 const ProjectMemberDrawer = () => {
-  const { isDrawerOpen, membersList } = useAppSelector(state => state.projectMemberReducer);
+  const { t } = useTranslation('project-view/project-member-drawer');
+  const { isDrawerOpen, currentMembersList, isLoading } = useAppSelector(
+    state => state.projectMemberReducer
+  );
+  const { teamMembers, loading: teamMembersLoading } = useAppSelector(state => state.teamMembersReducer);
+  const { projectId } = useAppSelector(state => state.projectReducer);
 
   const dispatch = useAppDispatch();
-
   const [form] = Form.useForm();
-
-  const onChange = (value: string) => {
-    console.log(`selected ${value}`);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isInviting, setIsInviting] = useState(false);
+  const fetchProjectMembers = async () => {
+    if (!projectId) return;
+    dispatch(getAllProjectMembers(projectId));
   };
 
-  const onSearch = (value: string) => {
-    console.log('search:', value);
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
   };
 
-  // this function for handle form submit
-  const handleFormSubmit = async (values: any) => {
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchTerm.trim()) {
+        dispatch(
+          getTeamMembers({
+            index: 1,
+            size: 5,
+            field: null,
+            order: null,
+            search: searchTerm,
+            all: true,
+          })
+        );
+      }
+    }, 100);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm, dispatch]);
+
+  const handleSelectChange = async (memberId: string) => {
+    if (!projectId || !memberId) return;
+
     try {
-      const newMember: any = {
-        memberId: nanoid(),
-        memberName: values.name,
-        memberEmail: values.email,
-        memberRole: 'member',
-        completedTasks: 0,
-        totalAssignedTasks: 0,
-      };
-      dispatch(toggleProjectMemberDrawer());
-      form.resetFields();
+      const res = await dispatch(addProjectMember({ memberId, projectId })).unwrap();
+      if (res.done) {
+        form.resetFields();
+        await fetchProjectMembers();
+      }
     } catch (error) {
-      console.error(error);
+      logger.error('Error adding member:', error);
     }
   };
+
+  const handleDeleteMember = async (memberId: string | undefined) => {
+    if (!memberId || !projectId) return;
+
+    try {
+      const res = await dispatch(deleteProjectMember({ memberId, projectId })).unwrap();
+      if (res.done) {
+        await fetchProjectMembers();
+      }
+    } catch (error) {
+      logger.error('Error deleting member:', error);
+    }
+  };
+
+  const handleOpenChange = () => {
+    if (isDrawerOpen) {
+      fetchProjectMembers();
+      dispatch(
+        getTeamMembers({
+          index: 1,
+          size: 5,
+          field: null,
+          order: null,
+          search: null,
+          all: true,
+        })
+      );
+    }
+  };
+
+  const sendInvite = async () => {
+    if (!validateEmail(searchTerm) || !projectId) return;
+    if (typeof searchTerm !== "string" || !searchTerm.length) return;
+
+    try {
+      const email = searchTerm.trim().toLowerCase();
+      const body = {
+        email,
+        projectId,
+      };
+      setIsInviting(true);
+      const res = await dispatch(createByEmail(body)).unwrap();
+      if (res.done) {
+        form.resetFields();
+        await fetchProjectMembers();  
+      }
+    } catch (error) {
+      logger.error('Error sending invite:', error);
+    } finally {
+      setIsInviting(false);
+      setSearchTerm('');
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      sendInvite();
+    }
+  };
+
+  const renderMemberOption = (member: any) => (
+    <Flex gap={4} align="center">
+      <SingleAvatar avatarUrl={member.avatar_url} name={member.name} email={member.email} />
+      <Flex vertical>
+        <Typography.Text style={{ textTransform: 'capitalize' }}>{member.name}</Typography.Text>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          {member.email}
+        </Typography.Text>
+      </Flex>
+    </Flex>
+  );
+
+  const renderNotFoundContent = () => (
+    <Flex>
+      <Button block type="primary" onClick={sendInvite} loading={isInviting}>
+        <span>
+          <MailOutlined /> &nbsp;
+          { validateEmail(searchTerm) ? t('inviteAsAMember') : t('inviteNewMemberByEmail')}
+        </span>
+      </Button>
+    </Flex>
+  );
 
   return (
     <Drawer
       title={
-        <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>Project Members</Typography.Text>
+        <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>{t('title')}</Typography.Text>
       }
       open={isDrawerOpen}
       onClose={() => dispatch(toggleProjectMemberDrawer())}
+      afterOpenChange={handleOpenChange}
     >
-      <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
-        <Form.Item name="memberName" label="Add members by adding their name or email">
+      <Form form={form} layout="vertical" onFinish={handleSelectChange}>
+        <Form.Item name="memberName" label={t('searchLabel')}>
           <Select
-            placeholder="Type name or email"
+            loading={teamMembersLoading}
+            placeholder={t('searchPlaceholder')}
             showSearch
-            onSearch={onSearch}
-            onChange={onChange}
-            options={membersList.map(member => ({
+            onSearch={handleSearch}
+            onChange={handleSelectChange}
+            onKeyDown={handleKeyDown}
+            options={teamMembers?.data?.map(member => ({
               key: member.id,
-              value: member.name,
-              label: (
-                <Flex gap={8} align="center">
-                  <SingleAvatar />
-                  <Flex vertical>
-                    <Typography.Text
-                      style={{
-                        textTransform: 'capitalize',
-                      }}
-                    >
-                      {member.name}
-                    </Typography.Text>
-
-                    <Typography.Text
-                      style={{
-                        fontSize: 14,
-                        color: colors.lightGray,
-                      }}
-                    >
-                      {member.email}
-                    </Typography.Text>
-                  </Flex>
-                </Flex>
-              ),
+              value: member.id,
+              label: renderMemberOption(member),
             }))}
-            suffixIcon={false}
+            filterOption={false}
+            notFoundContent={renderNotFoundContent()}
           />
         </Form.Item>
       </Form>
+
+      <List
+        loading={isLoading}
+        bordered
+        size="small"
+        itemLayout="horizontal"
+        dataSource={currentMembersList}
+        renderItem={member => (
+          <List.Item key={member.id}>
+            <Flex gap={4} align="center" justify="space-between" style={{ width: '100%' }}>
+              {renderMemberOption(member)}
+              <Button
+                onClick={() => handleDeleteMember(member.id)}
+                size="small"
+                icon={<DeleteOutlined />}
+              />
+            </Flex>
+          </List.Item>
+        )}
+      />
     </Drawer>
   );
 };

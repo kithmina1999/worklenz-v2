@@ -52,8 +52,8 @@ export const profileSettingsApiService = {
     return response.data;
   },
 
-  updateTeamName: async (body: { team_name: string }): Promise<IServerResponse<ITeam>> => {
-    const response = await apiClient.put<IServerResponse<ITeam>>(`${rootUrl}/team-name`, body);
+  updateTeamName: async (id: string, body: ITeam): Promise<IServerResponse<ITeam>> => { 
+    const response = await apiClient.put<IServerResponse<ITeam>>(`${rootUrl}/team-name/${id}`, body);
     return response.data;
   },
 

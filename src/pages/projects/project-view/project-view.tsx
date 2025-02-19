@@ -21,7 +21,7 @@ import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 // Constants & Utils
 import { colors } from '@/styles/colors';
 import { tabItems } from '@/lib/project/projectViewConstants';
-import { getFromLocalStorage, saveToLocalStorage } from '@utils/localStorageFunctions';
+import { getJSONFromLocalStorage, saveJSONToLocalStorage } from '@utils/localStorageFunctions';
 
 // Styles
 import './project-view.css';
@@ -29,6 +29,7 @@ import './project-view.css';
 import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import React from 'react';
+import { createPortal } from 'react-dom';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
 const StatusDrawer = React.lazy(
@@ -67,7 +68,7 @@ const ProjectView = () => {
   const pinToDefaultTab = (itemKey: string) => {
     setPinnedTab(itemKey);
 
-    saveToLocalStorage('pinnedTab', itemKey);
+    saveJSONToLocalStorage('pinnedTab', itemKey);
     navigate(`${location.pathname}?tab=${activeTab}&pinned_tab=${itemKey}`);
   };
 
@@ -95,7 +96,7 @@ const ProjectView = () => {
                   boxShadow: 'none',
                 }}
                 icon={
-                  getFromLocalStorage('pinnedTab') === item.key ? (
+                  getJSONFromLocalStorage('pinnedTab') === item.key ? (
                     <PushpinFilled
                       style={{
                         color: colors.skyBlue,
@@ -151,20 +152,13 @@ const ProjectView = () => {
           />
         </div>
 
-        {/* Right-side content */}
         <ProjectViewExtra />
       </div>
-      {/* drawers  */}
-      {/* add project members drawer */}
+
       <ProjectMemberDrawer />
-      {/* create task drawer  */}
-      <TaskDrawer />
-      {/* phase drawer  */}
+      {createPortal(<TaskDrawer />, document.body, 'task-drawer')}
       <PhaseDrawer />
-      {/* status drawer  */}
       <StatusDrawer />
-      {/* update task drawer  */}
-      {/* <UpdateTaskDrawer taskId={'SP-1'} /> */}
     </div>
   );
 };

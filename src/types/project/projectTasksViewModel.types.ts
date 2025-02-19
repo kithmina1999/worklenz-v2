@@ -26,6 +26,7 @@ export interface IProjectTask {
   status?: string;
   status_id?: string;
   status_color?: string;
+  status_color_dark?: string;
   priority?: string;
   start_date?: string;
   end_date?: string;
@@ -69,7 +70,7 @@ export interface IProjectTask {
   completed_count?: number;
   priority_value?: number;
   is_overdue?: boolean;
-  timer_start_time?: number;
+  timer_start_time?: number | null;
   description?: string;
   completed_at?: string;
   created_at?: string;

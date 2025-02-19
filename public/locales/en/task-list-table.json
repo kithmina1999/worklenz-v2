@@ -4,14 +4,18 @@
   "descriptionColumn": "Description",
   "progressColumn": "Progress",
   "membersColumn": "Members",
+  "assigneesColumn": "Assignees",
   "labelsColumn": "Labels",
   "phasesColumn": "Phases",
+  "phaseColumn": "Phase",
   "statusColumn": "Status",
   "priorityColumn": "Priority",
   "timeTrackingColumn": "Time Tracking",
+  "timetrackingColumn": "Time Tracking",
   "estimationColumn": "Estimation",
   "startDateColumn": "Start Date",
   "dueDateColumn": "Due Date",
+  "duedateColumn": "Due Date",
   "completedDateColumn": "Completed Date",
   "createdDateColumn": "Created Date",
   "lastUpdatedColumn": "Last Updated",
@@ -38,5 +42,6 @@
 
   "noLabelsFound": "No labels found",
   "searchInputPlaceholder": "Search or create",
-  "assigneeSelectorInviteButton": "Invite a new member by email"
+  "assigneeSelectorInviteButton": "Invite a new member by email",
+  "labelInputPlaceholder": "Search or create"
 }

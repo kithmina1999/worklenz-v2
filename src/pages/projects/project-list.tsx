@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +9,6 @@ import {
   Flex,
   Input,
   Segmented,
-  Skeleton,
   Table,
   TablePaginationConfig,
   Tooltip,
@@ -24,7 +23,6 @@ import TableColumns from '@/components/project-list/TableColumns';
 
 import {
   useGetProjectsQuery,
-  useDeleteProjectMutation,
 } from '@/api/projects/projects.v1.api.service';
 
 import {
@@ -50,10 +48,11 @@ import {
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
-import { setProjectId } from '@/features/project/project.slice';
+import { setProjectId, setStatuses } from '@/features/project/project.slice';
 import { setProject } from '@/features/project/project.slice';
 
 const ProjectList: React.FC = () => {
+  const [filteredInfo, setFilteredInfo] = useState<Record<string, FilterValue | null>>({});
   const { t } = useTranslation('all-project-list');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -73,7 +72,7 @@ const ProjectList: React.FC = () => {
     localStorage.setItem(PROJECT_SORT_ORDER, order);
   }, []);
 
-  const { requestParams, filteredCategories, filteredStatuses } = useAppSelector(
+  const { requestParams } = useAppSelector(
     state => state.projectsReducer
   );
 
@@ -90,6 +89,15 @@ const ProjectList: React.FC = () => {
 
   const filters = useMemo(() => Object.values(IProjectFilter), []);
 
+  useEffect(() => {
+    const filterIndex = getFilterIndex();
+    dispatch(setRequestParams({ filter: filterIndex }));
+  }, [dispatch, getFilterIndex]);
+  
+  useEffect(() => {
+    refetchProjects();
+  }, [requestParams, refetchProjects]);
+  
   const handleTableChange = useCallback(
     (
       newPagination: TablePaginationConfig,
@@ -97,11 +105,11 @@ const ProjectList: React.FC = () => {
       sorter: SorterResult<IProjectViewModel> | SorterResult<IProjectViewModel>[]
     ) => {
       const newParams: Partial<typeof requestParams> = {};
-
       if (!filters?.status_id) {
         newParams.statuses = null;
         dispatch(setFilteredStatuses([]));
       } else {
+        // dispatch(setFilteredStatuses(filters.status_id as Array<string>));
         newParams.statuses = filters.status_id.join(' ');
       }
 
@@ -109,6 +117,7 @@ const ProjectList: React.FC = () => {
         newParams.categories = null;
         dispatch(setFilteredCategories([]));
       } else {
+        // dispatch(setFilteredCategories(filters.category_id as Array<string>));
         newParams.categories = filters.category_id.join(' ');
       }
 
@@ -125,6 +134,7 @@ const ProjectList: React.FC = () => {
       newParams.size = newPagination.pageSize || DEFAULT_PAGE_SIZE;
 
       dispatch(setRequestParams(newParams));
+      setFilteredInfo(filters);
     },
     [setSortingValues]
   );
@@ -209,10 +219,7 @@ const ProjectList: React.FC = () => {
         <Table<IProjectViewModel>
           columns={TableColumns({
             navigate,
-            statuses: projectStatuses || [],
-            categories: projectCategories || [],
-            filteredCategories,
-            filteredStatuses,
+            filteredInfo,
           })}
           dataSource={projectsData?.body?.data || []}
           rowKey={record => record.id || ''}

@@ -14,6 +14,11 @@ import {
   Typography,
 } from 'antd';
 import React, { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
+
 import ListView from './list-view';
 import CalendarView from './calendar-view';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -22,18 +27,14 @@ import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
 import { colors } from '@/styles/colors';
 import { setHomeTasksConfig } from '@/features/home-page/home-page.slice';
 import { IMyTask } from '@/types/home/my-tasks.types';
-import { useTranslation } from 'react-i18next';
-import dayjs from 'dayjs';
-import { toggleTaskDrawer } from '@/features/tasks/tasks.slice';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 import { useGetMyTasksQuery } from '@/api/home-page/home-page.api.service';
 import { IHomeTasksModel } from '@/types/home/home-page.types';
-import type { Dayjs } from 'dayjs';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import './tasks-list.css';
 import HomeTasksStatusDropdown from '@/components/home-tasks/statusDropdown/home-tasks-status-dropdown';
-
-const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
+import TaskDrawer from '@/components/task-drawer/task-drawer';
 
 const TasksList: React.FC = React.memo(() => {
   const dispatch = useAppDispatch();
@@ -125,7 +126,10 @@ const TasksList: React.FC = React.memo(() => {
                 <Button
                   type="text"
                   icon={<ExpandAltOutlined />}
-                  onClick={() => dispatch(toggleTaskDrawer())}
+                  onClick={() => {
+                    dispatch(setShowTaskDrawer(true));
+                    dispatch(setSelectedTaskId(record.id || null));
+                  }}
                   style={{
                     backgroundColor: colors.transparent,
                     padding: 0,
@@ -237,7 +241,7 @@ const TasksList: React.FC = React.memo(() => {
       )}
 
       {/* task list table --> render with different filters and views  */}
-      {homeTasksFetching && !isLoading ? (
+      {!data?.body || isLoading ? (
         <Skeleton active />
       ) : data?.body.total === 0 ? (
         <EmptyListPlaceholder
@@ -256,7 +260,7 @@ const TasksList: React.FC = React.memo(() => {
           loading={homeTasksFetching}
         />
       )}
-      <TaskDrawer />
+      {createPortal(<TaskDrawer />, document.body, 'home-task-drawer')}
     </Card>
   );
 });

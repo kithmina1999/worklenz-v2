@@ -1,22 +1,12 @@
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import { IBillingCharge, IBillingChargesResponse } from '@/types/admin-center/admin-center.types';
-import { Table, TableProps } from 'antd';
+import { formatDate } from '@/utils/timeUtils';
+import { Table, TableProps, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface DataType {
-  key: string;
-  description: string;
-  startingDate: Date;
-  endingDate: Date;
-  billStatus: string;
-  perUserValue: number;
-  users: number;
-  amount: number;
-}
-
 const ChargesTable: React.FC = () => {
-  const { t } = useTranslation('current-bill');
+  const { t } = useTranslation('admin-center/current-bill');
   const [charges, setCharges] = useState<IBillingChargesResponse>({});
   const [loadingCharges, setLoadingCharges] = useState(false);
 
@@ -34,7 +24,7 @@ const ChargesTable: React.FC = () => {
     }
   };
 
-  const columns: TableProps['columns'] = [
+  const columns: TableProps<IBillingCharge>['columns'] = [
     {
       title: t('description'),
       key: 'name',
@@ -44,41 +34,49 @@ const ChargesTable: React.FC = () => {
       title: t('billingPeriod'),
       key: 'billingPeriod',
       render: record => {
-        const formattedStartingDate = new Date(record.startingDate).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-        const formattedEndingDate = new Date(record.endingDate).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-
-        return `${formattedStartingDate} - ${formattedEndingDate}`;
+        return `${formatDate(new Date(record.start_date))} - ${formatDate(new Date(record.end_date))}`;
       },
     },
     {
       title: t('billStatus'),
       key: 'status',
       dataIndex: 'status',
+      render: (_, record) => {
+        return (
+          <Tag
+            color={
+              record.status === 'success' ? 'green' : record.status === 'deleted' ? 'red' : 'blue'
+            }
+          >
+            {record.status?.toUpperCase()}
+          </Tag>
+        );
+      },
     },
     {
       title: t('perUserValue'),
       key: 'perUserValue',
       dataIndex: 'perUserValue',
-      render: (_, record) => <span>{record.currency} {record.unit_price}</span>,
+      render: (_, record) => (
+        <span>
+          {record.currency} {record.unit_price}
+        </span>
+      ),
     },
     {
       title: t('users'),
-      key: 'users',
-      dataIndex: 'users',
+      key: 'quantity',
+      dataIndex: 'quantity',
     },
     {
       title: t('amount'),
       key: 'amount',
       dataIndex: 'amount',
-      render: text => <span>USD {text}</span>,
+      render: (_, record) => (
+        <span>
+          {record.currency} {record.amount}
+        </span>
+      ),
     },
   ];
 

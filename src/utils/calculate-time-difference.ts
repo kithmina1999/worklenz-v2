@@ -18,7 +18,6 @@ export function calculateTimeDifference(timestamp: string | Date): string {
   const now = new Date();
 
   const diffInSeconds = differenceInSeconds(now, date);
-
   if (diffInSeconds < 60) {
     return 'Just now';
   }

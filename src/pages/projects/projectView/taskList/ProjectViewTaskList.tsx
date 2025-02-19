@@ -8,6 +8,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchTaskGroups, fetTaskListColumns } from '@/features/tasks/tasks.slice';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
+import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
 
 const ProjectViewTaskList = () => {
   const dispatch = useAppDispatch();
@@ -22,18 +23,22 @@ const ProjectViewTaskList = () => {
     fields,
     search,
     priorities,
+    taskAssignees,
   } = useAppSelector(state => state.taskReducer);
-  const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
+  const { statusCategories, loading: loadingStatusCategories } = useAppSelector(state => state.taskStatusReducer);
+  const { loadingPhases } = useAppSelector(state => state.phaseReducer);
+  const { loadingColumns } = useAppSelector(state => state.taskReducer);
 
   useEffect(() => {
     if (projectId) {
-      dispatch(fetchTaskGroups(projectId));
-      dispatch(fetTaskListColumns(projectId));
+      if (!loadingGroups) dispatch(fetchTaskGroups(projectId));
+      if (!loadingColumns) dispatch(fetTaskListColumns(projectId));
+      if (!loadingPhases) dispatch(fetchPhasesByProjectId(projectId));
     }
     if (!statusCategories.length) {
       dispatch(fetchStatusesCategories());
     }
-  }, [dispatch, projectId, archived, groupBy, labels, fields, search, priorities]);
+  }, [dispatch, projectId, archived, groupBy, labels, fields, search, priorities, taskAssignees]);
 
   return (
     <Flex vertical gap={16} style={{ overflowX: 'hidden' }}>

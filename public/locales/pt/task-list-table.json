@@ -17,6 +17,9 @@
   "lastUpdatedColumn": "Última Atualização",
   "reporterColumn": "Relator",
   "dueTimeColumn": "Hora de Vencimento",
+  "timetrackingColumn": "Rastreamento de Tempo",
+  "assigneesColumn": "Atribuídos",
+  "duedateColumn": "Data de Vencimento",
 
   "todoSelectorText": "A Fazer",
   "doingSelectorText": "Fazendo",
@@ -38,5 +41,6 @@
 
   "noLabelsFound": "Nenhum rótulo encontrado",
   "searchInputPlaceholder": "Pesquisar ou criar",
-  "assigneeSelectorInviteButton": "Convidar um novo membro por email"
+  "assigneeSelectorInviteButton": "Convidar um novo membro por email",
+  "labelInputPlaceholder": "Pesquisar ou criar"
 }

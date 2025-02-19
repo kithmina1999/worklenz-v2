@@ -10,8 +10,10 @@ export const projectMembersApiService = {
   createProjectMember: async (
     body: IProjectMemberViewModel
   ): Promise<IServerResponse<IProjectMemberViewModel>> => {
+    const q = toQueryString({current_project_id: body.project_id});
+
     const response = await apiClient.post<IServerResponse<IProjectMemberViewModel>>(
-      `${rootUrl}`,
+      `${rootUrl}${q}`,
       body
     );
     return response.data;

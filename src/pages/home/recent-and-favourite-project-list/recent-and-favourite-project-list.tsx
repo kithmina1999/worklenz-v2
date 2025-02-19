@@ -11,7 +11,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AddFavouriteProjectButton from './add-favourite-project-button';
@@ -32,12 +32,23 @@ const RecentAndFavouriteProjectList = () => {
     localStorage.setItem(MY_PROJECTS_FILTER_KEY, value.toString());
   }, []);
 
+  // Initialize projectSegment from localStorage on component mount
+  useEffect(() => {
+    const filterValue = getActiveProjectsFilter();
+    setProjectSegment(filterValue === 0 ? 'Recent' : 'Favourites');
+  }, [getActiveProjectsFilter]);
+
   const {
     data: projectsData,
     isFetching: projectsIsFetching,
     error: projectsError,
     refetch,
   } = useGetProjectsQuery({ view: getActiveProjectsFilter() });
+
+  // Refetch data when projectSegment changes
+  useEffect(() => {
+    refetch();
+  }, [projectSegment, refetch]);
 
   const handleSegmentChange = useCallback(
     (value: 'Recent' | 'Favourites') => {
@@ -101,7 +112,7 @@ const RecentAndFavouriteProjectList = () => {
       </Tooltip>
       <Segmented<'Recent' | 'Favourites'>
         options={['Recent', 'Favourites']}
-        defaultValue={projectSegment}
+        defaultValue={getActiveProjectsFilter() === 0 ? 'Recent' : 'Favourites'}
         onChange={handleSegmentChange}
       />
     </Flex>

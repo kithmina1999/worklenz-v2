@@ -13,54 +13,87 @@ import {
   List,
   Typography,
 } from 'antd';
-import React, { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { colors } from '../../../styles/colors';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { LabelType } from '../../../types/label.type';
-import { nanoid } from '@reduxjs/toolkit';
-import { addLabel } from '../../../features/settings/label/labelSlice';
+import { ITaskLabel } from '../../../types/label.type';
 import { toggleLabel } from '../../../features/tasks/taskSlice';
 import { useTranslation } from 'react-i18next';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { updateTaskLabel } from '@/features/tasks/tasks.slice';
+import { useAuthService } from '@/hooks/useAuth';
+import { SocketEvents } from '@/shared/socket-events';
+import { useSocket } from '@/socket/socketContext';
+import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 
-const LabelsSelector = ({ taskId }: { taskId: string }) => {
-  const labelInputRef = useRef<InputRef>(null);
-  // this is for get the current string that type on search bar
-  const [searchQuery, setSearchQuery] = useState<string>('');
+interface LabelsSelectorProps {
+  task: IProjectTask;
+}
 
-  // localization
+const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   const { t } = useTranslation('task-list-table');
-
-  // get label list from label reducer
-  const labelList = useAppSelector(state => state.labelReducer.labelList);
+  const { socket, connected } = useSocket();
   const dispatch = useAppDispatch();
 
-  // get task list from redux and find the selected task
-  const selectedTask = useAppSelector(state => state.taskReducer.tasks).find(
-    task => task.taskId === taskId
-  );
+  const labelInputRef = useRef<InputRef>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const { labels } = useAppSelector(state => state.taskLabelsReducer);
+  const [labelList, setLabelList] = useState<ITaskLabel[]>([]);
+
+  const currentSession = useAuthService().getCurrentSession();
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+
+  const handleLabelsChange = async (labels: ILabelsChangeResponse) => {
+    await dispatch(updateTaskLabel(labels));
+    await dispatch(fetchLabels());
+    setSearchQuery('');
+  };
+
+  const handleLabelChange = (label: ITaskLabel) => {
+    const labelData = {
+      task_id: task.id,
+      label_id: label.id,
+      parent_task: task.parent_task_id,
+      team_id: currentSession?.team_id,
+    };
+
+    socket?.emit(SocketEvents.TASK_LABELS_CHANGE.toString(), JSON.stringify(labelData));
+  };
+
+  const handleCreateLabel = () => {
+    const labelData = {
+      task_id: task.id,
+      label: searchQuery,
+      parent_task: task.parent_task_id,
+      team_id: currentSession?.team_id,
+    };
+    socket?.emit(SocketEvents.CREATE_LABEL.toString(), JSON.stringify(labelData));
+  };
+
+  useEffect(() => {
+    setLabelList(labels as ITaskLabel[]);
+  }, [labels, task.labels]);
+
+  useEffect(() => {
+    if (connected) {
+      socket?.on(SocketEvents.TASK_LABELS_CHANGE.toString(), handleLabelsChange);
+      socket?.on(SocketEvents.CREATE_LABEL.toString(), handleLabelsChange);
+    }
+
+    return () => {
+      socket?.removeListener(SocketEvents.TASK_LABELS_CHANGE.toString(), handleLabelsChange);
+      socket?.removeListener(SocketEvents.CREATE_LABEL.toString(), handleLabelsChange);
+    };
+  }, [connected]);
 
   // used useMemo hook for re render the list when searching
   const filteredLabelData = useMemo(() => {
-    return labelList.filter(label =>
-      label.labelName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    return labelList.filter(label => label.name?.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [labelList, searchQuery]);
 
-  const handleCreateLabel = (labelName: string) => {
-    if (labelName.length > 0) {
-      const newLabel: LabelType = {
-        labelId: nanoid(),
-        labelName,
-        labelColor: '#1E90FF',
-      };
-
-      dispatch(addLabel(newLabel));
-      setSearchQuery('');
-    }
-  };
-
-  // custom dropdown content
   const labelDropdownContent = (
     <Card
       className="custom-card"
@@ -74,12 +107,11 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
           placeholder={t('labelInputPlaceholder')}
           onKeyDown={e => {
             const isLabel = filteredLabelData.findIndex(
-              label => label.labelName.toLowerCase === searchQuery.toLowerCase
+              label => label.name?.toLowerCase() === searchQuery.toLowerCase()
             );
-
             if (isLabel === -1) {
               if (e.key === 'Enter') {
-                handleCreateLabel(searchQuery);
+                handleCreateLabel();
               }
             }
           }}
@@ -89,8 +121,8 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
           {filteredLabelData.length ? (
             filteredLabelData.map(label => (
               <List.Item
-                className="custom-list-item"
-                key={label.labelId}
+                className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
+                key={label.id}
                 style={{
                   display: 'flex',
                   justifyContent: 'flex-start',
@@ -100,27 +132,25 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
                 }}
               >
                 <Checkbox
-                  id={label.labelId}
+                  id={label.id}
                   checked={
-                    selectedTask?.labels
-                      ? selectedTask?.labels.some(
-                          existingLabel => existingLabel.labelId === label.labelId
-                        )
+                    task?.all_labels
+                      ? task?.all_labels.some(existingLabel => existingLabel.id === label.id)
                       : false
                   }
-                  onChange={() => dispatch(toggleLabel({ taskId, label }))}
-                />
-
-                <Flex gap={8}>
-                  <Badge color={label.labelColor} />
-                  {label.labelName}
-                </Flex>
+                  onChange={() => handleLabelChange(label)}
+                >
+                  <Flex gap={8}>
+                    <Badge color={label.color_code} />
+                    {label.name}
+                  </Flex>
+                </Checkbox>
               </List.Item>
             ))
           ) : (
             <Typography.Text
               style={{ color: colors.lightGray }}
-              onClick={() => handleCreateLabel(searchQuery)}
+              onClick={() => handleCreateLabel()}
             >
               {t('labelsSelectorInputTip')}
             </Typography.Text>
@@ -132,7 +162,7 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
         <Button
           type="primary"
           style={{ alignSelf: 'flex-end' }}
-          onClick={() => handleCreateLabel(searchQuery)}
+          onClick={() => handleCreateLabel()}
         >
           {t('okButton')}
         </Button>

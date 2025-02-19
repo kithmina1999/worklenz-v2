@@ -30,11 +30,10 @@ import { updateTaskAssignees } from '@/features/tasks/tasks.slice';
 
 interface AssigneeSelectorProps {
   task: IProjectTask;
-  showDropdown: boolean;
-  groupId: string;
+  groupId: string | null;
 }
 
-const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps) => {
+const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
   const membersInputRef = useRef<InputRef>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -42,6 +41,7 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
   const { projectId } = useAppSelector(state => state.projectReducer);
   const currentSession = useAuthService().getCurrentSession();
   const { socket } = useSocket();
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const { t } = useTranslation('task-list-table');
 
@@ -106,14 +106,16 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
       selected: true,
     }));
     dispatch(
-      updateTaskAssignees({ groupId: groupId, taskId: data.id, assignees: updatedAssignees })
+      updateTaskAssignees({ groupId: groupId || '', taskId: data.id, assignees: updatedAssignees })
     );
+    
   };
 
   useEffect(() => {
     socket?.on(
       SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(),
       (data: ITaskAssigneesUpdateResponse) => {
+        console.log(data);
         if (data) handleQuickAssigneesUpdate(data);
       }
     );
@@ -128,6 +130,7 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
     const assignees = task?.assignees?.map(assignee => assignee.team_member_id);
     return assignees?.includes(memberId);
   };
+  
 
   const membersDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 8 } }}>
@@ -143,7 +146,7 @@ const AssigneeSelector = ({ task, showDropdown, groupId }: AssigneeSelectorProps
           {filteredMembersData?.length ? (
             filteredMembersData.map(member => (
               <List.Item
-                className="custom-list-item"
+              className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
                 key={member.id}
                 style={{
                   display: 'flex',

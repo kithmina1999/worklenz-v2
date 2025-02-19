@@ -1,9 +1,11 @@
+import { IRPTDuration } from '@/types/reporting/reporting.types';
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
   StopOutlined,
 } from '@ant-design/icons';
+import dayjs from 'dayjs';
 
 export const avatarNamesMap: { [x: string]: string } = {
   A: '#154c9b',
@@ -182,6 +184,7 @@ export const DISPLAY_MODE_KEY = 'worklenz.projects.display_as';
 export const WORKLENZ_REDIRECT_PROJ_KEY = 'worklenz.redirect_proj';
 export const PROJECT_SORT_FIELD = 'worklenz.projects.sort_field';
 export const PROJECT_SORT_ORDER = 'worklenz.projects.sort_order';
+export const PROJECT_LIST_COLUMNS = 'worklenz.reporting.projects.column_list';
 
 export const PROJECT_STATUS_ICON_MAP = {
   'check-circle': CheckCircleOutlined,
@@ -206,3 +209,103 @@ export const MY_DASHBOARD_ACTIVE_FILTER = 'my-dashboard-active-filter';
 export const MY_DASHBOARD_DEFAULT_VIEW = 'All';
 
 export const CELL_WIDTH = 75;
+
+export const SUBSCRIPTION_STATUS = {
+  ACTIVE: 'active',
+  PASTDUE: 'past_due',
+  PAUSED: 'paused',
+  DELETED: 'deleted',
+  TRIALING: 'trialing',
+  FREE: 'free',
+};
+
+export enum IPaddlePlans {
+  FREE = "FREE",
+  ANNUAL = "ANNUAL",
+  MONTHLY = "MONTHLY",
+}
+
+export enum ISUBSCRIPTION_TYPE {
+  LIFE_TIME_DEAL = "LIFE_TIME_DEAL",
+  PADDLE = "PADDLE",
+  TRIAL = "TRIAL",
+  CUSTOM = "CUSTOM",
+  FREE = "FREE",
+  CREDIT = "CREDIT",
+}
+
+export const IconsMap: { [x: string]: string; } = {
+  ai: "ai.png",
+  avi: "avi.png",
+  css: "css.png",
+  csv: "csv.png",
+  doc: "doc.png",
+  docx: "doc.png",
+  exe: "exe.png",
+  html: "html.png",
+  js: "js.png",
+  jpg: "jpg.png",
+  jpeg: "jpg.png",
+  json: "json.png",
+  mp3: "mp3.png",
+  mp4: "mp4.png",
+  pdf: "pdf.png",
+  png: "png.png",
+  ppt: "ppt.png",
+  psd: "psd.png",
+  search: "search.png",
+  svg: "svg.png",
+  txt: "txt.png",
+  xls: "xls.png",
+  xml: "xml.png",
+  zip: "zip.png",
+}
+
+export const durations: IRPTDuration[] = [
+  {
+    key: YESTERDAY,
+    label: 'yesterdayText',
+    dates: dayjs().subtract(1, 'day').format('MMM DD, YYYY'),
+  },
+  {
+    key: LAST_WEEK,
+    label: 'lastSevenDaysText',
+    dates:
+      dayjs().subtract(7, 'day').format('MMM DD, YYYY') + ' - ' + dayjs().format('MMM DD, YYYY'),
+  },
+  {
+    key: PREV_WEEK,
+    label: 'lastWeekText',
+    dates:
+      dayjs().startOf('week').subtract(1, 'week').format('MMM DD, YYYY') +
+      ' - ' +
+      dayjs().endOf('week').subtract(1, 'week').format('MMM DD, YYYY'),
+  },
+  {
+    key: LAST_MONTH,
+    label: 'lastThirtyDaysText',
+    dates:
+      dayjs().subtract(30, 'day').format('MMM DD, YYYY') + ' - ' + dayjs().format('MMM DD, YYYY'),
+  },
+  {
+    key: PREV_MONTH,
+    label: 'lastMonthText',
+    dates:
+      dayjs().startOf('month').subtract(1, 'month').format('MMM DD, YYYY') +
+      ' - ' +
+      dayjs().endOf('month').subtract(1, 'month').format('MMM DD, YYYY'),
+  },
+  {
+    key: LAST_QUARTER,
+    label: 'lastThreeMonthsText',
+    dates:
+      dayjs().subtract(3, 'month').format('MMM DD, YYYY') +
+      ' - ' +
+      dayjs().format('MMM DD, YYYY'),
+  },
+  {
+    key: ALL_TIME,
+    label: 'allTimeText',
+    dates: '',
+  },
+];

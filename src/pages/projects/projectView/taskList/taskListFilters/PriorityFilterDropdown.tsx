@@ -27,15 +27,11 @@ const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const handleSelectedPriority = (priorityId: string) => {
-    let newPriorities = [...selectedPriorities];
-    console.log(newPriorities);
-    if (newPriorities.includes(priorityId)) {
-      newPriorities.splice(newPriorities.indexOf(priorityId), 1);
-      dispatch(setPriorities(newPriorities));
-    } else {
-      newPriorities.push(priorityId);
-      dispatch(setPriorities(newPriorities));
-    }
+    const newPriorities = selectedPriorities.includes(priorityId)
+      ? selectedPriorities.filter(id => id !== priorityId)
+      : [...selectedPriorities, priorityId];
+    
+    dispatch(setPriorities(newPriorities));
   };
 
   const priorityDropdownContent = useMemo(
@@ -46,6 +42,7 @@ const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => 
             <List.Item
               className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
               key={priority.id}
+              onClick={() => handleSelectedPriority(priority.id)}
               style={{
                 display: 'flex',
                 gap: 8,
@@ -68,7 +65,7 @@ const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => 
         </List>
       </Card>
     ),
-    [priorities, themeMode]
+    [priorities, selectedPriorities, themeMode]
   );
 
   return (

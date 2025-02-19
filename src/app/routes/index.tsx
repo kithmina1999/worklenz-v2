@@ -6,7 +6,6 @@ import notFoundRoute from './not-found-route';
 import accountSetupRoute from './account-setup-routes';
 import reportingRoutes from './reporting-routes';
 import { useAuthService } from '@/hooks/useAuth';
-import { useSocket } from '@/socket/socketContext';
 
 interface GuardProps {
   children: React.ReactNode;
@@ -24,17 +23,20 @@ export const AuthGuard = ({ children }: GuardProps) => {
 };
 
 export const AdminGuard = ({ children }: GuardProps) => {
-  const { isAuthenticated, isOwnerOrAdmin } = useAuthService();
+  const isAuthenticated = useAuthService().isAuthenticated();
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
   const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
+
   if (!isOwnerOrAdmin) {
-    return <Navigate to="/unauthorized" replace />;
+    return <Navigate to="/worklenz/unauthorized" replace />;
   }
+
 
   return <>{children}</>;
 };

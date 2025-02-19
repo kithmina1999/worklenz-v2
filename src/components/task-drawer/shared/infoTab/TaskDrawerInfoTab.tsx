@@ -1,5 +1,5 @@
 import { Button, Collapse, CollapseProps, Flex, Tooltip, Typography, Upload } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoadingOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import DescriptionEditor from './DescriptionEditor';
 import SubTaskTable from './SubTaskTable';
@@ -7,20 +7,28 @@ import DependenciesTable from './DependenciesTable';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import TaskDetailsForm from './TaskDetailsForm';
 import InfoTabFooter from './InfoTabFooter';
+import { fetchTask } from '@/features/tasks/tasks.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
-const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
+const TaskDrawerInfoTab = () => {
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [refreshSubTask, setRefreshSubTask] = useState<boolean>(false);
 
-  const themeMode = useAppSelector(state => state.themeReducer.mode);
-
-  const selectedTask = useAppSelector(state => state.taskReducer.tasks).find(
-    task => task.id === taskId
+  const { projectId } = useAppSelector(state => state.projectReducer);
+  const { taskFormViewModel, loadingTask, selectedTaskId } = useAppSelector(
+    state => state.taskDrawerReducer,
   );
 
   const handleRefresh = () => {
     setRefreshSubTask(true);
     setTimeout(() => setRefreshSubTask(false), 500);
+  };
+
+  const fetchTaskData = () => {
+    if (!loadingTask && selectedTaskId && projectId) {
+      dispatch(fetchTask({ taskId: selectedTaskId, projectId }));
+    }
   };
 
   const panelStyle: React.CSSProperties = {
@@ -32,14 +40,14 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
     {
       key: 'details',
       label: <Typography.Text strong>Details</Typography.Text>,
-      children: <TaskDetailsForm selectedTask={selectedTask || null} />,
+      children: <TaskDetailsForm taskFormViewModel={taskFormViewModel} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
     {
       key: 'description',
       label: <Typography.Text strong>Description</Typography.Text>,
-      children: <DescriptionEditor description={selectedTask?.description || null} />,
+      children: <DescriptionEditor description={taskFormViewModel?.task?.description || null} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
@@ -47,15 +55,15 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
       key: 'subTasks',
       label: <Typography.Text strong>Sub Tasks</Typography.Text>,
       extra: (
-        <Tooltip title={'Refresh project'} trigger={'hover'}>
+        <Tooltip title={'Refresh sub tasks'} trigger={'hover'}>
           <Button
             shape="circle"
             icon={<ReloadOutlined spin={refreshSubTask} />}
-            onClick={() => handleRefresh()}
+            onClick={handleRefresh}
           />
         </Tooltip>
       ),
-      children: <SubTaskTable datasource={selectedTask?.sub_tasks || null} />,
+      children: <SubTaskTable datasource={taskFormViewModel?.task?.sub_tasks} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
@@ -71,7 +79,7 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
       label: <Typography.Text strong>Attachments (0)</Typography.Text>,
       children: (
         <Upload
-          name="avatar"
+          name="attachment"
           listType="picture-card"
           className="avatar-uploader"
           showUploadList={false}
@@ -97,6 +105,10 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
     },
   ];
 
+  useEffect(() => {
+    fetchTaskData();
+  }, [selectedTaskId, projectId]);
+
   return (
     <Flex vertical justify="space-between" style={{ height: '78vh' }}>
       <Collapse
@@ -112,7 +124,6 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
           'comments',
         ]}
       />
-
       <InfoTabFooter />
     </Flex>
   );

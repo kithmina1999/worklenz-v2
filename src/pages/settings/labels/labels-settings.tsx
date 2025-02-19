@@ -18,6 +18,7 @@ import { ITaskLabel } from '@/types/label.type';
 import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service';
 import CustomColorLabel from '@components/task-list-common/labelsSelector/custom-color-label';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import logger from '@/utils/errorLogger';
 
 const LabelsSettings = () => {
   const { t } = useTranslation('settings/labels');
@@ -42,7 +43,7 @@ const LabelsSettings = () => {
     return async () => {
       const response = await labelsApiService.getLabels();
       if (response.done) {
-        setLabels(response.body);
+        setLabels(response.body as ITaskLabel[]);
       }
       setLoading(false);
     };
@@ -53,9 +54,13 @@ const LabelsSettings = () => {
   }, [getLabels]);
 
   const deleteLabel = async (id: string) => {
-    const response = await labelsApiService.deleteById(id);
-    if (response.done) {
-      getLabels();
+    try {
+      const response = await labelsApiService.deleteById(id);
+      if (response.done) {
+        getLabels();
+      }
+    } catch (error) {
+      logger.error('Failed to delete label:', error);
     }
   };
 

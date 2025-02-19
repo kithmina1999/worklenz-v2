@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import {
   evt_billing_pause_plan,
@@ -6,90 +6,66 @@ import {
 } from '@/shared/worklenz-analytics-events';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import logger from '@/utils/errorLogger';
-import { Button, Card, Modal, Skeleton, Space, Tooltip, Typography } from 'antd/es';
-import { IBillingAccountInfo } from '@/types/admin-center/admin-center.types';
-import RedeemCodeDrawer from '@/features/adminCenter/billing/RedeemCodeDrawer';
-import { toggleDrawer, toggleUpgradeModal } from '@/features/adminCenter/billing/billingSlice';
+import { Button, Card, Flex, Modal, Space, Tooltip, Typography } from 'antd/es';
+import RedeemCodeDrawer from '../drawers/redeem-code-drawer/redeem-code-drawer';
+import {
+  fetchBillingInfo,
+  toggleRedeemCodeDrawer,
+  toggleUpgradeModal,
+} from '@/features/admin-center/admin-center.slice';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
-import UpgradePlans from '../upgrade-plans';
+import { WarningTwoTone } from '@ant-design/icons';
+import { calculateTimeGap } from '@/utils/calculate-time-gap';
+import { formatDate } from '@/utils/timeUtils';
+import UpgradePlansLKR from '../drawers/upgrade-plans-lkr/upgrade-plans-lkr';
+import UpgradePlans from '../drawers/upgrade-plans/upgrade-plans';
+import { ISUBSCRIPTION_TYPE, SUBSCRIPTION_STATUS } from '@/shared/constants';
 
 const CurrentPlanDetails = () => {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation('current-bill');
+  const { t } = useTranslation('admin-center/current-bill');
+  const { trackMixpanelEvent } = useMixpanelTracking();
 
-  const [billingInfo, setBillingInfo] = useState<IBillingAccountInfo | null>(null);
-  const [loadingInfo, setLoadingInfo] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [showRedeem, setShowRedeem] = useState(false);
   const [pausingPlan, setPausingPlan] = useState(false);
   const [cancellingPlan, setCancellingPlan] = useState(false);
 
-  const { trackMixpanelEvent } = useMixpanelTracking();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const isModalOpen = useAppSelector(state => state.billingReducer.isModalOpen);
+  const { loadingBillingInfo, billingInfo, freePlanSettings, isUpgradeModalOpen } = useAppSelector(
+    state => state.adminCenterReducer
+  );
 
-  const subscriptionStatus = {
-    ACTIVE: 'active',
-    PASTDUE: 'past_due',
-    PAUSED: 'paused',
-    DELETED: 'deleted',
-    TRIALING: 'trialing',
-  };
+  const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  useEffect(() => {
-    getBillingAccountInfo();
-  }, []);
+  const handleSubscriptionAction = async (action: 'pause' | 'resume') => {
+    const isResume = action === 'resume';
+    const setLoadingState = isResume ? setCancellingPlan : setPausingPlan;
+    const apiMethod = isResume
+      ? adminCenterApiService.resumeSubscription
+      : adminCenterApiService.pauseSubscription;
+    const eventType = isResume ? evt_billing_resume_plan : evt_billing_pause_plan;
 
-  const getBillingAccountInfo = async () => {
     try {
-      setLoadingInfo(true);
-      const res = await adminCenterApiService.getBillingAccountInfo();
-      if (res.done) {
-        setBillingInfo(res.body);
-      }
-    } catch (e) {
-      logger.error('Error getting billing account info', e);
-    } finally {
-      setLoadingInfo(false);
-    }
-  };
-
-  const confirmPauseSubscription = async () => {
-    try {
-      setPausingPlan(true);
-      const res = await adminCenterApiService.pauseSubscription();
+      setLoadingState(true);
+      const res = await apiMethod();
       if (res.done) {
         setTimeout(() => {
-          setPausingPlan(false);
-          getBillingAccountInfo();
-          trackMixpanelEvent(evt_billing_pause_plan);
+          setLoadingState(false);
+          dispatch(fetchBillingInfo());
+          trackMixpanelEvent(eventType);
         }, 8000);
       }
     } catch (error) {
-      logger.error('Error pausing subscription', error);
+      logger.error(`Error ${action}ing subscription`, error);
     } finally {
-      setPausingPlan(false);
+      setLoadingState(false);
     }
   };
 
-  const confirmResumeSubscription = async () => {
-    try {
-      setCancellingPlan(true);
-      const res = await adminCenterApiService.resumeSubscription();
-      if (res.done) {
-        setTimeout(() => {
-          setCancellingPlan(false);
-          getBillingAccountInfo();
-          trackMixpanelEvent(evt_billing_resume_plan);
-        }, 8000);
-      }
-    } catch (error) {
-      logger.error('Error resuming subscription', error);
-    } finally {
-      setCancellingPlan(false);
-    }
+  const checkSubscriptionStatus = (allowedStatuses: any[]) => {
+    if (!billingInfo?.status || billingInfo.is_ltd_user) return false;
+    return allowedStatuses.includes(billingInfo.status);
   };
 
   const shouldShowRedeemButton = () => {
@@ -98,44 +74,46 @@ const CurrentPlanDetails = () => {
   };
 
   const showChangeButton = () => {
-    if (!billingInfo?.status) return false;
-    const status = [subscriptionStatus.ACTIVE, subscriptionStatus.PASTDUE];
-    return status.includes(billingInfo.status);
+    return checkSubscriptionStatus([SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.PASTDUE]);
   };
 
   const showPausePlanButton = () => {
-    if (!billingInfo?.status) return false;
-    const status = [subscriptionStatus.ACTIVE, subscriptionStatus.PASTDUE];
-    return status.includes(billingInfo.status);
+    return checkSubscriptionStatus([SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.PASTDUE]);
   };
 
   const showResumePlanButton = () => {
-    if (!billingInfo?.status) return false;
-    const status = [subscriptionStatus.PAUSED];
-    return status.includes(billingInfo.status);
+    return checkSubscriptionStatus([SUBSCRIPTION_STATUS.PAUSED]);
   };
 
   const renderExtra = () => {
-    if (!billingInfo) return null;
+    if (!billingInfo || billingInfo.is_custom) return null;
 
-    if (billingInfo.is_custom) return null;
     return (
       <Space>
         {showPausePlanButton() && (
-          <Button type="link" danger loading={pausingPlan}>
-            Pause Plan
+          <Button
+            type="link"
+            danger
+            loading={pausingPlan}
+            onClick={() => handleSubscriptionAction('pause')}
+          >
+            {t('pausePlan')}
           </Button>
         )}
 
         {showResumePlanButton() && (
-          <Button type="primary" loading={cancellingPlan}>
-            Resume Plan
+          <Button
+            type="primary"
+            loading={cancellingPlan}
+            onClick={() => handleSubscriptionAction('resume')}
+          >
+            {t('resumePlan')}
           </Button>
         )}
 
         {billingInfo.trial_in_progress && (
-          <Button type="primary" onClick={() => setIsVisible(true)}>
-            Upgrade Plan
+          <Button type="primary" onClick={() => dispatch(toggleUpgradeModal())}>
+            {t('upgradePlan')}
           </Button>
         )}
 
@@ -143,98 +121,134 @@ const CurrentPlanDetails = () => {
           <Button
             type="primary"
             loading={pausingPlan || cancellingPlan}
-            onClick={() => setIsVisible(true)}
+            onClick={() => dispatch(toggleUpgradeModal())}
           >
-            Change Plan
+            {t('changePlan')}
           </Button>
         )}
       </Space>
     );
   };
 
-  const fetchBillingInfo = async () => {
-    try {
-      setLoadingInfo(true);
-      const res = await adminCenterApiService.getBillingAccountInfo();
-      if (res.done) {
-        setBillingInfo(res.body);
-      }
-    } catch (e) {
-      logger.error('Error getting billing account info', e);
-    } finally {
-      setLoadingInfo(false);
-    }
+  const renderLtdDetails = () => {
+    if (!billingInfo || billingInfo.is_custom) return null;
+    return (
+      <Flex vertical>
+        <Typography.Text strong>{billingInfo.plan_name}</Typography.Text>
+        <Typography.Text>{t('ltdUsers', { ltd_users: billingInfo.ltd_users })}</Typography.Text>
+      </Flex>
+    );
   };
 
-  useEffect(() => {
-    fetchBillingInfo();
-  }, []);
+  const renderTrialDetails = () => {
+    const checkIfTrialExpired = () => {
+      if (!billingInfo?.trial_expire_date) return false;
+      const today = new Date();
+      const trialExpireDate = new Date(billingInfo.trial_expire_date);
+      return today > trialExpireDate;
+    };
+
+    const isExpired = checkIfTrialExpired();
+    const trialExpireDate = billingInfo?.trial_expire_date || '';
+
+    return (
+      <Flex vertical>
+        <Typography.Text strong>
+          {t('trialPlan')}
+          {isExpired && <WarningTwoTone twoToneColor="#faad14" style={{ marginLeft: 8 }} />}
+        </Typography.Text>
+        <Tooltip title={formatDate(new Date(trialExpireDate))}>
+          <Typography.Text>
+            {t(isExpired ? 'trialExpired' : 'trialInProgress', {
+              trial_expire_string: calculateTimeGap(trialExpireDate),
+            })}
+          </Typography.Text>
+        </Tooltip>
+      </Flex>
+    );
+  };
+
+  const renderFreePlan = () => (
+    <Flex vertical>
+      <Typography.Text strong>Free Plan</Typography.Text>
+      <Typography.Text>
+        <br />-{' '}
+        {freePlanSettings?.team_member_limit === 0
+          ? t('unlimitedTeamMembers')
+          : `${freePlanSettings?.team_member_limit} ${t('teamMembers')}`}
+        <br />- {freePlanSettings?.projects_limit} {t('projects')}
+        <br />- {freePlanSettings?.free_tier_storage} MB {t('storage')}
+      </Typography.Text>
+    </Flex>
+  );
+
+  const renderPaddleSubscriptionInfo = () => {
+    return (
+      <Flex vertical>
+        <Typography.Text strong>{billingInfo?.plan_name}</Typography.Text>
+        <Flex>
+          <Typography.Text>{billingInfo?.default_currency}</Typography.Text>&nbsp;
+          <Typography.Text>
+            {billingInfo?.billing_type === 'year'
+              ? billingInfo.unit_price_per_month
+              : billingInfo?.unit_price}
+
+            &nbsp;{t('perMonthPerUser')}
+          </Typography.Text>
+        </Flex>
+      </Flex>
+    );
+  };
 
   return (
     <Card
+      style={{ height: '100%' }}
       title={
-        <span
+        <Typography.Text
           style={{
-            color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
+
+            color: themeMode === 'dark' ? '#ffffffd9' : '#000000d9',
             fontWeight: 500,
             fontSize: '16px',
           }}
         >
           {t('currentPlanDetails')}
-        </span>
+        </Typography.Text>
       }
-      extra={
-        <div
-          style={{
-            marginTop: '8px',
-            marginRight: '8px',
-          }}
-        >
-          <Button type="primary" onClick={() => dispatch(toggleUpgradeModal())}>
-            {t('upgradePlan')}
-          </Button>
-          <Modal
-            open={isModalOpen}
-            onCancel={() => dispatch(toggleUpgradeModal())}
-            width={1000}
-            centered
-            okButtonProps={{ hidden: true }}
-            cancelButtonProps={{ hidden: true }}
-          >
-            <UpgradePlans />
-          </Modal>
-        </div>
-      }
+      loading={loadingBillingInfo}
+      extra={renderExtra()}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '50%',
-          padding: '0 12px',
-        }}
-      >
+      <Flex vertical>
         <div style={{ marginBottom: '14px' }}>
-          <Typography.Text strong>{billingInfo?.plan_name}</Typography.Text>
-          <Tooltip title={billingInfo?.trial_expire_date}>
-            <Typography.Text></Typography.Text>
-          </Tooltip>
+          {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.LIFE_TIME_DEAL && renderLtdDetails()}
+          {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.TRIAL && renderTrialDetails()}
+          {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.FREE && renderFreePlan()}
+          {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.PADDLE && renderPaddleSubscriptionInfo()}
         </div>
-        <Button
-          type="link"
-          style={{
-            margin: 0,
-            padding: 0,
-            width: '90px',
-          }}
-          onClick={() => {
-            dispatch(toggleDrawer());
-          }}
+
+        {shouldShowRedeemButton() && (
+          <>
+            <Button
+              type="link"
+              style={{ margin: 0, padding: 0, width: '90px' }}
+              onClick={() => dispatch(toggleRedeemCodeDrawer())}
+            >
+              {t('redeemCode')}
+            </Button>
+            <RedeemCodeDrawer />
+          </>
+        )}
+        <Modal
+          open={isUpgradeModalOpen}
+          onCancel={() => dispatch(toggleUpgradeModal())}
+          width={1000}
+          centered
+          okButtonProps={{ hidden: true }}
+          cancelButtonProps={{ hidden: true }}
         >
-          {t('redeemCode')}
-        </Button>
-        <RedeemCodeDrawer />
-      </div>
+          {browserTimeZone === 'Asia/Colombo' ? <UpgradePlansLKR /> : <UpgradePlans />}
+        </Modal>
+      </Flex>
     </Card>
   );
 };

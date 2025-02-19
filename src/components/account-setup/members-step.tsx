@@ -57,6 +57,7 @@ const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (!e.target.value.trim()) return;
     e.preventDefault();
     addEmail();
   };

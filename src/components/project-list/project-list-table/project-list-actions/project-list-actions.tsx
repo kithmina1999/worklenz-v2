@@ -1,10 +1,9 @@
 import { useGetProjectsQuery } from '@/api/projects/projects.v1.api.service';
 import { AppDispatch } from '@/app/store';
-import { getProject, setProjectId } from '@/features/project/project.slice';
+import { fetchProjectData, setProjectId, toggleProjectDrawer } from '@/features/project/project-drawer.slice';
 import {
   toggleArchiveProjectForAll,
   toggleArchiveProject,
-  toggleDrawer,
 } from '@/features/projects/projectsSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
@@ -31,8 +30,8 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   const handleSettingsClick = () => {
     if (record.id) {
       dispatch(setProjectId(record.id));
-      dispatch(getProject(record.id));
-      dispatch(toggleDrawer());
+      dispatch(fetchProjectData(record.id));
+      dispatch(toggleProjectDrawer());
     }
   };
 

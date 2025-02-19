@@ -1,78 +1,71 @@
 import { Button, Flex, Typography } from 'antd';
-import CustomAvatar from '@/components/CustomAvatar';
 import { colors } from '@/styles/colors';
+import { ITaskLogViewModel } from '@/types/tasks/task-log-view.types';
+import SingleAvatar from '@/components/common/single-avatar/single-avatar';
+import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
+import { calculateTimeGap } from '@/utils/calculate-time-gap';
 
 type TimeLogItemProps = {
-  log: {
-    logId: string;
-    username: string;
-    duration: string;
-    date: string;
-    via?: string;
-  };
-  onHover: (logId: string | null) => void;
-  isHovered: boolean;
+  log: ITaskLogViewModel;
 };
 
-const TimeLogItem = ({ log, onHover, isHovered }: TimeLogItemProps) => {
+const TimeLogItem = ({ log }: TimeLogItemProps) => {
+  const { user_name, avatar_url, time_spent_text, logged_by_timer, created_at } = log;
+
+  const renderLoggedByTimer = () => {
+    if (!logged_by_timer) return null;
+    return (
+      <>
+        via Timer about{' '}
+        <Typography.Text strong style={{ fontSize: 15 }}>
+          {logged_by_timer}
+        </Typography.Text>
+      </>
+    );
+  };
+
+  const renderActionButtons = () => {
+    const buttonStyle = {
+      backgroundColor: colors.transparent,
+      color: colors.skyBlue,
+      padding: 0,
+    };
+
+    return (
+      <Flex gap={12} style={{ alignSelf: 'flex-end' }}>
+        <Button type="text" style={buttonStyle}>
+          Edit
+        </Button>
+        <Button type="text" style={buttonStyle}>
+          Delete
+        </Button>
+      </Flex>
+    );
+  };
+
   return (
-    <Flex
-      vertical
-      key={log.logId}
-      onMouseEnter={() => onHover(log.logId)}
-      onMouseLeave={() => onHover(null)}
-    >
+    <Flex vertical key={log.id}>
       <Flex gap={12} align="center">
-        <CustomAvatar avatarName={log.username} size={22} />
+        <SingleAvatar avatarUrl={avatar_url} name={user_name} />
         <Flex vertical>
           <Typography style={{ fontSize: 15 }}>
             <Typography.Text strong style={{ fontSize: 15 }}>
-              {log.username}
-            </Typography.Text>{' '}
-            logged{' '}
+              {user_name}&nbsp;
+            </Typography.Text>
+            logged&nbsp;
             <Typography.Text strong style={{ fontSize: 15 }}>
-              {log.duration}
+              {time_spent_text}
             </Typography.Text>{' '}
-            {log?.via && `via `}
-            {log?.via && (
-              <Typography.Text strong style={{ fontSize: 15 }}>
-                {log.via}
-              </Typography.Text>
-            )}{' '}
-            5 hours ago
+            {renderLoggedByTimer()}
+            {calculateTimeGap(created_at || '')}
           </Typography>
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            {log.date}
+            {formatDateTimeWithLocale(created_at || '')}
           </Typography.Text>
         </Flex>
       </Flex>
 
-      {isHovered ? (
-        <Flex gap={12} style={{ alignSelf: 'flex-end' }}>
-          <Button
-            type="text"
-            style={{
-              backgroundColor: colors.transparent,
-              color: colors.skyBlue,
-              padding: 0,
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            type="text"
-            style={{
-              backgroundColor: colors.transparent,
-              color: colors.skyBlue,
-              padding: 0,
-            }}
-          >
-            Delete
-          </Button>
-        </Flex>
-      ) : (
-        <div style={{ width: '100%', height: 32 }} />
-      )}
+      {renderActionButtons()}
     </Flex>
   );
 };

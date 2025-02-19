@@ -105,6 +105,6 @@ export interface ITaskListColumn {
   index?: number;
   pinned?: boolean;
   project_id?: string;
-  isCustomColumn?: boolean;
-  customColumnObj?: any;
+  custom_column?: boolean;
+  custom_column_obj?: any;
 }

@@ -338,6 +338,7 @@ export interface IRPTProject extends IRPTOverviewProject {
   comment?: string;
   project_health: string;
   health_color: string;
+  health_name: string;
   estimated_time_string?: string;
   actual_time_string?: string;
   project_manager: ITeamMemberViewModel;
@@ -419,4 +420,18 @@ export interface IMemberTaskStatGroup {
   name: string;
   color_code: string;
   tasks: IProjectTask[];
+}
+
+export interface IGetProjectsRequestBody {
+  index: number;
+  size: number;
+  field: string;
+  order: string;
+  search: string | null;
+  filter: string;
+  statuses: string[];
+  healths: string[];
+  categories: string[];
+  project_managers: string[];
+  archived: boolean;
 }

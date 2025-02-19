@@ -15,34 +15,37 @@ import Typography from 'antd/es/typography';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
-import { ITaskListMemberFilter } from '@/types/tasks/taskList.types';
 import SingleAvatar from '@components/common/single-avatar/single-avatar';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setMembers } from '@/features/tasks/tasks.slice';
 
-const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
-  const [selectedCount, setSelectedCount] = useState<number>(0);
+const MembersFilterDropdown = () => {
   const membersInputRef = useRef<InputRef>(null);
+  const dispatch = useAppDispatch();
+  const [selectedCount, setSelectedCount] = useState<number>(0);
 
-  // localization
   const { t } = useTranslation('task-list-filters');
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { taskAssignees } = useAppSelector(state => state.taskReducer);
 
-  // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
-    return props.members.filter(member =>
+    return taskAssignees.filter(member =>
       member.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [props.members, searchQuery]);
+  }, [taskAssignees, searchQuery]);
 
-  // handle selected filters count
-  const handleSelectedFiltersCount = (checked: boolean) => {
-    setSelectedCount(prev => (checked ? prev + 1 : prev - 1));
+  const handleSelectedFiltersCount = (memberId: string | undefined, checked: boolean) => {
+    setSelectedCount(checked ? selectedCount + 1 : selectedCount - 1);
+    if (!memberId) return;
+    const newTaskAssignees = taskAssignees.map(member =>
+      member.id === memberId ? { ...member, selected: checked } : member
+    );
+    dispatch(setMembers(newTaskAssignees));
   };
 
-  // custom dropdown content
   const membersDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 8 } }}>
       <Flex vertical gap={8}>
@@ -68,7 +71,8 @@ const MembersFilterDropdown = (props: { members: ITaskListMemberFilter[] }) => {
               >
                 <Checkbox
                   id={member.id}
-                  onChange={e => handleSelectedFiltersCount(e.target.checked)}
+                  checked={member.selected}
+                  onChange={e => handleSelectedFiltersCount(member.id, e.target.checked)}
                 >
                   <div style={{ display: 'flex', gap: 8 }}>
                     <div>

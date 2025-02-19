@@ -12,26 +12,36 @@ import {
 } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
 import { Button, Dropdown, Flex, Tag, Tooltip, Typography } from 'antd';
-import { useState } from 'react';
-import ProjectMemberInviteButton from '@features/projects/singleProject/members/ProjectMemberInviteButton';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+
+import ProjectMemberInviteButton from '@features/projects/singleProject/members/ProjectMemberInviteButton';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleCreateTaskDrawer } from '@features/tasks/taskSlice';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { SocketEvents } from '@/shared/socket-events';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
-import { getProject, setProject, setProjectId } from '@features/project/project.slice';
+import { setProject, setImportTaskTemplateDrawerOpen } from '@features/project/project.slice';
 import { fetchTaskGroups } from '@features/tasks/tasks.slice';
 import ProjectStatusIcon from '@/components/common/project-status-icon/project-status-icon';
 import { formatDate } from '@/utils/timeUtils';
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
-import { toggleDrawer } from '@/features/projects/projectsSlice';
+import { toggleSaveAsTemplateDrawer } from '@/features/projects/projectsSlice';
+import SaveProjectAsTemplate from '@/components/save-project-as-template/save-project-as-template';
+import {
+  fetchProjectData,
+  toggleProjectDrawer,
+  setProjectId,
+} from '@/features/project/project-drawer.slice';
+import { createPortal } from 'react-dom';
+import ImportTaskTemplate from '@/components/task-templates/import-task-template';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('project-view');
 
   const currentSession = useAuthService().getCurrentSession();
   const { socket } = useSocket();
@@ -66,14 +76,18 @@ const ProjectViewHeader = () => {
   const handleSettingsClick = () => {
     if (selectedProject?.id) {
       dispatch(setProjectId(selectedProject.id));
-      dispatch(getProject(selectedProject.id));
-      dispatch(toggleDrawer());
+      dispatch(fetchProjectData(selectedProject.id));
+      dispatch(toggleProjectDrawer());
     }
   };
 
-  const handleDrawerClose = () => {
-    if (!selectedProject?.id) return;
-    dispatch(getProject(selectedProject?.id));
+  const handleCreateTask = () => {
+    dispatch(setSelectedTaskId(null));
+    dispatch(setShowTaskDrawer(true));
+  };
+
+  const handleImportTaskTemplate = () => {
+    dispatch(setImportTaskTemplateDrawerOpen(true));
   };
 
   // create task button items
@@ -81,7 +95,7 @@ const ProjectViewHeader = () => {
     {
       key: '1',
       label: (
-        <div style={{ width: '100%', margin: 0, padding: 0 }}>
+        <div style={{ width: '100%', margin: 0, padding: 0 }} onClick={handleImportTaskTemplate}>
           <ImportOutlined /> Import task
         </div>
       ),
@@ -93,7 +107,10 @@ const ProjectViewHeader = () => {
       className="site-page-header"
       title={
         <Flex gap={8} align="center">
-          <ArrowLeftOutlined style={{ fontSize: 16 }} onClick={() => navigate(-1)} />
+          <ArrowLeftOutlined
+            style={{ fontSize: 16 }}
+            onClick={() => navigate('/worklenz/projects')}
+          />
           <Typography.Title level={4} style={{ marginBlockEnd: 0, marginInlineStart: 12 }}>
             {selectedProject?.name}
           </Typography.Title>
@@ -158,8 +175,14 @@ const ProjectViewHeader = () => {
           </Tooltip>
 
           <Tooltip title={'Save as template'} trigger={'hover'}>
-            <Button shape="circle" icon={<SaveOutlined />} />
+            <Button
+              shape="circle"
+              icon={<SaveOutlined />}
+              onClick={() => dispatch(toggleSaveAsTemplateDrawer())}
+            />
           </Tooltip>
+
+          <SaveProjectAsTemplate />
 
           <Tooltip title={'Project settings'} trigger={'hover'}>
             <Button shape="circle" icon={<SettingOutlined />} onClick={handleSettingsClick} />
@@ -181,11 +204,12 @@ const ProjectViewHeader = () => {
             type="primary"
             icon={<DownOutlined />}
             menu={{ items }}
-            onClick={() => dispatch(toggleCreateTaskDrawer())}
+            onClick={handleCreateTask}
           >
             <EditOutlined /> Create Task
           </Dropdown.Button>
-          <ProjectDrawer onClose={handleDrawerClose} />
+          {createPortal(<ProjectDrawer onClose={() => {}} />, document.body, 'project-drawer')}
+          {createPortal(<ImportTaskTemplate />, document.body, 'import-task-template')}
         </Flex>
       }
     />
