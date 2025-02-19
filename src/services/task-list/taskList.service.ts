@@ -1,3 +1,5 @@
+import { getCurrentGroup } from '@/features/board/board-slice';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { IGroupByOption } from '@/types/tasks/taskList.types';
 import { NavigateFunction } from 'react-router-dom';
 
@@ -22,3 +24,17 @@ class TaskListService {
 export const createTaskListService = (navigate: NavigateFunction): TaskListService => {
   return new TaskListService(navigate);
 };
+
+export const getGroupIdByGroupedColumn = (task: IProjectTask) => {
+  const groupBy = getCurrentGroup().value;
+  if (groupBy === GROUP_BY_STATUS_VALUE)
+    return task.status as string;
+
+  if (groupBy === GROUP_BY_PRIORITY_VALUE)
+    return task.priority as string;
+
+  if (groupBy === GROUP_BY_PHASE_VALUE)
+    return task.phase_id as string;
+
+  return null;
+}

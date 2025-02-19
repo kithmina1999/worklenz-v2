@@ -1,10 +1,12 @@
-import { Button, Flex, Typography } from 'antd';
+import { Button, Flex, Popconfirm, Typography } from 'antd';
 import { colors } from '@/styles/colors';
 import { ITaskLogViewModel } from '@/types/tasks/task-log-view.types';
 import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 import { calculateTimeGap } from '@/utils/calculate-time-gap';
 import './time-log-item.css';
+import { taskTimeLogsApiService } from '@/api/tasks/task-time-logs.api.service';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 type TimeLogItemProps = {
   log: ITaskLogViewModel;
@@ -12,6 +14,7 @@ type TimeLogItemProps = {
 
 const TimeLogItem = ({ log }: TimeLogItemProps) => {
   const { user_name, avatar_url, time_spent_text, logged_by_timer, created_at } = log;
+  const { selectedTaskId } = useAppSelector(state => state.taskDrawerReducer);
 
   const renderLoggedByTimer = () => {
     if (!logged_by_timer) return null;
@@ -23,6 +26,14 @@ const TimeLogItem = ({ log }: TimeLogItemProps) => {
         </Typography.Text>
       </>
     );
+  };
+
+  const handleDeleteTimeLog = async (logId: string | undefined) => {
+    if (!logId || !selectedTaskId) return;
+    const res = await taskTimeLogsApiService.delete(logId, selectedTaskId);
+    if (res.done) {
+
+    }
   };
 
   const renderActionButtons = () => {
@@ -37,9 +48,14 @@ const TimeLogItem = ({ log }: TimeLogItemProps) => {
         <Button type="text" style={buttonStyle}>
           Edit
         </Button>
-        <Button type="text" style={buttonStyle}>
-          Delete
-        </Button>
+        <Popconfirm
+          title="Are you sure you want to delete this time log?"
+          onConfirm={() => handleDeleteTimeLog(log.id)}
+        >
+          <Button type="text" style={buttonStyle}>
+            Delete
+          </Button>
+        </Popconfirm>
       </Flex>
     );
   };

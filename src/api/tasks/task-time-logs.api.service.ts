@@ -10,4 +10,9 @@ export const taskTimeLogsApiService = {
     const response = await apiClient.get(`${rootUrl}/task/${id}`);
     return response.data;
   },
+
+  delete: async (id: string, taskId: string) : Promise<IServerResponse<void>> => {
+    const response = await apiClient.delete(`${rootUrl}/${id}?task=${taskId}`);
+    return response.data;
+  },
 };

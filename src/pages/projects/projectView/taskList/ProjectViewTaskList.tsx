@@ -9,6 +9,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchTaskGroups, fetTaskListColumns } from '@/features/tasks/tasks.slice';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
+import { setProjectView } from '@/features/project/project.slice';
 
 const ProjectViewTaskList = () => {
   const dispatch = useAppDispatch();
@@ -30,6 +31,7 @@ const ProjectViewTaskList = () => {
   const { loadingColumns } = useAppSelector(state => state.taskReducer);
 
   useEffect(() => {
+    dispatch(setProjectView('list'));
     if (projectId) {
       if (!loadingGroups) dispatch(fetchTaskGroups(projectId));
       if (!loadingColumns) dispatch(fetTaskListColumns(projectId));
