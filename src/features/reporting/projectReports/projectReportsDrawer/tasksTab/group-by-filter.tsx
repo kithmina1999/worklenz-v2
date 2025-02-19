@@ -1,12 +1,11 @@
+import { IGroupBy } from '@/features/board/board-slice';
 import { CaretDownFilled } from '@ant-design/icons';
 import { Flex, Select } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-type GroupType = 'status' | 'priority' | 'phase';
-
 type GroupByFilterProps = {
-  setActiveGroup: (group: GroupType) => void;
+  setActiveGroup: (group: IGroupBy) => void;
 };
 
 const GroupByFilter = ({ setActiveGroup }: GroupByFilterProps) => {
@@ -14,7 +13,7 @@ const GroupByFilter = ({ setActiveGroup }: GroupByFilterProps) => {
   const { t } = useTranslation('reporting-projects-drawer');
 
   const handleChange = (value: string) => {
-    setActiveGroup(value as GroupType);
+    setActiveGroup(value as IGroupBy);
   };
 
   const groupDropdownMenuItems = [

@@ -12,6 +12,7 @@ import { ITaskListMemberFilter } from '@/types/tasks/taskListFilters.types';
 import { ITaskFormViewModel } from '@/types/tasks/task.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
+import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -65,12 +66,6 @@ interface ITaskState {
   priorities: string[];
   members: string[];
   editableSectionId: string | null;
-
-  // task drawer
-  selectedTaskId: string | null;
-  showTaskDrawer: boolean;
-  taskFormViewModel: ITaskFormViewModel | null;
-  loadingTask: boolean;
 }
 
 const initialState: ITaskState = {
@@ -92,12 +87,6 @@ const initialState: ITaskState = {
   priorities: [],
   members: [],
   editableSectionId: null,
-
-  // task drawer
-  selectedTaskId: null,
-  showTaskDrawer: false,
-  taskFormViewModel: null,
-  loadingTask: false,
 };
 
 // async thunk for fetching members data
@@ -152,10 +141,6 @@ const boardSlice = createSlice({
   reducers: {
     setGroup: (state, action: PayloadAction<ITaskState['group']>) => {
       state.group = action.payload;
-    },
-
-    setSelectedTaskId: (state, action: PayloadAction<string>) => {
-      state.selectedTaskId = action.payload;
     },
 
     addBoardSectionCard: (
@@ -223,6 +208,17 @@ const boardSlice = createSlice({
     deleteSection: (state, action: PayloadAction<{ sectionId: string }>) => {
       state.taskGroups = state.taskGroups.filter(section => section.id !== action.payload.sectionId);
     },
+
+    updateTaskAssignee: (state, action: PayloadAction<{body: ITaskAssigneesUpdateResponse, sectionId: string, taskId: string}>) => {
+      const section = state.taskGroups.find(sec => sec.id === action.payload.sectionId);
+      if (section) {
+        const task = section.tasks.find((task: any) => task.id === action.payload.taskId);
+        if (task) {
+          task.assignees = action.payload.body.assignees;
+          task.names = action.payload.body.names;
+        }
+      }
+    },
   },
   extraReducers: builder => {
     builder
@@ -250,6 +246,6 @@ export const {
   addSubtask,
   deleteSection,
   deleteBoardTask,
-  setSelectedTaskId,
+  updateTaskAssignee
 } = boardSlice.actions;
 export default boardSlice.reducer;

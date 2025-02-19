@@ -3,9 +3,13 @@ import { Avatar, Button, Checkbox, Dropdown, Input, Menu, Typography } from 'ant
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import './add-members-dropdown.css';
 import { AvatarNamesMap } from '../../shared/constants';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const AddMembersDropdown: React.FC = () => {
   const [checkedMembers, setCheckedMembers] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
+  const teamMembers = useAppSelector(state => state.teamMembersReducer.teamMembers);
 
   const handleCheck = (member: string) => {
     setCheckedMembers(prevChecked =>

@@ -36,7 +36,7 @@ const ProjectsReportsTable = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('reporting-projects');
 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedProject, setSelectedProject] = useState<IRPTProject | null>(null);
   const { projectList, isLoading, total, index, pageSize } = useAppSelector(
     state => state.projectReportsReducer
   );
@@ -51,8 +51,8 @@ const ProjectsReportsTable = () => {
 
   const columnsVisibility = useAppSelector(state => state.projectReportsTableColumnsReducer);
 
-  const handleDrawerOpen = (id: string) => {
-    setSelectedId(id);
+  const handleDrawerOpen = (record: IRPTProject) => {
+    setSelectedProject(record);
     dispatch(toggleProjectReportsDrawer());
   };
 
@@ -63,7 +63,7 @@ const ProjectsReportsTable = () => {
       width: 300,
       onCell: record => {
         return {
-          onClick: () => handleDrawerOpen(record.id),
+          onClick: () => handleDrawerOpen(record),
         };
       },
       render: record => (
@@ -248,7 +248,7 @@ const ProjectsReportsTable = () => {
           };
         }}
       />
-      {createPortal(<ProjectReportsDrawer projectId={selectedId} />, document.body)}
+      {createPortal(<ProjectReportsDrawer selectedProject={selectedProject} />, document.body)}
     </ConfigProvider>
   );
 };

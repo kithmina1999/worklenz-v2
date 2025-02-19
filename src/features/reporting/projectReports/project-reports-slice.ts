@@ -4,7 +4,7 @@ import { IProjectCategory } from '@/types/project/projectCategory.types';
 import { IProjectHealth } from '@/types/project/projectHealth.types';
 import { IProjectManager } from '@/types/project/projectManager.types';
 import { IProjectStatus } from '@/types/project/projectStatus.types';
-import { IGetProjectsRequestBody, IRPTProject } from '@/types/reporting/reporting.types';
+import { IGetProjectsRequestBody, IRPTOverviewProject, IRPTOverviewProjectMember, IRPTProject } from '@/types/reporting/reporting.types';
 import { getFromLocalStorage } from '@/utils/localStorageFunctions';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
@@ -14,7 +14,11 @@ const filterIndex = () => {
 
 type ProjectReportsState = {
   isProjectReportsDrawerOpen: boolean;
+
   isProjectReportsMembersTaskDrawerOpen: boolean;
+  selectedMember: IRPTOverviewProjectMember | null;
+  selectedProject: IRPTOverviewProject | null;
+
   projectList: IRPTProject[];
   total: number;
   isLoading: boolean;
@@ -58,7 +62,11 @@ export const fetchProjectData = createAsyncThunk(
 
 const initialState: ProjectReportsState = {
   isProjectReportsDrawerOpen: false,
+
   isProjectReportsMembersTaskDrawerOpen: false,
+  selectedMember: null,
+  selectedProject: null, 
+
   projectList: [],
   total: 0,
   isLoading: false,
@@ -172,6 +180,12 @@ const projectReportsSlice = createSlice({
         project.end_date = action.payload.end_date;
       }
     },
+    setSelectedMember: (state, action) => {
+      state.selectedMember = action.payload;
+    },
+    setSelectedProject: (state, action) => {
+      state.selectedProject = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
@@ -208,5 +222,7 @@ export const {
   setOrder,
   setProjectHealth,
   setProjectStatus,
+  setSelectedMember,
+  setSelectedProject,
 } = projectReportsSlice.actions;
 export default projectReportsSlice.reducer;

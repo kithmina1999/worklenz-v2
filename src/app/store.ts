@@ -40,6 +40,7 @@ import createCardReducer from '@/features/board/create-card.slice';
 import priorityReducer from '@features/taskAttributes/taskPrioritySlice';
 import taskLabelsReducer from '@features/taskAttributes/taskLabelSlice';
 import taskStatusReducer from '@features/taskAttributes/taskStatusSlice';
+import taskDrawerReducer from '@features/task-drawer/task-drawer.slice';
 
 // Settings & Management
 import memberReducer from '@features/settings/member/memberSlice';
@@ -120,6 +121,7 @@ export const store = configureStore({
     priorityReducer: priorityReducer,
     taskLabelsReducer: taskLabelsReducer,
     taskStatusReducer: taskStatusReducer,
+    taskDrawerReducer: taskDrawerReducer,
 
     // Settings & Management
     memberReducer: memberReducer,

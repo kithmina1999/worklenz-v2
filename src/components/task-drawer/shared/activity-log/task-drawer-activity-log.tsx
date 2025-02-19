@@ -18,7 +18,7 @@ import logger from '@/utils/errorLogger';
 const TaskDrawerActivityLog = () => {
   const [activityLogs, setActivityLogs] = useState<IActivityLogsResponse>({});
   const [loading, setLoading] = useState<boolean>(false);
-  const { selectedTaskId } = useAppSelector(state => state.taskReducer);
+  const { selectedTaskId } = useAppSelector(state => state.taskDrawerReducer);
   const { mode: themeMode } = useAppSelector(state => state.themeReducer);
   const { t } = useTranslation();
 

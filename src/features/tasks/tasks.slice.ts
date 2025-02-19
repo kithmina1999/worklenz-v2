@@ -67,12 +67,6 @@ interface ITaskState {
   labels: string[];
   priorities: string[];
   members: string[];
-
-  // task drawer
-  selectedTaskId: string | null;
-  showTaskDrawer: boolean;
-  taskFormViewModel: ITaskFormViewModel | null;
-  loadingTask: boolean;
 }
 
 const initialState: ITaskState = {
@@ -93,12 +87,6 @@ const initialState: ITaskState = {
   labels: [],
   priorities: [],
   members: [],
-
-  // task drawer
-  selectedTaskId: null,
-  showTaskDrawer: false,
-  taskFormViewModel: null,
-  loadingTask: false,
 };
 
 export const COLUMN_KEYS = {
@@ -277,10 +265,6 @@ const taskSlice = createSlice({
   name: 'taskReducer',
   initialState,
   reducers: {
-    toggleTaskDrawer: state => {
-      state.showTaskDrawer = !state.showTaskDrawer;
-    },
-
     toggleArchived: state => {
       state.archived = !state.archived;
     },
@@ -311,14 +295,6 @@ const taskSlice = createSlice({
 
     setSearch: (state, action: PayloadAction<string>) => {
       state.search = action.payload;
-    },
-
-    setShowTaskDrawer: (state, action: PayloadAction<boolean>) => {
-      state.showTaskDrawer = action.payload;
-    },
-
-    setSelectedTaskId: (state, action: PayloadAction<string | null>) => {
-      state.selectedTaskId = action.payload;
     },
 
     addTask: (
@@ -524,6 +500,26 @@ const taskSlice = createSlice({
         column.pinned = !column.pinned;
       }
     },
+
+    updateTaskTimeTracking: (
+      state,
+      action: PayloadAction<{
+        taskId: string;
+        timeTracking: number | null;
+      }>
+    ) => {
+      const { taskId, timeTracking } = action.payload;
+      const group = state.taskGroups.find(group => 
+        group.tasks.some(task => task.id === taskId)
+      );
+
+      if (group) {
+        const task = group.tasks.find(task => task.id === taskId);
+        if (task) {
+          task.timer_start_time = timeTracking;
+        }
+      }
+    },
   },
 
   extraReducers: builder => {
@@ -566,18 +562,6 @@ const taskSlice = createSlice({
         });
         state.columns = action.payload;
       })
-      .addCase(fetchTask.pending, state => {
-        state.loadingTask = true;
-        state.error = null;
-      })
-      .addCase(fetchTask.fulfilled, (state, action) => {
-        state.loadingTask = false;
-        state.taskFormViewModel = action.payload;
-      })
-      .addCase(fetchTask.rejected, (state, action) => {
-        state.loadingTask = false;
-        state.error = action.error.message || 'Failed to fetch task';
-      });
   },
 });
 
@@ -588,7 +572,6 @@ export const {
   updateTaskProgress,
   updateTaskAssignees,
   updateTaskLabel,
-  toggleTaskDrawer,
   toggleArchived,
   setMembers,
   setLabels,
@@ -596,12 +579,11 @@ export const {
   setStatuses,
   setFields,
   setSearch,
-  setSelectedTaskId,
-  setShowTaskDrawer,
   toggleColumnVisibility,
   updateTaskStatus,
   updateTaskEndDate,  
   updateTaskStartDate,
+  updateTaskTimeTracking,
 } = taskSlice.actions;
 
 

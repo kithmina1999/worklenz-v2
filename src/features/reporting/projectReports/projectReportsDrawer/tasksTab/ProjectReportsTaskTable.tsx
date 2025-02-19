@@ -1,10 +1,10 @@
 import { Badge, Collapse, Flex, Table, TableColumnsType, Tag, Typography } from 'antd';
 import React from 'react';
-import CustomTableTitle from '../../../../../components/CustomTableTitle';
-import { colors } from '../../../../../styles/colors';
+import CustomTableTitle from '@/components/CustomTableTitle';
+import { colors } from '@/styles/colors';
 import dayjs from 'dayjs';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleTaskDrawer } from '../../../../tasks/tasks.slice';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +13,6 @@ type ProjectReportsTasksTableProps = {
   title: string;
   color: string;
   type: string;
-  setSeletedTaskId: (id: string) => void;
 };
 
 const ProjectReportsTasksTable = ({
@@ -21,7 +20,6 @@ const ProjectReportsTasksTable = ({
   title,
   color,
   type,
-  setSeletedTaskId,
 }: ProjectReportsTasksTableProps) => {
   // localization
   const { t } = useTranslation('reporting-projects-drawer');
@@ -30,8 +28,9 @@ const ProjectReportsTasksTable = ({
 
   // function to handle task drawer open
   const handleUpdateTaskDrawer = (id: string) => {
-    setSeletedTaskId(id);
-    dispatch(toggleTaskDrawer());
+    if (!id) return;
+    dispatch(setSelectedTaskId(id));
+    dispatch(setShowTaskDrawer(true));
   };
 
   const columns: TableColumnsType = [

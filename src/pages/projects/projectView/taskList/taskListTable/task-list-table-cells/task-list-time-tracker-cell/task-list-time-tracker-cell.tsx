@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Divider, Flex, Popover, Typography } from 'antd';
-import { PlayCircleFilled, PauseCircleFilled } from '@ant-design/icons';
-import dayjs from 'dayjs';
+import { PlayCircleFilled } from '@ant-design/icons';
 
 import { colors } from '@/styles/colors';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
@@ -11,19 +10,24 @@ import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import logger from '@/utils/errorLogger';
+import { updateTaskTimeTracking } from '@/features/tasks/tasks.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 type TaskListTimeTrackerCellProps = {
   task: IProjectTask;
 };
 
 const TaskListTimeTrackerCell = ({ task }: TaskListTimeTrackerCellProps) => {
+  const DEFAULT_TIME_LEFT = buildTimeString(0, 0, 0);
+  const dispatch = useAppDispatch();
+
   const { socket } = useSocket();
   const [timeLogs, setTimeLogs] = useState<ITaskLogViewModel[]>([]);
   const [started, setStarted] = useState(false);
-  const [startTime, setStartTime] = useState<number>(0);
-  const [timer, setTimer] = useState<number | null>(null);
+  const [startTime, setStartTime] = useState<number | null>(task.timer_start_time || null);
+  const [timeString, setTimeString] = useState(DEFAULT_TIME_LEFT);
 
-  const [timeString, setTimeString] = useState<string>(buildTimeString(0, 0, 0));
+  const [timer, setTimer] = useState<number | null>(null);
 
   const renderStopIcon = () => {
     return (
@@ -63,75 +67,74 @@ const TaskListTimeTrackerCell = ({ task }: TaskListTimeTrackerCellProps) => {
     </Flex>
   );
 
-  const handleStartTimer = () => {
-    if (started) {
-      clearInterval(timer!);
-      setStarted(false);
-      setTimer(null);
-      setTimeString(buildTimeString(0, 0, 0));
-      socket?.emit(SocketEvents.TASK_TIMER_STOP.toString(), JSON.stringify({ task_id: task.id }));
-    } else {
-      toggleTimer();
-    }
+  const timerTick = () => {
+    if (!startTime) return;
+    const now = Date.now();
+    const diff = ~~((now - startTime) / 1000);
+    const hours = ~~(diff / 3600);
+    const minutes = ~~((diff % 3600) / 60);
+    const seconds = diff % 60;
+    setTimeString(buildTimeString(hours, minutes, seconds));
   };
 
-  const toggleTimer = () => {
+  const handleStartTimer = () => {
+    if (started || !task.id) return;
     try {
-      const currentStartTime = task.timer_start_time
-        ? dayjs(task.timer_start_time).unix()
-        : dayjs().unix();
       setStarted(true);
-      setStartTime(currentStartTime);
-
-      const newTimer = window.setInterval(() => {
-        const now = dayjs().unix();
-        const diff = now - currentStartTime;
-        const hours = Math.floor(diff / 3600);
-        const minutes = Math.floor((diff % 3600) / 60);
-        const seconds = diff % 60;
-        setTimeString(buildTimeString(hours, minutes, seconds));
-      }, 1000);
-
-      setTimer(newTimer);
-      socket?.emit(SocketEvents.TASK_TIMER_START.toString(), JSON.stringify({ task_id: task.id }));
+      if (!startTime) {
+        const now = Date.now();
+        setStartTime(now);
+        dispatch(updateTaskTimeTracking({ taskId: task.id, timeTracking: now }));
+        socket?.emit(
+          SocketEvents.TASK_TIMER_START.toString(),
+          JSON.stringify({ task_id: task.id })
+        );
+      }
+      timerTick();
+      setTimer(setInterval(timerTick, 1000) as unknown as number);
     } catch (error) {
       logger.error('Error starting timer:', error);
     }
   };
 
-  useEffect(() => {
-    setStartTime(0);
-    setTimer(null);
-    if (task.timer_start_time) {
-      setStarted(true);
-      setStartTime(dayjs(task.timer_start_time).unix());
-      const newTimer = window.setInterval(() => {
-        const now = dayjs().unix();
-        const diff = now - startTime;
-        const hours = Math.floor(diff / 3600);
-        const minutes = Math.floor((diff % 3600) / 60);
-        const seconds = diff % 60;
-        setTimeString(buildTimeString(hours, minutes, seconds));
-      }, 1000);
-      console.log('newTimer', newTimer);
+  const handleStopTimer = () => {
+    if (!task.id) return;
+    if (typeof timer === 'number') {
+      clearInterval(timer);
+    }
 
-      setTimer(newTimer);
+    socket?.emit(SocketEvents.TASK_TIMER_STOP.toString(), JSON.stringify({ task_id: task.id }));
+
+    setStarted(false);
+    setStartTime(null);
+    setTimer(null);
+    setTimeString(DEFAULT_TIME_LEFT);
+    dispatch(updateTaskTimeTracking({ taskId: task.id, timeTracking: null }));
+  };
+
+  useEffect(() => {
+    if (task.timer_start_time) {
+      handleStartTimer();
     }
   }, [task.timer_start_time]);
 
+  useEffect(() => {
+    if (!started) {
+      setTimeString(DEFAULT_TIME_LEFT);
+    }
+  }, [started]);
+
   return (
     <Flex gap={4} align="center">
-      <Button
-        type="text"
-        icon={
-          started ? (
-            renderStopIcon()
-          ) : (
-            <PlayCircleFilled style={{ color: colors.skyBlue, fontSize: 16 }} />
-          )
-        }
-        onClick={handleStartTimer}
-      />
+      {started ? (
+        <Button type="text" icon={renderStopIcon()} onClick={handleStopTimer} />
+      ) : (
+        <Button
+          type="text"
+          icon={<PlayCircleFilled style={{ color: colors.skyBlue, fontSize: 16 }} />}
+          onClick={handleStartTimer}
+        />
+      )}
       <Popover
         title={
           <Typography.Text style={{ fontWeight: 500 }}>

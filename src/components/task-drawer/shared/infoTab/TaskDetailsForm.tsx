@@ -22,6 +22,7 @@ import TaskDrawerKey from './details/task-drawer-key/task-drawer-key';
 import TaskDrawerLabels from './details/task-drawer-labels/task-drawer-labels';
 import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
 import Avatars from '@/components/avatars/avatars';
+import TaskDrawerDueDate from './details/task-drawer-due-date/task-drawer-due-date';
 
 interface TaskDetailsFormProps {
   taskFormViewModel?: ITaskFormViewModel | null;
@@ -29,7 +30,6 @@ interface TaskDetailsFormProps {
 
 const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => {
   const { t } = useTranslation('task-drawer/task-drawer-info-tab');
-  const [isShowStartDate, setIsShowStartDate] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
       taskId: task?.id,
       phase: task?.phase_id,
       assignees: task?.assignees,
-      dueDate: task?.end_date ? simpleDateFormat(task.end_date) : null,
+      // dueDate: task?.end_date ? simpleDateFormat(task.end_date) : null,
       hours: task?.total_hours || 0,
       minutes: task?.total_minutes || 0,
       priority: task?.priority || 'medium',
@@ -68,11 +68,7 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
     }
   };
 
-  const renderTimeEstimationInput = (
-    name: string,
-    label: string,
-    max?: number
-  ) => (
+  const renderTimeEstimationInput = (name: string, label: string, max?: number) => (
     <Form.Item
       name={name}
       label={
@@ -125,24 +121,11 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
           </Flex>
         </Form.Item>
 
-        <Form.Item name="dueDate" label="Due Date">
-          <Flex align="center" gap={8}>
-            {isShowStartDate && (
-              <>
-                <DatePicker placeholder={t('details.start-date')} />
-                <Typography.Text>-</Typography.Text>
-              </>
-            )}
-            <DatePicker placeholder={t('details.end-date')} />
-            <Button
-              type="text"
-              onClick={() => setIsShowStartDate(prev => !prev)}
-              style={{ color: isShowStartDate ? 'red' : colors.skyBlue }}
-            >
-              {isShowStartDate ? t('details.hide-start-date') : t('details.show-start-date')}
-            </Button>
-          </Flex>
-        </Form.Item>
+        <TaskDrawerDueDate
+          task={taskFormViewModel?.task as IProjectTask}
+          t={t}
+          form={form}
+        />
 
         <Form.Item name="timeEstimation" label={t('details.time-estimation')}>
           <Flex gap={8}>
