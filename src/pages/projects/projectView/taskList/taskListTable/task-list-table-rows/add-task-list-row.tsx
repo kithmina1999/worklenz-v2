@@ -133,7 +133,7 @@ const AddTaskListRow = ({ groupId = null, parentTask = null }: IAddTaskListRowPr
         <Input
           onFocus={() => setIsEdit(true)}
           className="w-[300px] border-none"
-          value={t('addTaskText')}
+          value={parentTask ? t('addSubTaskText') : t('addTaskText')}
           ref={taskInputRef}
         />
       )}

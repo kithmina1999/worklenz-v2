@@ -72,14 +72,7 @@ interface DraggableRowProps {
 const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
   if (!task?.id) return null;
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
     data: {
       type: 'task',
@@ -99,9 +92,9 @@ const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
   };
 
   return (
-    <tr 
-      ref={setNodeRef} 
-      style={style} 
+    <tr
+      ref={setNodeRef}
+      style={style}
       className={`task-row h-[42px] ${isDragging ? 'shadow-lg' : ''}`}
     >
       {children(attributes, listeners!)}
@@ -418,8 +411,8 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
 
   return (
     <div className={`border-x border-b ${customBorderColor}`}>
-      <SortableContext 
-        items={(taskList?.map(t => t.id).filter(Boolean) || []) as string[]} 
+      <SortableContext
+        items={(taskList?.map(t => t.id).filter(Boolean) || []) as string[]}
         strategy={verticalListSortingStrategy}
       >
         <div className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}>
@@ -440,7 +433,9 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                     className={getColumnStyles(column.key, true)}
                     style={{ fontWeight: 500 }}
                   >
-                    {column.key === 'phases' || column.key === 'customColumn' || column.custom_column
+                    {column.key === 'phases' ||
+                    column.key === 'customColumn' ||
+                    column.custom_column
                       ? column.name
                       : t(`${column.key?.replace('_', '').toLowerCase()}Column`)}
                   </th>
@@ -461,7 +456,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                       {task?.sub_tasks?.map(subtask => renderTaskRow(subtask, true))}
                       <tr>
                         <td colSpan={visibleColumns.length + 1}>
-                          <AddSubTaskListRow />
+                          <AddTaskListRow groupId={tableId} parentTask={task.id} />
                         </td>
                       </tr>
                     </>
@@ -473,15 +468,15 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         </div>
       </SortableContext>
 
-      <DragOverlay dropAnimation={{
-        duration: 200,
-        easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
-      }}>
+      <DragOverlay
+        dropAnimation={{
+          duration: 200,
+          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+        }}
+      >
         {activeId && taskList?.length ? (
           <table className="w-full">
-            <tbody>
-              {renderTaskRow(taskList.find(t => t.id === activeId))}
-            </tbody>
+            <tbody>{renderTaskRow(taskList.find(t => t.id === activeId))}</tbody>
           </table>
         ) : null}
       </DragOverlay>
