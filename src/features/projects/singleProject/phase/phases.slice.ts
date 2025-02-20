@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { PhaseOption } from '../../../../types/phase.types';
 import { ITaskPhase } from '@/types/tasks/taskPhase.types';
 import { phasesApiService } from '@/api/taskAttributes/phases/phases.api.service';
 
@@ -63,12 +62,35 @@ export const updatePhaseColor = createAsyncThunk(
   }
 );
 
+export const updatePhaseOrder = createAsyncThunk(
+  'phases/updatePhaseOrder',
+  async ({ projectId, body }: { 
+    projectId: string, 
+    body: { 
+      from_index: number;
+      to_index: number;
+      phases: ITaskPhase[];
+      project_id: string;
+    } 
+  }) => {
+    try {
+      const response = await phasesApiService.updatePhaseOrder(projectId, body);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
 const phaseSlice = createSlice({
   name: 'phaseReducer',
   initialState,
   reducers: {
     toggleDrawer: state => {
       state.isPhaseDrawerOpen = !state.isPhaseDrawerOpen;
+    },
+    updatePhaseListOrder: (state, action: PayloadAction<ITaskPhase[]>) => {
+      state.phaseList = action.payload;
     },
   },
   extraReducers: builder => {
@@ -82,8 +104,17 @@ const phaseSlice = createSlice({
     builder.addCase(fetchPhasesByProjectId.rejected, state => {
       state.loadingPhases = false;
     });
+    builder.addCase(updatePhaseOrder.pending, (state) => {
+      state.loadingPhases = true;
+    });
+    builder.addCase(updatePhaseOrder.fulfilled, (state, action) => {
+      state.loadingPhases = false;
+    });
+    builder.addCase(updatePhaseOrder.rejected, (state) => {
+      state.loadingPhases = false;
+    });
   },
 });
 
-export const { toggleDrawer } = phaseSlice.actions;
+export const { toggleDrawer, updatePhaseListOrder } = phaseSlice.actions;
 export default phaseSlice.reducer;

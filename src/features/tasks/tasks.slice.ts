@@ -14,7 +14,8 @@ import { ITaskAssignee, ITaskFormViewModel } from '@/types/tasks/task.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
-import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.component';
+import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
+import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -245,7 +246,7 @@ const addTaskToGroup = (
       parentTask.sub_tasks.push({...task});
     }
   } else {
-    insert ? group.tasks.push({...task}) : group.tasks.unshift({...task});
+    insert ? group.tasks.push(task) : group.tasks.unshift(task);
   }
 };
 
@@ -417,25 +418,39 @@ const taskSlice = createSlice({
         id,
         status_id,
         color_code,
+        color_code_dark,
         complete_ratio,
         statusCategory,
       } = action.payload;
 
-      const group = state.taskGroups.find(group => 
-        group.tasks.some(task => task.id === id)
-      );
+      // Find the task in any group
+      let foundTask: IProjectTask | undefined;
+      let currentGroupId: string | undefined;
 
-      if (group) {
+      for (const group of state.taskGroups) {
         const task = group.tasks.find(task => task.id === id);
         if (task) {
-          task.status_color = color_code;
-          task.complete_ratio = +complete_ratio;
-          task.status = status_id;
-          task.status_category = statusCategory;
+          foundTask = task;
+          currentGroupId = group.id;
+          break;
+        }
+      }
 
-          if (state.group === GROUP_BY_STATUS_VALUE && !task.is_sub_task) {
-            updateTaskGroup(state.taskGroups, task as IProjectTask, false);
-          }
+      if (foundTask && status_id) {
+        // Update the task properties
+        foundTask.status_color = color_code;
+        foundTask.status_color_dark = color_code_dark;
+        foundTask.complete_ratio = +complete_ratio;
+        foundTask.status = status_id;
+        foundTask.status_category = statusCategory;
+
+        // If grouped by status and not a subtask, move the task to the new status group
+        if (state.group === GROUP_BY_STATUS_VALUE && !foundTask.is_sub_task && currentGroupId) {
+          // Remove from current group
+          deleteTaskFromGroup(state.taskGroups, foundTask, currentGroupId);
+          
+          // Add to new status group
+          addTaskToGroup(state.taskGroups, foundTask, status_id, false);
         }
       }
     },
@@ -513,6 +528,47 @@ const taskSlice = createSlice({
       const { taskId, timeTracking } = action.payload;
       state.activeTimers[taskId] = timeTracking;
     },
+
+    updateTaskPriority: (
+      state,
+      action: PayloadAction<ITaskListPriorityChangeResponse>
+    ) => {
+      const {
+        id,
+        priority_id,
+        color_code,
+        color_code_dark,
+      } = action.payload;
+
+      // Find the task in any group
+      let foundTask: IProjectTask | undefined;
+      let currentGroupId: string | undefined;
+
+      for (const group of state.taskGroups) {
+        const task = group.tasks.find(task => task.id === id);
+        if (task) {
+          foundTask = task;
+          currentGroupId = group.id;
+          break;
+        }
+      }
+
+      if (foundTask && priority_id) {
+        // Update the task properties
+        foundTask.priority = priority_id;
+        foundTask.priority_color = color_code;
+        foundTask.priority_color_dark = color_code_dark;
+
+        // If grouped by priority and not a subtask, move the task to the new priority group
+        if (state.group === GROUP_BY_PRIORITY_VALUE && !foundTask.is_sub_task && currentGroupId) {
+          // Remove from current group
+          deleteTaskFromGroup(state.taskGroups, foundTask, currentGroupId);
+          
+          // Add to new priority group
+          addTaskToGroup(state.taskGroups, foundTask, priority_id, false);
+        }
+      }
+    },
   },
 
   extraReducers: builder => {
@@ -574,6 +630,7 @@ export const {
   setSearch,
   toggleColumnVisibility,
   updateTaskStatus,
+  updateTaskPriority,
   updateTaskEndDate,  
   updateTaskStartDate,
   updateTaskTimeTracking,

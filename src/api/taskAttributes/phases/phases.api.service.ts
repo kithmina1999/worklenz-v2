@@ -6,6 +6,13 @@ import { toQueryString } from '@/utils/toQueryString';
 
 const rootUrl = `${API_BASE_URL}/task-phases`;
 
+interface UpdateSortOrderBody {
+  from_index: number;
+  to_index: number;
+  phases: ITaskPhase[];
+  project_id: string;
+}
+
 export const phasesApiService = {
   addPhaseOption: async (projectId: string) => {
     const q = toQueryString({ id: projectId, current_project_id: projectId });
@@ -43,11 +50,12 @@ export const phasesApiService = {
     return response.data;
   },
 
-  updatePhaseOrder: async (projectId: string, body: ITaskPhase) => {
-    const q = toQueryString({id: projectId, current_project_id: projectId})
-    const response = await apiClient.put<IServerResponse<ITaskPhase>>(
-      `${rootUrl}/order/${body.id}${q}`,
+  updatePhaseOrder: async (projectId: string, body: UpdateSortOrderBody) => {
+    const q = toQueryString({ id: projectId, current_project_id: projectId });
+    const response = await apiClient.put<IServerResponse<ITaskPhase[]>>(
+      `${rootUrl}/update-sort-order${q}`,
       body
     );
+    return response.data;
   },
 };

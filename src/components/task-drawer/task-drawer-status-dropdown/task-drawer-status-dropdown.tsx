@@ -3,7 +3,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { SocketEvents } from '@/shared/socket-events';
 import { useSocket } from '@/socket/socketContext';
-import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.component';
+import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 import { ITaskViewModel } from '@/types/tasks/task.types';
 import { ITaskStatus } from '@/types/tasks/taskStatus.types';
 import { Badge, Select } from 'antd';

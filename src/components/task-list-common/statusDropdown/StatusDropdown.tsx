@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useEffect, useMemo } from 'react';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
-import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.component';
+import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { getCurrentGroup, GROUP_BY_STATUS_VALUE, updateTaskStatus } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -16,7 +16,6 @@ type StatusDropdownProps = {
 };
 
 const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
-  const { t } = useTranslation('task-list-table');
   const { socket, connected } = useSocket();
   const dispatch = useAppDispatch();
 

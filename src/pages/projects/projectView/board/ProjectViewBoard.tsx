@@ -14,7 +14,6 @@ const ProjectViewBoard = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(setProjectView('kanban'));
     if (projectId) {
       if (!loadingGroups) dispatch(fetchTaskGroups(projectId));
     }

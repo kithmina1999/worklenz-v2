@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CaretDownFilled } from '@ant-design/icons';
 import { ConfigProvider, Flex, Select } from 'antd/es';
@@ -13,22 +13,35 @@ const GroupByFilterDropdown = () => {
   const { t } = useTranslation('task-list-filters');
   const dispatch = useAppDispatch();
   const { group: groupBy } = useAppSelector(state => state.taskReducer);
-  const { project } = useAppSelector(state => state.projectReducer);
+  const { project, projectView } = useAppSelector(state => state.projectReducer);
 
   const groupDropdownMenuItems = useMemo(
-    () => [
-      { value: IGroupBy.STATUS, label: t('statusText') },
-      { value: IGroupBy.PRIORITY, label: t('priorityText') },
-      { value: IGroupBy.PHASE, label: project?.phase_label || t('phaseText') },
-      { value: IGroupBy.MEMBERS, label: t('memberText') },
-    ],
-    [t, project]
+    () => {
+      const items = [
+        { value: IGroupBy.STATUS, label: t('statusText') },
+        { value: IGroupBy.PRIORITY, label: t('priorityText') },
+        { value: IGroupBy.PHASE, label: project?.phase_label || t('phaseText') },
+      ];
+
+      if (projectView !== 'list') {
+        items.push({ value: IGroupBy.MEMBERS, label: t('memberText') });
+      }
+
+      return items;
+    },
+    [t, project, projectView]
   );
 
   const handleChange = (value: IGroupBy) => {
     setCurrentGroup(value);
     dispatch(setGroup(value));
   };
+
+  useEffect(() => {
+    if (projectView === 'list') {
+      ;
+    }
+  }, [projectView]);
 
   return (
     <Flex align="center" gap={4} style={{ marginInlineStart: 12 }}>
