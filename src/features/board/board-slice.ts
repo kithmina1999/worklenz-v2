@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import {
   IGroupByOption,
   ITaskListColumn,
@@ -219,6 +219,10 @@ const boardSlice = createSlice({
         }
       }
     },
+
+    reorderTaskGroups: (state, action: PayloadAction<any[]>) => {
+      state.taskGroups = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
@@ -246,6 +250,7 @@ export const {
   addSubtask,
   deleteSection,
   deleteBoardTask,
-  updateTaskAssignee
+  updateTaskAssignee,
+  reorderTaskGroups
 } = boardSlice.actions;
 export default boardSlice.reducer;

@@ -27,6 +27,8 @@ import {
 } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -174,12 +176,38 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
     },
   ];
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: task.id || '',
+    data: {
+      type: 'task',
+      task,
+      sectionId,
+    },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
   return (
     <Dropdown menu={{ items }} trigger={['contextMenu']}>
       <Flex
+        ref={setNodeRef}
+        {...attributes}
+        {...listeners}
         vertical
         gap={12}
         style={{
+          ...style,
           width: '100%',
           padding: 12,
           backgroundColor: themeMode === 'dark' ? '#292929' : '#fafafa',
@@ -296,7 +324,7 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
                 {showNewSubtaskCard && (
                   <BoardCreateSubtaskCard
                     sectionId={sectionId}
-                    taskId={task.id}
+                    taskId={task.id || ''}
                     setShowNewSubtaskCard={setShowNewSubtaskCard}
                   />
                 )}
