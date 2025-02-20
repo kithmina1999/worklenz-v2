@@ -1,6 +1,10 @@
 import { Button, Flex } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDroppable } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { themeWiseColor } from '@/utils/themeWiseColor';
@@ -38,6 +42,40 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
   const [showNewCardTop, setShowNewCardTop] = useState<boolean>(false);
   const [showNewCardBottom, setShowNewCardBottom] = useState<boolean>(false);
   const [creatingTempTask, setCreatingTempTask] = useState<boolean>(false);
+
+  const { setNodeRef: setDroppableRef } = useDroppable({
+    id: taskGroup.id,
+    data: {
+      type: 'section',
+      section: taskGroup,
+    },
+  });
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setSortableRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: taskGroup.id,
+    data: {
+      type: 'section',
+      section: taskGroup,
+    },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const setRefs = (el: HTMLElement | null) => {
+    setSortableRef(el);
+    setDroppableRef(el);
+  };
 
   const getInstantTask = async ({task_id, group_id, task}: {task_id: string, group_id: string, task: IProjectTask}) => {
     try {
@@ -86,7 +124,11 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
     <Flex
       vertical
       gap={16}
+      ref={setRefs}
+      {...attributes}
+      {...listeners}
       style={{
+        ...style,
         minWidth: 375,
         outline: isHover
           ? `1px solid ${themeWiseColor('#edeae9', '#ffffff12', themeMode)}`
@@ -127,27 +169,32 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
               : 'transparent',
         }}
       >
-        <Flex vertical gap={16} align="center">
-          {showNewCardTop && (
-            <BoardViewCreateTaskCard
-              position="top"
-              sectionId={taskGroup.id}
-              setShowNewCard={setShowNewCardTop}
-            />
-          )}
+        <SortableContext
+          items={taskGroup.tasks.map(task => task.id ?? '')}
+          strategy={verticalListSortingStrategy}
+        >
+          <Flex vertical gap={16} align="center">
+            {showNewCardTop && (
+              <BoardViewCreateTaskCard
+                position="top"
+                sectionId={taskGroup.id}
+                setShowNewCard={setShowNewCardTop}
+              />
+            )}
 
-          {taskGroup.tasks.map((task: any) => (
-            <BoardViewTaskCard sectionId={taskGroup.id} task={task} />
-          ))}
+            {taskGroup.tasks.map((task: any) => (
+              <BoardViewTaskCard key={task.id} sectionId={taskGroup.id} task={task} />
+            ))}
 
-          {showNewCardBottom && (
-            <BoardViewCreateTaskCard
-              position="bottom"
-              sectionId={taskGroup.id}
-              setShowNewCard={setShowNewCardBottom}
-            />
-          )}
-        </Flex>
+            {showNewCardBottom && (
+              <BoardViewCreateTaskCard
+                position="bottom"
+                sectionId={taskGroup.id}
+                setShowNewCard={setShowNewCardBottom}
+              />
+            )}
+          </Flex>
+        </SortableContext>
 
         <Button
           type="text"
