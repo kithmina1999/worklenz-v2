@@ -86,7 +86,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
     const allTaskIds = taskList
       .flatMap(task => [task.id, ...(task.sub_tasks?.map(subtask => subtask.id) || [])])
       .filter(Boolean) as string[];
-    console.log('isSelectAll', isSelectAll);
+
     if (isSelectAll) {
       dispatch(deselectAll());
     } else {

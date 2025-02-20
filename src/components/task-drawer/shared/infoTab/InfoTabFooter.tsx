@@ -8,6 +8,7 @@ import { themeWiseColor } from '@/utils/themeWiseColor';
 const InfoTabFooter = () => {
   const [characterLength, setCharacterLength] = useState<number>(0);
   const [isCommentBoxExpand, setIsCommentBoxExpand] = useState<boolean>(false);
+  const { taskFormViewModel } = useAppSelector(state => state.taskReducer);
 
   const [form] = Form.useForm();
 
@@ -104,10 +105,10 @@ const InfoTabFooter = () => {
 
       <Flex align="center" justify="space-between" style={{ width: '100%' }}>
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          Created in a few seconds by Dev prasad
+          Created 
         </Typography.Text>
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          Updated in a few seconds
+          Updated 
         </Typography.Text>
       </Flex>
     </Flex>

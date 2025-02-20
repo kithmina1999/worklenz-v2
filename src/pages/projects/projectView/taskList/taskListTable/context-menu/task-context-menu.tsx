@@ -21,6 +21,7 @@ import {
 import { colors } from '@/styles/colors';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { deleteTask } from '@/features/tasks/tasks.slice';
+import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 
 type TaskContextMenuProps = {
   visible: boolean;
@@ -30,7 +31,6 @@ type TaskContextMenuProps = {
 };
 
 const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskContextMenuProps) => {
-  // find the available status for the currently active project
   const statusList = useAppSelector(state => state.statusReducer.status);
   const dispatch = useAppDispatch();
   const { trackMixpanelEvent } = useMixpanelTracking();
@@ -101,6 +101,7 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskConte
       if (res.done) {
         trackMixpanelEvent(evt_project_task_list_context_menu_delete);
         dispatch(deleteTask({taskId: selectedTask}));
+        dispatch(deselectAll());
       }
     } catch (error) {
       console.error(error);
@@ -143,16 +144,7 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskConte
       key: '5',
       icon: <DeleteOutlined />,
       label: 'Delete',
-      onClick: () => {
-        // Using Popconfirm inline since it needs to be rendered differently in a menu
-        Modal.confirm({
-          title: 'Are you sure you want to delete this task?',
-          icon: <ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />,
-          okText: 'Delete',
-          cancelText: 'Cancel',
-          onOk: handleDelete,
-        });
-      },
+      onClick: handleDelete,
     },
   ];
 
