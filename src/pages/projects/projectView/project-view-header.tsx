@@ -40,6 +40,9 @@ import { DEFAULT_TASK_NAME, UNMAPPED } from '@/shared/constants';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { getGroupIdByGroupedColumn } from '@/services/task-list/taskList.service';
 import logger from '@/utils/errorLogger';
+import { createPortal } from 'react-dom';
+import ImportTaskTemplate from '@/components/task-templates/import-task-template';
+import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
@@ -135,14 +138,7 @@ const ProjectViewHeader = () => {
   const renderProjectAttributes = () => (
     <Flex gap={8} align="center">
       {selectedProject?.category_id && (
-        <Tag
-          color={colors.vibrantOrange}
-          style={{
-            borderRadius: 24,
-            paddingInline: 8,
-            margin: 0,
-          }}
-        >
+        <Tag color={colors.vibrantOrange} style={{ borderRadius: 24, paddingInline: 8, margin: 0 }}>
           {selectedProject.category_name}
         </Tag>
       )}
@@ -222,6 +218,7 @@ const ProjectViewHeader = () => {
         type="primary"
         icon={<DownOutlined />}
         menu={{ items: dropdownItems }}
+        trigger={['click']}
         onClick={handleCreateTask}
       >
         <EditOutlined /> {t('createTask')}
@@ -230,23 +227,27 @@ const ProjectViewHeader = () => {
   );
 
   return (
-    <PageHeader
-      className="site-page-header"
-      title={
-        <Flex gap={8} align="center">
-          <ArrowLeftOutlined
-            style={{ fontSize: 16 }}
-            onClick={() => navigate('/worklenz/projects')}
-          />
-          <Typography.Title level={4} style={{ marginBlockEnd: 0, marginInlineStart: 12 }}>
-            {selectedProject?.name}
-          </Typography.Title>
-          {renderProjectAttributes()}
-        </Flex>
-      }
-      style={{ paddingInline: 0, marginBlockEnd: 12 }}
-      extra={renderHeaderActions()}
-    />
+    <>
+      <PageHeader
+        className="site-page-header"
+        title={
+          <Flex gap={8} align="center">
+            <ArrowLeftOutlined
+              style={{ fontSize: 16 }}
+              onClick={() => navigate('/worklenz/projects')}
+            />
+            <Typography.Title level={4} style={{ marginBlockEnd: 0, marginInlineStart: 12 }}>
+              {selectedProject?.name}
+            </Typography.Title>
+            {renderProjectAttributes()}
+          </Flex>
+        }
+        style={{ paddingInline: 0, marginBlockEnd: 12 }}
+        extra={renderHeaderActions()}
+      />
+      {createPortal(<ProjectDrawer onClose={() => {}} />, document.body, 'project-drawer')}
+      {createPortal(<ImportTaskTemplate />, document.body, 'import-task-template')}
+    </>
   );
 };
 
