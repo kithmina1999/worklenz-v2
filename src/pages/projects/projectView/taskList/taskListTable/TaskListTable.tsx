@@ -8,6 +8,14 @@ import Typography from 'antd/es/typography';
 import Flex from 'antd/es/flex';
 import { HolderOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { DraggableAttributes } from '@dnd-kit/core';
+import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
+import { DragOverlay } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { DndContext, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
+import { closestCenter } from '@dnd-kit/core';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useSelectedProject } from '@/hooks/useSelectedProject';
@@ -52,17 +60,49 @@ import { setSelectedTasks } from '@/features/project/project.slice';
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
   tableId: string;
+  activeId?: string | null;
 }
 
-const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
-  // const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [expandedTasks, setExpandedTasks] = useState<string[]>([]);
-  const [isSelectAll, setIsSelectAll] = useState(false);
-  const [contextMenuVisible, setContextMenuVisible] = useState(false);
-  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
-  const [scrollingTables, setScrollingTables] = useState<Record<string, boolean>>({});
+interface DraggableRowProps {
+  task: IProjectTask;
+  children: (attributes: DraggableAttributes, listeners: SyntheticListenerMap) => React.ReactNode;
+  groupId: string;
+}
 
+const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
+  if (!task?.id) return null;
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: task.id,
+    data: {
+      type: 'task',
+      task,
+      groupId,
+    },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition: transition || 'transform 200ms ease-in-out',
+    opacity: isDragging ? 0.3 : 1,
+    position: 'relative' as const,
+    zIndex: isDragging ? 1 : undefined,
+    backgroundColor: isDragging ? 'var(--dragging-bg)' : undefined,
+    border: isDragging ? '1px solid var(--border-color)' : undefined,
+  };
+
+  return (
+    <tr
+      ref={setNodeRef}
+      style={style}
+      className={`task-row h-[42px] ${isDragging ? 'shadow-lg' : ''}`}
+    >
+      {children(attributes, listeners!)}
+    </tr>
+  );
+};
+
+const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, activeId }) => {
   const { t } = useTranslation('task-list-table');
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
@@ -73,6 +113,12 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
 
   const isDarkMode = themeMode === 'dark';
   const customBorderColor = isDarkMode ? 'border-[#303030]' : '';
+
+  const [isSelectAll, setIsSelectAll] = useState(false);
+  const [expandedTasks, setExpandedTasks] = useState<string[]>([]);
+  const [scrollingTables, setScrollingTables] = useState<Record<string, boolean>>({});
+  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
 
   const toggleTaskExpansion = (taskId: string) => {
     setExpandedTasks(prev =>
@@ -118,18 +164,11 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
     dispatch(selectTasks(selectedTasks));
   };
 
-  const selectOneRow = (task: IProjectTask) => {
-    if (!task.id) return;
-    // setSelectedRows([task.id]);
-    dispatch(selectTaskIds([task.id]));
-    dispatch(selectTasks([task]));
-  };
-
   const handleContextMenu = (e: React.MouseEvent, task: IProjectTask) => {
     if (!task.id) return;
     e.preventDefault();
-    setSelectedTaskId(task.id);
-    selectOneRow(task);
+    dispatch(selectTaskIds([task.id]));
+    dispatch(selectTasks([task]));
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
     setContextMenuVisible(true);
   };
@@ -214,7 +253,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
     task: IProjectTask
   ) => {
     const customComponents = {
-      people: () => <AssigneeSelector task={task} showDropdown={false} groupId={tableId} />,
+      people: () => <AssigneeSelector task={task} groupId={tableId} />,
       date: () => (
         <DatePicker
           placeholder="Set Date"
@@ -317,133 +356,130 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId }) => {
         : '#fff';
   };
 
+  const renderTaskRow = (task: IProjectTask | undefined, isSubtask = false) => {
+    if (!task?.id) return null;
+
+    return (
+      <DraggableRow key={task.id} task={task} groupId={tableId}>
+        {(attributes, listeners) => (
+          <>
+            <td
+              className={getColumnStyles('selector', false)}
+              style={{
+                width: 56,
+                backgroundColor: selectedTaskIdsList.includes(task.id || '')
+                  ? isDarkMode
+                    ? colors.skyBlue
+                    : '#dceeff'
+                  : isDarkMode
+                    ? '#181818'
+                    : '#fff',
+              }}
+            >
+              <Flex gap={8} align="center">
+                <div {...attributes} {...listeners}>
+                  <HolderOutlined style={{ cursor: 'grab' }} />
+                </div>
+                <Checkbox
+                  checked={selectedTaskIdsList.includes(task.id || '')}
+                  onChange={() => toggleRowSelection(task)}
+                />
+              </Flex>
+            </td>
+            {visibleColumns.map(column => (
+              <td
+                key={column.key}
+                className={getColumnStyles(column.key, false)}
+                style={{
+                  backgroundColor: getRowBackgroundColor(task.id),
+                }}
+              >
+                {column.custom_column
+                  ? renderCustomColumnContent(
+                      column.custom_column_obj,
+                      column.custom_column_obj.fieldType,
+                      task
+                    )
+                  : renderColumnContent(column.key, task, isSubtask)}
+              </td>
+            ))}
+          </>
+        )}
+      </DraggableRow>
+    );
+  };
+
   return (
     <div className={`border-x border-b ${customBorderColor}`}>
-      <div className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}>
-        <table className="rounded-2 w-full min-w-max border-collapse">
-          <thead className="h-[42px]">
-            <tr>
-              <th
-                className={getColumnStyles('selector', true)}
-                style={{ width: 56, fontWeight: 500 }}
-              >
-                <Flex justify="flex-start" style={{ marginInlineStart: 22 }}>
-                  <Checkbox checked={isSelectAll} onChange={toggleSelectAll} />
-                </Flex>
-              </th>
-              {visibleColumns.map(column => (
+      <SortableContext
+        items={(taskList?.map(t => t.id).filter(Boolean) || []) as string[]}
+        strategy={verticalListSortingStrategy}
+      >
+        <div className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}>
+          <table className="rounded-2 w-full min-w-max border-collapse">
+            <thead className="h-[42px]">
+              <tr>
                 <th
-                  key={column.key}
-                  className={getColumnStyles(column.key, true)}
-                  style={{ fontWeight: 500 }}
+                  className={getColumnStyles('selector', true)}
+                  style={{ width: 56, fontWeight: 500 }}
                 >
-                  {column.key === 'phases' || column.key === 'customColumn' || column.custom_column
-                    ? column.name
-                    : t(`${column.key?.replace('_', '').toLowerCase()}Column`)}
+                  <Flex justify="flex-start" style={{ marginInlineStart: 22 }}>
+                    <Checkbox checked={isSelectAll} onChange={toggleSelectAll} />
+                  </Flex>
                 </th>
-              ))}
-              <th className={getColumnStyles('customColumn', true)}>
-                <Flex justify="flex-start" style={{ marginInlineStart: 22 }}>
-                  <AddCustomColumnButton />
-                </Flex>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {taskList?.map(task => (
-              <React.Fragment key={task.id}>
-                <tr
-                  onContextMenu={e => handleContextMenu(e, task)}
-                  className={`${!taskList.length ? 'h-0' : 'h-[42px]'} task-row`}
-                >
-                  <td
-                    className={getColumnStyles('selector', false)}
-                    style={{
-                      width: 56,
-                      backgroundColor: selectedTaskIdsList.includes(task.id || '')
-                        ? isDarkMode
-                          ? colors.skyBlue
-                          : '#dceeff'
-                        : isDarkMode
-                          ? '#181818'
-                          : '#fff',
-                    }}
+                {visibleColumns.map(column => (
+                  <th
+                    key={column.key}
+                    className={getColumnStyles(column.key, true)}
+                    style={{ fontWeight: 500 }}
                   >
-                    <Flex gap={8} align="center">
-                      <HolderOutlined />
-                      <Checkbox
-                        checked={selectedTaskIdsList.includes(task.id || '')}
-                        onChange={() => toggleRowSelection(task)}
-                      />
-                    </Flex>
-                  </td>
-                  {visibleColumns.map(column => (
-                    <td
-                      key={column.key}
-                      className={getColumnStyles(column.key, false)}
-                      style={{
-                        backgroundColor: getRowBackgroundColor(task.id),
-                      }}
-                    >
-                      {column.custom_column
-                        ? renderCustomColumnContent(
-                            column.custom_column_obj,
-                            column.custom_column_obj.fieldType,
-                            task
-                          )
-                        : renderColumnContent(column.key, task)}
-                    </td>
-                  ))}
-                  <td className={getColumnStyles('customColumn', false)}> </td>
-                </tr>
-
-                {expandedTasks.includes(task.id || '') && (
-                  <>
-                    {task?.sub_tasks?.map(subtask => (
-                      <tr
-                        key={subtask.id}
-                        onContextMenu={e => handleContextMenu(e, subtask)}
-                        className={`${!taskList.length ? 'h-0' : 'h-[42px]'} task-row`}
-                      >
-                        <td
-                          className={getColumnStyles('selector', false)}
-                          style={{
-                            width: 20,
-                            backgroundColor: getRowBackgroundColor(subtask.id),
-                          }}
-                        >
-                          <Flex style={{ marginInlineStart: 22 }}>
-                            <Checkbox
-                              checked={selectedTaskIdsList.includes(subtask.id || '')}
-                              onChange={() => toggleRowSelection(subtask)}
-                            />
-                          </Flex>
+                    {column.key === 'phases' ||
+                    column.key === 'customColumn' ||
+                    column.custom_column
+                      ? column.name
+                      : t(`${column.key?.replace('_', '').toLowerCase()}Column`)}
+                  </th>
+                ))}
+                <th className={getColumnStyles('customColumn', true)}>
+                  <Flex justify="flex-start" style={{ marginInlineStart: 22 }}>
+                    <AddCustomColumnButton />
+                  </Flex>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {taskList?.map(task => (
+                <React.Fragment key={task.id}>
+                  {renderTaskRow(task)}
+                  {expandedTasks.includes(task.id || '') && (
+                    <>
+                      {task?.sub_tasks?.map(subtask => renderTaskRow(subtask, true))}
+                      <tr>
+                        <td colSpan={visibleColumns.length + 1}>
+                          <AddTaskListRow groupId={tableId} parentTask={task.id} />
                         </td>
-                        {visibleColumns.map(column => (
-                          <td
-                            key={column.key}
-                            className={getColumnStyles(column.key, false)}
-                            style={{
-                              backgroundColor: getRowBackgroundColor(subtask.id),
-                            }}
-                          >
-                            {renderColumnContent(column.key, subtask, true)}
-                          </td>
-                        ))}
                       </tr>
-                    ))}
-                    <tr>
-                      <td colSpan={visibleColumns.length + 1}>
-                        <AddSubTaskListRow />
-                      </td>
-                    </tr>
-                  </>
-                )}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                    </>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </SortableContext>
+
+      <DragOverlay
+        dropAnimation={{
+          duration: 200,
+          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+        }}
+      >
+        {activeId && taskList?.length ? (
+          <table className="w-full">
+            <tbody>{renderTaskRow(taskList.find(t => t.id === activeId))}</tbody>
+          </table>
+        ) : null}
+      </DragOverlay>
 
       <AddTaskListRow groupId={tableId} />
 
