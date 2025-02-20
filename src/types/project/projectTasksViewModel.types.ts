@@ -58,6 +58,7 @@ export interface IProjectTask {
   sort_order?: number;
   color_code?: string;
   priority_color?: string;
+  priority_color_dark?: string;
   show_sub_tasks?: boolean;
   sub_tasks?: IProjectTask[];
   sub_tasks_loading?: boolean;

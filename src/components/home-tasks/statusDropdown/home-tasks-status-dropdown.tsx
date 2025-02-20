@@ -7,7 +7,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { ALPHA_CHANNEL } from '@/shared/constants';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
-import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.component';
+import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 type HomeTasksStatusDropdownProps = {

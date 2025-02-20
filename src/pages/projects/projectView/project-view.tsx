@@ -4,7 +4,7 @@ import { Badge, Button, ConfigProvider, Flex, Tabs, TabsProps, Tooltip } from 'a
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { getProject, setProjectId } from '@/features/project/project.slice';
+import { getProject, setProjectId, setProjectView } from '@/features/project/project.slice';
 import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
 import { projectsApiService } from '@/api/projects/projects.api.service';
 import { colors } from '@/styles/colors';
@@ -66,19 +66,20 @@ const ProjectView = () => {
 
       navigate({
         pathname: `/worklenz/projects/${projectId}`,
-        search: new URLSearchParams({ pinned_tab: itemKey }).toString()
+        search: new URLSearchParams({ pinned_tab: itemKey }).toString(),
       });
     }
   };
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
+    dispatch(setProjectView(key === 'board' ? 'kanban' : 'list'));
     navigate({
       pathname: location.pathname,
-      search: new URLSearchParams({ 
+      search: new URLSearchParams({
         tab: key,
-        pinned_tab: pinnedTab 
-      }).toString()
+        pinned_tab: pinnedTab,
+      }).toString(),
     });
   };
 

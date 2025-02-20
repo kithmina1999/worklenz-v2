@@ -31,7 +31,6 @@ const ProjectViewTaskList = () => {
   const { loadingColumns } = useAppSelector(state => state.taskReducer);
 
   useEffect(() => {
-    dispatch(setProjectView('list'));
     if (projectId) {
       if (!loadingGroups) dispatch(fetchTaskGroups(projectId));
       if (!loadingColumns) dispatch(fetTaskListColumns(projectId));

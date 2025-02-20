@@ -1,14 +1,16 @@
 import { Flex, Select, Typography } from 'antd';
 import './priorityDropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useMemo } from 'react';
 import { ALPHA_CHANNEL } from '@/shared/constants';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskPriority } from '@/types/tasks/taskPriority.types';
-import { DoubleLeftOutlined, MinusOutlined, PauseOutlined, DownOutlined } from '@ant-design/icons';
+import { DoubleLeftOutlined, MinusOutlined, PauseOutlined } from '@ant-design/icons';
+import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
+import { updateTaskPriority } from '@/features/tasks/tasks.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 type PriorityDropdownProps = {
   task: IProjectTask;
@@ -16,13 +18,16 @@ type PriorityDropdownProps = {
 };
 
 const PriorityDropdown = ({ task, teamId }: PriorityDropdownProps) => {
-  const { t } = useTranslation('task-list-table');
   const { socket, connected } = useSocket();
+  const dispatch = useAppDispatch();
 
   const [selectedPriority, setSelectedPriority] = useState<ITaskPriority | undefined>(undefined);
   const priorityList = useAppSelector(state => state.priorityReducer.priorities);
-
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+
+  const handlePriorityChangeResponse = (response: ITaskListPriorityChangeResponse) => {
+    dispatch(updateTaskPriority(response));
+  };
 
   const handlePriorityChange = (priorityId: string) => {
     if (!task.id || !priorityId) return;
@@ -43,12 +48,12 @@ const PriorityDropdown = ({ task, teamId }: PriorityDropdownProps) => {
   }, [task.priority, priorityList]);
 
   useEffect(() => {
-    socket?.on(SocketEvents.TASK_PRIORITY_CHANGE.toString(), handlePriorityChange);
+    socket?.on(SocketEvents.TASK_PRIORITY_CHANGE.toString(), handlePriorityChangeResponse);
 
     return () => {
-      socket?.removeListener(SocketEvents.TASK_PRIORITY_CHANGE.toString(), handlePriorityChange);
+      socket?.removeListener(SocketEvents.TASK_PRIORITY_CHANGE.toString(), handlePriorityChangeResponse);
     };
-  }, [task.status, connected]);
+  }, [connected]);
 
   const options = useMemo(
     () =>
