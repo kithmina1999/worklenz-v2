@@ -18,7 +18,7 @@ export const useTaskTimer = (taskId: string, initialStartTime: number | null) =>
   const reduxStartTime = activeTimers[taskId];
 
   const [timeString, setTimeString] = useState(DEFAULT_TIME_LEFT);
-
+  const [localStarted, setLocalStarted] = useState(false);
   const started = Boolean(reduxStartTime);
 
   const timerTick = useCallback(() => {
@@ -31,66 +31,117 @@ export const useTaskTimer = (taskId: string, initialStartTime: number | null) =>
     setTimeString(buildTimeString(hours, minutes, seconds));
   }, [reduxStartTime]);
 
-  const clearTimerInterval = () => {
+  const clearTimerInterval = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-  };
+  }, []);
 
-  const handleStartTimer = () => {
+  const resetTimer = useCallback(() => {
+    clearTimerInterval();
+    setTimeString(DEFAULT_TIME_LEFT);
+    setLocalStarted(false);
+  }, [clearTimerInterval]);
+
+  // Handle timer tick and initial state - with additional checks
+  useEffect(() => {
+    // Only run interval if we have both redux state and local state agreement
+    if (reduxStartTime && started && localStarted) {
+      timerTick(); // Initial tick
+      clearTimerInterval(); // Clear any existing interval first
+      intervalRef.current = setInterval(timerTick, 1000);
+    } else if (!reduxStartTime || !started) {
+      clearTimerInterval();
+      setTimeString(DEFAULT_TIME_LEFT);
+      setLocalStarted(false);
+    }
+
+    return () => {
+      clearTimerInterval();
+    };
+  }, [reduxStartTime, started, localStarted, timerTick, clearTimerInterval]);
+
+  // Initialize timer state on mount and when initialStartTime changes
+  useEffect(() => {
+    if (initialStartTime && !reduxStartTime) {
+      dispatch(updateTaskTimeTracking({ taskId, timeTracking: initialStartTime }));
+      setLocalStarted(true);
+    }
+  }, [initialStartTime, reduxStartTime, taskId, dispatch]);
+
+  // Sync local state with Redux state
+  useEffect(() => {
+    setLocalStarted(started);
+  }, [started]);
+
+  const handleStartTimer = useCallback(() => {
     if (started || !taskId) return;
     try {
       const now = Date.now();
       dispatch(updateTaskTimeTracking({ taskId, timeTracking: now }));
-      socket?.emit(
-        SocketEvents.TASK_TIMER_START.toString(),
-        JSON.stringify({ task_id: taskId })
-      );
+      setLocalStarted(true);
+      socket?.emit(SocketEvents.TASK_TIMER_START.toString(), JSON.stringify({ task_id: taskId }));
     } catch (error) {
       logger.error('Error starting timer:', error);
     }
-  };
+  }, [taskId, started, socket, dispatch]);
 
-  const handleStopTimer = () => {
+  const handleStopTimer = useCallback(() => {
     if (!taskId) return;
-    
-    clearTimerInterval();
+
+    resetTimer();
     socket?.emit(SocketEvents.TASK_TIMER_STOP.toString(), JSON.stringify({ task_id: taskId }));
     dispatch(updateTaskTimeTracking({ taskId, timeTracking: null }));
-    setTimeString(DEFAULT_TIME_LEFT);
-  };
+  }, [taskId, socket, dispatch, resetTimer]);
 
-  // Initialize timer if initialStartTime is provided
+  // Listen for socket events
   useEffect(() => {
-    if (initialStartTime && !reduxStartTime) {
-      dispatch(updateTaskTimeTracking({ taskId, timeTracking: initialStartTime }));
-    }
-  }, [initialStartTime, reduxStartTime]);
+    if (!socket) return;
 
-  // Handle timer tick
-  useEffect(() => {
-    clearTimerInterval(); // Clear existing interval first
+    const handleTimerStop = (data: string) => {
+      try {
+        const { task_id } = typeof data === 'string' ? JSON.parse(data) : data;
+        if (task_id === taskId) {
+          resetTimer();
+          dispatch(updateTaskTimeTracking({ taskId, timeTracking: null }));
+        }
+      } catch (error) {
+        console.log('error', error);
+        logger.error('Error parsing timer stop event:', error);
+      }
+    };
 
-    if (reduxStartTime) {
-      timerTick(); // Initial tick
-      intervalRef.current = setInterval(timerTick, 1000);
-    } else {
-      setTimeString(DEFAULT_TIME_LEFT);
-    }
+    const handleTimerStart = (data: string) => {
+      try {
+        const { task_id, start_time } = typeof data === 'string' ? JSON.parse(data) : data;
+        if (task_id === taskId && start_time) {
+          dispatch(
+            updateTaskTimeTracking({
+              taskId,
+              timeTracking: typeof start_time === 'number' ? start_time : parseInt(start_time),
+            })
+          );
+          setLocalStarted(true);
+        }
+      } catch (error) {
+        logger.error('Error parsing timer start event:', error);
+      }
+    };
 
-    return clearTimerInterval;
-  }, [reduxStartTime, timerTick]);
+    socket.on(SocketEvents.TASK_TIMER_STOP.toString(), handleTimerStop);
+    socket.on(SocketEvents.TASK_TIMER_START.toString(), handleTimerStart);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return clearTimerInterval;
-  }, []);
+    return () => {
+      socket.off(SocketEvents.TASK_TIMER_STOP.toString(), handleTimerStop);
+      socket.off(SocketEvents.TASK_TIMER_START.toString(), handleTimerStart);
+    };
+  }, [socket, taskId, dispatch, resetTimer]);
 
   return {
     started,
     timeString,
     handleStartTimer,
-    handleStopTimer
+    handleStopTimer,
   };
-}; 
+};

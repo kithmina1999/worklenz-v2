@@ -327,7 +327,7 @@ const taskSlice = createSlice({
       state,
       action: PayloadAction<{
         taskId: string;
-        index?: number;
+        index?: number | null;
       }>
     ) => {
       const { taskId, index } = action.payload;

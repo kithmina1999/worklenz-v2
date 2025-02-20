@@ -1,6 +1,6 @@
 import { Flex } from 'antd';
 import React, { useState } from 'react';
-import TimeLogItem from './TimeLogItem';
+import TimeLogItem from './time-log-item';
 import { ITaskLogViewModel } from '@/types/tasks/task-log-view.types';
 
 type TimeLogListProps = {

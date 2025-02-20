@@ -1,7 +1,7 @@
 import Tabs, { TabsProps } from 'antd/es/tabs';
 
 import TaskDrawerInfoTab from './infoTab/TaskDrawerInfoTab';
-import TaskDrawerTimeLog from './timeLog/TaskDrawerTimeLog';
+import TaskDrawerTimeLog from './timeLog/task-drawer-time-log';
 import TaskDrawerActivityLog from './activity-log/task-drawer-activity-log';
 
 const TaskDrawerTabs = () => {

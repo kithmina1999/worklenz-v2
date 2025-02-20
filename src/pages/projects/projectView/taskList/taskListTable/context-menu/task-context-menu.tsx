@@ -5,10 +5,23 @@ import {
   RetweetOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
-import { Badge, Dropdown, Flex, Typography } from 'antd';
+import { Badge, Dropdown, Flex, Typography, Modal } from 'antd';
 import { MenuProps } from 'antd/lib';
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppSelector } from '../../../../../../hooks/useAppSelector';
+import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
+import { taskListBulkActionsApiService } from '@/api/tasks/task-list-bulk-actions.api.service';
+import { IBulkAssignRequest } from '@/types/tasks/bulk-action-bar.types';
+import {
+  evt_project_task_list_context_menu_archive,
+  evt_project_task_list_context_menu_assign_me,
+  evt_project_task_list_context_menu_delete,
+} from '@/shared/worklenz-analytics-events';
+import { colors } from '@/styles/colors';
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import { deleteTask } from '@/features/tasks/tasks.slice';
+import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 
 type TaskContextMenuProps = {
   visible: boolean;
@@ -18,8 +31,11 @@ type TaskContextMenuProps = {
 };
 
 const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskContextMenuProps) => {
-  // find the available status for the currently active project
   const statusList = useAppSelector(state => state.statusReducer.status);
+  const dispatch = useAppDispatch();
+  const { trackMixpanelEvent } = useMixpanelTracking();
+  const projectId = useAppSelector(state => state.projectReducer.projectId);
+  const [updatingAssignToMe, setUpdatingAssignToMe] = useState(false);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -34,11 +50,70 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskConte
     }
   };
 
+  const handleAssignToMe = async () => {
+    if (!projectId || !selectedTask) return;
+
+    try {
+      setUpdatingAssignToMe(true);
+      const body: IBulkAssignRequest = {
+        tasks: [selectedTask],
+        project_id: projectId,
+      };
+      const res = await taskListBulkActionsApiService.assignToMe(body);
+      if (res.done) {
+        trackMixpanelEvent(evt_project_task_list_context_menu_assign_me);
+        // Note: You may need to implement a way to update the task assignee in your state management
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setUpdatingAssignToMe(false);
+    }
+  };
+
+  const handleArchive = async () => {
+    if (!projectId || !selectedTask) return;
+
+    try {
+      const res = await taskListBulkActionsApiService.archiveTasks(
+        {
+          tasks: [selectedTask],
+          project_id: projectId,
+        },
+        false
+      );
+
+      if (res.done) {
+        trackMixpanelEvent(evt_project_task_list_context_menu_archive);
+        // Note: You may need to implement a way to remove the task from your state management
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!projectId || !selectedTask) return;
+
+    try {
+      const res = await taskListBulkActionsApiService.deleteTasks({ tasks: [selectedTask] }, projectId);
+
+      if (res.done) {
+        trackMixpanelEvent(evt_project_task_list_context_menu_delete);
+        dispatch(deleteTask({taskId: selectedTask}));
+        dispatch(deselectAll());
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const items: MenuProps['items'] = [
     {
       key: '1',
       icon: <UserAddOutlined />,
-      label: ' Assign to me',
+      label: 'Assign to me',
+      onClick: handleAssignToMe,
     },
     {
       key: '2',
@@ -58,6 +133,7 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskConte
       key: '3',
       icon: <InboxOutlined />,
       label: 'Archive',
+      onClick: handleArchive,
     },
     {
       key: '4',
@@ -67,7 +143,8 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskConte
     {
       key: '5',
       icon: <DeleteOutlined />,
-      label: ' Delete',
+      label: 'Delete',
+      onClick: handleDelete,
     },
   ];
 
