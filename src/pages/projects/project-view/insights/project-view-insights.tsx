@@ -1,9 +1,8 @@
 import { DownloadOutlined } from '@ant-design/icons';
 import { Badge, Button, Checkbox, Flex, Segmented } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { colors } from '@/styles/colors';
@@ -15,19 +14,25 @@ import {
   setIncludeArchivedTasks,
   setProjectId,
 } from '@/features/projects/insights/project-insights.slice';
-
+import { format } from 'date-fns';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import logo from '@/assets/images/logo.png';
 type SegmentType = 'Overview' | 'Members' | 'Tasks';
 
 const ProjectViewInsights = () => {
   const { projectId } = useParams();
   const { t } = useTranslation('project-view-insights');
+  const exportRef = useRef<HTMLDivElement>(null);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const dispatch = useAppDispatch();
-
   const [exportLoading, setExportLoading] = useState(false);
   const { activeSegment, includeArchivedTasks } = useAppSelector(
     state => state.projectInsightsReducer
   );
+  const {
+    project: selectedProject,
+  } = useAppSelector(state => state.projectReducer);
 
   const handleSegmentChange = (value: SegmentType) => {
     dispatch(setActiveSegment(value));
@@ -58,15 +63,60 @@ const ProjectViewInsights = () => {
 
   const handleExport = async () => {
     if (!projectId) return;
-
-    setExportLoading(true);
     try {
+      setExportLoading(true);
       await dispatch(setActiveSegment(activeSegment));
+      await exportPdf(selectedProject?.name || '', activeSegment);
     } catch (error) {
-      // Error handling could be added here
+      console.error(error);
     } finally {
       setExportLoading(false);
     }
+  };
+
+  const exportPdf = async (projectName: string | null, activeSegment: string | '') => {
+    if (!exportRef.current) return;
+    const element = exportRef.current;
+    const canvas = await html2canvas(element);
+    const imgData = canvas.toDataURL('image/png');
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const bufferX = 5;
+    const bufferY = 28;
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth() - 2 * bufferX;
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    const logoImg = new Image();
+    logoImg.src = logo;
+    logoImg.onload = () => {
+      pdf.addImage(logoImg, 'PNG', pdf.internal.pageSize.getWidth() / 2 - 12, 5, 30, 6.5);
+
+      pdf.setFontSize(14);
+      pdf.setTextColor(0, 0, 0, 0.85);
+      pdf.text(
+        [`Insights - ${projectName} - ${activeSegment}`, format(new Date(), 'yyyy-MM-dd')],
+        pdf.internal.pageSize.getWidth() / 2,
+        17,
+        { align: 'center' }
+      );
+
+      pdf.addImage(imgData, 'PNG', bufferX, bufferY, pdfWidth, pdfHeight);
+      pdf.save(`${activeSegment} ${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+    };
+
+    logoImg.onerror = (error) => {
+      pdf.setFontSize(14);
+      pdf.setTextColor(0, 0, 0, 0.85);
+      pdf.text(
+        [`Insights - ${projectName} - ${activeSegment}`, format(new Date(), 'yyyy-MM-dd')],
+        pdf.internal.pageSize.getWidth() / 2,
+        17,
+        { align: 'center' }
+      );
+      pdf.addImage(imgData, 'PNG', bufferX, bufferY, pdfWidth, pdfHeight);
+      pdf.save(`${activeSegment} ${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+    };
   };
 
   return (
@@ -104,8 +154,9 @@ const ProjectViewInsights = () => {
           </Button>
         </Flex>
       </Flex>
-
-      {renderSegmentContent()}
+      <div ref={exportRef}>
+        {renderSegmentContent()}
+      </div>
     </Flex>
   );
 };
