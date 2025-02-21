@@ -5,7 +5,7 @@ export const SOCKET_CONFIG = {
     upgrade: true,
     rememberUpgrade: true,
     secure: true,
-    rejectUnauthorized: process.env.NODE_ENV === 'production',
+    rejectUnauthorized: import.meta.env.VITE_APP_ENV === 'production',
     autoConnect: false,
   },
 };
