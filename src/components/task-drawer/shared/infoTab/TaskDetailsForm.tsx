@@ -20,7 +20,7 @@ import NotifyMemberSelector from './NotifyMemberSelector';
 import TaskDrawerPhaseSelector from './details/task-drawer-phase-selector/task-drawer-phase-selector';
 import TaskDrawerKey from './details/task-drawer-key/task-drawer-key';
 import TaskDrawerLabels from './details/task-drawer-labels/task-drawer-labels';
-import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
+import AssigneeSelector from '@/components/taskListCommon/assignee-selector/assignee-selector';
 import Avatars from '@/components/avatars/avatars';
 import TaskDrawerDueDate from './details/task-drawer-due-date/task-drawer-due-date';
 

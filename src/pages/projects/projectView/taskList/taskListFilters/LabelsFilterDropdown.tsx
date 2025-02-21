@@ -15,7 +15,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
-import { setLabels } from '@/features/tasks/tasks.slice';
+import { fetchTaskGroups, setLabels } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 interface LabelsFilterDropdownProps {
@@ -28,7 +28,7 @@ const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const { labels } = useAppSelector(state => state.taskReducer);
-
+  const { projectId } = useAppSelector(state => state.projectReducer);
   const { t } = useTranslation('task-list-filters');
 
   const filteredLabelData = useMemo(() => {
@@ -49,6 +49,7 @@ const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
       newLabels.splice(newLabels.indexOf(labelId), 1);
       dispatch(setLabels(newLabels));
     }
+    if (projectId) dispatch(fetchTaskGroups(projectId));
   };
 
   // function to focus labels input

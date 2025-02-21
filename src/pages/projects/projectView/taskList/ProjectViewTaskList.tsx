@@ -19,12 +19,9 @@ const ProjectViewTaskList = () => {
     taskGroups,
     loadingGroups,
     group: groupBy,
-    archived,
     labels,
     fields,
     search,
-    priorities,
-    taskAssignees,
   } = useAppSelector(state => state.taskReducer);
   const { statusCategories, loading: loadingStatusCategories } = useAppSelector(state => state.taskStatusReducer);
   const { loadingPhases } = useAppSelector(state => state.phaseReducer);
@@ -39,7 +36,7 @@ const ProjectViewTaskList = () => {
     if (!statusCategories.length) {
       dispatch(fetchStatusesCategories());
     }
-  }, [dispatch, projectId, archived, groupBy, labels, fields, search, priorities, taskAssignees]);
+  }, [dispatch, projectId, groupBy, fields, search]);
 
   return (
     <Flex vertical gap={16} style={{ overflowX: 'hidden' }}>

@@ -11,6 +11,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchTaskAssignees, toggleArchived } from '@/features/tasks/tasks.slice';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
+import { fetchTaskGroups } from '@/features/board/board-slice';
 
 const SearchDropdown = React.lazy(() => import('./SearchDropdown'));
 const SortFilterDropdown = React.lazy(() => import('./SortFilterDropdown'));
@@ -37,6 +38,7 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
 
   const handleShowArchivedChange = () => {
     dispatch(toggleArchived());
+    if (projectId) dispatch(fetchTaskGroups(projectId));
   };
 
   useEffect(() => {

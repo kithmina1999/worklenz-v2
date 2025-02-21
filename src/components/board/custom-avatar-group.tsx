@@ -2,7 +2,7 @@ import { Button, Flex } from 'antd';
 import AddMembersDropdown from '@/components/add-members-dropdown/add-members-dropdown';
 import Avatars from '../avatars/avatars';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import AssigneeSelector from '../taskListCommon/assigneeSelector/AssigneeSelector';
+import AssigneeSelector from '../taskListCommon/assignee-selector/assignee-selector';
 
 type CustomAvatarGroupProps = {
   task: IProjectTask;
