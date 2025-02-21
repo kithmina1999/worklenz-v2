@@ -109,7 +109,7 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
           taskKey={taskFormViewModel?.task?.task_key || 'NEW-TASK'}
           label={t('details.task-key')}
         />
-        <TaskDrawerPhaseSelector phases={taskFormViewModel?.phases || []} />
+        <TaskDrawerPhaseSelector phases={taskFormViewModel?.phases || []} task={taskFormViewModel?.task} />
 
         <Form.Item name="assignees" label="Assignees">
           <Flex gap={4} align="center">

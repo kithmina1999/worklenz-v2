@@ -15,14 +15,12 @@ import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/tas
 type TaskListTaskCellProps = {
   task: IProjectTask;
   isSubTask?: boolean;
-  expandedTasks: string[];
   toggleTaskExpansion: (taskId: string) => void;
 };
 
 const TaskListTaskCell = ({
   task,
   isSubTask = false,
-  expandedTasks,
   toggleTaskExpansion,
 }: TaskListTaskCellProps) => {
   // localization
@@ -37,7 +35,7 @@ const TaskListTaskCell = ({
         onClick={() => toggleTaskExpansion(taskId)}
         className="hover flex h-4 w-4 items-center justify-center rounded text-[12px] hover:border hover:border-[#5587f5] hover:bg-[#d0eefa54]"
       >
-        {expandedTasks.includes(taskId) ? <DownOutlined /> : <RightOutlined />}
+        {task.show_sub_tasks ? <DownOutlined /> : <RightOutlined />}
       </button>
     );
   };
@@ -54,7 +52,7 @@ const TaskListTaskCell = ({
           onClick={() => toggleTaskExpansion(taskId)}
           className="hover flex h-4 w-4 items-center justify-center rounded text-[12px] hover:border hover:border-[#5587f5] hover:bg-[#d0eefa54]"
         >
-          {expandedTasks.includes(taskId) ? <DownOutlined /> : <RightOutlined />}
+          {task.show_sub_tasks ? <DownOutlined /> : <RightOutlined />}
         </button>
       );
     }
@@ -64,7 +62,7 @@ const TaskListTaskCell = ({
         onClick={() => toggleTaskExpansion(taskId)}
         className="hover flex h-4 w-4 items-center justify-center rounded text-[12px] hover:border hover:border-[#5587f5] hover:bg-[#d0eefa54] open-task-button"
       >
-        {expandedTasks.includes(taskId) ? <DownOutlined /> : <RightOutlined />}
+        {task.show_sub_tasks ? <DownOutlined /> : <RightOutlined />}
       </button>
     ) : (
       <div className="h-4 w-4"></div>

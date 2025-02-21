@@ -56,6 +56,8 @@ import PriorityDropdown from '@/components/task-list-common/priorityDropdown/Pri
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
 import { createPortal } from 'react-dom';
 import { setSelectedTasks } from '@/features/project/project.slice';
+import './taskListTable.css';
+import { toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -108,6 +110,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const selectedProject = useSelectedProject();
   const columnList = useAppSelector(state => state.taskReducer.columns);
+  const taskGroups = useAppSelector(state => state.taskReducer.taskGroups);
   const visibleColumns = columnList.filter(column => column.pinned);
   const selectedTaskIdsList = useAppSelector(state => state.bulkActionReducer.selectedTaskIdsList);
 
@@ -115,15 +118,12 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const customBorderColor = isDarkMode ? 'border-[#303030]' : '';
 
   const [isSelectAll, setIsSelectAll] = useState(false);
-  const [expandedTasks, setExpandedTasks] = useState<string[]>([]);
   const [scrollingTables, setScrollingTables] = useState<Record<string, boolean>>({});
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
 
   const toggleTaskExpansion = (taskId: string) => {
-    setExpandedTasks(prev =>
-      prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId]
-    );
+    dispatch(toggleTaskRowExpansion(taskId));
   };
 
   const toggleSelectAll = () => {
@@ -221,7 +221,6 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         <TaskListTaskCell
           task={task}
           isSubTask={isSubtask}
-          expandedTasks={expandedTasks}
           toggleTaskExpansion={toggleTaskExpansion}
         />
       ),
@@ -356,6 +355,14 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         : '#fff';
   };
 
+  const findTaskInGroups = (taskId: string) => {
+    for (const group of taskGroups) {
+      const task = group.tasks.find(t => t.id === taskId);
+      if (task) return task;
+    }
+    return null;
+  };
+
   const renderTaskRow = (task: IProjectTask | undefined, isSubtask = false) => {
     if (!task?.id) return null;
 
@@ -448,21 +455,33 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
               </tr>
             </thead>
             <tbody>
-              {taskList?.map(task => (
-                <React.Fragment key={task.id}>
-                  {renderTaskRow(task)}
-                  {expandedTasks.includes(task.id || '') && (
-                    <>
-                      {task?.sub_tasks?.map(subtask => renderTaskRow(subtask, true))}
-                      <tr>
-                        <td colSpan={visibleColumns.length + 1}>
-                          <AddTaskListRow groupId={tableId} parentTask={task.id} />
-                        </td>
-                      </tr>
-                    </>
-                  )}
-                </React.Fragment>
-              ))}
+              {taskList && taskList.length > 0 ? (
+                taskList.map(task => {
+                  const updatedTask = findTaskInGroups(task.id || '') || task;
+                  
+                  return (
+                    <React.Fragment key={updatedTask.id}>
+                      {renderTaskRow(updatedTask)}
+                      {updatedTask.show_sub_tasks && (
+                        <>
+                          {updatedTask?.sub_tasks?.map(subtask => renderTaskRow(subtask, true))}
+                          <tr>
+                            <td colSpan={visibleColumns.length + 1}>
+                              <AddTaskListRow groupId={tableId} parentTask={updatedTask.id} />
+                            </td>
+                          </tr>
+                        </>
+                      )}
+                    </React.Fragment>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={visibleColumns.length + 1} className="ps-2 py-2">
+                    {t('noTasksAvailable', 'No tasks available')}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
