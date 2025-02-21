@@ -55,6 +55,7 @@ import AddCustomColumnButton from './custom-columns/custom-column-modal/add-cust
 import { createPortal } from 'react-dom';
 import { setSelectedTasks } from '@/features/project/project.slice';
 import { toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
+import { useAuthService } from '@/hooks/useAuth';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -105,11 +106,11 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const { t } = useTranslation('task-list-table');
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const selectedProject = useSelectedProject();
   const columnList = useAppSelector(state => state.taskReducer.columns);
   const taskGroups = useAppSelector(state => state.taskReducer.taskGroups);
   const visibleColumns = columnList.filter(column => column.pinned);
   const selectedTaskIdsList = useAppSelector(state => state.bulkActionReducer.selectedTaskIdsList);
+  const currentSession = useAuthService().getCurrentSession();
 
   const isDarkMode = themeMode === 'dark';
   const customBorderColor = isDarkMode ? 'border-[#303030]' : '';
@@ -225,9 +226,9 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
       PROGRESS: () => <TaskListProgressCell task={task} />,
       ASSIGNEES: () => <TaskListMembersCell groupId={tableId} task={task} />,
       LABELS: () => <TaskListLabelsCell task={task} />,
-      PHASES: () => <PhaseDropdown projectId={selectedProject?.id || ''} />,
-      STATUS: () => <StatusDropdown task={task} teamId={selectedProject?.team_id || ''} />,
-      PRIORITY: () => <PriorityDropdown task={task} teamId={selectedProject?.team_id || ''} />,
+      PHASES: () => <PhaseDropdown projectId={currentSession?.team_id || ''} />,
+      STATUS: () => <StatusDropdown task={task} teamId={currentSession?.team_id || ''} />,
+      PRIORITY: () => <PriorityDropdown task={task} teamId={currentSession?.team_id || ''} />,
       TIME_TRACKING: () => <TaskListTimeTrackerCell task={task} />,
       ESTIMATION: () => <TaskListEstimationCell />,
       START_DATE: () => <TaskListStartDateCell task={task} />,
