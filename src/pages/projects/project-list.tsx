@@ -175,6 +175,11 @@ const ProjectList: React.FC = () => {
     dispatch(setProject({} as IProjectViewModel));
     dispatch(setProjectId(null));
   };
+  const navigateToProject = (projectId: string | undefined) => {
+    if (projectId) {
+      navigate(`/worklenz/projects/${projectId}`); // Update the route as per your project structure
+    }
+  };
 
   useEffect(() => {
     if (projectStatuses.length === 0) dispatch(fetchProjectStatuses());
@@ -228,6 +233,9 @@ const ProjectList: React.FC = () => {
           onChange={handleTableChange}
           pagination={paginationConfig}
           locale={{ emptyText: <Empty description={t('noProjects')} /> }}
+          onRow={(record) => ({
+            onClick: () => (navigateToProject(record.id)), // Navigate to project on row click
+          })}
         />
       </Card>
 
