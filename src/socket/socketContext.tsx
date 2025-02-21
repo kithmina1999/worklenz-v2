@@ -47,12 +47,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const socket = socketRef.current;
 
     // Add reconnect attempt handler
-    socket.on('reconnect_attempt', (attemptNumber) => {
+    socket.on('reconnect_attempt', attemptNumber => {
       logger.info(`Reconnection attempt ${attemptNumber}`);
       messageApi.loading({
         content: `${t('reconnecting')} (${t('attempt')} ${attemptNumber})`,
         duration: 0, // Keep showing until next state change
-        key: 'reconnection-status'
+        key: 'reconnection-status',
       });
     });
 
@@ -61,7 +61,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       logger.error('Reconnection failed after all attempts');
       messageApi.error({
         content: t('connection-failed'),
-        key: 'reconnection-status'
+        key: 'reconnection-status',
       });
     });
 
@@ -69,11 +69,11 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     socket.on('connect', () => {
       logger.info('Socket connected');
       setConnected(true);
-      
+
       if (!hasShownConnectedMessage.current) {
         messageApi.success({
           content: t('connection-restored'),
-          key: 'reconnection-status'
+          key: 'reconnection-status',
         });
         hasShownConnectedMessage.current = true;
       }
@@ -90,7 +90,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setConnected(false);
       messageApi.error({
         content: `${t('connection-lost')}: ${error.message}`,
-        key: 'reconnection-status'
+        key: 'reconnection-status',
       });
       hasShownConnectedMessage.current = false;
 
@@ -127,7 +127,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       logger.debug('Socket ping sent');
     });
 
-    socket.on('pong', (latency) => {
+    socket.on('pong', latency => {
       logger.debug('Socket pong received', { latency });
     });
 
