@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import io, { Socket } from 'socket.io-client';
+import { useTranslation } from 'react-i18next';
+
 import { SOCKET_CONFIG } from './config';
 import logger from '@/utils/errorLogger';
-import { Modal } from 'antd';
+import { Modal, message } from 'antd';
 import { SocketEvents } from '@/shared/socket-events';
 import { getUserSession } from '@/utils/session-helper';
 
@@ -15,10 +17,13 @@ interface SocketContextType {
 const SocketContext = createContext<SocketContextType | null>(null);
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { t } = useTranslation('common');
   const socketRef = useRef<Socket | null>(null);
   const [connected, setConnected] = useState(false);
   const [modal, contextHolder] = Modal.useModal();
   const profile = getUserSession(); // Adjust based on your Redux structure
+  const [messageApi, messageContextHolder] = message.useMessage(); // Add message API
+  const messageKeyRef = useRef<string>(''); // Add ref to store message key
 
   // Initialize socket connection
   useEffect(() => {
@@ -26,10 +31,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (!socketRef.current) {
       socketRef.current = io(SOCKET_CONFIG.url, {
         ...SOCKET_CONFIG.options,
-        autoConnect: false, // Prevent auto connection
         reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 5000,
       });
     }
 
@@ -39,6 +43,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     socket.on('connect', () => {
       logger.info('Socket connected');
       setConnected(true);
+      // Destroy any existing reconnecting message
+      if (messageKeyRef.current) {
+        messageApi.destroy(messageKeyRef.current);
+        messageKeyRef.current = '';
+      }
+      messageApi.success(t('connection-restored'));
     });
 
     // Emit login event
@@ -52,11 +62,29 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     socket.on('connect_error', error => {
       logger.error('Connection error', { error });
       setConnected(false);
+      // Show persistent reconnecting message if not already showing
+      if (!messageKeyRef.current) {
+        messageKeyRef.current = `reconnecting-${Date.now()}`;
+        messageApi.loading({
+          content: t('reconnecting'),
+          key: messageKeyRef.current,
+          duration: 0 // Make the message persistent
+        });
+      }
     });
 
     socket.on('disconnect', () => {
       logger.info('Socket disconnected');
       setConnected(false);
+      // Show persistent reconnecting message if not already showing
+      if (!messageKeyRef.current) {
+        messageKeyRef.current = `reconnecting-${Date.now()}`;
+        messageApi.loading({
+          content: t('reconnecting'),
+          key: messageKeyRef.current,
+          duration: 0 // Make the message persistent
+        });
+      }
 
       // Emit logout event
       if (profile && profile.id) {
@@ -92,6 +120,11 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Cleanup function
     return () => {
       if (socket) {
+        // Destroy any existing message when unmounting
+        if (messageKeyRef.current) {
+          messageApi.destroy(messageKeyRef.current);
+          messageKeyRef.current = '';
+        }
         // Remove all listeners first
         socket.off('connect');
         socket.off('connect_error');
@@ -105,7 +138,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         socketRef.current = null;
       }
     };
-  }, []); // Empty dependency array to run only once
+  }, [messageApi, t]); // Add t to dependencies
 
   const value = {
     socket: socketRef.current,
@@ -113,7 +146,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     modalContextHolder: contextHolder,
   };
 
-  return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
+  return (
+    <SocketContext.Provider value={value}>
+      {messageContextHolder}
+      {children}
+    </SocketContext.Provider>
+  );
 };
 
 export const useSocket = () => {
