@@ -14,6 +14,7 @@ import { ProgressListProgress } from './project-list-table/project-list-progress
 import { ProjectListUpdatedAt } from './project-list-table/project-list-updated-at/project-list-updated';
 import { ProjectNameCell } from './project-list-table/project-name/project-name-cell';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { ProjectRateCell } from './project-list-table/project-list-favorite/project-rate-cell';
 
 const createFilters = (items: { id: string; name: string }[]) =>
   items.map(item => ({ text: item.name, value: item.id })) as ColumnFilterItem[];
@@ -38,6 +39,14 @@ const TableColumns = ({
   );
   const columns = useMemo(
     () => [
+      {
+        title: '#',
+        dataIndex: 'favorite',
+        key: 'favorite',
+        render: (text: string, record: IProjectViewModel) => (
+          <ProjectRateCell key={record.id} t={t} record={record} />
+        ),
+      },
       {
         title: t('name'),
         dataIndex: 'name',
