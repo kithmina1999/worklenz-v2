@@ -207,14 +207,14 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
 
         <Divider style={{ marginBlock: 8 }} />
 
-        <Button
+        {/* <Button
           type="primary"
           style={{ alignSelf: 'flex-end' }}
           size="small"
           onClick={handleAssignMembers}
         >
           {t('okButton')}
-        </Button>
+        </Button> */}
       </Flex>
     </Card>
   );
