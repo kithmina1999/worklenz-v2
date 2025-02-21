@@ -18,7 +18,6 @@ import { useAppSelector } from '../../../hooks/useAppSelector';
 import { colors } from '../../../styles/colors';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { ITaskLabel } from '../../../types/label.type';
-import { toggleLabel } from '../../../features/tasks/taskSlice';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { updateTaskLabel } from '@/features/tasks/tasks.slice';
@@ -64,9 +63,10 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   };
 
   const handleCreateLabel = () => {
+    if (!searchQuery) return;
     const labelData = {
       task_id: task.id,
-      label: searchQuery,
+      label: searchQuery.trim(),
       parent_task: task.parent_task_id,
       team_id: currentSession?.team_id,
     };
@@ -157,15 +157,15 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
           )}
         </List>
 
-        <Divider style={{ margin: 0 }} />
+        {/* <Divider style={{ margin: 0 }} /> */}
 
-        <Button
+        {/* <Button
           type="primary"
           style={{ alignSelf: 'flex-end' }}
           onClick={() => handleCreateLabel()}
         >
           {t('okButton')}
-        </Button>
+        </Button> */}
       </Flex>
     </Card>
   );

@@ -128,11 +128,11 @@ const AssigneeSelector = ({ taskId, currentAssignees }: AssigneeSelectorProps) =
           {t('assigneeSelectorInviteButton')}
         </Button>
 
-        <Divider style={{ marginBlock: 8 }} />
+        {/* <Divider style={{ marginBlock: 8 }} />
 
         <Button type="primary" style={{ alignSelf: 'flex-end' }}>
           {t('okButton')}
-        </Button>
+        </Button> */}
       </Flex>
     </Card>
   );

@@ -1,8 +1,11 @@
 export const SOCKET_CONFIG = {
-  url: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_SOCKET_URL : 'ws://localhost:3000',
+  url: process.env.SOCKET_URL || 'your_socket_url',
   options: {
-    transports: ['websocket'],
-    path: '/socket',
+    transports: ['websocket', 'polling'],
     upgrade: true,
+    rememberUpgrade: true,
+    secure: true,
+    rejectUnauthorized: process.env.NODE_ENV === 'production',
+    autoConnect: false,
   },
 };

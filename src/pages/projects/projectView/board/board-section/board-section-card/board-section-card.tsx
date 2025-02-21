@@ -148,7 +148,7 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
         onHoverChange={setIsHover}
         setShowNewCard={setShowNewCardTop}
       />
-
+      
       <Flex
         vertical
         gap={16}
@@ -158,7 +158,7 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
           height: taskGroup?.tasks.length <= 0 ? 600 : 'auto',
           maxHeight: taskGroup?.tasks.length <= 0 ? 600 : 'auto',
           overflowY: 'scroll',
-          padding: taskGroup?.tasks.length <= 0 ? 8 : 1,
+          padding: taskGroup?.tasks.length <= 0 ? 8 : 6,
           background:
             taskGroup?.tasks.length <= 0 && !showNewCardTop && !showNewCardBottom
               ? themeWiseColor(
