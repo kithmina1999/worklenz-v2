@@ -64,6 +64,14 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const { message, code, name } = error || {};
 
+    // Add 401 unauthorized handling
+    if (error.response?.status === 401) {
+      alertService.error('Session Expired', 'Please log in again');
+      // Redirect to login page or trigger re-authentication
+      window.location.href = '/auth/login'; // Adjust this path as needed
+      return Promise.reject(error);
+    }
+
     const errorMessage = message || 'An unexpected error occurred';
     const errorTitle = 'Error';
 
