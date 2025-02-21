@@ -1,5 +1,5 @@
 export const SOCKET_CONFIG = {
-  url: process.env.SOCKET_URL || 'your_socket_url',
+  url: import.meta.env.VITE_SOCKET_URL,
   options: {
     transports: ['websocket', 'polling'],
     upgrade: true,
