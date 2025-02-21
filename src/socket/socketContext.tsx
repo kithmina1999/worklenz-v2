@@ -23,7 +23,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [modal, contextHolder] = Modal.useModal();
   const profile = getUserSession(); // Adjust based on your Redux structure
   const [messageApi, messageContextHolder] = message.useMessage(); // Add message API
-  const messageKeyRef = useRef<string>(''); // Add ref to store message key
 
   // Initialize socket connection
   useEffect(() => {
@@ -43,11 +42,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     socket.on('connect', () => {
       logger.info('Socket connected');
       setConnected(true);
-      // Destroy any existing reconnecting message
-      if (messageKeyRef.current) {
-        messageApi.destroy(messageKeyRef.current);
-        messageKeyRef.current = '';
-      }
       messageApi.success(t('connection-restored'));
     });
 
@@ -62,29 +56,13 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     socket.on('connect_error', error => {
       logger.error('Connection error', { error });
       setConnected(false);
-      // Show persistent reconnecting message if not already showing
-      if (!messageKeyRef.current) {
-        messageKeyRef.current = `reconnecting-${Date.now()}`;
-        messageApi.loading({
-          content: t('reconnecting'),
-          key: messageKeyRef.current,
-          duration: 0 // Make the message persistent
-        });
-      }
+      messageApi.error(t('connection-lost'));
     });
 
     socket.on('disconnect', () => {
       logger.info('Socket disconnected');
       setConnected(false);
-      // Show persistent reconnecting message if not already showing
-      if (!messageKeyRef.current) {
-        messageKeyRef.current = `reconnecting-${Date.now()}`;
-        messageApi.loading({
-          content: t('reconnecting'),
-          key: messageKeyRef.current,
-          duration: 0 // Make the message persistent
-        });
-      }
+      messageApi.loading(t('reconnecting'));
 
       // Emit logout event
       if (profile && profile.id) {
@@ -120,11 +98,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Cleanup function
     return () => {
       if (socket) {
-        // Destroy any existing message when unmounting
-        if (messageKeyRef.current) {
-          messageApi.destroy(messageKeyRef.current);
-          messageKeyRef.current = '';
-        }
         // Remove all listeners first
         socket.off('connect');
         socket.off('connect_error');
@@ -138,7 +111,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         socketRef.current = null;
       }
     };
-  }, [messageApi, t]); // Add t to dependencies
+  }, [messageApi]); // Add messageApi to dependencies
 
   const value = {
     socket: socketRef.current,

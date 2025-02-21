@@ -6,6 +6,7 @@ import notFoundRoute from './not-found-route';
 import accountSetupRoute from './account-setup-routes';
 import reportingRoutes from './reporting-routes';
 import { useAuthService } from '@/hooks/useAuth';
+import { SocketProvider } from '@/socket/socketContext';
 
 interface GuardProps {
   children: React.ReactNode;
@@ -19,38 +20,34 @@ export const AuthGuard = ({ children }: GuardProps) => {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  return <>{children}</>;
+  return <SocketProvider>{children}</SocketProvider>;
 };
 
 export const AdminGuard = ({ children }: GuardProps) => {
   const isAuthenticated = useAuthService().isAuthenticated();
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
-
   const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
-
 
   if (!isOwnerOrAdmin) {
     return <Navigate to="/worklenz/unauthorized" replace />;
   }
 
-
-  return <>{children}</>;
+  return <SocketProvider>{children}</SocketProvider>;
 };
 
 export const SetupGuard = ({ children }: GuardProps) => {
   const isAuthenticated = useAuthService().isAuthenticated();
-
   const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  return <>{children}</>;
+  return <SocketProvider>{children}</SocketProvider>;
 };
 
 // Helper to wrap routes with guards
