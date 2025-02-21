@@ -1,12 +1,11 @@
 // Core dependencies
 import React, { Suspense, useEffect } from 'react';
-import { RouterProvider, useNavigate } from 'react-router-dom';
+import { RouterProvider } from 'react-router-dom';
 import i18next from 'i18next';
 
 // Components
 import ThemeWrapper from './features/theme/ThemeWrapper';
 import PreferenceSelector from './components/PreferenceSelector';
-import { SocketProvider } from './socket/socketContext';
 
 // Routes
 import router from './app/routes';
@@ -38,12 +37,10 @@ const App: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <Suspense fallback={<SuspenseFallback />}>
-      <SocketProvider>
-        <ThemeWrapper>
-          <RouterProvider router={router} future={{ v7_startTransition: true }} />
-          <PreferenceSelector />
-        </ThemeWrapper>
-      </SocketProvider>
+      <ThemeWrapper>
+        <RouterProvider router={router} future={{ v7_startTransition: true }} />
+        <PreferenceSelector />
+      </ThemeWrapper>
     </Suspense>
   );
 };
