@@ -86,7 +86,7 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
           }}
           options={options}
           optionRender={(option) => (
-            <Flex align="center" style={{ backgroundColor: option.data.color }}>
+            <Flex align="center">
               {option.label}
             </Flex>
           )}

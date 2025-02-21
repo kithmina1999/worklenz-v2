@@ -569,6 +569,19 @@ const taskSlice = createSlice({
         }
       }
     },
+
+    toggleTaskRowExpansion: (state, action: PayloadAction<string>) => {
+      const taskId = action.payload;
+      
+      // Find the task in any group and toggle its show_sub_tasks property
+      for (const group of state.taskGroups) {
+        const task = group.tasks.find(t => t.id === taskId);
+        if (task) {
+          task.show_sub_tasks = !task.show_sub_tasks;
+          break;
+        }
+      }
+    },
   },
 
   extraReducers: builder => {
@@ -634,6 +647,7 @@ export const {
   updateTaskEndDate,  
   updateTaskStartDate,
   updateTaskTimeTracking,
+  toggleTaskRowExpansion,
 } = taskSlice.actions;
 
 
