@@ -23,6 +23,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [modal, contextHolder] = Modal.useModal();
   const profile = getUserSession(); // Adjust based on your Redux structure
   const [messageApi, messageContextHolder] = message.useMessage(); // Add message API
+  const hasShownConnectedMessage = useRef(false); // Add ref to track if message was shown
 
   // Initialize socket connection
   useEffect(() => {
@@ -42,7 +43,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     socket.on('connect', () => {
       logger.info('Socket connected');
       setConnected(true);
-      messageApi.success(t('connection-restored'));
+      
+      // Only show connected message once
+      if (!hasShownConnectedMessage.current) {
+        messageApi.success(t('connection-restored'));
+        hasShownConnectedMessage.current = true;
+      }
     });
 
     // Emit login event
@@ -57,12 +63,16 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       logger.error('Connection error', { error });
       setConnected(false);
       messageApi.error(t('connection-lost'));
+      // Reset the connected message flag on error
+      hasShownConnectedMessage.current = false;
     });
 
     socket.on('disconnect', () => {
       logger.info('Socket disconnected');
       setConnected(false);
       messageApi.loading(t('reconnecting'));
+      // Reset the connected message flag on disconnect
+      hasShownConnectedMessage.current = false;
 
       // Emit logout event
       if (profile && profile.id) {
@@ -109,9 +119,10 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         // Then close the connection
         socket.close();
         socketRef.current = null;
+        hasShownConnectedMessage.current = false; // Reset on unmount
       }
     };
-  }, [messageApi]); // Add messageApi to dependencies
+  }, [messageApi, t]); // Add messageApi and t to dependencies
 
   const value = {
     socket: socketRef.current,
