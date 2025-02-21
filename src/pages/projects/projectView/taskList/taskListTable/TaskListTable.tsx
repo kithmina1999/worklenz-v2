@@ -14,8 +14,6 @@ import { DraggableAttributes } from '@dnd-kit/core';
 import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
 import { DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { DndContext, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
-import { closestCenter } from '@dnd-kit/core';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useSelectedProject } from '@/hooks/useSelectedProject';
@@ -56,7 +54,6 @@ import PriorityDropdown from '@/components/task-list-common/priorityDropdown/Pri
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
 import { createPortal } from 'react-dom';
 import { setSelectedTasks } from '@/features/project/project.slice';
-import './taskListTable.css';
 import { toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
 
 interface TaskListTableProps {

@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 
 import Flex from 'antd/es/flex';
 import Badge from 'antd/es/badge';
 import Button from 'antd/es/button';
-import Collapse from 'antd/es/collapse';
 import ConfigProvider from 'antd/es/config-provider';
 import Dropdown from 'antd/es/dropdown';
 import Input from 'antd/es/input';
@@ -19,6 +16,7 @@ import './taskListTableWrapper.css';
 import TaskListTable from './TaskListTable';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import Collapsible from '@/components/Collapsible/Collapsible';
 
 interface TaskListTableWrapperProps {
   taskList: IProjectTask[];
@@ -27,8 +25,6 @@ interface TaskListTableWrapperProps {
   groupBy: string;
   color: string;
   statusCategory?: string | null;
-  priorityCategory?: string | null;
-  onRename?: (name: string) => void;
   onStatusCategoryChange?: (category: string) => void;
   activeId?: string | null;
 }
@@ -40,8 +36,6 @@ const TaskListTableWrapper = ({
   groupBy,
   color,
   statusCategory = null,
-  priorityCategory = null,
-  onRename,
   onStatusCategoryChange,
   activeId,
 }: TaskListTableWrapperProps) => {
@@ -56,6 +50,7 @@ const TaskListTableWrapper = ({
   const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
 
   const handlToggleExpand = () => {
+    if (isRenaming) return;
     setIsExpanded(!isExpanded);
   };
 
@@ -72,6 +67,13 @@ const TaskListTableWrapper = ({
     setCurrentCategory(category);
     if (onStatusCategoryChange) {
       onStatusCategoryChange(category);
+    }
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    console.log('handleInputKeyDown', e.key);
+    if (e.key === ' ') {
+      e.stopPropagation();
     }
   };
 
@@ -105,10 +107,6 @@ const TaskListTableWrapper = ({
         wave={{ disabled: true }}
         theme={{
           components: {
-            Collapse: {
-              headerPadding: 0,
-              contentPadding: 0,
-            },
             Select: {
               colorBorder: colors.transparent,
             },
@@ -136,6 +134,8 @@ const TaskListTableWrapper = ({
                   onChange={e => setTableName(e.target.value)}
                   onBlur={handleRename}
                   onPressEnter={handleRename}
+                  onKeyDown={handleInputKeyDown}
+                  onClick={e => e.stopPropagation()}
                   autoFocus
                 />
               ) : (
@@ -155,22 +155,13 @@ const TaskListTableWrapper = ({
               </Dropdown>
             )}
           </Flex>
-          <Collapse
-            collapsible="icon"
-            className="border-l-[4px]"
-            bordered={false}
-            ghost={true}
-            expandIcon={() => null}
-            activeKey={isExpanded ? tableId : undefined}
-            onChange={handlToggleExpand}
-            items={[
-              {
-                key: tableId,
-                className: `custom-collapse-content-box relative after:content after:absolute after:h-full after:w-1 after:bg-[${color}] after:z-10 after:top-0 after:left-0`,
-                children: <TaskListTable taskList={taskList} tableId={tableId} activeId={activeId} />,
-              },
-            ]}
-          />
+          <Collapsible
+            isOpen={isExpanded}
+            className={`border-l-[3px] relative after:content after:absolute after:h-full after:w-1 after:z-10 after:top-0 after:left-0 mt-1`}
+            color={color}
+          >
+            <TaskListTable taskList={taskList} tableId={tableId} activeId={activeId} />
+          </Collapsible>
         </Flex>
       </ConfigProvider>
     </div>
