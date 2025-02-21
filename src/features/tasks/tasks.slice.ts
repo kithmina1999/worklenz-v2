@@ -140,7 +140,7 @@ export const fetchTaskGroups = createAsyncThunk(
         statuses: '',
         members: selectedMembers,
         projects: '',
-        isSubtasksInclude: true,
+        isSubtasksInclude: false,
         labels: taskReducer.labels.join(' '),
         priorities: taskReducer.priorities.join(' '),
       };
