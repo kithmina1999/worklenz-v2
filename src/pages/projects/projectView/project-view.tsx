@@ -2,17 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { PushpinFilled, PushpinOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Badge, Button, ConfigProvider, Flex, Tabs, TabsProps, Tooltip } from 'antd';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { createPortal } from 'react-dom';
+
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { getProject, setProjectId, setProjectView } from '@/features/project/project.slice';
-import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
+import { fetchStatuses, resetStatuses } from '@/features/taskAttributes/taskStatusSlice';
 import { projectsApiService } from '@/api/projects/projects.api.service';
 import { colors } from '@/styles/colors';
 import { tabItems } from '@/lib/project/projectViewConstants';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import ProjectViewHeader from './project-view-header';
 import './project-view.css';
-import { createPortal } from 'react-dom';
+import { resetTaskListData } from '@/features/tasks/tasks.slice';
+import { resetBoardData } from '@/features/board/board-slice';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
 const StatusDrawer = React.lazy(
@@ -123,6 +126,19 @@ const ProjectView = () => {
     ),
     children: item.element,
   }));
+
+  const resetProjectData = () => {
+    dispatch(setProjectId(null));
+    dispatch(resetStatuses());
+    dispatch(resetTaskListData());
+    dispatch(resetBoardData());
+  };
+
+  useEffect(() => {
+    return () => {
+      resetProjectData();
+    };
+  }, []);
 
   return (
     <div style={{ marginBlockStart: 80, marginBlockEnd: 24, minHeight: '80vh' }}>

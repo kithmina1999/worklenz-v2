@@ -312,15 +312,23 @@ const taskSlice = createSlice({
       const group = state.taskGroups.find(g => g.id === groupId);
       if (!group || !task.id) return;
 
+      // Handle subtask addition
       if (task.parent_task_id) {
         const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
         if (parentTask) {
           parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
           if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
-          parentTask.sub_tasks.push(task);
+          parentTask.sub_tasks.push({...task});
+          // Ensure sub-tasks are visible when adding a new one
+          parentTask.show_sub_tasks = true;
         }
       } else {
-        insert ? group.tasks.push(task) : group.tasks.unshift(task);
+        // Handle main task addition
+        if (insert) {
+          group.tasks.push({...task});
+        } else {
+          group.tasks.unshift({...task});
+        }
       }
     },
 
@@ -582,6 +590,13 @@ const taskSlice = createSlice({
         }
       }
     },
+    resetTaskListData: state => {
+      state.taskGroups = [];
+      state.columns = [];
+      state.loadingGroups = false;
+      state.loadingColumns = false;
+      state.error = null;
+    },
   },
 
   extraReducers: builder => {
@@ -648,6 +663,7 @@ export const {
   updateTaskStartDate,
   updateTaskTimeTracking,
   toggleTaskRowExpansion,
+  resetTaskListData,
 } = taskSlice.actions;
 
 
