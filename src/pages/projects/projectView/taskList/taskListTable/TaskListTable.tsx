@@ -14,8 +14,6 @@ import { DraggableAttributes } from '@dnd-kit/core';
 import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
 import { DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { DndContext, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
-import { closestCenter } from '@dnd-kit/core';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useSelectedProject } from '@/hooks/useSelectedProject';
@@ -56,7 +54,6 @@ import PriorityDropdown from '@/components/task-list-common/priorityDropdown/Pri
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
 import { createPortal } from 'react-dom';
 import { setSelectedTasks } from '@/features/project/project.slice';
-import './taskListTable.css';
 import { toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
 
 interface TaskListTableProps {
@@ -416,10 +413,16 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     );
   };
 
+  // Get the tasks from the taskGroups state
+  const currentGroup = taskGroups.find(group => group.id === tableId);
+  
+  // Use the tasks from the current group if available, otherwise fall back to taskList prop
+  const displayTasks = currentGroup?.tasks || taskList || [];
+
   return (
     <div className={`border-x border-b ${customBorderColor}`}>
       <SortableContext
-        items={(taskList?.map(t => t.id).filter(Boolean) || []) as string[]}
+        items={(displayTasks?.map(t => t.id).filter(Boolean) || []) as string[]}
         strategy={verticalListSortingStrategy}
       >
         <div className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}>
@@ -455,8 +458,8 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
               </tr>
             </thead>
             <tbody>
-              {taskList && taskList.length > 0 ? (
-                taskList.map(task => {
+              {displayTasks && displayTasks.length > 0 ? (
+                displayTasks.map(task => {
                   const updatedTask = findTaskInGroups(task.id || '') || task;
                   
                   return (
@@ -493,9 +496,9 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
           easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
         }}
       >
-        {activeId && taskList?.length ? (
+        {activeId && displayTasks?.length ? (
           <table className="w-full">
-            <tbody>{renderTaskRow(taskList.find(t => t.id === activeId))}</tbody>
+            <tbody>{renderTaskRow(displayTasks.find(t => t.id === activeId))}</tbody>
           </table>
         ) : null}
       </DragOverlay>

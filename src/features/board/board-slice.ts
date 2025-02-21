@@ -223,6 +223,14 @@ const boardSlice = createSlice({
     reorderTaskGroups: (state, action: PayloadAction<any[]>) => {
       state.taskGroups = action.payload;
     },
+
+    resetBoardData: (state) => {
+      state.taskGroups = [];
+      state.columns = [];
+      state.loadingGroups = false;
+      state.loadingColumns = false;
+      state.error = null;
+    },
   },
   extraReducers: builder => {
     builder
@@ -251,6 +259,7 @@ export const {
   deleteSection,
   deleteBoardTask,
   updateTaskAssignee,
-  reorderTaskGroups
+  reorderTaskGroups,
+  resetBoardData,
 } = boardSlice.actions;
 export default boardSlice.reducer;
