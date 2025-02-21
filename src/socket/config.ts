@@ -1,11 +1,8 @@
 export const SOCKET_CONFIG = {
-  url: import.meta.env.VITE_SOCKET_URL,
+  url: import.meta.env.VITE_SOCKET_URL || 'ws://localhost:3000',
   options: {
-    transports: ['websocket', 'polling'],
+    transports: ['websocket'],
+    path: '/socket',
     upgrade: true,
-    rememberUpgrade: true,
-    secure: true,
-    rejectUnauthorized: import.meta.env.VITE_APP_ENV === 'production',
-    autoConnect: false,
   },
 };
