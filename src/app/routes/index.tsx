@@ -6,7 +6,7 @@ import notFoundRoute from './not-found-route';
 import accountSetupRoute from './account-setup-routes';
 import reportingRoutes from './reporting-routes';
 import { useAuthService } from '@/hooks/useAuth';
-import { SocketProvider } from '@/socket/socketContext';
+import { AuthenticatedLayout } from '@/layouts/AuthenticatedLayout';
 
 interface GuardProps {
   children: React.ReactNode;
@@ -20,7 +20,7 @@ export const AuthGuard = ({ children }: GuardProps) => {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  return <SocketProvider>{children}</SocketProvider>;
+  return <>{children}</>;
 };
 
 export const AdminGuard = ({ children }: GuardProps) => {
@@ -36,7 +36,7 @@ export const AdminGuard = ({ children }: GuardProps) => {
     return <Navigate to="/worklenz/unauthorized" replace />;
   }
 
-  return <SocketProvider>{children}</SocketProvider>;
+  return <>{children}</>;
 };
 
 export const SetupGuard = ({ children }: GuardProps) => {
@@ -47,7 +47,7 @@ export const SetupGuard = ({ children }: GuardProps) => {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  return <SocketProvider>{children}</SocketProvider>;
+  return <>{children}</>;
 };
 
 // Helper to wrap routes with guards
@@ -80,9 +80,14 @@ const setupRoutes = wrapRoutes([accountSetupRoute], SetupGuard);
 
 const router = createBrowserRouter([
   ...publicRoutes,
-  ...protectedMainRoutes,
-  ...adminRoutes,
-  ...setupRoutes,
+  {
+    element: <AuthenticatedLayout />,
+    children: [
+      ...protectedMainRoutes,
+      ...adminRoutes,
+      ...setupRoutes,
+    ],
+  },
 ]);
 
 export default router;
