@@ -6,7 +6,7 @@ import { SOCKET_CONFIG } from './config';
 import logger from '@/utils/errorLogger';
 import { Modal, message } from 'antd';
 import { SocketEvents } from '@/shared/socket-events';
-import { getUserSession } from '@/utils/session-helper';
+import { useAuthService } from '@/hooks/useAuth';
 
 // Add these constants at the top
 const INITIAL_RECONNECTION_DELAY = 1000;
@@ -26,9 +26,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const socketRef = useRef<Socket | null>(null);
   const [connected, setConnected] = useState(false);
   const [modal, contextHolder] = Modal.useModal();
-  const profile = getUserSession(); // Adjust based on your Redux structure
-  const [messageApi, messageContextHolder] = message.useMessage(); // Add message API
-  const hasShownConnectedMessage = useRef(false); // Add ref to track if message was shown
+  const [messageApi, messageContextHolder] = message.useMessage();
+  const hasShownConnectedMessage = useRef(false);
+  const currentSession = useAuthService().getCurrentSession();
 
   // Initialize socket connection
   useEffect(() => {
@@ -79,8 +79,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
 
       // Resubscribe to necessary events/channels here if needed
-      if (profile && profile.id) {
-        socket.emit(SocketEvents.LOGIN.toString(), profile.id);
+      if (currentSession && currentSession.id) {
+        socket.emit(SocketEvents.LOGIN.toString(), currentSession.id);
       }
     });
 
@@ -110,7 +110,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       (data: { teamId: string; message: string }) => {
         if (!data) return;
 
-        if (profile && profile.team_id === data.teamId) {
+        if (currentSession && currentSession.team_id === data.teamId) {
           modal.confirm({
             title: 'You no longer have permissions to stay on this team!',
             content: data.message,
@@ -155,7 +155,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         hasShownConnectedMessage.current = false; // Reset on unmount
       }
     };
-  }, [messageApi, t, profile]); // Add profile to dependencies
+  }, [messageApi, t, currentSession]); // Add profile to dependencies
 
   const value = {
     socket: socketRef.current,
