@@ -26,7 +26,7 @@ import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
-import { updateTaskAssignees } from '@/features/tasks/tasks.slice';
+import { fetchTaskAssignees, updateTaskAssignees } from '@/features/tasks/tasks.slice';
 
 interface AssigneeSelectorProps {
   task: IProjectTask;
@@ -48,6 +48,7 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
   const dispatch = useAppDispatch();
 
   const members = useAppSelector(state => state.teamMembersReducer.teamMembers);
+  const {loadingAssignees} = useAppSelector(state => state.taskReducer);
 
   const filteredMembersData = useMemo(() => {
     return teamMembers?.data?.filter(member =>
@@ -96,10 +97,6 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
     socket?.emit(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(), JSON.stringify(body));
   };
 
-  const handleAssignMembers = () => {
-    console.log(teamMembers.data);
-  };
-
   const handleQuickAssigneesUpdate = (data: ITaskAssigneesUpdateResponse) => {
     const updatedAssignees = data.assignees.map(assignee => ({
       ...assignee,
@@ -108,15 +105,14 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
     dispatch(
       updateTaskAssignees({ groupId: groupId || '', taskId: data.id, assignees: updatedAssignees })
     );
-    
   };
 
   useEffect(() => {
     socket?.on(
       SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(),
       (data: ITaskAssigneesUpdateResponse) => {
-        console.log(data);
         if (data) handleQuickAssigneesUpdate(data);
+        if (projectId && !loadingAssignees) dispatch(fetchTaskAssignees(projectId));
       }
     );
     return () => {
@@ -205,16 +201,16 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
           {t('assigneeSelectorInviteButton')}
         </Button>
 
-        <Divider style={{ marginBlock: 8 }} />
+        {/* <Divider style={{ marginBlock: 8 }} /> */}
 
-        <Button
+        {/* <Button
           type="primary"
           style={{ alignSelf: 'flex-end' }}
           size="small"
           onClick={handleAssignMembers}
         >
           {t('okButton')}
-        </Button>
+        </Button> */}
       </Flex>
     </Card>
   );

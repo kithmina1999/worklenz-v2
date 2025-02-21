@@ -41,7 +41,7 @@ import TaskListLastUpdatedCell from './task-list-table-cells/task-list-last-upda
 import TaskListReporterCell from './task-list-table-cells/task-list-reporter-cell/task-list-reporter-cell';
 import TaskListDueTimeCell from './task-list-table-cells/task-list-due-time-cell/task-list-due-time-cell';
 import PhaseDropdown from '@/components/taskListCommon/phaseDropdown/PhaseDropdown';
-import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
+import AssigneeSelector from '@/components/taskListCommon/assignee-selector/assignee-selector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { CustomFieldsTypes } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 import {

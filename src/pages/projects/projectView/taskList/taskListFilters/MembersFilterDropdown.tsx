@@ -17,7 +17,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import SingleAvatar from '@components/common/single-avatar/single-avatar';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setMembers } from '@/features/tasks/tasks.slice';
+import { fetchTaskGroups, setMembers } from '@/features/tasks/tasks.slice';
 
 const MembersFilterDropdown = () => {
   const membersInputRef = useRef<InputRef>(null);
@@ -28,7 +28,7 @@ const MembersFilterDropdown = () => {
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const { taskAssignees } = useAppSelector(state => state.taskReducer);
-
+  const { projectId } = useAppSelector(state => state.projectReducer);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const filteredMembersData = useMemo(() => {
@@ -37,13 +37,14 @@ const MembersFilterDropdown = () => {
     );
   }, [taskAssignees, searchQuery]);
 
-  const handleSelectedFiltersCount = (memberId: string | undefined, checked: boolean) => {
+  const handleSelectedFiltersCount = async (memberId: string | undefined, checked: boolean) => {
     setSelectedCount(checked ? selectedCount + 1 : selectedCount - 1);
     if (!memberId) return;
     const newTaskAssignees = taskAssignees.map(member =>
       member.id === memberId ? { ...member, selected: checked } : member
     );
-    dispatch(setMembers(newTaskAssignees));
+    await dispatch(setMembers(newTaskAssignees));
+    if (projectId) dispatch(fetchTaskGroups(projectId));
   };
 
   const membersDropdownContent = (
