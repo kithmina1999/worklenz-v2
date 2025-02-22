@@ -14,41 +14,33 @@ import { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
-import { ITaskLabel } from '@/types/tasks/taskLabel.types';
-import { fetchTaskGroups, setLabels } from '@/features/tasks/tasks.slice';
+import { fetchLabelsByProject, fetchTaskGroups, setLabels } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 
-interface LabelsFilterDropdownProps {
-  labels: ITaskLabel[];
-}
-
-const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
+const LabelsFilterDropdown = () => {
   const dispatch = useAppDispatch();
   const labelInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const { labels } = useAppSelector(state => state.taskReducer);
+  const { labels, loadingLabels } = useAppSelector(state => state.taskReducer);
   const { projectId } = useAppSelector(state => state.projectReducer);
   const { t } = useTranslation('task-list-filters');
 
   const filteredLabelData = useMemo(() => {
-    return props.labels.filter(label =>
+    return labels.filter(label =>
       label.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [props.labels, searchQuery]);
+  }, [labels, searchQuery]);
+
+  const labelsCount = useMemo(() => {
+    return labels.filter(label => label.selected).length;
+  }, [labels]);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // handle selected filters count
-  const handleSelectedFiltersCount = (checked: boolean, labelId: string) => {
-    let newLabels = [...labels];
-    if (checked) {
-      newLabels.push(labelId);
-      dispatch(setLabels(newLabels));
-    } else {
-      newLabels.splice(newLabels.indexOf(labelId), 1);
-      dispatch(setLabels(newLabels));
-    }
+  const handleLabelSelect = (checked: boolean, labelId: string) => {
+    dispatch(setLabels(labels.map(label => label.id === labelId ? { ...label, selected: checked } : label)));
     if (projectId) dispatch(fetchTaskGroups(projectId));
   };
 
@@ -88,8 +80,8 @@ const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
               >
                 <Checkbox
                   id={label.id}
-                  checked={labels.includes(label.id || '')}
-                  onChange={e => handleSelectedFiltersCount(e.target.checked, label.id || '')}
+                  checked={label.selected}
+                  onChange={e => handleLabelSelect(e.target.checked, label.id || '')}
                 >
                   <Flex gap={8}>
                     <Badge color={label.color_code} />
@@ -116,20 +108,21 @@ const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
       <Button
         icon={<CaretDownFilled />}
         iconPosition="end"
+        loading={loadingLabels}
         style={{
           backgroundColor:
-            labels.length > 0
+            labelsCount > 0
               ? themeMode === 'dark'
                 ? '#003a5c'
                 : colors.paleBlue
               : colors.transparent,
 
-          color: labels.length > 0 ? (themeMode === 'dark' ? 'white' : colors.darkGray) : 'inherit',
+          color: labelsCount > 0 ? (themeMode === 'dark' ? 'white' : colors.darkGray) : 'inherit',
         }}
       >
         <Space>
           {t('labelsText')}
-          {labels.length > 0 && <Badge size="small" count={labels.length} color={colors.skyBlue} />}
+          {labelsCount > 0 && <Badge size="small" count={labelsCount} color={colors.skyBlue} />}
         </Space>
       </Button>
     </Dropdown>

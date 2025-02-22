@@ -20,7 +20,7 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { ITaskLabel } from '../../../types/label.type';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { updateTaskLabel } from '@/features/tasks/tasks.slice';
+import { fetchLabelsByProject, updateTaskLabel } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import { SocketEvents } from '@/shared/socket-events';
 import { useSocket } from '@/socket/socketContext';
@@ -40,6 +40,7 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const { labels } = useAppSelector(state => state.taskLabelsReducer);
+  const { projectId } = useAppSelector(state => state.projectReducer);
   const [labelList, setLabelList] = useState<ITaskLabel[]>([]);
 
   const currentSession = useAuthService().getCurrentSession();
@@ -48,6 +49,7 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   const handleLabelsChange = async (labels: ILabelsChangeResponse) => {
     await dispatch(updateTaskLabel(labels));
     await dispatch(fetchLabels());
+    if (projectId) await dispatch(fetchLabelsByProject(projectId));
     setSearchQuery('');
   };
 

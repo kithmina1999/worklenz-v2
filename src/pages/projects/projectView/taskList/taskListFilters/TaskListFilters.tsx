@@ -9,7 +9,11 @@ import { fetchPriorities } from '@/features/taskAttributes/taskPrioritySlice';
 import { useEffect } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchTaskAssignees, toggleArchived } from '@/features/tasks/tasks.slice';
+import {
+  fetchLabelsByProject,
+  fetchTaskAssignees,
+  toggleArchived,
+} from '@/features/tasks/tasks.slice';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
 import { fetchTaskGroups } from '@/features/board/board-slice';
 
@@ -31,8 +35,6 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
 
   const priorities = useAppSelector(state => state.priorityReducer.priorities);
 
-  const labels = useAppSelector(state => state.taskLabelsReducer.labels);
-  const taskAssignees = useAppSelector(state => state.taskReducer.taskAssignees);
   const projectId = useAppSelector(state => state.projectReducer.projectId);
   const archived = useAppSelector(state => state.taskReducer.archived);
 
@@ -46,10 +48,8 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
       if (!priorities.length) {
         await dispatch(fetchPriorities());
       }
-      if (!labels.length) {
-        await dispatch(fetchLabels());
-      }
-      if (!taskAssignees?.length && projectId) {
+      if (projectId) {
+        await dispatch(fetchLabelsByProject(projectId));
         await dispatch(fetchTaskAssignees(projectId));
       }
       dispatch(
@@ -58,7 +58,7 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
     };
 
     fetchInitialData();
-  }, [dispatch, priorities.length, labels.length, projectId]);
+  }, [dispatch, priorities.length, projectId]);
 
   return (
     <Flex gap={8} align="center" justify="space-between">
@@ -66,7 +66,7 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
         <SearchDropdown />
         <SortFilterDropdown />
         <PriorityFilterDropdown priorities={priorities} />
-        <LabelsFilterDropdown labels={labels} />
+        <LabelsFilterDropdown />
         <MembersFilterDropdown />
         <GroupByFilterDropdown />
       </Flex>

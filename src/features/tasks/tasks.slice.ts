@@ -16,6 +16,8 @@ import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
+import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service';
+import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -62,10 +64,14 @@ interface ITaskState {
   columns: ITaskListColumn[];
   loadingGroups: boolean;
   error: string | null;
+
   taskAssignees: ITaskListMemberFilter[];
   loadingAssignees: boolean;
+
   statuses: ITaskStatusViewModel[];
-  labels: string[];
+
+  loadingLabels: boolean;
+  labels: ITaskLabel[];
   priorities: string[];
   members: string[];
   activeTimers: { [taskId: string]: number | null };
@@ -87,6 +93,7 @@ const initialState: ITaskState = {
   loadingAssignees: false,
   statuses: [],
   labels: [],
+  loadingLabels: false,
   priorities: [],
   members: [],
   activeTimers: {},
@@ -130,6 +137,11 @@ export const fetchTaskGroups = createAsyncThunk(
         .map(member => member.id)
         .join(' ');
 
+      const selectedLabels = taskReducer.labels
+        .filter(label => label.selected)
+        .map(label => label.id)
+        .join(' ');
+
       const config: ITaskListConfigV2 = {
         id: projectId,
         archived: taskReducer.archived,
@@ -141,7 +153,7 @@ export const fetchTaskGroups = createAsyncThunk(
         members: selectedMembers,
         projects: '',
         isSubtasksInclude: false,
-        labels: taskReducer.labels.join(' '),
+        labels: selectedLabels,
         priorities: taskReducer.priorities.join(' '),
       };
 
@@ -177,6 +189,23 @@ export const fetchTaskAssignees = createAsyncThunk(
         return rejectWithValue(error.message);
       }
       return rejectWithValue('Failed to fetch task assignees');
+    }
+  }
+);
+
+// Create async thunk for fetching labels by project
+export const fetchLabelsByProject = createAsyncThunk(
+  'taskLabel/fetchLabelsByProject',
+  async (projectId: string, { rejectWithValue }) => {
+    try {
+      const response = await labelsApiService.getPriorityByProject(projectId);
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Labels By Project', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch project labels');
     }
   }
 );
@@ -276,7 +305,7 @@ const taskSlice = createSlice({
       state.group = action.payload;
     },
 
-    setLabels: (state, action: PayloadAction<string[]>) => {
+    setLabels: (state, action: PayloadAction<ITaskLabel[]>) => {
       state.labels = action.payload;
     },
 
@@ -593,6 +622,7 @@ const taskSlice = createSlice({
     resetTaskListData: state => {
       state.taskGroups = [];
       state.columns = [];
+      state.labels = [];
       state.loadingGroups = false;
       state.loadingColumns = false;
       state.error = null;
@@ -639,6 +669,19 @@ const taskSlice = createSlice({
         });
         state.columns = action.payload;
       })
+      // Fetch Labels By Project
+      .addCase(fetchLabelsByProject.pending, state => {
+        state.loadingLabels = true;
+        state.error = null;
+      })
+      .addCase(fetchLabelsByProject.fulfilled, (state, action: PayloadAction<ITaskLabel[]>) => {
+        state.loadingLabels = false;
+        state.labels = action.payload;
+      })
+      .addCase(fetchLabelsByProject.rejected, (state, action) => {
+        state.loadingLabels = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
