@@ -16,6 +16,7 @@ import ProjectViewHeader from './project-view-header';
 import './project-view.css';
 import { resetTaskListData } from '@/features/tasks/tasks.slice';
 import { resetBoardData } from '@/features/board/board-slice';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
 const StatusDrawer = React.lazy(
@@ -48,6 +49,7 @@ const ProjectView = () => {
           return;
         }
         dispatch(fetchStatuses(projectId));
+        dispatch(fetchLabels());
       });
     }
   }, [dispatch, navigate, projectId]);

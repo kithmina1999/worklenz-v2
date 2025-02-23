@@ -23,11 +23,9 @@ interface TaskGroupWrapperProps {
 }
 
 const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
-  const dispatch = useAppDispatch();
   const [groups, setGroups] = useState(taskGroups);
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  const selectedTaskIdsList = useAppSelector(state => state.bulkActionReducer.selectedTaskIdsList);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const sensors = useSensors(
