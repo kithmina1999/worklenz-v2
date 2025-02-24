@@ -1,6 +1,22 @@
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge, Checkbox, Dropdown, Flex, Tooltip, Button, Typography, InputRef } from 'antd';
+import {
+  Badge,
+  Checkbox,
+  Dropdown,
+  Flex,
+  Tooltip,
+  Button,
+  Typography,
+  InputRef,
+  List,
+  Menu,
+  Card,
+  Input,
+  Divider,
+  Empty,
+  CheckboxChangeEvent,
+} from 'antd';
 import {
   RetweetOutlined,
   TagsOutlined,
@@ -44,6 +60,7 @@ import { toggleTaskTemplateDrawer } from '@/features/settings/taskTemplates/task
 import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
 import { createPortal } from 'react-dom';
 import { setSelectedTasks } from '@/features/project/project.slice';
+import { MenuItemType } from 'antd/es/menu/interface';
 
 const TaskListBulkActionsBar = () => {
   const dispatch = useAppDispatch();
@@ -70,15 +87,25 @@ const TaskListBulkActionsBar = () => {
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const membersInputRef = useRef<InputRef>(null);
+  const labelsInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [labelsSearchQuery, setLabelsSearchQuery] = useState<string>('');
+
   const [teamMembers, setTeamMembers] = useState<ITeamMembersViewModel>({ data: [], total: 0 });
   const [assigneeDropdownOpen, setAssigneeDropdownOpen] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+
   const filteredMembersData = useMemo(() => {
     return teamMembers?.data?.filter(member =>
       member.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [teamMembers, searchQuery]);
+
+  const filteredLabels = useMemo(() => {
+    return labelsList?.filter(label =>
+      label.name?.toLowerCase().includes(labelsSearchQuery.toLowerCase())
+    );
+  }, [labelsList, labelsSearchQuery]);
 
   // Handlers
   const handleChangeStatus = async (status: ITaskStatus) => {
@@ -193,7 +220,15 @@ const TaskListBulkActionsBar = () => {
       const body = {
         tasks: selectedTaskIdsList,
         project_id: projectId,
-        members: members?.data?.filter(m => m.selected),
+        members:
+          members?.data
+            ?.filter(m => m.selected)
+            .map(member => ({
+              id: member.id,
+              name: member.name,
+              email: member.email,
+              avatar_url: member.avatar_url,
+            })) || [],
       };
       const res = await taskListBulkActionsApiService.assignTasks(body);
       if (res.done) {
@@ -263,7 +298,7 @@ const TaskListBulkActionsBar = () => {
   const getLabelMenu = () =>
     labelsList.map(label => ({
       key: label.id,
-      type: 'checkbox',
+      type: 'checkbox' as const,
       label: (
         <Flex align="center" gap={8}>
           <Checkbox>
@@ -282,6 +317,7 @@ const TaskListBulkActionsBar = () => {
     return [
       ...(members?.data?.map(member => ({
         key: member.id,
+        type: 'checkbox' as const,
         label: (
           <Flex align="center" justify="space-between" gap={8}>
             <Checkbox onChange={e => e.stopPropagation()}>
@@ -304,6 +340,7 @@ const TaskListBulkActionsBar = () => {
       })) || []),
       {
         key: 'apply',
+        type: 'item' as const,
         label: (
           <Button
             type="primary"
@@ -316,80 +353,74 @@ const TaskListBulkActionsBar = () => {
         ),
       },
     ];
-
-    // return (
-    //   <Flex vertical>
-    //     <Input
-    //       ref={membersInputRef}
-    //       value={searchQuery}
-    //       onChange={e => setSearchQuery(e.currentTarget.value)}
-    //       placeholder={t('searchInputPlaceholder')}
-    //     />
-
-    //     <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
-    //       {filteredMembersData?.length ? (
-    //         filteredMembersData.map(member => (
-    //           <List.Item
-    //             className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
-    //             key={member.id}
-    //             style={{
-    //               display: 'flex',
-    //               gap: 8,
-    //               justifyContent: 'flex-start',
-    //               padding: '4px 8px',
-    //               border: 'none',
-    //               cursor: 'pointer',
-    //             }}
-    //             // onClick={e => handleMemberChange(null, member.id || '')}
-    //           >
-    //             <Checkbox
-    //               id={member.id}
-    //               // checked={checkMemberSelected(member.id || '')}
-    //               // onChange={e => handleMemberChange(e, member.id || '')}
-    //             />
-    //             <div>
-    //               <SingleAvatar
-    //                 avatarUrl={member.avatar_url}
-    //                 name={member.name}
-    //                 email={member.email}
-    //               />
-    //             </div>
-    //             <Flex vertical>
-    //               {member.name}
-
-    //               <Typography.Text
-    //                 style={{
-    //                   fontSize: 12,
-    //                   color: colors.lightGray,
-    //                 }}
-    //               >
-    //                 {member.email}
-    //               </Typography.Text>
-    //             </Flex>
-    //           </List.Item>
-    //         ))
-    //       ) : (
-    //         <Empty />
-    //       )}
-    //     </List>
-
-    //     <Divider style={{ marginBlock: 0 }} />
-
-    //     <Divider style={{ marginBlock: 8 }} />
-
-    //     <Button
-    //       type="primary"
-    //       style={{ alignSelf: 'flex-end' }}
-    //       size="small"
-    //       onClick={handleChangeAssignees}
-    //     >
-    //       {t('okButton')}
-    //     </Button>
-    //   </Flex>
-    // );
   };
 
   const buttonStyle = { background: colors.transparent, color: colors.white };
+
+  const handleLabelChange = (e: CheckboxChangeEvent, labelId: string) => {
+    filteredLabels.map(label => {
+      if (label.id === labelId) {
+        label.selected = e.target.checked;
+      }
+    });
+  };
+
+  const labelsDropdownContent = (
+    <Card className="custom-card" styles={{ body: { padding: 8 } }}>
+      <Flex vertical>
+        <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
+          {filteredLabels?.length ? (
+            filteredLabels.map(label => (
+              <List.Item
+                className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
+                key={label.id}
+                style={{
+                  display: 'flex',
+                  gap: 8,
+                  justifyContent: 'flex-start',
+                  padding: '4px 8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                <Checkbox
+                  id={label.id}
+                  checked={label.selected}
+                  onChange={e => handleLabelChange(e, label.id || '')}
+                />
+                <Badge color={label.color_code} text={label.name} />
+              </List.Item>
+            ))
+          ) : (
+            <Empty />
+          )}
+        </List>
+
+        <Flex
+          style={{ paddingTop: 8 }}
+          vertical
+          align="center"
+          justify="space-between"
+          gap={8}
+        >
+          <Input
+            ref={labelsInputRef}
+            value={labelsSearchQuery}
+            onChange={e => setLabelsSearchQuery(e.currentTarget.value)}
+            placeholder={t('searchInputPlaceholder')}
+          />
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => setLabelsSearchQuery('')}
+            style={{ width: '100%' }}
+          >
+            {t('apply')}
+          </Button>
+        </Flex>
+      </Flex>
+    </Card>
+  );
 
   return (
     <div className={`bulk-actions ${selectedTaskIdsList.length > 0 ? 'open' : ''}`}>
@@ -417,11 +448,7 @@ const TaskListBulkActionsBar = () => {
 
           <Tooltip title={t('changeLabel')}>
             <Dropdown
-              menu={{
-                items: getLabelMenu(),
-                style: { maxHeight: '200px', overflow: 'auto' },
-                multiple: true,
-              }}
+              dropdownRender={() => labelsDropdownContent}
               placement="top"
               arrow
               trigger={['click']}
