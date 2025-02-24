@@ -14,7 +14,7 @@ const Collapsible = ({ isOpen, children, className = '', color }: CollapsiblePro
         borderLeft: `3px solid ${color}`,
       }}
       className={`transition-all duration-300 ease-in-out ${
-        isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+        isOpen ? 'max-h-[2000px] opacity-100 overflow-x-scroll' : 'max-h-0 opacity-0 overflow-hidden'
       } ${className}`}
     >
       {children}
