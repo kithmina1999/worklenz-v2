@@ -15,7 +15,13 @@ import {
   DragEndEvent,
   DragStartEvent,
 } from '@dnd-kit/core';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
+import { SocketEvents } from '@/shared/socket-events';
+import logger from '@/utils/errorLogger';
+import { useSocket } from '@/socket/socketContext';
+import { useAuthService } from '@/hooks/useAuth';
+import { fetchTaskAssignees, updateTaskAssignees } from '@/features/tasks/tasks.slice';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -25,6 +31,10 @@ interface TaskGroupWrapperProps {
 const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
   const [groups, setGroups] = useState(taskGroups);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const { socket } = useSocket();
+  const currentSession = useAuthService().getCurrentSession();
+  const loadingAssignees = useAppSelector(state => state.taskReducer.loadingAssignees);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
@@ -35,6 +45,50 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       },
     })
   );
+
+  // Update local groups state when taskGroups prop changes
+  useEffect(() => {
+    setGroups(taskGroups);
+  }, [taskGroups]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleAssigneesUpdate = (data: ITaskAssigneesUpdateResponse) => {
+      logger.info('change assignees response:- ', data);
+      if (data) {
+        const updatedAssignees = data.assignees.map(assignee => ({
+          ...assignee,
+          selected: true,
+        }));
+
+        // Find which group contains this task
+        const groupId = groups.find(group => 
+          group.tasks.some(task => task.id === data.id)
+        )?.id;
+
+        if (groupId) {
+          dispatch(
+            updateTaskAssignees({
+              groupId,
+              taskId: data.id,
+              assignees: updatedAssignees,
+            })
+          );
+
+          if (currentSession?.team_id && !loadingAssignees) {
+            dispatch(fetchTaskAssignees(currentSession.team_id));
+          }
+        }
+      }
+    };
+
+    socket.on(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(), handleAssigneesUpdate);
+    
+    return () => {
+      socket.off(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(), handleAssigneesUpdate);
+    };
+  }, [socket, currentSession?.team_id, loadingAssignees, groups]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
