@@ -27,6 +27,7 @@ import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
 import { fetchTaskAssignees, updateTaskAssignees } from '@/features/tasks/tasks.slice';
+import logger from '@/utils/errorLogger';
 
 interface AssigneeSelectorProps {
   task: IProjectTask;
@@ -102,6 +103,7 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
       ...assignee,
       selected: true,
     }));
+    logger.info('updatedAssignees:- ', updatedAssignees);
     dispatch(
       updateTaskAssignees({ groupId: groupId || '', taskId: data.id, assignees: updatedAssignees })
     );
@@ -111,6 +113,7 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
     socket?.on(
       SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(),
       (data: ITaskAssigneesUpdateResponse) => {
+        logger.info('change assignees response:- ', data);
         if (data) handleQuickAssigneesUpdate(data);
         if (projectId && !loadingAssignees) dispatch(fetchTaskAssignees(projectId));
       }
