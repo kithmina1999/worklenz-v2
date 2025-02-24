@@ -22,6 +22,9 @@ import logger from '@/utils/errorLogger';
 import { useSocket } from '@/socket/socketContext';
 import { useAuthService } from '@/hooks/useAuth';
 import { fetchTaskAssignees, updateTaskAssignees } from '@/features/tasks/tasks.slice';
+import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
+import { fetchLabelsByProject, updateTaskLabel } from '@/features/tasks/tasks.slice';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -88,6 +91,25 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       socket.off(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(), handleAssigneesUpdate);
     };
   }, [socket, currentSession?.team_id, loadingAssignees, groups]);
+
+  // Add label socket handlers
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleLabelsChange = async (labels: ILabelsChangeResponse) => {
+      await dispatch(updateTaskLabel(labels));
+      await dispatch(fetchLabels());
+      if (projectId) await dispatch(fetchLabelsByProject(projectId));
+    };
+
+    socket.on(SocketEvents.TASK_LABELS_CHANGE.toString(), handleLabelsChange);
+    socket.on(SocketEvents.CREATE_LABEL.toString(), handleLabelsChange);
+
+    return () => {
+      socket.off(SocketEvents.TASK_LABELS_CHANGE.toString(), handleLabelsChange);
+      socket.off(SocketEvents.CREATE_LABEL.toString(), handleLabelsChange);
+    };
+  }, [socket, dispatch, projectId]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
@@ -190,7 +212,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       onDragEnd={handleDragEnd}
     >
       <Flex gap={24} vertical>
-        {groups.map(taskGroup => (
+        {groups?.map(taskGroup => (
           <TaskListTableWrapper
             key={taskGroup.id}
             taskList={taskGroup.tasks}

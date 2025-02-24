@@ -6,10 +6,9 @@ import TaskListFilters from './taskListFilters/TaskListFilters';
 import TaskGroupWrapper from './groupTables/task-group-wrapper/task-group-wrapper';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchTaskGroups, fetTaskListColumns, fetchTaskAssignees, updateTaskAssignees } from '@/features/tasks/tasks.slice';
+import { fetchTaskGroups, fetTaskListColumns } from '@/features/tasks/tasks.slice';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
-import { setProjectView } from '@/features/project/project.slice';
 
 const ProjectViewTaskList = () => {
   const dispatch = useAppDispatch();
@@ -19,7 +18,7 @@ const ProjectViewTaskList = () => {
     taskGroups,
     loadingGroups,
     group: groupBy,
-    labels,
+    archived,
     fields,
     search,
   } = useAppSelector(state => state.taskReducer);
@@ -36,7 +35,7 @@ const ProjectViewTaskList = () => {
     if (!statusCategories.length) {
       dispatch(fetchStatusesCategories());
     }
-  }, [dispatch, projectId, groupBy, fields, search]);
+  }, [dispatch, projectId, groupBy, fields, search, archived]);
 
   return (
     <Flex vertical gap={16} style={{ overflowX: 'hidden' }}>
