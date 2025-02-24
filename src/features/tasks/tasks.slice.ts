@@ -306,7 +306,8 @@ const taskSlice = createSlice({
     },
 
     setLabels: (state, action: PayloadAction<ITaskLabel[]>) => {
-      state.labels = action.payload;
+      const newLabels = action.payload.map(label => ({...label, selected: false}));
+      state.labels = newLabels;
     },
 
     setMembers: (state, action: PayloadAction<ITaskListMemberFilter[]>) => {
