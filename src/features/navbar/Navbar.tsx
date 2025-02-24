@@ -18,6 +18,7 @@ import { useResponsive } from '@/hooks/useResponsive';
 import { getJSONFromLocalStorage } from '@/utils/localStorageFunctions';
 import { navRoutes, NavRoutesType } from './navRoutes';
 import { useAuthService } from '@/hooks/useAuth';
+import { createPortal } from 'react-dom';
 
 const Navbar = () => {
   const [current, setCurrent] = useState<string>('home');
@@ -123,8 +124,8 @@ const Navbar = () => {
         </Flex>
       </Flex>
 
-      {isOwnerOrAdmin && <InviteTeamMembers />}
-      <NotficationDrawer />
+      {isOwnerOrAdmin && createPortal(<InviteTeamMembers />, document.body, 'invite-team-members')}
+      {createPortal(<NotficationDrawer />, document.body, 'notification-drawer')}
     </Col>
   );
 };
