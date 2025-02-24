@@ -75,3 +75,20 @@
 .temp-details::-webkit-scrollbar-thumb:hover {
   background-color: #555;
 }
+
+.custom-template-list .ant-list-item {
+  cursor: pointer;
+}
+
+.custom-template-list .selected-custom-template {
+  background-color: var(--color-paleBlue);
+}
+
+.custom-template-list .selected-custom-template-dark {
+  background-color: #141414;
+}
+
+.custom-template-list .selected-custom-template:hover {
+  background-color: var(--color-paleBlue);
+}
+
