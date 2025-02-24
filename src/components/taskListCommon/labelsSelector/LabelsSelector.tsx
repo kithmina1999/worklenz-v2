@@ -65,7 +65,7 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   };
 
   const handleCreateLabel = () => {
-    if (!searchQuery) return;
+    if (!searchQuery.trim()) return;
     const labelData = {
       task_id: task.id,
       label: searchQuery.trim(),

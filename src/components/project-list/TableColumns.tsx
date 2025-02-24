@@ -40,7 +40,7 @@ const TableColumns = ({
   const columns = useMemo(
     () => [
       {
-        title: '#',
+        title: '',
         dataIndex: 'favorite',
         key: 'favorite',
         render: (text: string, record: IProjectViewModel) => (
