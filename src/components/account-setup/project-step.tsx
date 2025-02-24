@@ -16,6 +16,7 @@ import { IAccountSetupRequest } from '@/types/project-templates/project-template
 
 import { evt_account_setup_template_complete } from '@/shared/worklenz-analytics-events';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
+import { createPortal } from 'react-dom';
 
 const { Title } = Typography;
 
@@ -133,7 +134,15 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
           </div>
         }
       >
-        <TemplateDrawer showBothTabs={false} templateSelected={handleTemplateSelected} />
+        {createPortal(
+          <TemplateDrawer
+            showBothTabs={false}
+            templateSelected={handleTemplateSelected}
+            selectedTemplateType={() => {}}
+          />,
+          document.body,
+          'template-drawer'
+        )}
       </Drawer>
     </div>
   );

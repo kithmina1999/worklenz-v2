@@ -21,9 +21,7 @@ import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 import CreateProjectButton from '@/components/projects/project-create-button/project-create-button';
 import TableColumns from '@/components/project-list/TableColumns';
 
-import {
-  useGetProjectsQuery,
-} from '@/api/projects/projects.v1.api.service';
+import { useGetProjectsQuery } from '@/api/projects/projects.v1.api.service';
 
 import {
   DEFAULT_PAGE_SIZE,
@@ -50,6 +48,7 @@ import { fetchProjectCategories } from '@/features/projects/lookups/projectCateg
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
 import { setProjectId, setStatuses } from '@/features/project/project.slice';
 import { setProject } from '@/features/project/project.slice';
+import { createPortal } from 'react-dom';
 
 const ProjectList: React.FC = () => {
   const [filteredInfo, setFilteredInfo] = useState<Record<string, FilterValue | null>>({});
@@ -72,9 +71,7 @@ const ProjectList: React.FC = () => {
     localStorage.setItem(PROJECT_SORT_ORDER, order);
   }, []);
 
-  const { requestParams } = useAppSelector(
-    state => state.projectsReducer
-  );
+  const { requestParams } = useAppSelector(state => state.projectsReducer);
 
   const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
   const { projectHealths } = useAppSelector(state => state.projectHealthReducer);
@@ -93,11 +90,11 @@ const ProjectList: React.FC = () => {
     const filterIndex = getFilterIndex();
     dispatch(setRequestParams({ filter: filterIndex }));
   }, [dispatch, getFilterIndex]);
-  
+
   useEffect(() => {
     refetchProjects();
   }, [requestParams, refetchProjects]);
-  
+
   const handleTableChange = useCallback(
     (
       newPagination: TablePaginationConfig,
@@ -233,13 +230,13 @@ const ProjectList: React.FC = () => {
           onChange={handleTableChange}
           pagination={paginationConfig}
           locale={{ emptyText: <Empty description={t('noProjects')} /> }}
-          onRow={(record) => ({
-            onClick: () => (navigateToProject(record.id)), // Navigate to project on row click
+          onRow={record => ({
+            onClick: () => navigateToProject(record.id), // Navigate to project on row click
           })}
         />
       </Card>
 
-      <ProjectDrawer onClose={handleDrawerClose} />
+      {createPortal(<ProjectDrawer onClose={handleDrawerClose} />, document.body, 'project-drawer')}
     </div>
   );
 };

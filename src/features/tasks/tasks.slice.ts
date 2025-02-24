@@ -682,7 +682,7 @@ const taskSlice = createSlice({
       .addCase(fetchLabelsByProject.rejected, (state, action) => {
         state.loadingLabels = false;
         state.error = action.payload as string;
-      });
+      })
   },
 });
 

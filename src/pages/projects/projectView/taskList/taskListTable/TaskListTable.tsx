@@ -84,8 +84,8 @@ const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition: transition || 'transform 200ms ease-in-out',
-    opacity: isDragging ? 0.3 : 1,
+    transition,
+    opacity: isDragging ? 0.3 : undefined,
     position: 'relative' as const,
     zIndex: isDragging ? 1 : undefined,
     backgroundColor: isDragging ? 'var(--dragging-bg)' : undefined,

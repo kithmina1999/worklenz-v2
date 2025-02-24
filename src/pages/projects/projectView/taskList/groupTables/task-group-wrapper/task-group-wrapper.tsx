@@ -35,6 +35,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
   const { socket } = useSocket();
   const currentSession = useAuthService().getCurrentSession();
   const loadingAssignees = useAppSelector(state => state.taskReducer.loadingAssignees);
+  const { projectId } = useAppSelector(state => state.projectReducer);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
@@ -63,9 +64,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
         }));
 
         // Find which group contains this task
-        const groupId = groups.find(group => 
-          group.tasks.some(task => task.id === data.id)
-        )?.id;
+        const groupId = groups.find(group => group.tasks.some(task => task.id === data.id))?.id;
 
         if (groupId) {
           dispatch(
@@ -84,7 +83,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
 
     socket.on(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(), handleAssigneesUpdate);
-    
+
     return () => {
       socket.off(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(), handleAssigneesUpdate);
     };
@@ -104,58 +103,84 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     const overGroupId = over.data.current?.groupId;
     const activeTaskId = active.id;
     const overTaskId = over.id;
+
+    // Find source and target groups
+    const sourceGroup = groups.find(g => g.id === activeGroupId);
+    const targetGroup = groups.find(g => g.id === overGroupId);
     
+    if (!sourceGroup || !targetGroup) return;
+
+    // Find task indices
+    const fromIndex = sourceGroup.tasks.findIndex(t => t.id === activeTaskId);
+    const toIndex = targetGroup.tasks.findIndex(t => t.id === overTaskId);
+    
+    if (fromIndex === -1) return;
+
+    const task = sourceGroup.tasks[fromIndex];
+    const toPos = targetGroup.tasks[toIndex]?.sort_order;
+
+    // Emit socket event for task reordering
+    socket?.emit(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), {
+      project_id: projectId,
+      from_index: sourceGroup.tasks[fromIndex].sort_order,
+      to_index: toPos || targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order || -1,
+      to_last_index: !toPos,
+      from_group: sourceGroup.id,
+      to_group: targetGroup.id,
+      group_by: groupBy,
+      task,
+      team_id: currentSession?.team_id
+    });
+
+    // Listen for completion and request task progress update
+    socket?.once(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), () => {
+      socket.emit(SocketEvents.GET_TASK_PROGRESS.toString(), task.id);
+    });
+
+    // Update local state
     setGroups(prevGroups => {
-      // Find the source and target groups
-      const sourceGroup = prevGroups.find(g => g.id === activeGroupId);
-      const targetGroup = prevGroups.find(g => g.id === overGroupId);
-      
-      if (!sourceGroup || !targetGroup) return prevGroups;
-
-      // Find the task being moved
-      const taskToMove = sourceGroup.tasks.find(task => task.id === activeTaskId);
-      if (!taskToMove) return prevGroups;
-
-      // If moving within the same group
-      if (activeGroupId === overGroupId) {
-        const taskIndex = sourceGroup.tasks.findIndex(task => task.id === activeTaskId);
-        const overIndex = sourceGroup.tasks.findIndex(task => task.id === overTaskId);
-        
-        return prevGroups.map(group => {
-          if (group.id === activeGroupId) {
-            const newTasks = [...group.tasks];
-            newTasks.splice(taskIndex, 1);
-            newTasks.splice(overIndex, 0, taskToMove);
-            return { ...group, tasks: newTasks };
-          }
-          return group;
-        });
-      }
-
-      // If moving between groups
-      return prevGroups.map(group => {
+      const newGroups = prevGroups.map(group => {
         if (group.id === activeGroupId) {
-          return {
-            ...group,
-            tasks: group.tasks.filter(task => task.id !== activeTaskId),
-          };
+          // Handle source group
+          const newTasks = [...group.tasks];
+          newTasks.splice(fromIndex, 1);
+          return { ...group, tasks: newTasks };
         }
         if (group.id === overGroupId) {
-          const overIndex = group.tasks.findIndex(task => task.id === overTaskId);
+          // Handle target group
           const newTasks = [...group.tasks];
-          if (overIndex >= 0) {
-            newTasks.splice(overIndex, 0, taskToMove);
+          if (activeGroupId === overGroupId) {
+            // Same group - move task within array
+            const [movedTask] = newTasks.splice(fromIndex, 1);
+            newTasks.splice(toIndex, 0, movedTask);
           } else {
-            newTasks.push(taskToMove);
+            // Different group - insert task at new position
+            newTasks.splice(toIndex, 0, task);
           }
           return { ...group, tasks: newTasks };
         }
         return group;
       });
-    });
 
-    // Here you would typically dispatch an action to update the backend
+      return newGroups;
+    });
   };
+
+  // Add socket event listeners for task updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleTaskProgress = (data: any) => {
+      // Handle task progress updates
+      console.log('Task progress update:', data);
+    };
+
+    socket.on(SocketEvents.GET_TASK_PROGRESS.toString(), handleTaskProgress);
+
+    return () => {
+      socket.off(SocketEvents.GET_TASK_PROGRESS.toString(), handleTaskProgress);
+    };
+  }, [socket]);
 
   return (
     <DndContext
@@ -178,13 +203,12 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
           />
         ))}
 
-
         {createPortal(<TaskListBulkActionsBar />, document.body, 'bulk-action-container')}
-        
+
         {createPortal(
           <TaskTemplateDrawer showDrawer={false} selectedTemplateId={''} onClose={() => {}} />,
           document.body,
-          'task-template-drawer',
+          'task-template-drawer'
         )}
       </Flex>
     </DndContext>
