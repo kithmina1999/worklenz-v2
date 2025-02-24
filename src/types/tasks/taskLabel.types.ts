@@ -8,3 +8,7 @@ export interface ITaskLabel {
   names?: string[];
   usage?: number;
 }
+
+export interface ITaskLabelFilter extends ITaskLabel {
+  selected?: boolean;
+}
