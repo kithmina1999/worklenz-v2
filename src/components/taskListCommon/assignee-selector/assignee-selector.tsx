@@ -98,32 +98,6 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
     socket?.emit(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(), JSON.stringify(body));
   };
 
-  const handleQuickAssigneesUpdate = (data: ITaskAssigneesUpdateResponse) => {
-    const updatedAssignees = data.assignees.map(assignee => ({
-      ...assignee,
-      selected: true,
-    }));
-    logger.info('updatedAssignees:- ', updatedAssignees);
-    dispatch(
-      updateTaskAssignees({ groupId: groupId || '', taskId: data.id, assignees: updatedAssignees })
-    );
-  };
-
-  useEffect(() => {
-    socket?.on(
-      SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(),
-      (data: ITaskAssigneesUpdateResponse) => {
-        logger.info('change assignees response:- ', data);
-        if (data) handleQuickAssigneesUpdate(data);
-        if (projectId && !loadingAssignees) dispatch(fetchTaskAssignees(projectId));
-      }
-    );
-    return () => {
-      setTeamMembers({ data: [], total: 0 });
-      socket?.off(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString());
-    };
-  }, []);
-
   const checkMemberSelected = (memberId: string) => {
     if (!memberId) return false;
     const assignees = task?.assignees?.map(assignee => assignee.team_member_id);

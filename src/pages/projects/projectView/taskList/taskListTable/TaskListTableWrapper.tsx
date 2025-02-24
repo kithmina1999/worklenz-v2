@@ -17,6 +17,7 @@ import TaskListTable from './TaskListTable';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import Collapsible from '@/components/Collapsible/Collapsible';
+import { useAuthService } from '@/hooks/useAuth';
 
 interface TaskListTableWrapperProps {
   taskList: IProjectTask[];
@@ -48,6 +49,7 @@ const TaskListTableWrapper = ({
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
+  const currentSession = useAuthService().getCurrentSession();
 
   const handlToggleExpand = () => {
     if (isRenaming) return;

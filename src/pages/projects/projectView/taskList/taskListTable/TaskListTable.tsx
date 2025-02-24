@@ -56,6 +56,7 @@ import { createPortal } from 'react-dom';
 import { setSelectedTasks } from '@/features/project/project.slice';
 import { toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
+import { useSocket } from '@/socket/socketContext';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -416,7 +417,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
 
   // Get the tasks from the taskGroups state
   const currentGroup = taskGroups.find(group => group.id === tableId);
-  
+
   // Use the tasks from the current group if available, otherwise fall back to taskList prop
   const displayTasks = currentGroup?.tasks || taskList || [];
 
@@ -462,7 +463,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
               {displayTasks && displayTasks.length > 0 ? (
                 displayTasks.map(task => {
                   const updatedTask = findTaskInGroups(task.id || '') || task;
-                  
+
                   return (
                     <React.Fragment key={updatedTask.id}>
                       {renderTaskRow(updatedTask)}
