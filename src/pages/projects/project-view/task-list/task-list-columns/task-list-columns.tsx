@@ -2,7 +2,7 @@ import { Avatar, Checkbox, DatePicker, Flex, Select, Tag } from 'antd';
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { HolderOutlined, PlusOutlined } from '@ant-design/icons';
-import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
+import StatusDropdown from '@/components/task-list-common/status-dropdown/status-dropdown';
 import Avatars from '@/components/avatars/avatars';
 import LabelsSelector from '@/components/task-list-common/labelsSelector/labels-selector';
 import CustomColorLabel from '@/components/task-list-common/labelsSelector/custom-color-label';

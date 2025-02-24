@@ -8,8 +8,8 @@ import AddTaskListRow from '@/pages/projects/project-view/taskList/taskListTable
 import CustomAvatar from '@/components/CustomAvatar';
 import LabelsSelector from '@components/task-list-common/labelsSelector/labels-selector';
 import { useSelectedProject } from '@/hooks/useSelectedProject';
-import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
-import PriorityDropdown from '@components/task-list-common/priorityDropdown/PriorityDropdown';
+import StatusDropdown from '@/components/task-list-common/status-dropdown/status-dropdown';
+import PriorityDropdown from '@/components/task-list-common/priorityDropdown/priority-dropdown';
 import { simpleDateFormat } from '@/utils/simpleDateFormat';
 import { durationDateFormat } from '@/utils/durationDateFormat';
 import CustomColorLabel from '@components/task-list-common/labelsSelector/custom-color-label';
