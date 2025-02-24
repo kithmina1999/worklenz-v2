@@ -50,7 +50,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   };
 
   return (
-    <Space>
+    <Space onClick={e => e.stopPropagation()}>
       <Tooltip title={t('setting')}>
         <Button
           className="action-button"
