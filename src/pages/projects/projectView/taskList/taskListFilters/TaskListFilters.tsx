@@ -40,7 +40,6 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
 
   const handleShowArchivedChange = () => {
     dispatch(toggleArchived());
-    if (projectId) dispatch(fetchTaskGroups(projectId));
   };
 
   useEffect(() => {

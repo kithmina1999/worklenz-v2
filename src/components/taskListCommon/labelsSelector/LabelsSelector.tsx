@@ -33,7 +33,7 @@ interface LabelsSelectorProps {
 
 const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   const { t } = useTranslation('task-list-table');
-  const { socket, connected } = useSocket();
+  const { socket } = useSocket();
   const dispatch = useAppDispatch();
 
   const labelInputRef = useRef<InputRef>(null);
@@ -45,13 +45,6 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
 
   const currentSession = useAuthService().getCurrentSession();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-
-  const handleLabelsChange = async (labels: ILabelsChangeResponse) => {
-    await dispatch(updateTaskLabel(labels));
-    await dispatch(fetchLabels());
-    if (projectId) await dispatch(fetchLabelsByProject(projectId));
-    setSearchQuery('');
-  };
 
   const handleLabelChange = (label: ITaskLabel) => {
     const labelData = {
@@ -78,18 +71,6 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   useEffect(() => {
     setLabelList(labels as ITaskLabel[]);
   }, [labels, task.labels]);
-
-  useEffect(() => {
-    if (connected) {
-      socket?.on(SocketEvents.TASK_LABELS_CHANGE.toString(), handleLabelsChange);
-      socket?.on(SocketEvents.CREATE_LABEL.toString(), handleLabelsChange);
-    }
-
-    return () => {
-      socket?.removeListener(SocketEvents.TASK_LABELS_CHANGE.toString(), handleLabelsChange);
-      socket?.removeListener(SocketEvents.CREATE_LABEL.toString(), handleLabelsChange);
-    };
-  }, [connected]);
 
   // used useMemo hook for re render the list when searching
   const filteredLabelData = useMemo(() => {

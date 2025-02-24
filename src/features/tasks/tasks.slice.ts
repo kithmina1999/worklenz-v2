@@ -17,7 +17,7 @@ import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types'
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
 import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service';
-import { ITaskLabel } from '@/types/tasks/taskLabel.types';
+import { ITaskLabel, ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -71,7 +71,7 @@ interface ITaskState {
   statuses: ITaskStatusViewModel[];
 
   loadingLabels: boolean;
-  labels: ITaskLabel[];
+  labels: ITaskLabelFilter[];
   priorities: string[];
   members: string[];
   activeTimers: { [taskId: string]: number | null };
@@ -140,7 +140,7 @@ export const fetchTaskGroups = createAsyncThunk(
       const selectedLabels = taskReducer.labels
         .filter(label => label.selected)
         .map(label => label.id)
-        .join(' ');
+        .join(' ');        
 
       const config: ITaskListConfigV2 = {
         id: projectId,
@@ -306,8 +306,7 @@ const taskSlice = createSlice({
     },
 
     setLabels: (state, action: PayloadAction<ITaskLabel[]>) => {
-      const newLabels = action.payload.map(label => ({...label, selected: false}));
-      state.labels = newLabels;
+      state.labels = action.payload;
     },
 
     setMembers: (state, action: PayloadAction<ITaskListMemberFilter[]>) => {
@@ -680,8 +679,9 @@ const taskSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchLabelsByProject.fulfilled, (state, action: PayloadAction<ITaskLabel[]>) => {
+        const newLabels = action.payload.map(label => ({...label, selected: false}));
+        state.labels = newLabels;
         state.loadingLabels = false;
-        state.labels = action.payload;
       })
       .addCase(fetchLabelsByProject.rejected, (state, action) => {
         state.loadingLabels = false;
