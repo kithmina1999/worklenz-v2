@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CaretDownFilled } from '@ant-design/icons';
-import { ConfigProvider, Flex, Select } from 'antd/es';
+import { ConfigProvider, Flex, Dropdown, Button } from 'antd/es';
 import { colors } from '@/styles/colors';
 import ConfigPhaseButton from '@features/projects/singleProject/phase/ConfigPhaseButton';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -15,26 +15,26 @@ const GroupByFilterDropdown = () => {
   const { group: groupBy } = useAppSelector(state => state.taskReducer);
   const { project, projectView } = useAppSelector(state => state.projectReducer);
 
-  const groupDropdownMenuItems = useMemo(
+  const items = useMemo(
     () => {
-      const items = [
-        { value: IGroupBy.STATUS, label: t('statusText') },
-        { value: IGroupBy.PRIORITY, label: t('priorityText') },
-        { value: IGroupBy.PHASE, label: project?.phase_label || t('phaseText') },
+      const menuItems = [
+        { key: IGroupBy.STATUS, label: t('statusText') },
+        { key: IGroupBy.PRIORITY, label: t('priorityText') },
+        { key: IGroupBy.PHASE, label: project?.phase_label || t('phaseText') },
       ];
 
       if (projectView !== 'list') {
-        items.push({ value: IGroupBy.MEMBERS, label: t('memberText') });
+        menuItems.push({ key: IGroupBy.MEMBERS, label: t('memberText') });
       }
 
-      return items;
+      return menuItems;
     },
     [t, project, projectView]
   );
 
-  const handleChange = (value: IGroupBy) => {
-    setCurrentGroup(value);
-    dispatch(setGroup(value));
+  const handleMenuClick = ({ key }: { key: string }) => {
+    setCurrentGroup(key as IGroupBy);
+    dispatch(setGroup(key as IGroupBy));
   };
 
   useEffect(() => {
@@ -46,13 +46,18 @@ const GroupByFilterDropdown = () => {
   return (
     <Flex align="center" gap={4} style={{ marginInlineStart: 12 }}>
       {t('groupByText')}:
-      <Select
-        value={groupBy}
-        options={groupDropdownMenuItems}
-        onChange={handleChange}
-        suffixIcon={<CaretDownFilled />}
-        dropdownStyle={{ width: 'wrap-content' }}
-      />
+      <Dropdown
+        trigger={['click']}
+        menu={{
+          items,
+          onClick: handleMenuClick,
+          selectedKeys: [groupBy],
+        }}
+      >
+        <Button>
+          {items.find(item => item.key === groupBy)?.label} <CaretDownFilled />
+        </Button>
+      </Dropdown>
       {(groupBy === IGroupBy.STATUS || groupBy === IGroupBy.PHASE) && (
         <ConfigProvider wave={{ disabled: true }}>
           {groupBy === IGroupBy.PHASE && <ConfigPhaseButton color={colors.skyBlue} />}

@@ -15,6 +15,7 @@ import { colors } from '@/styles/colors';
 import { ITaskPriority } from '@/types/tasks/taskPriority.types';
 import { setLabels, setPriorities } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { fetchTaskGroups } from '@/features/board/board-slice';
 
 interface PriorityFilterDropdownProps {
   priorities: ITaskPriority[];
@@ -25,13 +26,17 @@ const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => 
   const { t } = useTranslation('task-list-filters');
   const { priorities: selectedPriorities } = useAppSelector(state => state.taskReducer);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { projectId } = useAppSelector(state => state.projectReducer);
 
   const handleSelectedPriority = (priorityId: string) => {
     const newPriorities = selectedPriorities.includes(priorityId)
       ? selectedPriorities.filter(id => id !== priorityId)
       : [...selectedPriorities, priorityId];
-    
+
     dispatch(setPriorities(newPriorities));
+    if (projectId) {
+      dispatch(fetchTaskGroups(projectId));
+    }
   };
 
   const priorityDropdownContent = useMemo(
