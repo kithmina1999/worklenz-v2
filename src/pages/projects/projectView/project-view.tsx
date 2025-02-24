@@ -17,6 +17,7 @@ import './project-view.css';
 import { resetTaskListData } from '@/features/tasks/tasks.slice';
 import { resetBoardData } from '@/features/board/board-slice';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
+import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
 const StatusDrawer = React.lazy(
@@ -132,6 +133,7 @@ const ProjectView = () => {
   const resetProjectData = () => {
     dispatch(setProjectId(null));
     dispatch(resetStatuses());
+    dispatch(deselectAll());
     dispatch(resetTaskListData());
     dispatch(resetBoardData());
   };
