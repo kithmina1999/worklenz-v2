@@ -1,5 +1,5 @@
 import { Flex, Select, Typography } from 'antd';
-import './priorityDropdown.css';
+import './priority-dropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useState, useEffect, useMemo } from 'react';
 import { ALPHA_CHANNEL } from '@/shared/constants';
@@ -8,9 +8,6 @@ import { SocketEvents } from '@/shared/socket-events';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskPriority } from '@/types/tasks/taskPriority.types';
 import { DoubleLeftOutlined, MinusOutlined, PauseOutlined } from '@ant-design/icons';
-import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
-import { updateTaskPriority } from '@/features/tasks/tasks.slice';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 type PriorityDropdownProps = {
   task: IProjectTask;
@@ -18,16 +15,10 @@ type PriorityDropdownProps = {
 };
 
 const PriorityDropdown = ({ task, teamId }: PriorityDropdownProps) => {
-  const { socket, connected } = useSocket();
-  const dispatch = useAppDispatch();
-
+  const { socket } = useSocket();
   const [selectedPriority, setSelectedPriority] = useState<ITaskPriority | undefined>(undefined);
   const priorityList = useAppSelector(state => state.priorityReducer.priorities);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-
-  const handlePriorityChangeResponse = (response: ITaskListPriorityChangeResponse) => {
-    dispatch(updateTaskPriority(response));
-  };
 
   const handlePriorityChange = (priorityId: string) => {
     if (!task.id || !priorityId) return;
@@ -46,14 +37,6 @@ const PriorityDropdown = ({ task, teamId }: PriorityDropdownProps) => {
     const foundPriority = priorityList.find(priority => priority.id === task.priority);
     setSelectedPriority(foundPriority);
   }, [task.priority, priorityList]);
-
-  useEffect(() => {
-    socket?.on(SocketEvents.TASK_PRIORITY_CHANGE.toString(), handlePriorityChangeResponse);
-
-    return () => {
-      socket?.removeListener(SocketEvents.TASK_PRIORITY_CHANGE.toString(), handlePriorityChangeResponse);
-    };
-  }, [connected]);
 
   const options = useMemo(
     () =>
@@ -88,7 +71,7 @@ const PriorityDropdown = ({ task, teamId }: PriorityDropdownProps) => {
           </Flex>
         ),
       })),
-    [priorityList]
+    [priorityList, themeMode]
   );
 
   return (

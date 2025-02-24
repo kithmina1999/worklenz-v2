@@ -49,8 +49,8 @@ import {
   selectTaskIds,
   selectTasks,
 } from '@/features/projects/bulkActions/bulkActionSlice';
-import StatusDropdown from '@/components/task-list-common/statusDropdown/StatusDropdown';
-import PriorityDropdown from '@/components/task-list-common/priorityDropdown/PriorityDropdown';
+import StatusDropdown from '@/components/task-list-common/status-dropdown/status-dropdown';
+import PriorityDropdown from '@/components/task-list-common/priorityDropdown/priority-dropdown';
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
 import { createPortal } from 'react-dom';
 import { setSelectedTasks } from '@/features/project/project.slice';
