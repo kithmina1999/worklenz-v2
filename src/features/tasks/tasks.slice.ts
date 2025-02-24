@@ -627,6 +627,7 @@ const taskSlice = createSlice({
       state.search = null;
       state.archived = false;
       state.priorities = [];
+      state.fields = [];  
       state.loadingGroups = false;
       state.loadingColumns = false;
       state.error = null;
