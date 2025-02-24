@@ -623,6 +623,7 @@ const taskSlice = createSlice({
       state.taskGroups = [];
       state.columns = [];
       state.labels = [];
+      state.taskAssignees = [];
       state.loadingGroups = false;
       state.loadingColumns = false;
       state.error = null;
