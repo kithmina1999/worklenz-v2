@@ -7,16 +7,9 @@ import {
   Flex,
   Tooltip,
   Button,
-  Typography,
   InputRef,
-  List,
-  Menu,
-  Card,
-  Input,
-  Divider,
-  Empty,
   CheckboxChangeEvent,
-} from 'antd';
+} from 'antd/es';
 import {
   RetweetOutlined,
   TagsOutlined,
@@ -56,15 +49,20 @@ import { ITaskPriority } from '@/types/tasks/taskPriority.types';
 import { ITaskPhase } from '@/types/tasks/taskPhase.types';
 
 import './task-list-bulk-actions-bar.css';
-import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { ITeamMembersViewModel } from '@/types/teamMembers/teamMembersViewModel.types';
-import { toggleTaskTemplateDrawer } from '@/features/settings/taskTemplates/taskTemplateSlice';
 import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
 import { createPortal } from 'react-dom';
-import { setSelectedTasks } from '@/features/project/project.slice';
-import { MenuItemType } from 'antd/es/menu/interface';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
+import AssigneesDropdown from './components/AssigneesDropdown';
+import LabelsDropdown from './components/LabelsDropdown';
+
+interface ITaskAssignee {
+  id: string;
+  name?: string;
+  email?: string;
+  avatar_url?: string;
+}
 
 const TaskListBulkActionsBar = () => {
   const dispatch = useAppDispatch();
@@ -90,7 +88,6 @@ const TaskListBulkActionsBar = () => {
   const archived = useAppSelector(state => state.taskReducer.archived);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
-  const membersInputRef = useRef<InputRef>(null);
   const labelsInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [createLabelText, setCreateLabelText] = useState<string>('');
@@ -212,22 +209,19 @@ const TaskListBulkActionsBar = () => {
     }
   };
 
-  const handleChangeAssignees = async () => {
+  const handleChangeAssignees = async (selectedAssignees: ITeamMemberViewModel[]) => {
     if (!projectId) return;
     try {
       setUpdatingAssignees(true);
       const body = {
         tasks: selectedTaskIdsList,
         project_id: projectId,
-        members:
-          members?.data
-            ?.filter(m => m.selected)
-            .map(member => ({
-              id: member.id,
-              name: member.name,
-              email: member.email,
-              avatar_url: member.avatar_url,
-            })) || [],
+        members: selectedAssignees.map(member => ({
+          id: member.id,
+          name: member.name,
+          email: member.email,
+          avatar_url: member.avatar_url,
+        })) as ITaskAssignee[],
       };
       const res = await taskListBulkActionsApiService.assignTasks(body);
       if (res.done) {
@@ -294,86 +288,24 @@ const TaskListBulkActionsBar = () => {
     },
   ];
 
-  const getLabelMenu = () =>
-    labelsList.map(label => ({
-      key: label.id,
-      type: 'checkbox' as const,
-      label: (
-        <Flex align="center" gap={8}>
-          <Checkbox>
-            <Badge color={label.color_code} text={label.name} />
-          </Checkbox>
-        </Flex>
-      ),
-    }));
-
   const getLabel = () => {
     const word = selectedTaskIdsList.length < 2 ? t('taskSelected') : t('tasksSelected');
     return `${selectedTaskIdsList.length} ${word}`;
   };
 
-  const handleAssigneeChange = (e: CheckboxChangeEvent, member: ITeamMemberViewModel) => {
-    if (member.is_pending) {
-      e.stopPropagation();
-    }
-  };
-
   const getAssigneesMenu = () => {
     return (
-      <Card className="custom-card" styles={{ body: { padding: 8 } }}>
-        <Flex vertical>
-          <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
-            {members?.data?.map(member => (
-              <List.Item
-                className={`${themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'} ${member.is_pending ? 'disabled' : ''}`}
-                key={member.id}
-                style={{
-                  display: 'flex',
-                  gap: 8,
-                  justifyContent: 'flex-start',
-                  padding: '4px 8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                <Checkbox disabled={member.is_pending} onChange={e => handleAssigneeChange(e, member)}>
-                  <Flex align="center">
-                    <SingleAvatar
-                      avatarUrl={member.avatar_url}
-                      name={member.name}
-                      email={member.email}
-                    />
-                    <Flex vertical>
-                      <Typography.Text>{member.name}</Typography.Text>
-                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                        {member.email}
-                        {member.is_pending && <small>t('pendingInvitation')</small>}
-                      </Typography.Text>
-                    </Flex>
-                  </Flex>
-                </Checkbox>
-              </List.Item>
-            ))}
-          </List>
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: '100%' }}
-            onClick={() => {
-              setAssigneeDropdownOpen(false);
-              handleChangeAssignees();
-            }}
-          >
-            {t('apply')}
-          </Button>
-        </Flex>
-      </Card>
+      <AssigneesDropdown
+        members={members?.data || []}
+        themeMode={themeMode}
+        onApply={handleChangeAssignees}
+        onClose={() => setAssigneeDropdownOpen(false)}
+        t={t}
+      />
     );
   };
 
   const buttonStyle = { background: colors.transparent, color: colors.white };
-
-  const labelIds = selectedLabels.map(label => label.id);
 
   const handleLabelChange = (e: CheckboxChangeEvent, label: ITaskLabel) => {
     if (e.target.checked) {
@@ -387,7 +319,7 @@ const TaskListBulkActionsBar = () => {
     if (!projectId) return;
 
     try {
-      setUpdatingLabels (true);
+      setUpdatingLabels(true);
       const body: IBulkTasksLabelsRequest = {
         tasks: selectedTaskIdsList,
         labels: selectedLabels,
@@ -407,67 +339,26 @@ const TaskListBulkActionsBar = () => {
   };
 
   const labelsDropdownContent = (
-    <Card className="custom-card" styles={{ body: { padding: 8 } }}>
-      <Flex vertical>
-        {!createLabelText && (
-          <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
-            {labelsList?.length ? (
-              labelsList.map(label => (
-                <List.Item
-                  className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
-                  key={label.id}
-                  style={{
-                    display: 'flex',
-                    gap: 8,
-                    justifyContent: 'flex-start',
-                    padding: '4px 8px',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <Checkbox
-                    id={label.id}
-                    checked={labelIds.includes(label.id)}
-                    onChange={e => handleLabelChange(e, label)}
-                  >
-                    <Badge color={label.color_code} text={label.name} />
-                  </Checkbox>
-                </List.Item>
-              ))
-            ) : (
-              <Empty />
-            )}
-          </List>
-        )}
-
-        <Flex style={{ paddingTop: 8 }} vertical justify="space-between" gap={8}>
-          <Input
-            ref={labelsInputRef}
-            value={createLabelText}
-            onChange={e => setCreateLabelText(e.currentTarget.value)}
-            placeholder={t('createLabel')}
-            onPressEnter={() => applyLabels()}
-          />
-          {createLabelText && (
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {t('hitEnterToCreate')}
-            </Typography.Text>
-          )}
-          {!createLabelText && labelsList.length > 0 && (
-            <Button
-              type="primary"
-              size="small"
-              onClick={() => applyLabels()}
-              style={{ width: '100%' }}
-            >
-              {t('apply')}
-            </Button>
-          )}
-        </Flex>
-      </Flex>
-    </Card>
+    <LabelsDropdown
+      labelsList={labelsList}
+      themeMode={themeMode}
+      createLabelText={createLabelText}
+      selectedLabels={selectedLabels}
+      labelsInputRef={labelsInputRef as React.RefObject<InputRef>}
+      onLabelChange={handleLabelChange}
+      onCreateLabelTextChange={value => setCreateLabelText(value)}
+      onApply={applyLabels}
+      t={t}
+    />
   );
 
+  const onAssigneeDropdownOpenChange = (open: boolean) => {
+    if (!open) {
+      setAssigneeDropdownOpen(false);
+    } else {
+      setAssigneeDropdownOpen(true);
+    }
+  };
   return (
     <div className={`bulk-actions ${selectedTaskIdsList.length > 0 ? 'open' : ''}`}>
       <Flex className="bulk-actions-inner" align="center" justify="center" gap={12}>
@@ -519,16 +410,16 @@ const TaskListBulkActionsBar = () => {
               icon={<UserAddOutlined />}
               className="borderless-icon-btn"
               style={buttonStyle}
-              onClick={() => handleAssignToMe()}
+              onClick={handleAssignToMe}
               loading={updatingAssignToMe}
             />
           </Tooltip>
 
           <Tooltip title={t('changeAssignees')}>
             <Dropdown
-              dropdownRender={() => getAssigneesMenu()}
+              dropdownRender={getAssigneesMenu}
               open={assigneeDropdownOpen}
-              onOpenChange={value => setAssigneeDropdownOpen(value)}
+              onOpenChange={onAssigneeDropdownOpenChange}
               placement="top"
               arrow
               trigger={['click']}
@@ -547,7 +438,8 @@ const TaskListBulkActionsBar = () => {
               icon={<InboxOutlined />}
               className="borderless-icon-btn"
               style={buttonStyle}
-              onClick={() => handleArchive()}
+              onClick={handleArchive}
+              loading={updatingArchive}
             />
           </Tooltip>
 
@@ -556,7 +448,8 @@ const TaskListBulkActionsBar = () => {
               icon={<DeleteOutlined />}
               className="borderless-icon-btn"
               style={buttonStyle}
-              onClick={() => handleDelete()}
+              onClick={handleDelete}
+              loading={updatingDelete}
             />
           </Tooltip>
         </Flex>

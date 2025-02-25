@@ -190,21 +190,32 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const getColumnStyles = (key: string | undefined, isHeader: boolean) => {
     if (!key) return '';
 
-    const baseStyles = `border px-2 ${key === 'selector' ? 'sticky left-0 z-10' : ''}`;
-    const taskStyles =
-      key === 'task'
-        ? `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10 after:w-1.5 after:bg-transparent ${
+    const baseStyles = `border px-2`;
+    const stickyStyles = (() => {
+      switch (key) {
+        case 'selector':
+          return `sticky left-0 z-20 ${
             scrollingTables[tableId]
-              ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent'
+              ? 'shadow-[2px_0_4px_-2px_rgba(0,0,0,0.2)]'
               : ''
-          }`
-        : '';
+          }`;
+        case 'TASK':
+          return `sticky left-[48px] z-10 ${
+            scrollingTables[tableId]
+              ? 'shadow-[2px_0_4px_-2px_rgba(0,0,0,0.2)]'
+              : ''
+          }`;
+        default:
+          return '';
+      }
+    })();
+
     const heightStyles = isHeader ? 'after:h-[42px]' : 'after:min-h-[40px]';
     const themeStyles = isDarkMode
       ? `bg-${isHeader ? '[#1d1d1d]' : '[#141414]'} border-[#303030]`
       : `bg-${isHeader ? '[#fafafa]' : 'white'}`;
 
-    return `${baseStyles} ${taskStyles} ${heightStyles} ${themeStyles}`;
+    return `${baseStyles} ${stickyStyles} ${heightStyles} ${themeStyles}`;
   };
 
   const renderColumnContent = (
@@ -428,7 +439,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         strategy={verticalListSortingStrategy}
       >
         <div className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}>
-          <table className="rounded-2 w-full min-w-max border-collapse">
+          <table className="rounded-2 w-full min-w-max border-collapse relative">
             <thead className="h-[42px]">
               <tr>
                 <th

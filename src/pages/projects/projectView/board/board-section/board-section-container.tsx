@@ -23,7 +23,7 @@ const BoardSectionCardContainer = ({
         align="flex-start"
         className="max-w-screen max-h-[620px] min-h-[620px] overflow-x-scroll p-[1px]"
       >
-        {datasource.map((data: any) => (
+        {datasource?.map((data: any) => (
           <BoardSectionCard key={data.id} taskGroup={data} />
         ))}
 
