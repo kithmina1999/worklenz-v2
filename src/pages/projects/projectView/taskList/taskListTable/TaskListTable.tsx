@@ -196,13 +196,13 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         case 'selector':
           return `sticky left-0 z-20 ${
             scrollingTables[tableId]
-              ? 'shadow-[2px_0_4px_-2px_rgba(0,0,0,0.2)] border-r-[1px] border-r-solid'
+              ? 'shadow-[2px_0_4px_-2px_rgba(0,0,0,0.2)]'
               : ''
           }`;
         case 'TASK':
           return `sticky left-[48px] z-10 ${
             scrollingTables[tableId]
-              ? 'shadow-[2px_0_4px_-2px_rgba(0,0,0,0.2)] border-r-[1px] border-r-solid'
+              ? 'shadow-[2px_0_4px_-2px_rgba(0,0,0,0.2)]'
               : ''
           }`;
         default:
@@ -212,8 +212,8 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
 
     const heightStyles = isHeader ? 'after:h-[42px]' : 'after:min-h-[40px]';
     const themeStyles = isDarkMode
-      ? `bg-${isHeader ? '[#1d1d1d]' : '[#141414]'} ${scrollingTables[tableId] ? 'border-r-[#303030]' : ''}`
-      : `bg-${isHeader ? '[#fafafa]' : 'white'} ${scrollingTables[tableId] ? 'border-r-[#d9d9d9]' : ''}`;
+      ? `bg-${isHeader ? '[#1d1d1d]' : '[#141414]'} border-[#303030]`
+      : `bg-${isHeader ? '[#fafafa]' : 'white'}`;
 
     return `${baseStyles} ${stickyStyles} ${heightStyles} ${themeStyles}`;
   };
