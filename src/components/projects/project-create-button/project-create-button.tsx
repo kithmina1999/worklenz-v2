@@ -39,6 +39,8 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
 
   const handleTemplateDrawerClose = () => {
     setIsTemplateDrawerOpen(false);
+    setCurrentTemplateId('');
+    setSelectedType('worklenz');
   };
 
   const handleTemplateSelect = (templateId: string) => {
@@ -74,14 +76,14 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
     try {
       setProjectImporting(true);
       if (selectedType === 'worklenz') {
-        const res = await projectTemplatesApiService.createFromTemplate({
+        const res = await projectTemplatesApiService.createFromWorklenzTemplate({
           template_id: currentTemplateId,
         });
         if (res.done) {
           navigate(`/worklenz/projects/${res.body.project_id}`);
         }
       } else {
-        const res = await projectTemplatesApiService.createCustomTemplate({
+        const res = await projectTemplatesApiService.createFromCustomTemplate({
           template_id: currentTemplateId,
         });
         if (res.done) {
