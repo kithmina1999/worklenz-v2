@@ -14,5 +14,8 @@
     "priority": "Priority",
     "phase": "Phase",
     "member": "Member",
-    "createTaskTemplate": "Create Task Template"
+    "createTaskTemplate": "Create Task Template",
+    "apply": "Apply",
+    "createLabel": "+ Create Label",
+    "hitEnterToCreate": "Press Enter to create"
 }

@@ -14,5 +14,8 @@
     "priority": "Prioridad",
     "phase": "Fase",
     "member": "Miembro",
-    "createTaskTemplate": "Crear plantilla de tarea"
+    "createTaskTemplate": "Crear plantilla de tarea",
+    "apply": "Aplicar",
+    "createLabel": "+ Crear etiqueta",
+    "hitEnterToCreate": "Presione Enter para crear"
 }

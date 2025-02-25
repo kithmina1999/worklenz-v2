@@ -14,5 +14,8 @@
     "priority": "Prioridade",
     "phase": "Fase",
     "member": "Membro",
-    "createTaskTemplate": "Criar Modelo de Tarefa"
+    "createTaskTemplate": "Criar Modelo de Tarefa",
+    "apply": "Aplicar",
+    "createLabel": "+ Criar etiqueta",
+    "hitEnterToCreate": "Pressione Enter para criar"
 }

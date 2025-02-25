@@ -43,8 +43,10 @@ import {
   evt_project_task_list_bulk_change_priority,
   evt_project_task_list_bulk_change_status,
   evt_project_task_list_bulk_delete,
+  evt_project_task_list_bulk_update_labels,
 } from '@/shared/worklenz-analytics-events';
 import {
+  IBulkTasksLabelsRequest,
   IBulkTasksPhaseChangeRequest,
   IBulkTasksPriorityChangeRequest,
   IBulkTasksStatusChangeRequest,
@@ -61,6 +63,7 @@ import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer
 import { createPortal } from 'react-dom';
 import { setSelectedTasks } from '@/features/project/project.slice';
 import { MenuItemType } from 'antd/es/menu/interface';
+import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 
 const TaskListBulkActionsBar = () => {
   const dispatch = useAppDispatch();
@@ -89,23 +92,18 @@ const TaskListBulkActionsBar = () => {
   const membersInputRef = useRef<InputRef>(null);
   const labelsInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [labelsSearchQuery, setLabelsSearchQuery] = useState<string>('');
+  const [createLabelText, setCreateLabelText] = useState<string>('');
 
   const [teamMembers, setTeamMembers] = useState<ITeamMembersViewModel>({ data: [], total: 0 });
   const [assigneeDropdownOpen, setAssigneeDropdownOpen] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+  const [selectedLabels, setSelectedLabels] = useState<ITaskLabel[]>([]);
 
   const filteredMembersData = useMemo(() => {
     return teamMembers?.data?.filter(member =>
       member.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [teamMembers, searchQuery]);
-
-  const filteredLabels = useMemo(() => {
-    return labelsList?.filter(label =>
-      label.name?.toLowerCase().includes(labelsSearchQuery.toLowerCase())
-    );
-  }, [labelsList, labelsSearchQuery]);
 
   // Handlers
   const handleChangeStatus = async (status: ITaskStatus) => {
@@ -357,66 +355,96 @@ const TaskListBulkActionsBar = () => {
 
   const buttonStyle = { background: colors.transparent, color: colors.white };
 
-  const handleLabelChange = (e: CheckboxChangeEvent, labelId: string) => {
-    filteredLabels.map(label => {
-      if (label.id === labelId) {
-        label.selected = e.target.checked;
+  const labelIds = selectedLabels.map(label => label.id);
+
+  const handleLabelChange = (e: CheckboxChangeEvent, label: ITaskLabel) => {
+    if (e.target.checked) {
+      setSelectedLabels(prev => [...prev, label]);
+    } else {
+      setSelectedLabels(prev => prev.filter(l => l.id !== label.id));
+    }
+  };
+
+  const applyLabels = async () => {
+    if (!projectId) return;
+
+    try {
+      setUpdatingLabels (true);
+      const body: IBulkTasksLabelsRequest = {
+        tasks: selectedTaskIdsList,
+        labels: selectedLabels,
+        text: createLabelText.trim() !== '' ? createLabelText.trim() : null,
+      };
+      const res = await taskListBulkActionsApiService.assignLabels(body, projectId);
+      if (res.done) {
+        trackMixpanelEvent(evt_project_task_list_bulk_update_labels);
+        dispatch(deselectAll());
+        dispatch(fetchTaskGroups(projectId));
       }
-    });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setUpdatingLabels(false);
+    }
   };
 
   const labelsDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 8 } }}>
       <Flex vertical>
-        <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
-          {filteredLabels?.length ? (
-            filteredLabels.map(label => (
-              <List.Item
-                className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
-                key={label.id}
-                style={{
-                  display: 'flex',
-                  gap: 8,
-                  justifyContent: 'flex-start',
-                  padding: '4px 8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                <Checkbox
-                  id={label.id}
-                  checked={label.selected}
-                  onChange={e => handleLabelChange(e, label.id || '')}
-                />
-                <Badge color={label.color_code} text={label.name} />
-              </List.Item>
-            ))
-          ) : (
-            <Empty />
-          )}
-        </List>
+        {!createLabelText && (
+          <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
+            {labelsList?.length ? (
+              labelsList.map(label => (
+                <List.Item
+                  className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
+                  key={label.id}
+                  style={{
+                    display: 'flex',
+                    gap: 8,
+                    justifyContent: 'flex-start',
+                    padding: '4px 8px',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Checkbox
+                    id={label.id}
+                    checked={labelIds.includes(label.id)}
+                    onChange={e => handleLabelChange(e, label)}
+                  >
+                    <Badge color={label.color_code} text={label.name} />
+                  </Checkbox>
+                </List.Item>
+              ))
+            ) : (
+              <Empty />
+            )}
+          </List>
+        )}
 
-        <Flex
-          style={{ paddingTop: 8 }}
-          vertical
-          align="center"
-          justify="space-between"
-          gap={8}
-        >
+        <Flex style={{ paddingTop: 8 }} vertical justify="space-between" gap={8}>
           <Input
             ref={labelsInputRef}
-            value={labelsSearchQuery}
-            onChange={e => setLabelsSearchQuery(e.currentTarget.value)}
-            placeholder={t('searchInputPlaceholder')}
+            value={createLabelText}
+            onChange={e => setCreateLabelText(e.currentTarget.value)}
+            placeholder={t('createLabel')}
+            onPressEnter={() => applyLabels()}
           />
-          <Button
-            type="primary"
-            size="small"
-            onClick={() => setLabelsSearchQuery('')}
-            style={{ width: '100%' }}
-          >
-            {t('apply')}
-          </Button>
+          {createLabelText && (
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {t('hitEnterToCreate')}
+            </Typography.Text>
+          )}
+          {!createLabelText && labelsList.length > 0 && (
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => applyLabels()}
+              style={{ width: '100%' }}
+            >
+              {t('apply')}
+            </Button>
+          )}
         </Flex>
       </Flex>
     </Card>
@@ -452,6 +480,12 @@ const TaskListBulkActionsBar = () => {
               placement="top"
               arrow
               trigger={['click']}
+              destroyPopupOnHide
+              onOpenChange={value => {
+                if (!value) {
+                  setSelectedLabels([]);
+                }
+              }}
             >
               <Button
                 icon={<TagsOutlined />}
