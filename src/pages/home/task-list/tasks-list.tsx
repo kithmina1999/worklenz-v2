@@ -189,8 +189,7 @@ const TasksList: React.FC = React.memo(() => {
   );
 
   const handleTaskModeChange = (value: number) => {
-    dispatch(setHomeTasksConfig({ ...homeTasksConfig, tasks_group_by: +value }));
-    refetch();
+    dispatch(setHomeTasksConfig({ ...homeTasksConfig, tasks_group_by: value }));
   };
 
   return (

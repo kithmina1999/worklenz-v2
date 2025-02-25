@@ -38,7 +38,6 @@ const HomeTasksStatusDropdown = ({ task, teamId }: HomeTasksStatusDropdownProps)
   };
 
   const handleTaskStatusChange = (response: ITaskListStatusChangeResponse) => {
-    console.log('response', response);
     if (response && response.id === task.id) {
       task.status_color = response.color_code;
       task.complete_ratio = +response.complete_ratio || 0;
