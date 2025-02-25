@@ -44,9 +44,15 @@ export const projectTemplatesApiService = {
     return response.data;
   },
 
-  createFromTemplate: async (body: { template_id: string }): Promise<IServerResponse<IProjectTemplate>> => {
+  createFromWorklenzTemplate: async (body: { template_id: string }): Promise<IServerResponse<IProjectTemplate>> => {
+    const response = await apiClient.post(`${rootUrl}/import-template`, body);
+    return response.data;
+  },  
+  
+  createFromCustomTemplate: async (body: { template_id: string }): Promise<IServerResponse<IProjectTemplate>> => {
     const response = await apiClient.post(`${rootUrl}/import-custom-template`, body);
     return response.data;
   },
+
 };
 
