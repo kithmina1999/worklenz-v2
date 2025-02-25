@@ -64,6 +64,7 @@ import { createPortal } from 'react-dom';
 import { setSelectedTasks } from '@/features/project/project.slice';
 import { MenuItemType } from 'antd/es/menu/interface';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
+import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 
 const TaskListBulkActionsBar = () => {
   const dispatch = useAppDispatch();
@@ -311,46 +312,63 @@ const TaskListBulkActionsBar = () => {
     return `${selectedTaskIdsList.length} ${word}`;
   };
 
+  const handleAssigneeChange = (e: CheckboxChangeEvent, member: ITeamMemberViewModel) => {
+    if (member.is_pending) {
+      e.stopPropagation();
+    }
+  };
+
   const getAssigneesMenu = () => {
-    return [
-      ...(members?.data?.map(member => ({
-        key: member.id,
-        type: 'checkbox' as const,
-        label: (
-          <Flex align="center" justify="space-between" gap={8}>
-            <Checkbox onChange={e => e.stopPropagation()}>
-              <Flex align="center">
-                <SingleAvatar
-                  avatarUrl={member.avatar_url}
-                  name={member.name}
-                  email={member.email}
-                />
-                <Flex vertical>
-                  <Typography.Text>{member.name}</Typography.Text>
-                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                    {member.email}
-                  </Typography.Text>
-                </Flex>
-              </Flex>
-            </Checkbox>
-          </Flex>
-        ),
-      })) || []),
-      {
-        key: 'apply',
-        type: 'item' as const,
-        label: (
+    return (
+      <Card className="custom-card" styles={{ body: { padding: 8 } }}>
+        <Flex vertical>
+          <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
+            {members?.data?.map(member => (
+              <List.Item
+                className={`${themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'} ${member.is_pending ? 'disabled' : ''}`}
+                key={member.id}
+                style={{
+                  display: 'flex',
+                  gap: 8,
+                  justifyContent: 'flex-start',
+                  padding: '4px 8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                <Checkbox disabled={member.is_pending} onChange={e => handleAssigneeChange(e, member)}>
+                  <Flex align="center">
+                    <SingleAvatar
+                      avatarUrl={member.avatar_url}
+                      name={member.name}
+                      email={member.email}
+                    />
+                    <Flex vertical>
+                      <Typography.Text>{member.name}</Typography.Text>
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                        {member.email}
+                        {member.is_pending && <small>t('pendingInvitation')</small>}
+                      </Typography.Text>
+                    </Flex>
+                  </Flex>
+                </Checkbox>
+              </List.Item>
+            ))}
+          </List>
           <Button
             type="primary"
             size="small"
             style={{ width: '100%' }}
-            onClick={() => setAssigneeDropdownOpen(false)}
+            onClick={() => {
+              setAssigneeDropdownOpen(false);
+              handleChangeAssignees();
+            }}
           >
-            Apply
+            {t('apply')}
           </Button>
-        ),
-      },
-    ];
+        </Flex>
+      </Card>
+    );
   };
 
   const buttonStyle = { background: colors.transparent, color: colors.white };
@@ -508,13 +526,9 @@ const TaskListBulkActionsBar = () => {
 
           <Tooltip title={t('changeAssignees')}>
             <Dropdown
+              dropdownRender={() => getAssigneesMenu()}
               open={assigneeDropdownOpen}
               onOpenChange={value => setAssigneeDropdownOpen(value)}
-              menu={{
-                items: getAssigneesMenu(),
-                style: { maxHeight: '200px', overflow: 'auto' },
-                multiple: true,
-              }}
               placement="top"
               arrow
               trigger={['click']}
