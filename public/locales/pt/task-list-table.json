@@ -42,5 +42,6 @@
   "noLabelsFound": "Nenhum rótulo encontrado",
   "searchInputPlaceholder": "Pesquisar ou criar",
   "assigneeSelectorInviteButton": "Convidar um novo membro por email",
-  "labelInputPlaceholder": "Pesquisar ou criar"
+  "labelInputPlaceholder": "Pesquisar ou criar",
+  "pendingInvitation": "Convite Pendente"
 }

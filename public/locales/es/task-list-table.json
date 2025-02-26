@@ -42,5 +42,6 @@
   "noLabelsFound": "No se encontraron etiquetas",
   "searchInputPlaceholder": "Buscar o crear",
   "assigneeSelectorInviteButton": "Invitar a un nuevo miembro por correo electrónico",
-  "labelInputPlaceholder": "Buscar o crear"
+  "labelInputPlaceholder": "Buscar o crear",
+  "pendingInvitation": "Invitación Pendiente"
 }

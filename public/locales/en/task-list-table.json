@@ -43,5 +43,7 @@
   "noLabelsFound": "No labels found",
   "searchInputPlaceholder": "Search or create",
   "assigneeSelectorInviteButton": "Invite a new member by email",
-  "labelInputPlaceholder": "Search or create"
+  "labelInputPlaceholder": "Search or create",
+  
+  "pendingInvitation": "Pending Invitation"
 }

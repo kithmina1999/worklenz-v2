@@ -17,5 +17,6 @@
     "createTaskTemplate": "Create Task Template",
     "apply": "Apply",
     "createLabel": "+ Create Label",
-    "hitEnterToCreate": "Press Enter to create"
+    "hitEnterToCreate": "Press Enter to create",
+    "pendingInvitation": "Pending Invitation"
 }

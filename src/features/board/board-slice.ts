@@ -13,6 +13,7 @@ import { ITaskFormViewModel } from '@/types/tasks/task.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
 import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
+import { ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -59,10 +60,14 @@ interface ITaskState {
   columns: ITaskListColumn[];
   loadingGroups: boolean;
   error: string | null;
+
   taskAssignees: ITaskListMemberFilter[];
   loadingAssignees: boolean;
+
   statuses: ITaskStatusViewModel[];
-  labels: string[];
+
+  loadingLabels: boolean;
+  labels: ITaskLabelFilter[];
   priorities: string[];
   members: string[];
   editableSectionId: string | null;
@@ -84,6 +89,7 @@ const initialState: ITaskState = {
   loadingAssignees: false,
   statuses: [],
   labels: [],
+  loadingLabels: false,
   priorities: [],
   members: [],
   editableSectionId: null,
@@ -108,6 +114,11 @@ export const fetchTaskGroups = createAsyncThunk(
         .map(member => member.id)
         .join(' ');
 
+      const selectedLabels = taskReducer.labels
+        .filter(label => label.selected)
+        .map(label => label.id)
+        .join(' ');
+
       const config: ITaskListConfigV2 = {
         id: projectId,
         archived: taskReducer.archived,
@@ -119,7 +130,7 @@ export const fetchTaskGroups = createAsyncThunk(
         members: selectedMembers,
         projects: '',
         isSubtasksInclude: true,
-        labels: taskReducer.labels.join(' '),
+        labels: selectedLabels,
         priorities: taskReducer.priorities.join(' '),
       };
 
