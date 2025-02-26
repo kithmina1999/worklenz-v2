@@ -114,36 +114,36 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
           {t('templateButton')}
         </Button>
       </div>
-      <Drawer
-        title={t('templateDrawerTitle')}
-        width={1000}
-        onClose={() => toggleTemplateSelector(false)}
-        open={open}
-        footer={
-          <div style={styles.drawerFooter}>
-            <Button style={{ marginRight: '8px' }} onClick={() => toggleTemplateSelector(false)}>
-              {t('cancel')}
-            </Button>
-            <Button
-              type="primary"
-              onClick={() => createFromTemplate()}
-              loading={creatingFromTemplate}
-            >
-              {t('create')}
-            </Button>
-          </div>
-        }
-      >
-        {createPortal(
+      {createPortal(
+        <Drawer
+          title={t('templateDrawerTitle')}
+          width={1000}
+          onClose={() => toggleTemplateSelector(false)}
+          open={open}
+          footer={
+            <div style={styles.drawerFooter}>
+              <Button style={{ marginRight: '8px' }} onClick={() => toggleTemplateSelector(false)}>
+                {t('cancel')}
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => createFromTemplate()}
+                loading={creatingFromTemplate}
+              >
+                {t('create')}
+              </Button>
+            </div>
+          }
+        >
           <TemplateDrawer
             showBothTabs={false}
             templateSelected={handleTemplateSelected}
             selectedTemplateType={() => {}}
-          />,
-          document.body,
-          'template-drawer'
-        )}
-      </Drawer>
+          />
+        </Drawer>,
+        document.body,
+        'template-drawer'
+      )}
     </div>
   );
 };
