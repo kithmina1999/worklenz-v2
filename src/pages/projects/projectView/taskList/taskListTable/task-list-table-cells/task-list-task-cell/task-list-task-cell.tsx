@@ -40,7 +40,7 @@ const TaskListTaskCell = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-        setEditTaskName(false);
+        handleTaskNameSave();
       }
     };
 
@@ -119,14 +119,9 @@ const TaskListTaskCell = ({
     );
   };
 
-  const handleTaskNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value.trim() !== '') {
-      setTaskName(e.target.value);
-    }
-  };
-
   const handleTaskNameSave = () => {
-    if (taskName.trim() !== '' && connected) {
+    const taskName = inputRef.current?.input?.value;
+    if (taskName?.trim() !== '' && connected) {
       socket?.emit(SocketEvents.TASK_NAME_CHANGE.toString(), JSON.stringify({
         task_id: task.id,
         name: taskName,
@@ -145,7 +140,7 @@ const TaskListTaskCell = ({
         margin: editTaskName ? '-8px' : undefined,
         border: editTaskName ? '1px solid #1677ff' : undefined,
         backgroundColor: editTaskName ? 'rgba(22, 119, 255, 0.02)' : undefined,
-        minHeight: editTaskName ? '40px' : undefined,
+        minHeight: editTaskName ? '42px' : undefined,
       }}
     >
       <Flex gap={8} align="center">
@@ -175,10 +170,9 @@ const TaskListTaskCell = ({
               ref={inputRef}
               variant="borderless"
               value={taskName}
-              onChange={handleTaskNameChange}
+              onChange={(e) => setTaskName(e.target.value)}
               autoFocus
               onPressEnter={handleTaskNameSave}
-              onBlur={handleTaskNameSave}
               style={{
                 width: '100%',
                 padding: 0,
