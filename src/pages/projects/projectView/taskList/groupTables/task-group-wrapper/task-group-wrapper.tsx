@@ -32,7 +32,8 @@ import {
   updateTaskLabel,
   updateTaskStatus,
   updateTaskPriority,
-  updateTaskEndDate
+  updateTaskEndDate,
+  updateTaskName
 } from '@/features/tasks/tasks.slice';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 
@@ -171,6 +172,21 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     return () => {
       socket.off(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleEndDateChange);
     };
+  }, [socket, dispatch]);
+
+  // Socket handlers for task name updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleTaskNameChange = (data: { id: string; parent_task: string; name: string; }) => {
+      dispatch(updateTaskName(data));
+    };
+
+    socket.on(SocketEvents.TASK_NAME_CHANGE.toString(), handleTaskNameChange);
+
+    return () => {
+      socket.off(SocketEvents.TASK_NAME_CHANGE.toString(), handleTaskNameChange);
+    };  
   }, [socket, dispatch]);
 
   const handleDragStart = ({ active }: DragStartEvent) => {

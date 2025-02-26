@@ -21,9 +21,9 @@ import { ITaskLabel, ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
 
 export enum IGroupBy {
   STATUS = 'status',
-  PRIORITY = 'priority', 
+  PRIORITY = 'priority',
   PHASE = 'phase',
-  MEMBERS = 'members'
+  MEMBERS = 'members',
 }
 
 export const GROUP_BY_STATUS_VALUE = IGroupBy.STATUS;
@@ -101,7 +101,7 @@ const initialState: ITaskState = {
 
 export const COLUMN_KEYS = {
   KEY: 'KEY',
-  NAME: 'NAME', 
+  NAME: 'NAME',
   DESCRIPTION: 'DESCRIPTION',
   PROGRESS: 'PROGRESS',
   ASSIGNEES: 'ASSIGNEES',
@@ -140,7 +140,7 @@ export const fetchTaskGroups = createAsyncThunk(
       const selectedLabels = taskReducer.labels
         .filter(label => label.selected)
         .map(label => label.id)
-        .join(' ');        
+        .join(' ');
 
       const config: ITaskListConfigV2 = {
         id: projectId,
@@ -212,7 +212,7 @@ export const fetchLabelsByProject = createAsyncThunk(
 
 export const fetchTask = createAsyncThunk(
   'tasks/fetchTask',
-  async ({taskId, projectId}: {taskId: string, projectId: string}, { rejectWithValue }) => {
+  async ({ taskId, projectId }: { taskId: string; projectId: string }, { rejectWithValue }) => {
     const response = await tasksApiService.getFormViewModel(taskId, projectId);
     return response.body;
   }
@@ -272,24 +272,20 @@ const addTaskToGroup = (
     if (parentTask) {
       parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
       if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
-      parentTask.sub_tasks.push({...task});
+      parentTask.sub_tasks.push({ ...task });
     }
   } else {
     insert ? group.tasks.push(task) : group.tasks.unshift(task);
   }
 };
 
-const updateTaskGroup = (
-  taskGroups: ITaskListGroup[],
-  task: IProjectTask,
-  insert = true
-): void => {
+const updateTaskGroup = (taskGroups: ITaskListGroup[], task: IProjectTask, insert = true): void => {
   if (!task.id) return;
-  
+
   const groupId = getGroupIdByGroupedColumn(task);
   if (groupId) {
     deleteTaskFromGroup(taskGroups, task, groupId);
-    addTaskToGroup(taskGroups, {...task}, groupId, insert);
+    addTaskToGroup(taskGroups, { ...task }, groupId, insert);
   }
 };
 
@@ -347,16 +343,16 @@ const taskSlice = createSlice({
         if (parentTask) {
           parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
           if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
-          parentTask.sub_tasks.push({...task});
+          parentTask.sub_tasks.push({ ...task });
           // Ensure sub-tasks are visible when adding a new one
           parentTask.show_sub_tasks = true;
         }
       } else {
         // Handle main task addition
         if (insert) {
-          group.tasks.push({...task});
+          group.tasks.push({ ...task });
         } else {
-          group.tasks.unshift({...task});
+          group.tasks.unshift({ ...task });
         }
       }
     },
@@ -391,6 +387,21 @@ const taskSlice = createSlice({
       }
     },
 
+    updateTaskName: (
+      state,
+      action: PayloadAction<{ id: string; parent_task: string; name: string; }>
+    ) => {
+      const { id, name, parent_task } = action.payload;
+      const group = state.taskGroups.find(group => group.tasks.some(task => task.id === id));
+
+      if (group) {
+        const task = group.tasks.find(task => task.id === id);
+        if (task) {
+          task.name = name;
+        }
+      }
+    },
+
     updateTaskProgress: (
       state,
       action: PayloadAction<{
@@ -401,9 +412,7 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { taskId, progress, totalTasksCount, completedCount } = action.payload;
-      const group = state.taskGroups.find(group => 
-        group.tasks.some(task => task.id === taskId)
-      );
+      const group = state.taskGroups.find(group => group.tasks.some(task => task.id === taskId));
 
       if (group) {
         const task = group.tasks.find(task => task.id === taskId);
@@ -433,10 +442,7 @@ const taskSlice = createSlice({
       }
     },
 
-    updateTaskLabel: (
-      state,
-      action: PayloadAction<ILabelsChangeResponse>
-    ) => {
+    updateTaskLabel: (state, action: PayloadAction<ILabelsChangeResponse>) => {
       const label = action.payload;
       state.taskGroups.forEach(group => {
         const task = group.tasks.find(task => task.id === label.id);
@@ -447,18 +453,9 @@ const taskSlice = createSlice({
       });
     },
 
-    updateTaskStatus: (
-      state,
-      action: PayloadAction<ITaskListStatusChangeResponse>
-    ) => {
-      const {
-        id,
-        status_id,
-        color_code,
-        color_code_dark,
-        complete_ratio,
-        statusCategory,
-      } = action.payload;
+    updateTaskStatus: (state, action: PayloadAction<ITaskListStatusChangeResponse>) => {
+      const { id, status_id, color_code, color_code_dark, complete_ratio, statusCategory } =
+        action.payload;
 
       // Find the task in any group
       let foundTask: IProjectTask | undefined;
@@ -485,7 +482,7 @@ const taskSlice = createSlice({
         if (state.group === GROUP_BY_STATUS_VALUE && !foundTask.is_sub_task && currentGroupId) {
           // Remove from current group
           deleteTaskFromGroup(state.taskGroups, foundTask, currentGroupId);
-          
+
           // Add to new status group
           addTaskToGroup(state.taskGroups, foundTask, status_id, false);
         }
@@ -522,7 +519,6 @@ const taskSlice = createSlice({
           group.tasks[taskIndex].start_date = task.start_date;
         }
       }
-
     },
 
     updateTaskGroup: (
@@ -534,7 +530,7 @@ const taskSlice = createSlice({
     ) => {
       const { task } = action.payload;
       const groupId = getGroupIdByGroupedColumn(task);
-      
+
       if (groupId) {
         const group = state.taskGroups.find(g => g.id === groupId);
         if (group) {
@@ -566,16 +562,8 @@ const taskSlice = createSlice({
       state.activeTimers[taskId] = timeTracking;
     },
 
-    updateTaskPriority: (
-      state,
-      action: PayloadAction<ITaskListPriorityChangeResponse>
-    ) => {
-      const {
-        id,
-        priority_id,
-        color_code,
-        color_code_dark,
-      } = action.payload;
+    updateTaskPriority: (state, action: PayloadAction<ITaskListPriorityChangeResponse>) => {
+      const { id, priority_id, color_code, color_code_dark } = action.payload;
 
       // Find the task in any group
       let foundTask: IProjectTask | undefined;
@@ -600,7 +588,7 @@ const taskSlice = createSlice({
         if (state.group === GROUP_BY_PRIORITY_VALUE && !foundTask.is_sub_task && currentGroupId) {
           // Remove from current group
           deleteTaskFromGroup(state.taskGroups, foundTask, currentGroupId);
-          
+
           // Add to new priority group
           addTaskToGroup(state.taskGroups, foundTask, priority_id, false);
         }
@@ -609,7 +597,7 @@ const taskSlice = createSlice({
 
     toggleTaskRowExpansion: (state, action: PayloadAction<string>) => {
       const taskId = action.payload;
-      
+
       // Find the task in any group and toggle its show_sub_tasks property
       for (const group of state.taskGroups) {
         const task = group.tasks.find(t => t.id === taskId);
@@ -627,7 +615,7 @@ const taskSlice = createSlice({
       state.search = null;
       state.archived = false;
       state.priorities = [];
-      state.fields = [];  
+      state.fields = [];
       state.loadingGroups = false;
       state.loadingColumns = false;
       state.error = null;
@@ -680,14 +668,14 @@ const taskSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchLabelsByProject.fulfilled, (state, action: PayloadAction<ITaskLabel[]>) => {
-        const newLabels = action.payload.map(label => ({...label, selected: false}));
+        const newLabels = action.payload.map(label => ({ ...label, selected: false }));
         state.labels = newLabels;
         state.loadingLabels = false;
       })
       .addCase(fetchLabelsByProject.rejected, (state, action) => {
         state.loadingLabels = false;
         state.error = action.payload as string;
-      })
+      });
   },
 });
 
@@ -695,6 +683,7 @@ export const {
   setGroup,
   addTask,
   deleteTask,
+  updateTaskName,
   updateTaskProgress,
   updateTaskAssignees,
   updateTaskLabel,
@@ -708,12 +697,11 @@ export const {
   toggleColumnVisibility,
   updateTaskStatus,
   updateTaskPriority,
-  updateTaskEndDate,  
+  updateTaskEndDate,
   updateTaskStartDate,
   updateTaskTimeTracking,
   toggleTaskRowExpansion,
   resetTaskListData,
 } = taskSlice.actions;
-
 
 export default taskSlice.reducer;
