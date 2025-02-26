@@ -128,16 +128,21 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
 
   const toggleSelectAll = () => {
     if (!taskList) return;
-
     const allTaskIds = taskList
       .flatMap(task => [task.id, ...(task.sub_tasks?.map(subtask => subtask.id) || [])])
       .filter(Boolean) as string[];
 
     if (isSelectAll) {
-      dispatch(deselectAll());
+      const remainingTaskIds = selectedTaskIdsList.filter(id => !allTaskIds.includes(id));
+      const remainingTasks = remainingTaskIds.map(id => findTaskInGroups(id) || taskList.find(t => t.id === id)).filter(Boolean) as IProjectTask[];
+      dispatch(selectTaskIds(remainingTaskIds));
+      dispatch(selectTasks(remainingTasks));
     } else {
-      dispatch(selectTaskIds(allTaskIds));
-      dispatch(selectTasks(taskList));
+      const updatedTaskIds = [...selectedTaskIdsList, ...allTaskIds];
+      const uniqueTaskIds = Array.from(new Set(updatedTaskIds));
+      const updatedTasks = uniqueTaskIds.map(id => findTaskInGroups(id) || taskList.find(t => t.id === id)).filter(Boolean) as IProjectTask[];
+      dispatch(selectTaskIds(uniqueTaskIds));
+      dispatch(selectTasks(updatedTasks));
     }
     setIsSelectAll(!isSelectAll);
   };
@@ -146,7 +151,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     if (!task.id) return;
     const taskIdsSet = new Set(selectedTaskIdsList);
     const selectedTasksSet = new Set(
-      selectedTaskIdsList.map(id => taskList?.find(t => t.id === id)).filter(Boolean)
+      selectedTaskIdsList.map(id => findTaskInGroups(id) || taskList?.find(t => t.id === id)).filter(Boolean)
     );
 
     if (taskIdsSet.has(task.id)) {
