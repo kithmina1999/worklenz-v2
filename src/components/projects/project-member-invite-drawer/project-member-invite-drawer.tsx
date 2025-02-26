@@ -16,19 +16,23 @@ import { DeleteOutlined, MailOutlined } from '@ant-design/icons';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
 import logger from '@/utils/errorLogger';
 import { validateEmail } from '@/utils/validateEmail';
+import { ITeamMembersViewModel } from '@/types/teamMembers/teamMembersViewModel.types';
+import { teamMembersApiService } from '@/api/team-members/teamMembers.api.service';
 
 const ProjectMemberDrawer = () => {
   const { t } = useTranslation('project-view/project-member-drawer');
   const { isDrawerOpen, currentMembersList, isLoading } = useAppSelector(
     state => state.projectMemberReducer
   );
-  const { teamMembers, loading: teamMembersLoading } = useAppSelector(state => state.teamMembersReducer);
   const { projectId } = useAppSelector(state => state.projectReducer);
 
   const dispatch = useAppDispatch();
   const [form] = Form.useForm();
   const [searchTerm, setSearchTerm] = useState('');
   const [isInviting, setIsInviting] = useState(false);
+  const [members, setMembers] = useState<ITeamMembersViewModel>({ data: [], total: 0 });
+  const [teamMembersLoading, setTeamMembersLoading] = useState(false);
+
   const fetchProjectMembers = async () => {
     if (!projectId) return;
     dispatch(getAllProjectMembers(projectId));
@@ -38,19 +42,25 @@ const ProjectMemberDrawer = () => {
     setSearchTerm(value);
   };
 
+  const fetchTeamMembers = async () => {
+    if (!searchTerm.trim()) return;
+    try {
+      setTeamMembersLoading(true);
+      const response = await teamMembersApiService.get(1, 10, null, null, searchTerm, true);
+      if (response.done) {
+        setMembers(response.body);
+      }
+    } catch (error) {
+      logger.error('Error fetching team members:', error);
+    } finally {
+      setTeamMembersLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const handler = setTimeout(() => {
+    const handler = setTimeout(async () => {
       if (searchTerm.trim()) {
-        dispatch(
-          getTeamMembers({
-            index: 1,
-            size: 5,
-            field: null,
-            order: null,
-            search: searchTerm,
-            all: true,
-          })
-        );
+        fetchTeamMembers();
       }
     }, 100);
 
@@ -102,9 +112,9 @@ const ProjectMemberDrawer = () => {
     }
   };
 
-  const sendInvite = async () => {
+  const sendInviteToProject = async () => {
     if (!validateEmail(searchTerm) || !projectId) return;
-    if (typeof searchTerm !== "string" || !searchTerm.length) return;
+    if (typeof searchTerm !== 'string' || !searchTerm.length) return;
 
     try {
       const email = searchTerm.trim().toLowerCase();
@@ -116,7 +126,7 @@ const ProjectMemberDrawer = () => {
       const res = await dispatch(createByEmail(body)).unwrap();
       if (res.done) {
         form.resetFields();
-        await fetchProjectMembers();  
+        await fetchProjectMembers();
       }
     } catch (error) {
       logger.error('Error sending invite:', error);
@@ -128,7 +138,7 @@ const ProjectMemberDrawer = () => {
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
-      sendInvite();
+      sendInviteToProject();
     }
   };
 
@@ -146,10 +156,16 @@ const ProjectMemberDrawer = () => {
 
   const renderNotFoundContent = () => (
     <Flex>
-      <Button block type="primary" onClick={sendInvite} loading={isInviting} disabled={!validateEmail(searchTerm)}>
+      <Button
+        block
+        type="primary"
+        onClick={sendInviteToProject}
+        loading={isInviting}
+        disabled={!validateEmail(searchTerm)}
+      >
         <span>
           <MailOutlined /> &nbsp;
-          { validateEmail(searchTerm) ? t('inviteAsAMember') : t('inviteNewMemberByEmail')}
+          {validateEmail(searchTerm) ? t('inviteAsAMember') : t('inviteNewMemberByEmail')}
         </span>
       </Button>
     </Flex>
@@ -173,7 +189,7 @@ const ProjectMemberDrawer = () => {
             onSearch={handleSearch}
             onChange={handleSelectChange}
             onKeyDown={handleKeyDown}
-            options={teamMembers?.data?.map(member => ({
+            options={members?.data?.map(member => ({
               key: member.id,
               value: member.id,
               label: renderMemberOption(member),
