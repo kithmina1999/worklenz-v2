@@ -76,12 +76,8 @@ const addProjectMember = createAsyncThunk(
 
 const createByEmail = createAsyncThunk(
   'projectMembers/createByEmail',
-  async (params: { email: string; projectId: string }) => {
-    const { email, projectId } = params;
-    const response = await projectMembersApiService.createByEmail({
-      project_id: projectId,
-      email: email,
-    });
+  async (params: { email: string; project_id: string }) => {
+    const response = await projectMembersApiService.createByEmail(params);
     return response;
   }
 );

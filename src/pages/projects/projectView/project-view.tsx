@@ -24,7 +24,7 @@ const StatusDrawer = React.lazy(
   () => import('@/components/project-task-filters/create-status-drawer/create-status-drawer')
 );
 const ProjectMemberDrawer = React.lazy(
-  () => import('@features/projects/singleProject/members/ProjectMemberDrawer')
+  () => import('@/components/projects/project-member-invite-drawer/project-member-invite-drawer')
 );
 const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 

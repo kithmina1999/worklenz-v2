@@ -1,4 +1,4 @@
-import { Drawer, Flex, Form, Select, Typography, List, Button, AutoComplete } from 'antd/es';
+import { Drawer, Flex, Form, Select, Typography, List, Button } from 'antd/es';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 
@@ -10,7 +10,7 @@ import {
   deleteProjectMember,
   getAllProjectMembers,
   toggleProjectMemberDrawer,
-} from './projectMembersSlice';
+} from '@/features/projects/singleProject/members/projectMembersSlice';
 import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { DeleteOutlined, MailOutlined } from '@ant-design/icons';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
@@ -110,7 +110,7 @@ const ProjectMemberDrawer = () => {
       const email = searchTerm.trim().toLowerCase();
       const body = {
         email,
-        projectId,
+        project_id: projectId,
       };
       setIsInviting(true);
       const res = await dispatch(createByEmail(body)).unwrap();
@@ -146,7 +146,7 @@ const ProjectMemberDrawer = () => {
 
   const renderNotFoundContent = () => (
     <Flex>
-      <Button block type="primary" onClick={sendInvite} loading={isInviting}>
+      <Button block type="primary" onClick={sendInvite} loading={isInviting} disabled={!validateEmail(searchTerm)}>
         <span>
           <MailOutlined /> &nbsp;
           { validateEmail(searchTerm) ? t('inviteAsAMember') : t('inviteNewMemberByEmail')}

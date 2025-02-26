@@ -1,11 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { PlusOutlined } from '@ant-design/icons';
 import {
   Badge,
   Button,
   Card,
   Checkbox,
-  Divider,
   Dropdown,
   Flex,
   Input,
@@ -14,18 +12,14 @@ import {
   Typography,
 } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { colors } from '../../../styles/colors';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { ITaskLabel } from '../../../types/label.type';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
+import { ITaskLabel } from '@/types/label.type';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { fetchLabelsByProject, updateTaskLabel } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import { SocketEvents } from '@/shared/socket-events';
 import { useSocket } from '@/socket/socketContext';
-import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
-import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 
 interface LabelsSelectorProps {
   task: IProjectTask;
@@ -34,13 +28,11 @@ interface LabelsSelectorProps {
 const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   const { t } = useTranslation('task-list-table');
   const { socket } = useSocket();
-  const dispatch = useAppDispatch();
 
   const labelInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const { labels } = useAppSelector(state => state.taskLabelsReducer);
-  const { projectId } = useAppSelector(state => state.projectReducer);
   const [labelList, setLabelList] = useState<ITaskLabel[]>([]);
 
   const currentSession = useAuthService().getCurrentSession();
