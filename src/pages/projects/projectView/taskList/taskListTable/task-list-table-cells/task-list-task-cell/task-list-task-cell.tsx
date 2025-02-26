@@ -13,6 +13,8 @@ import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import './task-list-task-cell.css';
 import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 import { useState, useRef, useEffect } from 'react';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
 
 type TaskListTaskCellProps = {
   task: IProjectTask;
@@ -26,7 +28,10 @@ const TaskListTaskCell = ({
   toggleTaskExpansion,
 }: TaskListTaskCellProps) => {
   const { t } = useTranslation('task-list-table');
-  const [editTaskName, setEditTaskName] = useState(true);
+  const { socket, connected } = useSocket();
+
+  const [editTaskName, setEditTaskName] = useState(false);
+  const [taskName, setTaskName] = useState(task.name || '');
   const inputRef = useRef<InputRef>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -114,6 +119,23 @@ const TaskListTaskCell = ({
     );
   };
 
+  const handleTaskNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value.trim() !== '') {
+      setTaskName(e.target.value);
+    }
+  };
+
+  const handleTaskNameSave = () => {
+    if (taskName.trim() !== '' && connected) {
+      socket?.emit(SocketEvents.TASK_NAME_CHANGE.toString(), JSON.stringify({
+        task_id: task.id,
+        name: taskName,
+        parent_task: task.parent_task_id,
+      }));
+      setEditTaskName(false);
+    }
+  };
+
   return (
     <Flex
       align="center"
@@ -122,8 +144,8 @@ const TaskListTaskCell = ({
       style={{
         margin: editTaskName ? '-8px' : undefined,
         border: editTaskName ? '1px solid #1677ff' : undefined,
-        borderRadius: editTaskName ? '4px' : undefined,
         backgroundColor: editTaskName ? 'rgba(22, 119, 255, 0.02)' : undefined,
+        minHeight: editTaskName ? '40px' : undefined,
       }}
     >
       <Flex gap={8} align="center">
@@ -152,10 +174,11 @@ const TaskListTaskCell = ({
             <Input
               ref={inputRef}
               variant="borderless"
-              value={task.name}
+              value={taskName}
+              onChange={handleTaskNameChange}
               autoFocus
-              onPressEnter={() => setEditTaskName(false)}
-              onBlur={() => setEditTaskName(false)}
+              onPressEnter={handleTaskNameSave}
+              onBlur={handleTaskNameSave}
               style={{
                 width: '100%',
                 padding: 0,
