@@ -9,6 +9,7 @@ import {
   SaveOutlined,
   SettingOutlined,
   SyncOutlined,
+  UsergroupAddOutlined,
 } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
 import { Button, Dropdown, Flex, Tag, Tooltip, Typography } from 'antd';
@@ -43,12 +44,14 @@ import logger from '@/utils/errorLogger';
 import { createPortal } from 'react-dom';
 import ImportTaskTemplate from '@/components/task-templates/import-task-template';
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
+import { toggleProjectMemberDrawer } from '@/features/projects/singleProject/members/projectMembersSlice';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
   const { t } = useTranslation('project-view/project-view-header');
   const dispatch = useAppDispatch();
   const currentSession = useAuthService().getCurrentSession();
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
   const { socket } = useSocket();
 
   const {
@@ -124,6 +127,10 @@ const ProjectViewHeader = () => {
     dispatch(setImportTaskTemplateDrawerOpen(true));
   };
 
+  const isProjectManager = () => {
+    return currentSession?.team_member_id === selectedProject?.project_manager?.id;
+  };
+
   const dropdownItems = [
     {
       key: 'import',
@@ -187,15 +194,15 @@ const ProjectViewHeader = () => {
         />
       </Tooltip>
 
-      <Tooltip title="Save as template">
-        <Button
-          shape="circle"
-          icon={<SaveOutlined />}
-          onClick={() => dispatch(toggleSaveAsTemplateDrawer())}
-        />
-      </Tooltip>
-
-      <SaveProjectAsTemplate />
+      {(isOwnerOrAdmin || isProjectManager()) && (
+        <Tooltip title="Save as template">
+          <Button
+            shape="circle"
+            icon={<SaveOutlined />}
+            onClick={() => dispatch(toggleSaveAsTemplateDrawer())}
+          />
+        </Tooltip>
+      )}
 
       <Tooltip title="Project settings">
         <Button shape="circle" icon={<SettingOutlined />} onClick={handleSettingsClick} />
@@ -211,7 +218,15 @@ const ProjectViewHeader = () => {
         </Button>
       </Tooltip>
 
-      <ProjectMemberInviteButton />
+      {(isOwnerOrAdmin || isProjectManager()) && (
+        <Button
+          type="primary"
+          icon={<UsergroupAddOutlined />}
+          onClick={() => dispatch(toggleProjectMemberDrawer())}
+        >
+          Invite
+        </Button>
+      )}
 
       <Dropdown.Button
         loading={creatingTask}
@@ -247,6 +262,8 @@ const ProjectViewHeader = () => {
       />
       {createPortal(<ProjectDrawer onClose={() => {}} />, document.body, 'project-drawer')}
       {createPortal(<ImportTaskTemplate />, document.body, 'import-task-template')}
+      {createPortal(<SaveProjectAsTemplate />, document.body, 'save-project-as-template')}
+
     </>
   );
 };

@@ -13,7 +13,7 @@ import { getProject, setProject, setProjectId } from '@/features/project/project
 // Components
 import ProjectViewHeader from './project-view-header';
 import ProjectViewExtra from './project-view-extra';
-import ProjectMemberDrawer from '@features/projects/singleProject/members/ProjectMemberDrawer';
+import ProjectMemberDrawer from '@/components/projects/project-member-invite-drawer/project-member-invite-drawer';
 
 // Hooks
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
