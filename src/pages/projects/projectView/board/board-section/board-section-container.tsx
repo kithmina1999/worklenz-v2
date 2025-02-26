@@ -15,7 +15,7 @@ const BoardSectionCardContainer = ({
 }) => {
   return (
     <SortableContext 
-      items={datasource.map((section: any) => section.id)}
+      items={datasource?.map((section: any) => section.id)}
       strategy={horizontalListSortingStrategy}
     >
       <Flex

@@ -120,6 +120,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const [scrollingTables, setScrollingTables] = useState<Record<string, boolean>>({});
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
   const toggleTaskExpansion = (taskId: string) => {
     dispatch(toggleTaskRowExpansion(taskId));
@@ -187,6 +188,21 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     return () => tableContainer.removeEventListener('scroll', handleScroll);
   }, [tableId]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      // Check if click is outside of any task cell
+      if (!target.closest('[data-task-cell]')) {
+        setEditingTaskId(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const getColumnStyles = (key: string | undefined, isHeader: boolean) => {
     if (!key) return '';
 
@@ -194,15 +210,11 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     const stickyStyles = (() => {
       switch (key) {
         case 'selector':
-          return `sticky left-0 z-20 ${
-            scrollingTables[tableId]
-              ? 'shadow-[2px_0_4px_-2px_rgba(0,0,0,0.2)]'
-              : ''
-          }`;
+          return 'sticky left-0 z-20';
         case 'TASK':
-          return `sticky left-[48px] z-10 ${
+          return `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:h-full after:-z-10 after:w-1.5 after:bg-transparent ${
             scrollingTables[tableId]
-              ? 'shadow-[2px_0_4px_-2px_rgba(0,0,0,0.2)]'
+              ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent'
               : ''
           }`;
         default:
@@ -210,12 +222,13 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
       }
     })();
 
+    const widthStyles = key === 'TASK' ? 'w-[474px]' : '';
     const heightStyles = isHeader ? 'after:h-[42px]' : 'after:min-h-[40px]';
     const themeStyles = isDarkMode
       ? `bg-${isHeader ? '[#1d1d1d]' : '[#141414]'} border-[#303030]`
       : `bg-${isHeader ? '[#fafafa]' : 'white'}`;
 
-    return `${baseStyles} ${stickyStyles} ${heightStyles} ${themeStyles}`;
+    return `${baseStyles} ${stickyStyles} ${heightStyles} ${themeStyles} ${widthStyles}`;
   };
 
   const renderColumnContent = (
@@ -410,6 +423,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                 style={{
                   backgroundColor: getRowBackgroundColor(task.id),
                 }}
+                data-task-cell
               >
                 {column.custom_column
                   ? renderCustomColumnContent(

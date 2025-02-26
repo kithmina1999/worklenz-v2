@@ -20,20 +20,8 @@ const CustomAvatarGroup = ({ task, sectionId }: CustomAvatarGroupProps) => {
       }}
     >
       <Avatars members={task.names || []} />
-      <Button
-        shape="circle"
-        type="dashed"
-        size="small"
-        style={{
-          background: 'transparent',
-          boxShadow: 'none',
-          width: 26,
-          height: 26,
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        <AssigneeSelector showDropdown={false} task={task} groupId={sectionId} />
-      </Button>
+
+      <AssigneeSelector task={task} groupId={sectionId} />
     </Flex>
   ) : (
     <Button
