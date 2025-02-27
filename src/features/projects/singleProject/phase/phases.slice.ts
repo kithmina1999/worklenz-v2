@@ -94,7 +94,17 @@ export const updateProjectPhaseLabel = createAsyncThunk(
   }
 );
 
-
+export const updatePhaseName = createAsyncThunk(
+  'phase/updatePhaseName',
+  async ({ phaseId, phase, projectId }: { phaseId: string; phase: ITaskPhase; projectId: string }, { rejectWithValue }) => {
+    try {
+      const response = await phasesApiService.updateNameOfPhase(phaseId, phase, projectId);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
 const phaseSlice = createSlice({
   name: 'phaseReducer',
   initialState,

@@ -35,7 +35,7 @@ export const phasesApiService = {
   },
 
   updatePhaseColor: async (projectId: string, body: ITaskPhase) => {
-    const q = toQueryString({id: projectId, current_project_id: projectId})
+    const q = toQueryString({ id: projectId, current_project_id: projectId });
     const response = await apiClient.put<IServerResponse<ITaskPhase>>(
       `${rootUrl}/change-color/${body.id}${q}`,
       body
@@ -43,10 +43,12 @@ export const phasesApiService = {
     return response.data;
   },
 
-  updatePhaseName: async (projectId: string, name: string,) => {
-    const q = toQueryString({current_project_id: projectId})
+  updateNameOfPhase: async (phaseId: string, body: ITaskPhase, projectId: string,) => {
+    const q = toQueryString({ id: projectId, current_project_id: projectId });
     const response = await apiClient.put<IServerResponse<ITaskPhase>>(
-      `${rootUrl}/label/${projectId}${q}`, {name});
+      `${rootUrl}/${phaseId}${q}`,
+      body
+    );
     return response.data;
   },
 
@@ -62,7 +64,9 @@ export const phasesApiService = {
   updateProjectPhaseLabel: async (projectId: string, phaseLabel: string) => {
     const q = toQueryString({ id: projectId, current_project_id: projectId });
     const response = await apiClient.put<IServerResponse<ITaskPhase>>(
-      `${rootUrl}/label/${projectId}${q}`, {name: phaseLabel});
+      `${rootUrl}/label/${projectId}${q}`,
+      { name: phaseLabel }
+    );
     return response.data;
   },
 };

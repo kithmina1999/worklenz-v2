@@ -2,14 +2,16 @@ import { Button, ColorPicker, ConfigProvider, Flex, Input } from 'antd';
 import { CloseCircleOutlined, HolderOutlined, DragOutlined } from '@ant-design/icons';
 import { nanoid } from '@reduxjs/toolkit';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import { deletePhaseOption, fetchPhasesByProjectId, updatePhaseColor } from './phases.slice';
+import { deletePhaseOption, fetchPhasesByProjectId, updatePhaseColor, updatePhaseName } from './phases.slice';
 import { PhaseColorCodes } from '../../../../shared/constants';
 import { ITaskPhase } from '@/types/tasks/taskPhase.types';
 import { TFunction } from 'i18next';
 import logger from '@/utils/errorLogger';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { fetchTaskGroups } from '@/features/board/board-slice';
+import { updatePhaseLabel } from '@/features/project/project.slice';
 
 const PhaseOptionItem = ({
   option,
@@ -38,6 +40,40 @@ const PhaseOptionItem = ({
     transition,
   };
 
+  const [phaseName, setPhaseName] = useState(option?.name || '');
+
+  useEffect(() => {
+    setPhaseName(option?.name || '');
+  }, [option]);
+
+  const handlePhaseNameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhaseName(e.target.value);
+  };
+
+  const handlePhaseNameChange = async (e: React.FocusEvent<HTMLInputElement>) => {
+    if (!projectId || !option) return;
+    
+    // Only update if the name has actually changed
+    if (phaseName.trim() !== option.name.trim()) {
+      try {
+        const phase = { ...option, name: phaseName.trim() };
+        const response = await dispatch(updatePhaseName({ 
+          phaseId: option.id, 
+          phase: phase, 
+          projectId: projectId 
+        })).unwrap();
+        if (response.done) {
+          dispatch(fetchPhasesByProjectId(projectId));
+          await dispatch(fetchTaskGroups(projectId));
+        }
+      } catch (error) {
+        logger.error('Error updating phase name', error);
+        // Reset to original name if update fails
+        setPhaseName(option.name);
+      }
+    }
+  };
+
   // handle delete phase option
   const handleDeletePhaseOption = async () => {
     try {
@@ -46,6 +82,7 @@ const PhaseOptionItem = ({
       ).unwrap();
       if (response.done) {
         dispatch(fetchPhasesByProjectId(projectId || ''));
+        await dispatch(fetchTaskGroups(projectId || ''));
       }
     } catch (error) {
       logger.error('Error deleting phase option', error);
@@ -59,6 +96,7 @@ const PhaseOptionItem = ({
       const response = await dispatch(updatePhaseColor({ projectId, body: phase })).unwrap();
       if (response.done) {
         dispatch(fetchPhasesByProjectId(projectId || ''));
+        await dispatch(fetchTaskGroups(projectId || ''));
       }
     } catch (error) {
       logger.error('Error changing phase color', error);
@@ -72,7 +110,13 @@ const PhaseOptionItem = ({
           <div {...listeners} style={{ cursor: 'grab' }}>
           <HolderOutlined />
           </div>
-          <Input placeholder={t('enterPhaseName')} value={option?.name} />
+          <Input
+            type="text"
+            value={phaseName}
+            onChange={handlePhaseNameInput}
+            onBlur={handlePhaseNameChange}
+            placeholder={t('enterPhaseName')}
+          />
           <ColorPicker
             onChange={value => setColor(value.toHexString())}
             onChangeComplete={handleColorChange}
