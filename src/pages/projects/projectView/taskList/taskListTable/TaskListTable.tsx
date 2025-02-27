@@ -16,13 +16,11 @@ import { DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { useSelectedProject } from '@/hooks/useSelectedProject';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 import { colors } from '@/styles/colors';
 import TaskContextMenu from './context-menu/task-context-menu';
 import AddTaskListRow from './task-list-table-rows/add-task-list-row';
-import AddSubTaskListRow from './task-list-table-rows/add-sub-task-list-row';
 import CustomColumnLabelCell from './custom-columns/custom-column-cells/custom-column-label-cell/custom-column-label-cell';
 import CustomColumnSelectionCell from './custom-columns/custom-column-cells/custom-column-selection-cell/custom-column-selection-cell';
 import TaskListProgressCell from './task-list-table-cells/task-list-progress-cell/task-list-progress-cell';
@@ -45,7 +43,6 @@ import AssigneeSelector from '@/components/taskListCommon/assignee-selector/assi
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { CustomFieldsTypes } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 import {
-  deselectAll,
   selectTaskIds,
   selectTasks,
 } from '@/features/projects/bulkActions/bulkActionSlice';
@@ -53,10 +50,8 @@ import StatusDropdown from '@/components/task-list-common/status-dropdown/status
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/priority-dropdown';
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
 import { createPortal } from 'react-dom';
-import { setSelectedTasks } from '@/features/project/project.slice';
 import { toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
-import { useSocket } from '@/socket/socketContext';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
