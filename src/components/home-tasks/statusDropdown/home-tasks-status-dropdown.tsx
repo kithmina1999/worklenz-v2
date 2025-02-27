@@ -39,7 +39,6 @@ const HomeTasksStatusDropdown = ({ task, teamId }: HomeTasksStatusDropdownProps)
       })
     );
     getTaskProgress(task.id);
-    refetch();
   };
 
   const handleTaskStatusChange = (response: ITaskListStatusChangeResponse) => {
@@ -54,6 +53,7 @@ const HomeTasksStatusDropdown = ({ task, teamId }: HomeTasksStatusDropdownProps)
       };
       // Create a new task object instead of modifying the existing one
       setSelectedStatus(updatedTask);
+      refetch();
     }
   };
 
