@@ -22,8 +22,6 @@ const PhaseDropdown = ({ task }: PhaseDropdownProps) => {
 
   // Handle phase select
   const handlePhaseOptionSelect = (value: string) => {
-    console.log('value', value, task.id, connected);
-
   if (!connected || !task.id || !value) return;
     try {
       socket?.emit(
