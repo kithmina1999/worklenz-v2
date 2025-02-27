@@ -1,5 +1,5 @@
 import { CaretDownFilled } from '@ant-design/icons';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Badge from 'antd/es/badge';
@@ -13,7 +13,7 @@ import Space from 'antd/es/space';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { ITaskPriority } from '@/types/tasks/taskPriority.types';
-import { setLabels, setPriorities } from '@/features/tasks/tasks.slice';
+import { setPriorities } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchTaskGroups } from '@/features/board/board-slice';
 
@@ -27,6 +27,12 @@ const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => 
   const { priorities: selectedPriorities } = useAppSelector(state => state.taskReducer);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const { projectId } = useAppSelector(state => state.projectReducer);
+
+  useEffect(() => {
+    if (projectId) {
+      dispatch(fetchTaskGroups(projectId));
+    }
+  }, [dispatch, projectId]);
 
   const handleSelectedPriority = (priorityId: string) => {
     const newPriorities = selectedPriorities.includes(priorityId)
