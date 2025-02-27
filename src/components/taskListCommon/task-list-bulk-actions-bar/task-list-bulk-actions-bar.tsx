@@ -1,8 +1,7 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Badge,
-  Checkbox,
   Dropdown,
   Flex,
   Tooltip,
@@ -56,6 +55,7 @@ import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import AssigneesDropdown from './components/AssigneesDropdown';
 import LabelsDropdown from './components/LabelsDropdown';
+import { sortTeamMembers } from '@/utils/sort-team-members';
 
 interface ITaskAssignee {
   id: string;
@@ -92,16 +92,13 @@ const TaskListBulkActionsBar = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [createLabelText, setCreateLabelText] = useState<string>('');
 
-  const [teamMembers, setTeamMembers] = useState<ITeamMembersViewModel>({ data: [], total: 0 });
+  const [teamMembersSorted, setTeamMembersSorted] = useState<ITeamMembersViewModel>({
+    data: [],
+    total: 0,
+  });
   const [assigneeDropdownOpen, setAssigneeDropdownOpen] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [selectedLabels, setSelectedLabels] = useState<ITaskLabel[]>([]);
-
-  const filteredMembersData = useMemo(() => {
-    return teamMembers?.data?.filter(member =>
-      member.name?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [teamMembers, searchQuery]);
 
   // Handlers
   const handleChangeStatus = async (status: ITaskStatus) => {
@@ -292,11 +289,17 @@ const TaskListBulkActionsBar = () => {
     const word = selectedTaskIdsList.length < 2 ? t('taskSelected') : t('tasksSelected');
     return `${selectedTaskIdsList.length} ${word}`;
   };
+  useEffect(() => {
+    if (members?.data && assigneeDropdownOpen) {
+      let sortedMembers = sortTeamMembers(members.data);
+      setTeamMembersSorted({ data: sortedMembers, total: members.total });
+    }
+  }, [assigneeDropdownOpen, members?.data]);
 
   const getAssigneesMenu = () => {
     return (
       <AssigneesDropdown
-        members={members?.data || []}
+        members={teamMembersSorted?.data || []}
         themeMode={themeMode}
         onApply={handleChangeAssignees}
         onClose={() => setAssigneeDropdownOpen(false)}

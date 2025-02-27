@@ -21,7 +21,7 @@ import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITeamMembersViewModel } from '@/types/teamMembers/teamMembersViewModel.types';
-import { sortBySelection } from '@/utils/sort-team-members';
+import { sortByBooleanField, sortBySelection, sortTeamMembers } from '@/utils/sort-team-members';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
@@ -66,7 +66,8 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
         ...member,
         selected: assignees?.includes(member.id),
       }));
-      let sortedMembers = sortBySelection(membersData);
+      let sortedMembers = sortTeamMembers(membersData);
+
       setTeamMembers({ data: sortedMembers });
 
       setTimeout(() => {
