@@ -57,9 +57,8 @@ export const teamMembersApiService = {
     return response.data;
   },
 
-  delete: async (id: string, email: string): Promise<IServerResponse<any>> => {
-    const params = new URLSearchParams({ email });
-    const response = await apiClient.delete<IServerResponse<any>>(`${rootUrl}/${id}?${params}`);
+  delete: async (id: string): Promise<IServerResponse<any>> => {
+    const response = await apiClient.delete<IServerResponse<any>>(`${rootUrl}/${id}`);
     return response.data;
   },
 
