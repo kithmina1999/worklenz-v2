@@ -237,7 +237,6 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     isSubtask: boolean = false
   ) => {
     if (!columnKey || !task) return null;
-
     const columnComponents = {
       KEY: () => <TaskListTaskIdCell taskId={task.task_key || ''} />,
       TASK: () => (
@@ -251,7 +250,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
       PROGRESS: () => <TaskListProgressCell task={task} />,
       ASSIGNEES: () => <TaskListMembersCell groupId={tableId} task={task} />,
       LABELS: () => <TaskListLabelsCell task={task} />,
-      PHASES: () => <PhaseDropdown projectId={currentSession?.team_id || ''} />,
+      PHASE: () => <PhaseDropdown task={task} />,
       STATUS: () => <StatusDropdown task={task} teamId={currentSession?.team_id || ''} />,
       PRIORITY: () => <PriorityDropdown task={task} teamId={currentSession?.team_id || ''} />,
       TIME_TRACKING: () => <TaskListTimeTrackerCell task={task} />,
@@ -261,12 +260,12 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
       DUE_TIME: () => <TaskListDueTimeCell />,
       COMPLETED_DATE: () => <TaskListCompletedDateCell completedDate={task.completed_at || null} />,
       CREATED_DATE: () => <TaskListCreatedDateCell createdDate={task.created_at || null} />,
-
       LAST_UPDATED: () => <TaskListLastUpdatedCell lastUpdated={task.updated_at || null} />,
       REPORTER: () => <TaskListReporterCell task={task} />,
     };
 
-    return columnComponents[columnKey as keyof typeof columnComponents]?.() || null;
+    const component = columnComponents[columnKey as keyof typeof columnComponents]?.();
+    return component;
   };
 
   const renderCustomColumnContent = (
@@ -470,8 +469,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                     className={getColumnStyles(column.key, true)}
                     style={{ fontWeight: 500 }}
                   >
-                    {column.key === 'phases' ||
-                    column.key === 'customColumn' ||
+                    {column.key === 'customColumn' ||
                     column.custom_column
                       ? column.name
                       : t(`${column.key?.replace('_', '').toLowerCase()}Column`)}

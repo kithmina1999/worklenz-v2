@@ -18,6 +18,7 @@ import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.ty
 import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
 import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service';
 import { ITaskLabel, ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
+import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -552,6 +553,25 @@ const taskSlice = createSlice({
       }
     },
 
+    updateTaskPhase: (state, action: PayloadAction<ITaskPhaseChangeResponse>) => {
+      const { id: phase_id, task_id, color_code } = action.payload;
+
+      if (!task_id || !phase_id) return;
+
+      const taskInfo = findTaskInGroups(state.taskGroups, task_id);
+      if (!taskInfo) return;
+
+      const { task, groupId } = taskInfo;
+
+      task.phase_id = phase_id;
+      task.phase_color = color_code;
+
+      if (state.group === GROUP_BY_PHASE_VALUE && !task.is_sub_task && groupId !== phase_id) {
+        deleteTaskFromGroup(state.taskGroups, task, groupId);
+        addTaskToGroup(state.taskGroups, task, phase_id, false);
+      }
+    },
+
     updateTaskGroup: (
       state,
       action: PayloadAction<{
@@ -729,6 +749,7 @@ export const {
   setSearch,
   toggleColumnVisibility,
   updateTaskStatus,
+  updateTaskPhase,
   updateTaskPriority,
   updateTaskEndDate,
   updateTaskStartDate,
