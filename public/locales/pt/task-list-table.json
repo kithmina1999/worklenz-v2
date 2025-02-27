@@ -11,6 +11,7 @@
   "timeTrackingColumn": "Rastreamento de Tempo",
   "estimationColumn": "Estimativa",
   "startDateColumn": "Data de Início",
+  "startdateColumn": "Data de Início",
   "dueDateColumn": "Data de Vencimento",
   "completedDateColumn": "Data de Conclusão",
   "createdDateColumn": "Data de Criação",

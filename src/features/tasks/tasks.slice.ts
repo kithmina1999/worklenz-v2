@@ -64,17 +64,14 @@ interface ITaskState {
   columns: ITaskListColumn[];
   loadingGroups: boolean;
   error: string | null;
-
   taskAssignees: ITaskListMemberFilter[];
   loadingAssignees: boolean;
-
   statuses: ITaskStatusViewModel[];
-
   loadingLabels: boolean;
   labels: ITaskLabelFilter[];
   priorities: string[];
   members: string[];
-  activeTimers: { [taskId: string]: number | null };
+  activeTimers: Record<string, number | null>;
 }
 
 const initialState: ITaskState = {
@@ -193,7 +190,6 @@ export const fetchTaskAssignees = createAsyncThunk(
   }
 );
 
-// Create async thunk for fetching labels by project
 export const fetchLabelsByProject = createAsyncThunk(
   'taskLabel/fetchLabelsByProject',
   async (projectId: string, { rejectWithValue }) => {
@@ -213,8 +209,35 @@ export const fetchLabelsByProject = createAsyncThunk(
 export const fetchTask = createAsyncThunk(
   'tasks/fetchTask',
   async ({ taskId, projectId }: { taskId: string; projectId: string }, { rejectWithValue }) => {
-    const response = await tasksApiService.getFormViewModel(taskId, projectId);
-    return response.body;
+    try {
+      const response = await tasksApiService.getFormViewModel(taskId, projectId);
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Task', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch task');
+    }
+  }
+);
+
+export const updateColumnVisibility = createAsyncThunk(
+  'tasks/updateColumnVisibility',
+  async (
+    { projectId, item }: { projectId: string; item: ITaskListColumn },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await tasksApiService.toggleColumnVisibility(projectId, item);
+      return response.body;
+    } catch (error) {
+      logger.error('Update Column Visibility', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to update column visibility');
+    }
   }
 );
 
@@ -289,6 +312,19 @@ const updateTaskGroup = (taskGroups: ITaskListGroup[], task: IProjectTask, inser
   }
 };
 
+const findTaskInGroups = (
+  taskGroups: ITaskListGroup[],
+  taskId: string
+): { task: IProjectTask; groupId: string; index: number } | null => {
+  for (const group of taskGroups) {
+    const taskIndex = group.tasks.findIndex(t => t.id === taskId);
+    if (taskIndex !== -1) {
+      return { task: group.tasks[taskIndex], groupId: group.id, index: taskIndex };
+    }
+  }
+  return null;
+};
+
 const taskSlice = createSlice({
   name: 'taskReducer',
   initialState,
@@ -299,6 +335,7 @@ const taskSlice = createSlice({
 
     setGroup: (state, action: PayloadAction<IGroupBy>) => {
       state.group = action.payload;
+      setCurrentGroup(action.payload);
     },
 
     setLabels: (state, action: PayloadAction<ITaskLabel[]>) => {
@@ -389,15 +426,15 @@ const taskSlice = createSlice({
 
     updateTaskName: (
       state,
-      action: PayloadAction<{ id: string; parent_task: string; name: string; }>
+      action: PayloadAction<{ id: string; parent_task: string; name: string }>
     ) => {
-      const { id, name, parent_task } = action.payload;
-      const group = state.taskGroups.find(group => group.tasks.some(task => task.id === id));
-
-      if (group) {
+      const { id, name } = action.payload;
+      
+      for (const group of state.taskGroups) {
         const task = group.tasks.find(task => task.id === id);
         if (task) {
           task.name = name;
+          break;
         }
       }
     },
@@ -412,14 +449,14 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { taskId, progress, totalTasksCount, completedCount } = action.payload;
-      const group = state.taskGroups.find(group => group.tasks.some(task => task.id === taskId));
-
-      if (group) {
+      
+      for (const group of state.taskGroups) {
         const task = group.tasks.find(task => task.id === taskId);
         if (task) {
           task.complete_ratio = progress;
           task.total_tasks_count = totalTasksCount;
           task.completed_count = completedCount;
+          break;
         }
       }
     },
@@ -444,13 +481,14 @@ const taskSlice = createSlice({
 
     updateTaskLabel: (state, action: PayloadAction<ILabelsChangeResponse>) => {
       const label = action.payload;
-      state.taskGroups.forEach(group => {
+      for (const group of state.taskGroups) {
         const task = group.tasks.find(task => task.id === label.id);
         if (task) {
           task.labels = label.labels || [];
           task.all_labels = label.all_labels || [];
+          break;
         }
-      });
+      }
     },
 
     updateTaskStatus: (state, action: PayloadAction<ITaskListStatusChangeResponse>) => {
@@ -458,34 +496,25 @@ const taskSlice = createSlice({
         action.payload;
 
       // Find the task in any group
-      let foundTask: IProjectTask | undefined;
-      let currentGroupId: string | undefined;
+      const taskInfo = findTaskInGroups(state.taskGroups, id);
+      if (!taskInfo || !status_id) return;
 
-      for (const group of state.taskGroups) {
-        const task = group.tasks.find(task => task.id === id);
-        if (task) {
-          foundTask = task;
-          currentGroupId = group.id;
-          break;
-        }
-      }
+      const { task, groupId } = taskInfo;
 
-      if (foundTask && status_id) {
-        // Update the task properties
-        foundTask.status_color = color_code;
-        foundTask.status_color_dark = color_code_dark;
-        foundTask.complete_ratio = +complete_ratio;
-        foundTask.status = status_id;
-        foundTask.status_category = statusCategory;
+      // Update the task properties
+      task.status_color = color_code;
+      task.status_color_dark = color_code_dark;
+      task.complete_ratio = +complete_ratio;
+      task.status = status_id;
+      task.status_category = statusCategory;
 
-        // If grouped by status and not a subtask, move the task to the new status group
-        if (state.group === GROUP_BY_STATUS_VALUE && !foundTask.is_sub_task && currentGroupId) {
-          // Remove from current group
-          deleteTaskFromGroup(state.taskGroups, foundTask, currentGroupId);
+      // If grouped by status and not a subtask, move the task to the new status group
+      if (state.group === GROUP_BY_STATUS_VALUE && !task.is_sub_task && groupId !== status_id) {
+        // Remove from current group
+        deleteTaskFromGroup(state.taskGroups, task, groupId);
 
-          // Add to new status group
-          addTaskToGroup(state.taskGroups, foundTask, status_id, false);
-        }
+        // Add to new status group
+        addTaskToGroup(state.taskGroups, task, status_id, false);
       }
     },
 
@@ -496,11 +525,12 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { task } = action.payload;
-      const group = state.taskGroups.find(group => group.tasks.some(t => t.id === task.id));
-      if (group) {
-        const taskIndex = group.tasks.findIndex(t => t.id === task.id);
-        if (taskIndex >= 0) {
-          group.tasks[taskIndex].end_date = task.end_date;
+      
+      for (const group of state.taskGroups) {
+        const existingTask = group.tasks.find(t => t.id === task.id);
+        if (existingTask) {
+          existingTask.end_date = task.end_date;
+          break;
         }
       }
     },
@@ -512,11 +542,12 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { task } = action.payload;
-      const group = state.taskGroups.find(group => group.tasks.some(t => t.id === task.id));
-      if (group) {
-        const taskIndex = group.tasks.findIndex(t => t.id === task.id);
-        if (taskIndex >= 0) {
-          group.tasks[taskIndex].start_date = task.start_date;
+      
+      for (const group of state.taskGroups) {
+        const existingTask = group.tasks.find(t => t.id === task.id);
+        if (existingTask) {
+          existingTask.start_date = task.start_date;
+          break;
         }
       }
     },
@@ -566,32 +597,23 @@ const taskSlice = createSlice({
       const { id, priority_id, color_code, color_code_dark } = action.payload;
 
       // Find the task in any group
-      let foundTask: IProjectTask | undefined;
-      let currentGroupId: string | undefined;
+      const taskInfo = findTaskInGroups(state.taskGroups, id);
+      if (!taskInfo || !priority_id) return;
 
-      for (const group of state.taskGroups) {
-        const task = group.tasks.find(task => task.id === id);
-        if (task) {
-          foundTask = task;
-          currentGroupId = group.id;
-          break;
-        }
-      }
+      const { task, groupId } = taskInfo;
 
-      if (foundTask && priority_id) {
-        // Update the task properties
-        foundTask.priority = priority_id;
-        foundTask.priority_color = color_code;
-        foundTask.priority_color_dark = color_code_dark;
+      // Update the task properties
+      task.priority = priority_id;
+      task.priority_color = color_code;
+      task.priority_color_dark = color_code_dark;
 
-        // If grouped by priority and not a subtask, move the task to the new priority group
-        if (state.group === GROUP_BY_PRIORITY_VALUE && !foundTask.is_sub_task && currentGroupId) {
-          // Remove from current group
-          deleteTaskFromGroup(state.taskGroups, foundTask, currentGroupId);
+      // If grouped by priority and not a subtask, move the task to the new priority group
+      if (state.group === GROUP_BY_PRIORITY_VALUE && !task.is_sub_task && groupId !== priority_id) {
+        // Remove from current group
+        deleteTaskFromGroup(state.taskGroups, task, groupId);
 
-          // Add to new priority group
-          addTaskToGroup(state.taskGroups, foundTask, priority_id, false);
-        }
+        // Add to new priority group
+        addTaskToGroup(state.taskGroups, task, priority_id, false);
       }
     },
 
@@ -607,18 +629,12 @@ const taskSlice = createSlice({
         }
       }
     },
+    
     resetTaskListData: state => {
-      state.taskGroups = [];
-      state.columns = [];
-      state.labels = [];
-      state.taskAssignees = [];
-      state.search = null;
-      state.archived = false;
-      state.priorities = [];
-      state.fields = [];
-      state.loadingGroups = false;
-      state.loadingColumns = false;
-      state.error = null;
+      return {
+        ...initialState,
+        group: state.group // Preserve the current grouping
+      };
     },
   },
 
@@ -662,6 +678,10 @@ const taskSlice = createSlice({
         });
         state.columns = action.payload;
       })
+      .addCase(fetTaskListColumns.rejected, (state, action) => {
+        state.loadingColumns = false;
+        state.error = action.error.message || 'Failed to fetch task list columns';
+      })
       // Fetch Labels By Project
       .addCase(fetchLabelsByProject.pending, state => {
         state.loadingLabels = true;
@@ -675,6 +695,19 @@ const taskSlice = createSlice({
       .addCase(fetchLabelsByProject.rejected, (state, action) => {
         state.loadingLabels = false;
         state.error = action.payload as string;
+      })
+      .addCase(updateColumnVisibility.fulfilled, (state, action) => {
+        const column = state.columns.find(col => col.key === action.payload.key);
+        if (column) {
+          column.pinned = action.payload.pinned;
+        }
+      })
+      .addCase(updateColumnVisibility.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      .addCase(updateColumnVisibility.pending, state => {
+        state.loadingColumns = true;
+        state.error = null;
       });
   },
 });

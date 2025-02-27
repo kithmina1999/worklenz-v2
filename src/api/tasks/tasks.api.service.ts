@@ -64,4 +64,9 @@ export const tasksApiService = {
     const response = await apiClient.delete(`${rootUrl}/${taskId}`);
     return response.data;
   },
+
+  toggleColumnVisibility: async (projectId: string, item: ITaskListColumn): Promise<IServerResponse<ITaskListColumn>> => {
+    const response = await apiClient.put(`${rootUrl}/list/columns/${projectId}`, item);
+    return response.data;
+  },
 };
