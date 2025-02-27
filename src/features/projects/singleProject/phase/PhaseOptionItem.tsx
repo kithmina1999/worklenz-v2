@@ -103,6 +103,12 @@ const PhaseOptionItem = ({
     }
   };
 
+  const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur();
+    }
+  };
+
   return (
     <ConfigProvider wave={{ disabled: true }}>
       <div ref={setNodeRef} style={style} {...attributes}>
@@ -115,6 +121,7 @@ const PhaseOptionItem = ({
             value={phaseName}
             onChange={handlePhaseNameInput}
             onBlur={handlePhaseNameChange}
+            onPressEnter={handleEnterPress}
             placeholder={t('enterPhaseName')}
           />
           <ColorPicker
