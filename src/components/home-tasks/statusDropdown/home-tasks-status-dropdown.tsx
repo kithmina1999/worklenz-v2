@@ -44,10 +44,16 @@ const HomeTasksStatusDropdown = ({ task, teamId }: HomeTasksStatusDropdownProps)
 
   const handleTaskStatusChange = (response: ITaskListStatusChangeResponse) => {
     if (response && response.id === task.id) {
-      task.status_color = response.color_code;
-      task.complete_ratio = +response.complete_ratio || 0;
-      task.status_id = response.status_id;
-      task.status_category = response.statusCategory;
+      // task.status_color = response.color_code;
+      const updatedTask = {
+        ...task,
+        status_color: response.color_code,
+        complete_ratio: +response.complete_ratio || 0,
+        status_id: response.status_id,
+        status_category: response.statusCategory,
+      };
+      // Create a new task object instead of modifying the existing one
+      setSelectedStatus(updatedTask);
     }
   };
 
