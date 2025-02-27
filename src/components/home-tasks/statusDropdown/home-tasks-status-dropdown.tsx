@@ -9,6 +9,7 @@ import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { useGetMyTasksQuery } from '@/api/home-page/home-page.api.service';
 
 type HomeTasksStatusDropdownProps = {
   task: IProjectTask;
@@ -18,6 +19,10 @@ type HomeTasksStatusDropdownProps = {
 const HomeTasksStatusDropdown = ({ task, teamId }: HomeTasksStatusDropdownProps) => {
   const { t } = useTranslation('task-list-table');
   const { socket, connected } = useSocket();
+  const { homeTasksConfig } = useAppSelector(state => state.homePageReducer);
+  const {
+      refetch
+    } = useGetMyTasksQuery(homeTasksConfig);
 
   const [selectedStatus, setSelectedStatus] = useState<ITaskStatus | undefined>(undefined);
 
@@ -33,8 +38,8 @@ const HomeTasksStatusDropdown = ({ task, teamId }: HomeTasksStatusDropdownProps)
         team_id: teamId,
       })
     );
-
     getTaskProgress(task.id);
+    refetch();
   };
 
   const handleTaskStatusChange = (response: ITaskListStatusChangeResponse) => {
