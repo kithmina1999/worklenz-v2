@@ -40,9 +40,9 @@ const ProjectViewUpdates = () => {
     if (!projectId) return;
     try {
       setIsLoading(true);
-      const res = await projectsApiService.getMembers(projectId, 1, 15, null, null, null);
+      const res = await projectCommentsApiService.getMentionMembers(projectId, 1, 15, null, null, null);
       if (res.done) {
-        setMembers(res.body.data as IMentionMemberViewModel[]);
+        setMembers(res.body as IMentionMemberViewModel[]);
       }
     } catch (error) {
       console.error('Failed to fetch members:', error);
@@ -75,16 +75,16 @@ const ProjectViewUpdates = () => {
       }
 
       const mentionRegex = /@\[([^\]]+)\]\(([^)]+)\)/g;
-      const mentions = Array.from(commentValue.matchAll(mentionRegex)).map(match => ({
-        id: match[2],
-        name: match[1],
-      }));
+      // const mentions = Array.from(commentValue.matchAll(mentionRegex)).map(match => ({
+      //   id: match[2],
+      //   name: match[1],
+      // }));
 
       const body = {
         project_id: projectId,
         team_id: getUserSession()?.team_id,
         content: commentValue.trim(),
-        mentions: mentions,
+        mentions: selectedMembers
       };
 
       const res = await projectCommentsApiService.createProjectComment(body);
@@ -127,17 +127,21 @@ const ProjectViewUpdates = () => {
         ? prev
         : [...prev, { id: member.value, name: member.label }]
     );
+
+    setCommentValue(prev => {
+      const parts = prev.split('@');
+      const lastPart = parts[parts.length - 1];
+      const mentionText = member.label;
+      // Keep only the part before the @ and add the new mention
+      return prev.slice(0, prev.length - lastPart.length) + mentionText;
+    });
   }, []);
 
   const handleCommentChange = useCallback((value: string) => {
-    const updatedValue = value.replace(/@\[([^\]]+)\]/g, (match, id) => {
-      const member = members.find(m => m.id === id);
-      return member ? `@[${member.name}](${id})` : match;
-    });
-    
-    setCommentValue(updatedValue);
-    setCharacterLength(updatedValue.trim().length);
-  }, [members]);
+    // Only update the value without trying to replace mentions    
+    setCommentValue(value);
+    setCharacterLength(value.trim().length);
+  }, []);
 
   const handleDeleteComment = useCallback(
     async (commentId: string | undefined) => {
@@ -214,6 +218,8 @@ const ProjectViewUpdates = () => {
             onSelect={option => memberSelectHandler(option as IMentionMemberSelectOption)}
             onClick={() => setIsCommentBoxExpand(true)}
             onChange={handleCommentChange}
+            prefix="@"
+            split=""
             style={{
               minHeight: isCommentBoxExpand ? 180 : 60,
               paddingBlockEnd: 24,
