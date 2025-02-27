@@ -88,6 +88,8 @@ const PhaseDrawer = () => {
           projectId: projectId || '',
           body
         })).unwrap();
+        await dispatch(fetchTaskGroups(projectId || ''));
+
       } catch (error) {
         // If there's an error, revert back to the server state
         dispatch(fetchPhasesByProjectId(projectId || ''));

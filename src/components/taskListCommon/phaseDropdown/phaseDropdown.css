@@ -17,3 +17,15 @@
   align-items: center;
   height: 32px;
 }
+
+.custom-list-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.custom-list-item.dark:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.custom-card {
+  min-width: 200px;
+}
