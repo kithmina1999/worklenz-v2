@@ -58,4 +58,11 @@ export const phasesApiService = {
     );
     return response.data;
   },
+
+  updateProjectPhaseLabel: async (projectId: string, phaseLabel: string) => {
+    const q = toQueryString({ id: projectId, current_project_id: projectId });
+    const response = await apiClient.put<IServerResponse<ITaskPhase>>(
+      `${rootUrl}/label/${projectId}${q}`, {name: phaseLabel});
+    return response.data;
+  },
 };

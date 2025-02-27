@@ -110,6 +110,11 @@ const projectSlice = createSlice({
     setCreateTaskTemplateDrawerOpen: (state, action: PayloadAction<boolean>) => {
       state.createTaskTemplateDrawerOpen = action.payload;
     },
+    updatePhaseLabel: (state, action: PayloadAction<string>) => {
+      if (state.project) {
+        state.project.phase_label = action.payload;
+      }
+    },
     addTask: (
       state,
       action: PayloadAction<{ task: IProjectTask; groupId: string; insert?: boolean }>
@@ -204,6 +209,7 @@ export const {
   setImportTaskTemplateDrawerOpen,
   setCreateTaskTemplateDrawerOpen,
   setProjectView,
+  updatePhaseLabel,
 } = projectSlice.actions;
 
 export default projectSlice.reducer;
