@@ -75,11 +75,11 @@ const TasksList: React.FC = React.memo(() => {
   };
 
   const handleEndDateChanged = (value: Dayjs | null, taskId: string) => {
-    if (!value || !taskId) return;
+    if (!taskId) return;
 
     const body = {
       task_id: taskId,
-      end_date: value.format('YYYY-MM-DD'),
+      end_date: value?.format('YYYY-MM-DD'),
     };
     socket?.emit(SocketEvents.TASK_END_DATE_CHANGE.toString(), JSON.stringify(body));
   };
