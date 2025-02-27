@@ -255,7 +255,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
       STATUS: () => <StatusDropdown task={task} teamId={currentSession?.team_id || ''} />,
       PRIORITY: () => <PriorityDropdown task={task} teamId={currentSession?.team_id || ''} />,
       TIME_TRACKING: () => <TaskListTimeTrackerCell task={task} />,
-      ESTIMATION: () => <TaskListEstimationCell />,
+      ESTIMATION: () => <TaskListEstimationCell task={task} />,
       START_DATE: () => <TaskListStartDateCell task={task} />,
       DUE_DATE: () => <TaskListDueDateCell task={task} />,
       DUE_TIME: () => <TaskListDueTimeCell />,

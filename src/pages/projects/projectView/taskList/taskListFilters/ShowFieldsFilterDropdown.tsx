@@ -9,7 +9,8 @@ import Space from 'antd/es/space';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleColumnVisibility } from '@/features/tasks/tasks.slice';
+import { toggleColumnVisibility, updateColumnVisibility } from '@/features/tasks/tasks.slice';
+import { ITaskListColumn } from '@/types/tasks/taskList.types';
 
 const ShowFieldsFilterDropdown = () => {
   // localization
@@ -19,13 +20,19 @@ const ShowFieldsFilterDropdown = () => {
 
   // access the updated columnList with isVisible properties
   const columnList = useAppSelector(state => state.taskReducer.columns);
-
+  const projectId = useAppSelector(state => state.projectReducer.projectId);
   // remove the task and selector columns as they are fixed
   const visibilityChangableColumnList = columnList.filter(
     column => column.key !== 'selector' && column.key !== 'task' && column.key !== 'customColumn'
   );
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+
+  const handleColumnVisibilityChange = async (col: ITaskListColumn) => {
+    if (!projectId) return;
+    const column = { ...col, pinned: !col.pinned };
+    await dispatch(updateColumnVisibility({ projectId, item: column }));
+  };
 
   const showFieldsDropdownContent = (
     <Card
@@ -46,13 +53,12 @@ const ShowFieldsFilterDropdown = () => {
             }}
           >
             <Space>
-              <Checkbox
-                checked={col.pinned}
-                onClick={() => dispatch(toggleColumnVisibility(col.key ?? ''))}
-              >
+              <Checkbox checked={col.pinned} onChange={e => handleColumnVisibilityChange(col)}>
                 {col.custom_column
                   ? col.name
-                  : t(`${col.key === 'phases' ? 'phasesText' : col.key?.replace('_', '').toLowerCase() + 'Text'}`)}
+                  : t(
+                      `${col.key === 'phases' ? 'phasesText' : col.key?.replace('_', '').toLowerCase() + 'Text'}`
+                    )}
               </Checkbox>
             </Space>
           </List.Item>
