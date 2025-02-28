@@ -56,6 +56,7 @@ import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse
 import AssigneesDropdown from './components/AssigneesDropdown';
 import LabelsDropdown from './components/LabelsDropdown';
 import { sortTeamMembers } from '@/utils/sort-team-members';
+import logger from '@/utils/errorLogger';
 
 interface ITaskAssignee {
   id: string;
@@ -116,7 +117,7 @@ const TaskListBulkActionsBar = () => {
         dispatch(fetchTaskGroups(projectId));
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error changing status:', error);
     } finally {
       setLoading(false);
     }
@@ -137,7 +138,7 @@ const TaskListBulkActionsBar = () => {
         dispatch(fetchTaskGroups(projectId));
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error changing priority:', error);
     } finally {
       setLoading(false);
     }
@@ -158,7 +159,7 @@ const TaskListBulkActionsBar = () => {
         dispatch(fetchTaskGroups(projectId));
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error changing phase:', error);
     } finally {
       setLoading(false);
     }
@@ -179,7 +180,7 @@ const TaskListBulkActionsBar = () => {
         dispatch(fetchTaskGroups(projectId));
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error assigning to me:', error);
     } finally {
       setUpdatingAssignToMe(false);
     }
@@ -200,7 +201,7 @@ const TaskListBulkActionsBar = () => {
         dispatch(fetchTaskGroups(projectId));
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error archiving tasks:', error);
     } finally {
       setUpdatingArchive(false);
     }
@@ -227,7 +228,7 @@ const TaskListBulkActionsBar = () => {
         dispatch(fetchTaskGroups(projectId));
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error assigning tasks:', error);
     } finally {
       setUpdatingAssignees(false);
     }
@@ -248,7 +249,7 @@ const TaskListBulkActionsBar = () => {
         dispatch(fetchTaskGroups(projectId));
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error deleting tasks:', error);
     } finally {
       setUpdatingDelete(false);
     }
@@ -335,7 +336,7 @@ const TaskListBulkActionsBar = () => {
         dispatch(fetchTaskGroups(projectId));
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error updating labels:', error);
     } finally {
       setUpdatingLabels(false);
     }

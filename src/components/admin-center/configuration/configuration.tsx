@@ -5,6 +5,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector';
 import { IBillingConfigurationCountry } from '@/types/admin-center/country.types';
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import { IBillingConfiguration } from '@/types/admin-center/admin-center.types';
+import logger from '@/utils/errorLogger';
 
 const Configuration: React.FC = () => {
   const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
@@ -20,7 +21,7 @@ const Configuration: React.FC = () => {
         setCountries(res.body);
       }
     } catch (error) {
-      console.error('Error fetching countries:', error);
+      logger.error('Error fetching countries:', error);
     }
   };
 
@@ -45,7 +46,7 @@ const Configuration: React.FC = () => {
         fetchConfiguration();
       }
     } catch (error) {
-      console.error('Error updating configuration:', error);
+      logger.error('Error updating configuration:', error);
     } finally {
       setLoading(false);
     }
