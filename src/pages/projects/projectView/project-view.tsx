@@ -37,9 +37,16 @@ const ProjectView = () => {
 
   const selectedProject = useAppSelector(state => state.projectReducer.project);
   useDocumentTitle(selectedProject?.name || 'Project View');
-
   const [activeTab, setActiveTab] = useState<string>(searchParams.get('tab') || tabItems[0].key);
   const [pinnedTab, setPinnedTab] = useState<string>(searchParams.get('pinned_tab') || '');
+
+  useEffect(()=>{
+    tabItems.forEach(item => {
+      if(item.isPinned){
+        setPinnedTab(item.key);
+      }
+    });
+  });
 
   useEffect(() => {
     if (projectId) {
@@ -94,37 +101,39 @@ const ProjectView = () => {
     label: (
       <Flex align="center" style={{ color: colors.skyBlue }}>
         {item.label}
-        {item.isPinned && (
+        {item.key === 'tasks-list' || item.key === 'board' ? (
           <ConfigProvider wave={{ disabled: true }}>
             <Button
               className="borderless-icon-btn"
               style={{
-                backgroundColor: colors.transparent,
-                boxShadow: 'none',
+          backgroundColor: colors.transparent,
+          boxShadow: 'none',
               }}
               icon={
-                pinnedTab === item.key ? (
-                  <PushpinFilled
-                    size={20}
-                    style={{
-                      color: colors.skyBlue,
-                      rotate: '-45deg',
-                      transition: 'transform ease-in 300ms',
-                    }}
-                  />
-                ) : (
-                  <PushpinOutlined
-                    size={20}
-                    style={{
-                      color: colors.skyBlue,
-                    }}
-                  />
-                )
+          item.key === pinnedTab? (
+            <PushpinFilled
+              size={20}
+              style={{
+                color: colors.skyBlue,
+                rotate: '-45deg',
+                transition: 'transform ease-in 300ms',
+              }}
+            />
+          ) : (
+            <PushpinOutlined
+              size={20}
+              style={{
+                color: colors.skyBlue,
+              }}
+            />
+          )
               }
-              onClick={() => pinToDefaultTab(item.key)}
+              onClick={(e) => {
+                e.stopPropagation()
+                pinToDefaultTab(item.key)}}
             />
           </ConfigProvider>
-        )}
+        ) : null}
       </Flex>
     ),
     children: item.element,

@@ -21,7 +21,6 @@ export const ProjectRateCell: React.FC<{
   const handleFavorite = useCallback(async () => {
     if (record.id) {
       await toggleFavoriteProject(record.id);
-      refetchProjects();
     }
   }, [dispatch, record.id]);
 
@@ -30,6 +29,7 @@ export const ProjectRateCell: React.FC<{
     onClick={e => {
       e.stopPropagation();
       handleFavorite();
+      refetchProjects();
     }}>
       <Rate
         value={record.favorite ? 1 : 0}
