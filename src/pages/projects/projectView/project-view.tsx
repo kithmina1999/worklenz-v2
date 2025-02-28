@@ -40,14 +40,6 @@ const ProjectView = () => {
   const [activeTab, setActiveTab] = useState<string>(searchParams.get('tab') || tabItems[0].key);
   const [pinnedTab, setPinnedTab] = useState<string>(searchParams.get('pinned_tab') || '');
 
-  useEffect(()=>{
-    tabItems.forEach(item => {
-      if(item.isPinned){
-        setPinnedTab(item.key);
-      }
-    });
-  });
-
   useEffect(() => {
     if (projectId) {
       dispatch(setProjectId(projectId));
