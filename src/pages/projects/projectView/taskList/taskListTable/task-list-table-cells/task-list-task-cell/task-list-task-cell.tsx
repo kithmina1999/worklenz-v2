@@ -1,4 +1,5 @@
-import { Flex, Typography, Button } from 'antd';
+import { Flex, Typography, Button, Input } from 'antd';
+import type { InputRef } from 'antd';
 import {
   DoubleRightOutlined,
   DownOutlined,
@@ -11,6 +12,9 @@ import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import './task-list-task-cell.css';
 import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
+import { useState, useRef, useEffect } from 'react';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
 
 type TaskListTaskCellProps = {
   task: IProjectTask;
@@ -23,10 +27,32 @@ const TaskListTaskCell = ({
   isSubTask = false,
   toggleTaskExpansion,
 }: TaskListTaskCellProps) => {
-  // localization
   const { t } = useTranslation('task-list-table');
+  const { socket, connected } = useSocket();
+
+  const [editTaskName, setEditTaskName] = useState(false);
+  const [taskName, setTaskName] = useState(task.name || '');
+  const inputRef = useRef<InputRef>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        handleTaskNameSave();
+      }
+    };
+
+    if (editTaskName) {
+      document.addEventListener('mousedown', handleClickOutside);
+      inputRef.current?.focus();
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [editTaskName]);
 
   const renderToggleButtonForHasSubTasks = (taskId: string | null, hasSubtasks: boolean) => {
     if (!hasSubtasks || !taskId) return null;
@@ -93,8 +119,30 @@ const TaskListTaskCell = ({
     );
   };
 
+  const handleTaskNameSave = () => {
+    const taskName = inputRef.current?.input?.value;
+    if (taskName?.trim() !== '' && connected) {
+      socket?.emit(SocketEvents.TASK_NAME_CHANGE.toString(), JSON.stringify({
+        task_id: task.id,
+        name: taskName,
+        parent_task: task.parent_task_id,
+      }));
+      setEditTaskName(false);
+    }
+  };
+
   return (
-    <Flex align="center" justify="space-between">
+    <Flex
+      align="center"
+      justify="space-between"
+      className={editTaskName ? 'edit-mode-cell' : ''}
+      style={{
+        margin: editTaskName ? '-8px' : undefined,
+        border: editTaskName ? '1px solid #1677ff' : undefined,
+        backgroundColor: editTaskName ? 'rgba(22, 119, 255, 0.02)' : undefined,
+        minHeight: editTaskName ? '42px' : undefined,
+      }}
+    >
       <Flex gap={8} align="center">
         {!!task?.sub_tasks?.length ? (
           renderToggleButtonForHasSubTasks(task.id || null, !!task?.sub_tasks?.length)
@@ -106,9 +154,35 @@ const TaskListTaskCell = ({
 
         {isSubTask && <DoubleRightOutlined style={{ fontSize: 12 }} />}
 
-        <Typography.Text ellipsis={{ expanded: false }}>{task.name}</Typography.Text>
+        <div ref={wrapperRef} style={{ flex: 1 }}>
+          {!editTaskName && (
+            <Typography.Text
+              ellipsis={{ expanded: false }}
+              onClick={() => setEditTaskName(true)}
+              style={{ cursor: 'pointer' }}
+            >
+              {task.name}
+            </Typography.Text>
+          )}
 
-        {renderSubtasksCountLabel(task.id || '', isSubTask, task.sub_tasks_count || 0)}
+          {editTaskName && (
+            <Input
+              ref={inputRef}
+              variant="borderless"
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
+              autoFocus
+              onPressEnter={handleTaskNameSave}
+              style={{
+                width: '100%',
+                padding: 0,
+              }}
+            />
+          )}
+        </div>
+
+        {!editTaskName &&
+          renderSubtasksCountLabel(task.id || '', isSubTask, task.sub_tasks_count || 0)}
       </Flex>
 
       <div className="open-task-button">

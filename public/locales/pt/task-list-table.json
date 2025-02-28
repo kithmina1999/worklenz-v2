@@ -11,10 +11,13 @@
   "timeTrackingColumn": "Rastreamento de Tempo",
   "estimationColumn": "Estimativa",
   "startDateColumn": "Data de Início",
+  "startdateColumn": "Data de Início",
   "dueDateColumn": "Data de Vencimento",
   "completedDateColumn": "Data de Conclusão",
   "createdDateColumn": "Data de Criação",
+  "createddateColumn": "Data de Criação",
   "lastUpdatedColumn": "Última Atualização",
+  "lastupdatedColumn": "Última Atualização",
   "reporterColumn": "Relator",
   "dueTimeColumn": "Hora de Vencimento",
   "timetrackingColumn": "Rastreamento de Tempo",
@@ -42,5 +45,6 @@
   "noLabelsFound": "Nenhum rótulo encontrado",
   "searchInputPlaceholder": "Pesquisar ou criar",
   "assigneeSelectorInviteButton": "Convidar um novo membro por email",
-  "labelInputPlaceholder": "Pesquisar ou criar"
+  "labelInputPlaceholder": "Pesquisar ou criar",
+  "pendingInvitation": "Convite Pendente"
 }

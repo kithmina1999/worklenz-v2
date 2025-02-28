@@ -25,20 +25,23 @@ import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
 
-import { 
-  fetchTaskAssignees, 
+import {
+  fetchTaskAssignees,
   updateTaskAssignees,
-  fetchLabelsByProject, 
+  fetchLabelsByProject,
   updateTaskLabel,
   updateTaskStatus,
   updateTaskPriority,
-  updateTaskEndDate
+  updateTaskEndDate,
+  updateTaskName,
+  updateTaskPhase,
 } from '@/features/tasks/tasks.slice';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 
 import TaskListTableWrapper from '@/pages/projects/projectView/taskList/taskListTable/TaskListTableWrapper';
 import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
 import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
+import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -48,7 +51,7 @@ interface TaskGroupWrapperProps {
 const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
   const [groups, setGroups] = useState(taskGroups);
   const [activeId, setActiveId] = useState<string | null>(null);
-  
+
   const dispatch = useAppDispatch();
   const { socket } = useSocket();
   const currentSession = useAuthService().getCurrentSession();
@@ -58,7 +61,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 }
+      activationConstraint: { distance: 8 },
     })
   );
 
@@ -78,16 +81,16 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
         selected: true,
       }));
 
-      const groupId = groups.find(group => 
-        group.tasks.some(task => task.id === data.id)
-      )?.id;
+      const groupId = groups.find(group => group.tasks.some(task => task.id === data.id))?.id;
 
       if (groupId) {
-        dispatch(updateTaskAssignees({
-          groupId,
-          taskId: data.id,
-          assignees: updatedAssignees,
-        }));
+        dispatch(
+          updateTaskAssignees({
+            groupId,
+            taskId: data.id,
+            assignees: updatedAssignees,
+          })
+        );
 
         if (currentSession?.team_id && !loadingAssignees) {
           dispatch(fetchTaskAssignees(currentSession.team_id));
@@ -109,7 +112,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       await Promise.all([
         dispatch(updateTaskLabel(labels)),
         dispatch(fetchLabels()),
-        projectId && dispatch(fetchLabelsByProject(projectId))
+        projectId && dispatch(fetchLabelsByProject(projectId)),
       ]);
     };
 
@@ -162,7 +165,11 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleEndDateChange = (task: { id: string; parent_task: string | null; end_date: string }) => {
+    const handleEndDateChange = (task: {
+      id: string;
+      parent_task: string | null;
+      end_date: string;
+    }) => {
       dispatch(updateTaskEndDate({ task }));
     };
 
@@ -170,6 +177,36 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
     return () => {
       socket.off(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleEndDateChange);
+    };
+  }, [socket, dispatch]);
+
+  // Socket handlers for task name updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleTaskNameChange = (data: { id: string; parent_task: string; name: string }) => {
+      dispatch(updateTaskName(data));
+    };
+
+    socket.on(SocketEvents.TASK_NAME_CHANGE.toString(), handleTaskNameChange);
+
+    return () => {
+      socket.off(SocketEvents.TASK_NAME_CHANGE.toString(), handleTaskNameChange);
+    };
+  }, [socket, dispatch]);
+
+  // Socket handlers for phase updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handlePhaseChange = (data: ITaskPhaseChangeResponse) => {
+      dispatch(updateTaskPhase(data));
+    };
+
+    socket.on(SocketEvents.TASK_PHASE_CHANGE.toString(), handlePhaseChange);
+
+    return () => {
+      socket.off(SocketEvents.TASK_PHASE_CHANGE.toString(), handlePhaseChange);
     };
   }, [socket, dispatch]);
 
@@ -188,12 +225,12 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
     const sourceGroup = groups.find(g => g.id === activeGroupId);
     const targetGroup = groups.find(g => g.id === overGroupId);
-    
+
     if (!sourceGroup || !targetGroup) return;
 
     const fromIndex = sourceGroup.tasks.findIndex(t => t.id === activeTaskId);
     const toIndex = targetGroup.tasks.findIndex(t => t.id === overTaskId);
-    
+
     if (fromIndex === -1) return;
 
     const task = sourceGroup.tasks[fromIndex];
@@ -209,7 +246,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       to_group: targetGroup.id,
       group_by: groupBy,
       task,
-      team_id: currentSession?.team_id
+      team_id: currentSession?.team_id,
     });
 
     // Request progress update after reordering
@@ -225,7 +262,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
           newTasks.splice(fromIndex, 1);
           return { ...group, tasks: newTasks };
         }
-        
+
         if (group.id === overGroupId) {
           const newTasks = [...group.tasks];
           if (activeGroupId === overGroupId) {
@@ -236,7 +273,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
           }
           return { ...group, tasks: newTasks };
         }
-        
+
         return group;
       });
     });
@@ -263,18 +300,10 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
           />
         ))}
 
-        {createPortal(
-          <TaskListBulkActionsBar />, 
-          document.body, 
-          'bulk-action-container'
-        )}
+        {createPortal(<TaskListBulkActionsBar />, document.body, 'bulk-action-container')}
 
         {createPortal(
-          <TaskTemplateDrawer 
-            showDrawer={false} 
-            selectedTemplateId="" 
-            onClose={() => {}}
-          />,
+          <TaskTemplateDrawer showDrawer={false} selectedTemplateId="" onClose={() => {}} />,
           document.body,
           'task-template-drawer'
         )}

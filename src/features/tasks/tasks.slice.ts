@@ -18,12 +18,13 @@ import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.ty
 import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
 import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service';
 import { ITaskLabel, ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
+import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
 
 export enum IGroupBy {
   STATUS = 'status',
-  PRIORITY = 'priority', 
+  PRIORITY = 'priority',
   PHASE = 'phase',
-  MEMBERS = 'members'
+  MEMBERS = 'members',
 }
 
 export const GROUP_BY_STATUS_VALUE = IGroupBy.STATUS;
@@ -64,17 +65,14 @@ interface ITaskState {
   columns: ITaskListColumn[];
   loadingGroups: boolean;
   error: string | null;
-
   taskAssignees: ITaskListMemberFilter[];
   loadingAssignees: boolean;
-
   statuses: ITaskStatusViewModel[];
-
   loadingLabels: boolean;
   labels: ITaskLabelFilter[];
   priorities: string[];
   members: string[];
-  activeTimers: { [taskId: string]: number | null };
+  activeTimers: Record<string, number | null>;
 }
 
 const initialState: ITaskState = {
@@ -101,7 +99,7 @@ const initialState: ITaskState = {
 
 export const COLUMN_KEYS = {
   KEY: 'KEY',
-  NAME: 'NAME', 
+  NAME: 'NAME',
   DESCRIPTION: 'DESCRIPTION',
   PROGRESS: 'PROGRESS',
   ASSIGNEES: 'ASSIGNEES',
@@ -140,7 +138,7 @@ export const fetchTaskGroups = createAsyncThunk(
       const selectedLabels = taskReducer.labels
         .filter(label => label.selected)
         .map(label => label.id)
-        .join(' ');        
+        .join(' ');
 
       const config: ITaskListConfigV2 = {
         id: projectId,
@@ -193,7 +191,6 @@ export const fetchTaskAssignees = createAsyncThunk(
   }
 );
 
-// Create async thunk for fetching labels by project
 export const fetchLabelsByProject = createAsyncThunk(
   'taskLabel/fetchLabelsByProject',
   async (projectId: string, { rejectWithValue }) => {
@@ -212,9 +209,36 @@ export const fetchLabelsByProject = createAsyncThunk(
 
 export const fetchTask = createAsyncThunk(
   'tasks/fetchTask',
-  async ({taskId, projectId}: {taskId: string, projectId: string}, { rejectWithValue }) => {
-    const response = await tasksApiService.getFormViewModel(taskId, projectId);
-    return response.body;
+  async ({ taskId, projectId }: { taskId: string; projectId: string }, { rejectWithValue }) => {
+    try {
+      const response = await tasksApiService.getFormViewModel(taskId, projectId);
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Task', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch task');
+    }
+  }
+);
+
+export const updateColumnVisibility = createAsyncThunk(
+  'tasks/updateColumnVisibility',
+  async (
+    { projectId, item }: { projectId: string; item: ITaskListColumn },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await tasksApiService.toggleColumnVisibility(projectId, item);
+      return response.body;
+    } catch (error) {
+      logger.error('Update Column Visibility', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to update column visibility');
+    }
   }
 );
 
@@ -272,25 +296,34 @@ const addTaskToGroup = (
     if (parentTask) {
       parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
       if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
-      parentTask.sub_tasks.push({...task});
+      parentTask.sub_tasks.push({ ...task });
     }
   } else {
     insert ? group.tasks.push(task) : group.tasks.unshift(task);
   }
 };
 
-const updateTaskGroup = (
-  taskGroups: ITaskListGroup[],
-  task: IProjectTask,
-  insert = true
-): void => {
+const updateTaskGroup = (taskGroups: ITaskListGroup[], task: IProjectTask, insert = true): void => {
   if (!task.id) return;
-  
+
   const groupId = getGroupIdByGroupedColumn(task);
   if (groupId) {
     deleteTaskFromGroup(taskGroups, task, groupId);
-    addTaskToGroup(taskGroups, {...task}, groupId, insert);
+    addTaskToGroup(taskGroups, { ...task }, groupId, insert);
   }
+};
+
+const findTaskInGroups = (
+  taskGroups: ITaskListGroup[],
+  taskId: string
+): { task: IProjectTask; groupId: string; index: number } | null => {
+  for (const group of taskGroups) {
+    const taskIndex = group.tasks.findIndex(t => t.id === taskId);
+    if (taskIndex !== -1) {
+      return { task: group.tasks[taskIndex], groupId: group.id, index: taskIndex };
+    }
+  }
+  return null;
 };
 
 const taskSlice = createSlice({
@@ -303,6 +336,7 @@ const taskSlice = createSlice({
 
     setGroup: (state, action: PayloadAction<IGroupBy>) => {
       state.group = action.payload;
+      setCurrentGroup(action.payload);
     },
 
     setLabels: (state, action: PayloadAction<ITaskLabel[]>) => {
@@ -347,16 +381,16 @@ const taskSlice = createSlice({
         if (parentTask) {
           parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
           if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
-          parentTask.sub_tasks.push({...task});
+          parentTask.sub_tasks.push({ ...task });
           // Ensure sub-tasks are visible when adding a new one
           parentTask.show_sub_tasks = true;
         }
       } else {
         // Handle main task addition
         if (insert) {
-          group.tasks.push({...task});
+          group.tasks.push({ ...task });
         } else {
-          group.tasks.unshift({...task});
+          group.tasks.unshift({ ...task });
         }
       }
     },
@@ -391,6 +425,21 @@ const taskSlice = createSlice({
       }
     },
 
+    updateTaskName: (
+      state,
+      action: PayloadAction<{ id: string; parent_task: string; name: string }>
+    ) => {
+      const { id, name } = action.payload;
+      
+      for (const group of state.taskGroups) {
+        const task = group.tasks.find(task => task.id === id);
+        if (task) {
+          task.name = name;
+          break;
+        }
+      }
+    },
+
     updateTaskProgress: (
       state,
       action: PayloadAction<{
@@ -401,16 +450,14 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { taskId, progress, totalTasksCount, completedCount } = action.payload;
-      const group = state.taskGroups.find(group => 
-        group.tasks.some(task => task.id === taskId)
-      );
-
-      if (group) {
+      
+      for (const group of state.taskGroups) {
         const task = group.tasks.find(task => task.id === taskId);
         if (task) {
           task.complete_ratio = progress;
           task.total_tasks_count = totalTasksCount;
           task.completed_count = completedCount;
+          break;
         }
       }
     },
@@ -433,62 +480,42 @@ const taskSlice = createSlice({
       }
     },
 
-    updateTaskLabel: (
-      state,
-      action: PayloadAction<ILabelsChangeResponse>
-    ) => {
+    updateTaskLabel: (state, action: PayloadAction<ILabelsChangeResponse>) => {
       const label = action.payload;
-      state.taskGroups.forEach(group => {
+      for (const group of state.taskGroups) {
         const task = group.tasks.find(task => task.id === label.id);
         if (task) {
           task.labels = label.labels || [];
           task.all_labels = label.all_labels || [];
-        }
-      });
-    },
-
-    updateTaskStatus: (
-      state,
-      action: PayloadAction<ITaskListStatusChangeResponse>
-    ) => {
-      const {
-        id,
-        status_id,
-        color_code,
-        color_code_dark,
-        complete_ratio,
-        statusCategory,
-      } = action.payload;
-
-      // Find the task in any group
-      let foundTask: IProjectTask | undefined;
-      let currentGroupId: string | undefined;
-
-      for (const group of state.taskGroups) {
-        const task = group.tasks.find(task => task.id === id);
-        if (task) {
-          foundTask = task;
-          currentGroupId = group.id;
           break;
         }
       }
+    },
 
-      if (foundTask && status_id) {
-        // Update the task properties
-        foundTask.status_color = color_code;
-        foundTask.status_color_dark = color_code_dark;
-        foundTask.complete_ratio = +complete_ratio;
-        foundTask.status = status_id;
-        foundTask.status_category = statusCategory;
+    updateTaskStatus: (state, action: PayloadAction<ITaskListStatusChangeResponse>) => {
+      const { id, status_id, color_code, color_code_dark, complete_ratio, statusCategory } =
+        action.payload;
 
-        // If grouped by status and not a subtask, move the task to the new status group
-        if (state.group === GROUP_BY_STATUS_VALUE && !foundTask.is_sub_task && currentGroupId) {
-          // Remove from current group
-          deleteTaskFromGroup(state.taskGroups, foundTask, currentGroupId);
-          
-          // Add to new status group
-          addTaskToGroup(state.taskGroups, foundTask, status_id, false);
-        }
+      // Find the task in any group
+      const taskInfo = findTaskInGroups(state.taskGroups, id);
+      if (!taskInfo || !status_id) return;
+
+      const { task, groupId } = taskInfo;
+
+      // Update the task properties
+      task.status_color = color_code;
+      task.status_color_dark = color_code_dark;
+      task.complete_ratio = +complete_ratio;
+      task.status = status_id;
+      task.status_category = statusCategory;
+
+      // If grouped by status and not a subtask, move the task to the new status group
+      if (state.group === GROUP_BY_STATUS_VALUE && !task.is_sub_task && groupId !== status_id) {
+        // Remove from current group
+        deleteTaskFromGroup(state.taskGroups, task, groupId);
+
+        // Add to new status group
+        addTaskToGroup(state.taskGroups, task, status_id, false);
       }
     },
 
@@ -499,11 +526,12 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { task } = action.payload;
-      const group = state.taskGroups.find(group => group.tasks.some(t => t.id === task.id));
-      if (group) {
-        const taskIndex = group.tasks.findIndex(t => t.id === task.id);
-        if (taskIndex >= 0) {
-          group.tasks[taskIndex].end_date = task.end_date;
+      
+      for (const group of state.taskGroups) {
+        const existingTask = group.tasks.find(t => t.id === task.id);
+        if (existingTask) {
+          existingTask.end_date = task.end_date;
+          break;
         }
       }
     },
@@ -515,14 +543,33 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { task } = action.payload;
-      const group = state.taskGroups.find(group => group.tasks.some(t => t.id === task.id));
-      if (group) {
-        const taskIndex = group.tasks.findIndex(t => t.id === task.id);
-        if (taskIndex >= 0) {
-          group.tasks[taskIndex].start_date = task.start_date;
+      
+      for (const group of state.taskGroups) {
+        const existingTask = group.tasks.find(t => t.id === task.id);
+        if (existingTask) {
+          existingTask.start_date = task.start_date;
+          break;
         }
       }
+    },
 
+    updateTaskPhase: (state, action: PayloadAction<ITaskPhaseChangeResponse>) => {
+      const { id: phase_id, task_id, color_code } = action.payload;
+
+      if (!task_id || !phase_id) return;
+
+      const taskInfo = findTaskInGroups(state.taskGroups, task_id);
+      if (!taskInfo) return;
+
+      const { task, groupId } = taskInfo;
+
+      task.phase_id = phase_id;
+      task.phase_color = color_code;
+
+      if (state.group === GROUP_BY_PHASE_VALUE && !task.is_sub_task && groupId !== phase_id) {
+        deleteTaskFromGroup(state.taskGroups, task, groupId);
+        addTaskToGroup(state.taskGroups, task, phase_id, false);
+      }
     },
 
     updateTaskGroup: (
@@ -534,7 +581,7 @@ const taskSlice = createSlice({
     ) => {
       const { task } = action.payload;
       const groupId = getGroupIdByGroupedColumn(task);
-      
+
       if (groupId) {
         const group = state.taskGroups.find(g => g.id === groupId);
         if (group) {
@@ -566,50 +613,33 @@ const taskSlice = createSlice({
       state.activeTimers[taskId] = timeTracking;
     },
 
-    updateTaskPriority: (
-      state,
-      action: PayloadAction<ITaskListPriorityChangeResponse>
-    ) => {
-      const {
-        id,
-        priority_id,
-        color_code,
-        color_code_dark,
-      } = action.payload;
+    updateTaskPriority: (state, action: PayloadAction<ITaskListPriorityChangeResponse>) => {
+      const { id, priority_id, color_code, color_code_dark } = action.payload;
 
       // Find the task in any group
-      let foundTask: IProjectTask | undefined;
-      let currentGroupId: string | undefined;
+      const taskInfo = findTaskInGroups(state.taskGroups, id);
+      if (!taskInfo || !priority_id) return;
 
-      for (const group of state.taskGroups) {
-        const task = group.tasks.find(task => task.id === id);
-        if (task) {
-          foundTask = task;
-          currentGroupId = group.id;
-          break;
-        }
-      }
+      const { task, groupId } = taskInfo;
 
-      if (foundTask && priority_id) {
-        // Update the task properties
-        foundTask.priority = priority_id;
-        foundTask.priority_color = color_code;
-        foundTask.priority_color_dark = color_code_dark;
+      // Update the task properties
+      task.priority = priority_id;
+      task.priority_color = color_code;
+      task.priority_color_dark = color_code_dark;
 
-        // If grouped by priority and not a subtask, move the task to the new priority group
-        if (state.group === GROUP_BY_PRIORITY_VALUE && !foundTask.is_sub_task && currentGroupId) {
-          // Remove from current group
-          deleteTaskFromGroup(state.taskGroups, foundTask, currentGroupId);
-          
-          // Add to new priority group
-          addTaskToGroup(state.taskGroups, foundTask, priority_id, false);
-        }
+      // If grouped by priority and not a subtask, move the task to the new priority group
+      if (state.group === GROUP_BY_PRIORITY_VALUE && !task.is_sub_task && groupId !== priority_id) {
+        // Remove from current group
+        deleteTaskFromGroup(state.taskGroups, task, groupId);
+
+        // Add to new priority group
+        addTaskToGroup(state.taskGroups, task, priority_id, false);
       }
     },
 
     toggleTaskRowExpansion: (state, action: PayloadAction<string>) => {
       const taskId = action.payload;
-      
+
       // Find the task in any group and toggle its show_sub_tasks property
       for (const group of state.taskGroups) {
         const task = group.tasks.find(t => t.id === taskId);
@@ -619,18 +649,12 @@ const taskSlice = createSlice({
         }
       }
     },
+    
     resetTaskListData: state => {
-      state.taskGroups = [];
-      state.columns = [];
-      state.labels = [];
-      state.taskAssignees = [];
-      state.search = null;
-      state.archived = false;
-      state.priorities = [];
-      state.fields = [];  
-      state.loadingGroups = false;
-      state.loadingColumns = false;
-      state.error = null;
+      return {
+        ...initialState,
+        group: state.group // Preserve the current grouping
+      };
     },
   },
 
@@ -674,13 +698,17 @@ const taskSlice = createSlice({
         });
         state.columns = action.payload;
       })
+      .addCase(fetTaskListColumns.rejected, (state, action) => {
+        state.loadingColumns = false;
+        state.error = action.error.message || 'Failed to fetch task list columns';
+      })
       // Fetch Labels By Project
       .addCase(fetchLabelsByProject.pending, state => {
         state.loadingLabels = true;
         state.error = null;
       })
       .addCase(fetchLabelsByProject.fulfilled, (state, action: PayloadAction<ITaskLabel[]>) => {
-        const newLabels = action.payload.map(label => ({...label, selected: false}));
+        const newLabels = action.payload.map(label => ({ ...label, selected: false }));
         state.labels = newLabels;
         state.loadingLabels = false;
       })
@@ -688,6 +716,19 @@ const taskSlice = createSlice({
         state.loadingLabels = false;
         state.error = action.payload as string;
       })
+      .addCase(updateColumnVisibility.fulfilled, (state, action) => {
+        const column = state.columns.find(col => col.key === action.payload.key);
+        if (column) {
+          column.pinned = action.payload.pinned;
+        }
+      })
+      .addCase(updateColumnVisibility.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      .addCase(updateColumnVisibility.pending, state => {
+        state.loadingColumns = true;
+        state.error = null;
+      });
   },
 });
 
@@ -695,6 +736,7 @@ export const {
   setGroup,
   addTask,
   deleteTask,
+  updateTaskName,
   updateTaskProgress,
   updateTaskAssignees,
   updateTaskLabel,
@@ -707,13 +749,13 @@ export const {
   setSearch,
   toggleColumnVisibility,
   updateTaskStatus,
+  updateTaskPhase,
   updateTaskPriority,
-  updateTaskEndDate,  
+  updateTaskEndDate,
   updateTaskStartDate,
   updateTaskTimeTracking,
   toggleTaskRowExpansion,
   resetTaskListData,
 } = taskSlice.actions;
-
 
 export default taskSlice.reducer;

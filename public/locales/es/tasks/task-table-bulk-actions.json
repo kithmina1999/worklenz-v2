@@ -17,5 +17,6 @@
     "createTaskTemplate": "Crear plantilla de tarea",
     "apply": "Aplicar",
     "createLabel": "+ Crear etiqueta",
-    "hitEnterToCreate": "Presione Enter para crear"
+    "hitEnterToCreate": "Presione Enter para crear",
+    "pendingInvitation": "Invitación Pendiente"
 }

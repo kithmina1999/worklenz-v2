@@ -10,7 +10,7 @@ import List from 'antd/es/list';
 import Typography from 'antd/es/typography';
 import Button from 'antd/es/button';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { toggleProjectMemberDrawer } from '../../../features/projects/singleProject/members/projectMembersSlice';
@@ -21,13 +21,11 @@ import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITeamMembersViewModel } from '@/types/teamMembers/teamMembersViewModel.types';
-import { sortBySelection } from '@/utils/sort-team-members';
+import { sortByBooleanField, sortBySelection, sortTeamMembers } from '@/utils/sort-team-members';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
-import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
-import { fetchTaskAssignees, updateTaskAssignees } from '@/features/tasks/tasks.slice';
-import logger from '@/utils/errorLogger';
+import { getTeamMembers } from '@/features/team-members/team-members.slice';
 
 interface AssigneeSelectorProps {
   task: IProjectTask;
@@ -68,7 +66,8 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
         ...member,
         selected: assignees?.includes(member.id),
       }));
-      let sortedMembers = sortBySelection(membersData);
+      let sortedMembers = sortTeamMembers(membersData);
+
       setTeamMembers({ data: sortedMembers });
 
       setTimeout(() => {
@@ -119,7 +118,7 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
           {filteredMembersData?.length ? (
             filteredMembersData.map(member => (
               <List.Item
-              className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
+                className={`${themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'} ${member.pending_invitation ? 'disabled cursor-not-allowed' : ''}`}
                 key={member.id}
                 style={{
                   display: 'flex',
@@ -135,6 +134,7 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
                   id={member.id}
                   checked={checkMemberSelected(member.id || '')}
                   onChange={e => handleMemberChange(e, member.id || '')}
+                  disabled={member.pending_invitation}
                 />
                 <div>
                   <SingleAvatar
@@ -144,17 +144,16 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
                   />
                 </div>
                 <Flex vertical>
-                  {member.name}
-
-                  <Typography.Text
-                    style={{
-                      fontSize: 12,
-                      color: colors.lightGray,
-                    }}
-                  >
-                    {member.email}
-                  </Typography.Text>
-                </Flex>
+                    <Typography.Text>{member.name}</Typography.Text>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                      {member.email}&nbsp;
+                      {member.pending_invitation && (
+                        <Typography.Text type="danger" style={{ fontSize: 10 }}>
+                          ({t('pendingInvitation')})
+                        </Typography.Text>
+                      )}
+                    </Typography.Text>
+                  </Flex>
               </List.Item>
             ))
           ) : (

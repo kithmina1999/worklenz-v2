@@ -17,7 +17,16 @@ import TaskListTable from './TaskListTable';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import Collapsible from '@/components/Collapsible/Collapsible';
+import { IGroupBy } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { ITaskStatusUpdateModel } from '@/types/tasks/task-status-update-model.types';
+import { statusApiService } from '@/api/taskAttributes/status/status.api.service';
+import { phasesApiService } from '@/api/taskAttributes/phases/phases.api.service';
+import { ITaskPhase } from '@/types/tasks/taskPhase.types';
+import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
+import logger from '@/utils/errorLogger';
+import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
 
 interface TaskListTableWrapperProps {
   taskList: IProjectTask[];
@@ -40,29 +49,84 @@ const TaskListTableWrapper = ({
   onStatusCategoryChange,
   activeId,
 }: TaskListTableWrapperProps) => {
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
+  const currentSession = useAuthService().getCurrentSession();
+  const dispatch = useAppDispatch();
+
   const [tableName, setTableName] = useState<string>(name);
+  const [showRenameInput, setShowRenameInput] = useState<boolean>(false);
   const [isRenaming, setIsRenaming] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const [currentCategory, setCurrentCategory] = useState<string | null>(statusCategory);
 
   const { t } = useTranslation('task-list-table');
 
-  const themeMode = useAppSelector(state => state.themeReducer.mode);
   const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
-  const currentSession = useAuthService().getCurrentSession();
+  const { projectId, project } = useAppSelector(state => state.projectReducer);
 
   const handlToggleExpand = () => {
     if (isRenaming) return;
     setIsExpanded(!isExpanded);
   };
 
-  const handleRename = () => {
-    console.log(tableName);
-    setIsRenaming(false);
-    // if (onRename) {
-    //   onRename(tableName);
-    // }
-    // setIsRenaming(false);
+  const isProjectManager = () => {
+    return currentSession?.team_member_id === project?.project_manager?.id;
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Only prevent default behavior for the collapse/expand button
+    if (e.key === ' ' && e.target !== e.currentTarget) {
+      e.preventDefault();
+    }
+  };
+
+  const handleRename = async () => {
+    if (!projectId || isRenaming || !(isOwnerOrAdmin || isProjectManager()) || !tableId)
+      return;
+
+    if (tableName.trim() === name.trim()) {
+      setShowRenameInput(false);
+      return;
+    }
+
+    setShowRenameInput(false);
+    setIsRenaming(true);
+
+    try {
+      if (groupBy === IGroupBy.STATUS) {
+        if (!statusCategory) return;
+        const body: ITaskStatusUpdateModel = {
+          name: tableName.trim(),
+          project_id: projectId,
+          category_id: statusCategory,
+        };
+        const res = await statusApiService.updateStatus(tableId, body, projectId);
+        if (res.done) {
+          dispatch(fetchStatuses(projectId));
+        }
+      } else if (groupBy === IGroupBy.PHASE) {
+        const body = {
+          id: tableId,
+          name: tableName.trim(),
+        };
+        const res = await phasesApiService.updateNameOfPhase(tableId, body as ITaskPhase, projectId);
+        if (res.done) {
+          dispatch(fetchPhasesByProjectId(projectId));
+        }
+      }
+    } catch (error) {
+      logger.error('Error renaming:', error);
+      // Reset to original name if rename fails
+      setTableName(name);
+      setShowRenameInput(true); // Keep input visible to allow retry
+    } finally {
+      setIsRenaming(false);
+    }
+  };
+
+  const handleBlurOrEnter = () => {
+    handleRename();
+    setShowRenameInput(false);
   };
 
   const handleCategoryChange = (category: string) => {
@@ -72,21 +136,14 @@ const TaskListTableWrapper = ({
     }
   };
 
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    console.log('handleInputKeyDown', e.key);
-    if (e.key === ' ') {
-      e.stopPropagation();
-    }
-  };
-
   const items: MenuProps['items'] = [
     {
       key: '1',
       icon: <EditOutlined />,
-      label: 'Rename',
-      onClick: () => setIsRenaming(true),
+      label: groupBy === IGroupBy.STATUS ? 'Rename status' : 'Rename phase',
+      onClick: () => setShowRenameInput(true),
     },
-    {
+    groupBy === IGroupBy.STATUS && {
       key: '2',
       icon: <RetweetOutlined />,
       label: 'Change category',
@@ -101,7 +158,7 @@ const TaskListTableWrapper = ({
         type: 'group',
       })),
     },
-  ];
+  ].filter(Boolean) as MenuProps['items'];
 
   return (
     <div>
@@ -128,17 +185,19 @@ const TaskListTableWrapper = ({
               }}
               icon={<RightOutlined rotate={isExpanded ? 90 : 0} />}
               onClick={handlToggleExpand}
+              disabled={showRenameInput}
             >
-              {isRenaming ? (
+              {showRenameInput ? (
                 <Input
                   size="small"
                   value={tableName}
                   onChange={e => setTableName(e.target.value)}
-                  onBlur={handleRename}
-                  onPressEnter={handleRename}
+                  onBlur={handleBlurOrEnter}
+                  onPressEnter={handleBlurOrEnter}
                   onKeyDown={handleInputKeyDown}
                   onClick={e => e.stopPropagation()}
                   autoFocus
+                  style={{ cursor: 'text' }}
                 />
               ) : (
                 <Typography.Text
@@ -151,7 +210,7 @@ const TaskListTableWrapper = ({
                 </Typography.Text>
               )}
             </Button>
-            {groupBy === 'status' && !isRenaming && (
+            {groupBy !== IGroupBy.PRIORITY && !showRenameInput && (
               <Dropdown menu={{ items }}>
                 <Button icon={<EllipsisOutlined />} className="borderless-icon-btn" />
               </Dropdown>

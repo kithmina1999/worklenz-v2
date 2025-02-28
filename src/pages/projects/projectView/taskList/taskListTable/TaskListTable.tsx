@@ -6,7 +6,7 @@ import Tooltip from 'antd/es/tooltip';
 import Input from 'antd/es/input';
 import Typography from 'antd/es/typography';
 import Flex from 'antd/es/flex';
-import { HolderOutlined } from '@ant-design/icons';
+import { HolderOutlined, SettingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -14,15 +14,14 @@ import { DraggableAttributes } from '@dnd-kit/core';
 import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
 import { DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { createPortal } from 'react-dom';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { useSelectedProject } from '@/hooks/useSelectedProject';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 import { colors } from '@/styles/colors';
 import TaskContextMenu from './context-menu/task-context-menu';
 import AddTaskListRow from './task-list-table-rows/add-task-list-row';
-import AddSubTaskListRow from './task-list-table-rows/add-sub-task-list-row';
 import CustomColumnLabelCell from './custom-columns/custom-column-cells/custom-column-label-cell/custom-column-label-cell';
 import CustomColumnSelectionCell from './custom-columns/custom-column-cells/custom-column-selection-cell/custom-column-selection-cell';
 import TaskListProgressCell from './task-list-table-cells/task-list-progress-cell/task-list-progress-cell';
@@ -44,19 +43,13 @@ import PhaseDropdown from '@/components/taskListCommon/phaseDropdown/PhaseDropdo
 import AssigneeSelector from '@/components/taskListCommon/assignee-selector/assignee-selector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { CustomFieldsTypes } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
-import {
-  deselectAll,
-  selectTaskIds,
-  selectTasks,
-} from '@/features/projects/bulkActions/bulkActionSlice';
+import { selectTaskIds, selectTasks } from '@/features/projects/bulkActions/bulkActionSlice';
 import StatusDropdown from '@/components/task-list-common/status-dropdown/status-dropdown';
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/priority-dropdown';
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
-import { createPortal } from 'react-dom';
-import { setSelectedTasks } from '@/features/project/project.slice';
 import { toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
-import { useSocket } from '@/socket/socketContext';
+import ConfigPhaseButton from '@/features/projects/singleProject/phase/ConfigPhaseButton';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -109,6 +102,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const columnList = useAppSelector(state => state.taskReducer.columns);
   const taskGroups = useAppSelector(state => state.taskReducer.taskGroups);
+  const { project } = useAppSelector(state => state.projectReducer);
   const visibleColumns = columnList.filter(column => column.pinned);
   const selectedTaskIdsList = useAppSelector(state => state.bulkActionReducer.selectedTaskIdsList);
   const currentSession = useAuthService().getCurrentSession();
@@ -120,6 +114,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const [scrollingTables, setScrollingTables] = useState<Record<string, boolean>>({});
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
   const toggleTaskExpansion = (taskId: string) => {
     dispatch(toggleTaskRowExpansion(taskId));
@@ -127,16 +122,25 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
 
   const toggleSelectAll = () => {
     if (!taskList) return;
-
     const allTaskIds = taskList
       .flatMap(task => [task.id, ...(task.sub_tasks?.map(subtask => subtask.id) || [])])
       .filter(Boolean) as string[];
 
     if (isSelectAll) {
-      dispatch(deselectAll());
+      const remainingTaskIds = selectedTaskIdsList.filter(id => !allTaskIds.includes(id));
+      const remainingTasks = remainingTaskIds
+        .map(id => findTaskInGroups(id) || taskList.find(t => t.id === id))
+        .filter(Boolean) as IProjectTask[];
+      dispatch(selectTaskIds(remainingTaskIds));
+      dispatch(selectTasks(remainingTasks));
     } else {
-      dispatch(selectTaskIds(allTaskIds));
-      dispatch(selectTasks(taskList));
+      const updatedTaskIds = [...selectedTaskIdsList, ...allTaskIds];
+      const uniqueTaskIds = Array.from(new Set(updatedTaskIds));
+      const updatedTasks = uniqueTaskIds
+        .map(id => findTaskInGroups(id) || taskList.find(t => t.id === id))
+        .filter(Boolean) as IProjectTask[];
+      dispatch(selectTaskIds(uniqueTaskIds));
+      dispatch(selectTasks(updatedTasks));
     }
     setIsSelectAll(!isSelectAll);
   };
@@ -145,7 +149,9 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     if (!task.id) return;
     const taskIdsSet = new Set(selectedTaskIdsList);
     const selectedTasksSet = new Set(
-      selectedTaskIdsList.map(id => taskList?.find(t => t.id === id)).filter(Boolean)
+      selectedTaskIdsList
+        .map(id => findTaskInGroups(id) || taskList?.find(t => t.id === id))
+        .filter(Boolean)
     );
 
     if (taskIdsSet.has(task.id)) {
@@ -187,22 +193,33 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     return () => tableContainer.removeEventListener('scroll', handleScroll);
   }, [tableId]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      // Check if click is outside of any task cell
+      if (!target.closest('[data-task-cell]')) {
+        setEditingTaskId(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const getColumnStyles = (key: string | undefined, isHeader: boolean) => {
     if (!key) return '';
 
-    const baseStyles = `border px-2`;
+    const baseStyles = `border px-2 text-left`;
     const stickyStyles = (() => {
       switch (key) {
         case 'selector':
-          return `sticky left-0 z-20 ${
-            scrollingTables[tableId]
-              ? 'shadow-[2px_0_4px_-2px_rgba(0,0,0,0.2)]'
-              : ''
-          }`;
+          return 'sticky left-0 z-20';
         case 'TASK':
-          return `sticky left-[48px] z-10 ${
+          return `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:h-full after:-z-10 after:w-1.5 after:bg-transparent ${
             scrollingTables[tableId]
-              ? 'shadow-[2px_0_4px_-2px_rgba(0,0,0,0.2)]'
+              ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent'
               : ''
           }`;
         default:
@@ -210,12 +227,13 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
       }
     })();
 
+    const widthStyles = key === 'TASK' ? 'w-[474px]' : '';
     const heightStyles = isHeader ? 'after:h-[42px]' : 'after:min-h-[40px]';
     const themeStyles = isDarkMode
       ? `bg-${isHeader ? '[#1d1d1d]' : '[#141414]'} border-[#303030]`
       : `bg-${isHeader ? '[#fafafa]' : 'white'}`;
 
-    return `${baseStyles} ${stickyStyles} ${heightStyles} ${themeStyles}`;
+    return `${baseStyles} ${stickyStyles} ${heightStyles} ${themeStyles} ${widthStyles}`;
   };
 
   const renderColumnContent = (
@@ -224,7 +242,6 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     isSubtask: boolean = false
   ) => {
     if (!columnKey || !task) return null;
-
     const columnComponents = {
       KEY: () => <TaskListTaskIdCell taskId={task.task_key || ''} />,
       TASK: () => (
@@ -238,22 +255,22 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
       PROGRESS: () => <TaskListProgressCell task={task} />,
       ASSIGNEES: () => <TaskListMembersCell groupId={tableId} task={task} />,
       LABELS: () => <TaskListLabelsCell task={task} />,
-      PHASES: () => <PhaseDropdown projectId={currentSession?.team_id || ''} />,
+      PHASE: () => <PhaseDropdown task={task} />,
       STATUS: () => <StatusDropdown task={task} teamId={currentSession?.team_id || ''} />,
       PRIORITY: () => <PriorityDropdown task={task} teamId={currentSession?.team_id || ''} />,
       TIME_TRACKING: () => <TaskListTimeTrackerCell task={task} />,
-      ESTIMATION: () => <TaskListEstimationCell />,
+      ESTIMATION: () => <TaskListEstimationCell task={task} />,
       START_DATE: () => <TaskListStartDateCell task={task} />,
       DUE_DATE: () => <TaskListDueDateCell task={task} />,
       DUE_TIME: () => <TaskListDueTimeCell />,
       COMPLETED_DATE: () => <TaskListCompletedDateCell completedDate={task.completed_at || null} />,
       CREATED_DATE: () => <TaskListCreatedDateCell createdDate={task.created_at || null} />,
-
       LAST_UPDATED: () => <TaskListLastUpdatedCell lastUpdated={task.updated_at || null} />,
       REPORTER: () => <TaskListReporterCell task={task} />,
     };
 
-    return columnComponents[columnKey as keyof typeof columnComponents]?.() || null;
+    const component = columnComponents[columnKey as keyof typeof columnComponents]?.();
+    return component;
   };
 
   const renderCustomColumnContent = (
@@ -410,6 +427,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                 style={{
                   backgroundColor: getRowBackgroundColor(task.id),
                 }}
+                data-task-cell
               >
                 {column.custom_column
                   ? renderCustomColumnContent(
@@ -456,11 +474,23 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                     className={getColumnStyles(column.key, true)}
                     style={{ fontWeight: 500 }}
                   >
-                    {column.key === 'phases' ||
-                    column.key === 'customColumn' ||
-                    column.custom_column
-                      ? column.name
-                      : t(`${column.key?.replace('_', '').toLowerCase()}Column`)}
+                    <Flex align="center" gap={4}>
+                      {column.key === 'PHASE' && (
+                        <Flex
+                          align="center"
+                          gap={4}
+                          justify="space-between"
+                          className="w-full min-w-[120px]"
+                        >
+                          {project?.phase_label}
+                          <ConfigPhaseButton />
+                        </Flex>
+                      )}
+                      {column.key !== 'PHASE' &&
+                        (column.key === 'customColumn' || column.custom_column
+                          ? column.name
+                          : t(`${column.key?.replace('_', '').toLowerCase()}Column`))}
+                    </Flex>
                   </th>
                 ))}
                 <th className={getColumnStyles('customColumn', true)}>

@@ -12,13 +12,7 @@ interface AssigneesDropdownProps {
   t: (key: string) => string;
 }
 
-const AssigneesDropdown = ({
-  members,
-  themeMode,
-  onApply,
-  onClose,
-  t,
-}: AssigneesDropdownProps) => {
+const AssigneesDropdown = ({ members, themeMode, onApply, onClose, t }: AssigneesDropdownProps) => {
   const [selectedAssignees, setSelectedAssignees] = useState<ITeamMemberViewModel[]>([]);
 
   const handleAssigneeChange = (e: CheckboxChangeEvent, member: ITeamMemberViewModel) => {
@@ -40,7 +34,7 @@ const AssigneesDropdown = ({
         <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
           {members?.map(member => (
             <List.Item
-              className={`${themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'} ${member.is_pending ? 'disabled' : ''}`}
+              className={`${themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'} ${member.pending_invitation ? 'cursor-not-allowed' : ''}`}
               key={member.id}
               style={{
                 display: 'flex',
@@ -52,7 +46,7 @@ const AssigneesDropdown = ({
               }}
             >
               <Checkbox
-                disabled={member.is_pending}
+                disabled={member.pending_invitation}
                 checked={selectedAssignees.some(a => a.id === member.id)}
                 onChange={e => handleAssigneeChange(e, member)}
               >
@@ -65,8 +59,12 @@ const AssigneesDropdown = ({
                   <Flex vertical>
                     <Typography.Text>{member.name}</Typography.Text>
                     <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      {member.email}
-                      {member.is_pending && <small>{t('pendingInvitation')}</small>}
+                      {member.email}&nbsp;
+                      {member.pending_invitation && (
+                        <Typography.Text type="danger" style={{ fontSize: 10 }}>
+                          ({t('pendingInvitation')})
+                        </Typography.Text>
+                      )}
                     </Typography.Text>
                   </Flex>
                 </Flex>

@@ -1,5 +1,6 @@
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import { IBillingTransaction } from '@/types/admin-center/admin-center.types';
+import logger from '@/utils/errorLogger';
 import { formatDate } from '@/utils/timeUtils';
 import { ContainerOutlined } from '@ant-design/icons';
 import { Button, Table, TableProps, Tag, Tooltip } from 'antd';
@@ -20,7 +21,7 @@ const InvoicesTable: React.FC = () => {
         setTransactions(res.body);
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error fetching transactions:', error);
     } finally {
       setLoadingTransactions(false);
     }

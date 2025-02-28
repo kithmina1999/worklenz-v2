@@ -14,14 +14,17 @@
   "timetrackingColumn": "Time Tracking",
   "estimationColumn": "Estimation",
   "startDateColumn": "Start Date",
+  "startdateColumn": "Start Date",
   "dueDateColumn": "Due Date",
   "duedateColumn": "Due Date",
   "completedDateColumn": "Completed Date",
+  "completeddateColumn": "Completed Date",
   "createdDateColumn": "Created Date",
+  "createddateColumn": "Created Date",
   "lastUpdatedColumn": "Last Updated",
+  "lastupdatedColumn": "Last Updated",
   "reporterColumn": "Reporter",
   "dueTimeColumn": "Due Time",
-
   "todoSelectorText": "To Do",
   "doingSelectorText": "Doing",
   "doneSelectorText": "Done",
@@ -43,5 +46,7 @@
   "noLabelsFound": "No labels found",
   "searchInputPlaceholder": "Search or create",
   "assigneeSelectorInviteButton": "Invite a new member by email",
-  "labelInputPlaceholder": "Search or create"
+  "labelInputPlaceholder": "Search or create",
+  
+  "pendingInvitation": "Pending Invitation"
 }
