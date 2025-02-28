@@ -7,7 +7,7 @@ import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { colors } from '../../../../styles/colors';
 import { useTranslation } from 'react-i18next';
 
-const ConfigPhaseButton = ({ color }: { color: string }) => {
+const ConfigPhaseButton = () => {
   // get theme details from redux
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
@@ -24,14 +24,7 @@ const ConfigPhaseButton = ({ color }: { color: string }) => {
         onClick={() => dispatch(toggleDrawer())}
         icon={
           <SettingOutlined
-            style={{
-              color:
-                color !== colors.darkGray
-                  ? color
-                  : themeMode === 'dark'
-                    ? colors.white
-                    : colors.darkGray,
-            }}
+            style={{ color: themeMode === 'dark' ? colors.white : colors.skyBlue }}
           />
         }
       />
