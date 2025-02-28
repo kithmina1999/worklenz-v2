@@ -39,7 +39,7 @@ const TimeLogForm = ({ onCancel }: { onCancel: () => void }) => {
         <Form.Item style={{ marginBlockEnd: 0 }}>
           <Flex gap={8}>
             <Form.Item name="date" label="Date">
-              <DatePicker />
+              <DatePicker disabledDate={current => current && current.toDate() > new Date()}/>
             </Form.Item>
 
             <Form.Item name="startTime" label="Start Time">
