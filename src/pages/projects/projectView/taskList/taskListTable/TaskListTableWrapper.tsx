@@ -22,7 +22,11 @@ import { useAuthService } from '@/hooks/useAuth';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { ITaskStatusUpdateModel } from '@/types/tasks/task-status-update-model.types';
 import { statusApiService } from '@/api/taskAttributes/status/status.api.service';
-import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
+import { phasesApiService } from '@/api/taskAttributes/phases/phases.api.service';
+import { ITaskPhase } from '@/types/tasks/taskPhase.types';
+import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
+import logger from '@/utils/errorLogger';
+import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
 
 interface TaskListTableWrapperProps {
   taskList: IProjectTask[];
@@ -77,10 +81,9 @@ const TaskListTableWrapper = ({
   };
 
   const handleRename = async () => {
-    if (!projectId || isRenaming || !(isOwnerOrAdmin || isProjectManager()) || !statusCategory)
+    if (!projectId || isRenaming || !(isOwnerOrAdmin || isProjectManager()) || !tableId)
       return;
 
-    console.log('handleRename', !projectId || isRenaming || !(isOwnerOrAdmin || isProjectManager()) || !statusCategory);
     if (tableName.trim() === name.trim()) {
       setShowRenameInput(false);
       return;
@@ -91,20 +94,28 @@ const TaskListTableWrapper = ({
 
     try {
       if (groupBy === IGroupBy.STATUS) {
+        if (!statusCategory) return;
         const body: ITaskStatusUpdateModel = {
           name: tableName.trim(),
           project_id: projectId,
           category_id: statusCategory,
         };
-        const res = await statusApiService.updateStatus(statusCategory, body, projectId);
+        const res = await statusApiService.updateStatus(tableId, body, projectId);
         if (res.done) {
-          dispatch(fetchProjectStatuses());
+          dispatch(fetchStatuses(projectId));
         }
       } else if (groupBy === IGroupBy.PHASE) {
-        // dispatch(renamePhase(tableName));
+        const body = {
+          id: tableId,
+          name: tableName.trim(),
+        };
+        const res = await phasesApiService.updateNameOfPhase(tableId, body as ITaskPhase, projectId);
+        if (res.done) {
+          dispatch(fetchPhasesByProjectId(projectId));
+        }
       }
     } catch (error) {
-      console.error('Error renaming:', error);
+      logger.error('Error renaming:', error);
       // Reset to original name if rename fails
       setTableName(name);
       setShowRenameInput(true); // Keep input visible to allow retry

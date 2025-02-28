@@ -24,6 +24,7 @@ import {
 } from '@/types/project-templates/project-templates.types';
 import './template-drawer.css';
 import { SearchOutlined } from '@ant-design/icons';
+import logger from '@/utils/errorLogger';
 
 const { Title, Text } = Typography;
 
@@ -64,7 +65,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         setSelectedTemplate(res.body);
       }
     } catch (error) {
-      console.error('Error loading template:', error);
+      logger.error('Error loading template:', error);
     } finally {
       setLoadingSelectedTemplate(false);
     }
@@ -82,7 +83,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         }
       }
     } catch (error) {
-      console.error('Error loading templates:', error);
+      logger.error('Error loading templates:', error);
     } finally {
       setLoadingTemplates(false);
     }
@@ -96,7 +97,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         setCustomTemplates(res.body);
       }
     } catch (error) {
-      console.error('Error loading custom templates:', error);
+      logger.error('Error loading custom templates:', error);
     } finally {
       setLoadingCustomTemplates(false);
     }
