@@ -6,7 +6,7 @@ import Tooltip from 'antd/es/tooltip';
 import Input from 'antd/es/input';
 import Typography from 'antd/es/typography';
 import Flex from 'antd/es/flex';
-import { HolderOutlined } from '@ant-design/icons';
+import { HolderOutlined, SettingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -14,6 +14,7 @@ import { DraggableAttributes } from '@dnd-kit/core';
 import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
 import { DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { createPortal } from 'react-dom';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -42,16 +43,13 @@ import PhaseDropdown from '@/components/taskListCommon/phaseDropdown/PhaseDropdo
 import AssigneeSelector from '@/components/taskListCommon/assignee-selector/assignee-selector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { CustomFieldsTypes } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
-import {
-  selectTaskIds,
-  selectTasks,
-} from '@/features/projects/bulkActions/bulkActionSlice';
+import { selectTaskIds, selectTasks } from '@/features/projects/bulkActions/bulkActionSlice';
 import StatusDropdown from '@/components/task-list-common/status-dropdown/status-dropdown';
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/priority-dropdown';
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
-import { createPortal } from 'react-dom';
 import { toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
+import ConfigPhaseButton from '@/features/projects/singleProject/phase/ConfigPhaseButton';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -104,6 +102,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const columnList = useAppSelector(state => state.taskReducer.columns);
   const taskGroups = useAppSelector(state => state.taskReducer.taskGroups);
+  const { project } = useAppSelector(state => state.projectReducer);
   const visibleColumns = columnList.filter(column => column.pinned);
   const selectedTaskIdsList = useAppSelector(state => state.bulkActionReducer.selectedTaskIdsList);
   const currentSession = useAuthService().getCurrentSession();
@@ -129,13 +128,17 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
 
     if (isSelectAll) {
       const remainingTaskIds = selectedTaskIdsList.filter(id => !allTaskIds.includes(id));
-      const remainingTasks = remainingTaskIds.map(id => findTaskInGroups(id) || taskList.find(t => t.id === id)).filter(Boolean) as IProjectTask[];
+      const remainingTasks = remainingTaskIds
+        .map(id => findTaskInGroups(id) || taskList.find(t => t.id === id))
+        .filter(Boolean) as IProjectTask[];
       dispatch(selectTaskIds(remainingTaskIds));
       dispatch(selectTasks(remainingTasks));
     } else {
       const updatedTaskIds = [...selectedTaskIdsList, ...allTaskIds];
       const uniqueTaskIds = Array.from(new Set(updatedTaskIds));
-      const updatedTasks = uniqueTaskIds.map(id => findTaskInGroups(id) || taskList.find(t => t.id === id)).filter(Boolean) as IProjectTask[];
+      const updatedTasks = uniqueTaskIds
+        .map(id => findTaskInGroups(id) || taskList.find(t => t.id === id))
+        .filter(Boolean) as IProjectTask[];
       dispatch(selectTaskIds(uniqueTaskIds));
       dispatch(selectTasks(updatedTasks));
     }
@@ -146,7 +149,9 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     if (!task.id) return;
     const taskIdsSet = new Set(selectedTaskIdsList);
     const selectedTasksSet = new Set(
-      selectedTaskIdsList.map(id => findTaskInGroups(id) || taskList?.find(t => t.id === id)).filter(Boolean)
+      selectedTaskIdsList
+        .map(id => findTaskInGroups(id) || taskList?.find(t => t.id === id))
+        .filter(Boolean)
     );
 
     if (taskIdsSet.has(task.id)) {
@@ -206,7 +211,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const getColumnStyles = (key: string | undefined, isHeader: boolean) => {
     if (!key) return '';
 
-    const baseStyles = `border px-2`;
+    const baseStyles = `border px-2 text-left`;
     const stickyStyles = (() => {
       switch (key) {
         case 'selector':
@@ -469,10 +474,23 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                     className={getColumnStyles(column.key, true)}
                     style={{ fontWeight: 500 }}
                   >
-                    {column.key === 'customColumn' ||
-                    column.custom_column
-                      ? column.name
-                      : t(`${column.key?.replace('_', '').toLowerCase()}Column`)}
+                    <Flex align="center" gap={4}>
+                      {column.key === 'PHASE' && (
+                        <Flex
+                          align="center"
+                          gap={4}
+                          justify="space-between"
+                          className="w-full min-w-[120px]"
+                        >
+                          {project?.phase_label}
+                          <ConfigPhaseButton />
+                        </Flex>
+                      )}
+                      {column.key !== 'PHASE' &&
+                        (column.key === 'customColumn' || column.custom_column
+                          ? column.name
+                          : t(`${column.key?.replace('_', '').toLowerCase()}Column`))}
+                    </Flex>
                   </th>
                 ))}
                 <th className={getColumnStyles('customColumn', true)}>

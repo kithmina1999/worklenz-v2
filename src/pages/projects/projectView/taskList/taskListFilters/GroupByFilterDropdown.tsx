@@ -60,7 +60,7 @@ const GroupByFilterDropdown = () => {
       </Dropdown>
       {(groupBy === IGroupBy.STATUS || groupBy === IGroupBy.PHASE) && (
         <ConfigProvider wave={{ disabled: true }}>
-          {groupBy === IGroupBy.PHASE && <ConfigPhaseButton color={colors.skyBlue} />}
+          {groupBy === IGroupBy.PHASE && <ConfigPhaseButton />}
           {groupBy === IGroupBy.STATUS && <CreateStatusButton />}
         </ConfigProvider>
       )}
