@@ -572,26 +572,26 @@ const taskSlice = createSlice({
       }
     },
 
-    updateTaskGroup: (
+    updateTaskGroupColor: (
       state,
-      action: PayloadAction<{
-        task: IProjectTask;
-        isSubtasksIncluded: boolean;
-      }>
+      action: PayloadAction<{groupId: string, colorCode: string}>
     ) => {
-      const { task } = action.payload;
-      const groupId = getGroupIdByGroupedColumn(task);
+      const { colorCode, groupId } = action.payload;
 
       if (groupId) {
         const group = state.taskGroups.find(g => g.id === groupId);
+
         if (group) {
-          const taskIndex = group.tasks.findIndex(t => t.id === task.id);
-          if (taskIndex >= 0) {
-            group.tasks[taskIndex] = task;
-          } else {
-            group.tasks.push(task);
-          }
-        }
+          group.color_code = colorCode;
+        }   
+      }
+    },
+
+    updateTaskStatusColor: (state, action: PayloadAction<{ taskId: string; color: string }>) => {
+      const { taskId, color } = action.payload;
+      const task = state.tasks.find(t => t.id === taskId);
+      if (task) {
+        task.status_color = color;
       }
     },
 
@@ -756,6 +756,8 @@ export const {
   updateTaskTimeTracking,
   toggleTaskRowExpansion,
   resetTaskListData,
+  updateTaskStatusColor,
+  updateTaskGroupColor,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;
