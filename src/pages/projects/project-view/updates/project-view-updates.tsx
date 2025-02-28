@@ -74,12 +74,6 @@ const ProjectViewUpdates = () => {
         return;
       }
 
-      const mentionRegex = /@\[([^\]]+)\]\(([^)]+)\)/g;
-      // const mentions = Array.from(commentValue.matchAll(mentionRegex)).map(match => ({
-      //   id: match[2],
-      //   name: match[1],
-      // }));
-
       const body = {
         project_id: projectId,
         team_id: getUserSession()?.team_id,
