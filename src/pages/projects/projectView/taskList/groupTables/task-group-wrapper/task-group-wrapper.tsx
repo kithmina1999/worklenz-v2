@@ -42,6 +42,7 @@ import TaskListTableWrapper from '@/pages/projects/projectView/taskList/taskList
 import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
 import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
 import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
+import { setTaskStatus } from '@/features/task-drawer/task-drawer.slice';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -131,6 +132,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
     const handleTaskStatusChange = (response: ITaskListStatusChangeResponse) => {
       dispatch(updateTaskStatus(response));
+      dispatch(setTaskStatus(response));
     };
 
     const handleTaskProgress = (data: unknown) => {

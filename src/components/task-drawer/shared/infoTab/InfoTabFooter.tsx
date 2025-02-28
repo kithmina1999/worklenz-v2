@@ -4,11 +4,14 @@ import { PaperClipOutlined } from '@ant-design/icons';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { themeWiseColor } from '@/utils/themeWiseColor';
+import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
+import { calculateTimeGap } from '@/utils/calculate-time-gap';
+import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 
 const InfoTabFooter = () => {
   const [characterLength, setCharacterLength] = useState<number>(0);
   const [isCommentBoxExpand, setIsCommentBoxExpand] = useState<boolean>(false);
-  const { taskFormViewModel } = useAppSelector(state => state.taskReducer);
+  const { taskFormViewModel } = useAppSelector(state => state.taskDrawerReducer);
 
   const [form] = Form.useForm();
 
@@ -28,8 +31,8 @@ const InfoTabFooter = () => {
   // mentions options
   const mentionsOptions = projectMembersList
     ? projectMembersList.map(member => ({
-        value: member.memberName,
-        label: member.memberName,
+        value: member.id,
+        label: member.name,
       }))
     : [];
 
@@ -104,12 +107,34 @@ const InfoTabFooter = () => {
       </Form>
 
       <Flex align="center" justify="space-between" style={{ width: '100%' }}>
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          Created 
-        </Typography.Text>
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          Updated 
-        </Typography.Text>
+        <Tooltip
+          title={
+            taskFormViewModel?.task?.created_at
+              ? formatDateTimeWithLocale(taskFormViewModel.task.created_at)
+              : 'N/A'
+          }
+        >
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            Created{' '}
+            {taskFormViewModel?.task?.created_at
+              ? calculateTimeDifference(taskFormViewModel.task.created_at)
+              : 'N/A'} by {taskFormViewModel?.task?.reporter}
+          </Typography.Text>
+        </Tooltip>
+        <Tooltip
+          title={
+            taskFormViewModel?.task?.updated_at
+              ? formatDateTimeWithLocale(taskFormViewModel.task.updated_at)
+              : 'N/A'
+          }
+        >
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            Updated{' '}
+            {taskFormViewModel?.task?.updated_at
+              ? calculateTimeDifference(taskFormViewModel.task.updated_at)
+              : 'N/A'}
+          </Typography.Text>
+        </Tooltip>
       </Flex>
     </Flex>
   );

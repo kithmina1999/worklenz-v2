@@ -1,7 +1,8 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import { ITaskFormViewModel } from '@/types/tasks/task.types';
+import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 
 interface ITaskDrawerState {
   selectedTaskId: string | null;
@@ -41,6 +42,13 @@ const taskDrawerSlice = createSlice({
     setLoadingTask: (state, action) => {
       state.loadingTask = action.payload;
     },
+    setTaskStatus: (state, action: PayloadAction<ITaskListStatusChangeResponse>) => {
+      const { status_id, color_code, id: taskId } = action.payload;
+      if (state.taskFormViewModel?.task && state.taskFormViewModel.task.id === taskId) {
+        state.taskFormViewModel.task.status_id = status_id;
+        state.taskFormViewModel.task.status_color = color_code;
+      }
+    },
   },
   extraReducers: builder => {
     builder.addCase(fetchTask.pending, state => {
@@ -56,6 +64,11 @@ const taskDrawerSlice = createSlice({
   },
 });
 
-export const { setSelectedTaskId, setShowTaskDrawer, setTaskFormViewModel, setLoadingTask } =
-  taskDrawerSlice.actions;
+export const {
+  setSelectedTaskId,
+  setShowTaskDrawer,
+  setTaskFormViewModel,
+  setLoadingTask,
+  setTaskStatus,
+} = taskDrawerSlice.actions;
 export default taskDrawerSlice.reducer;
