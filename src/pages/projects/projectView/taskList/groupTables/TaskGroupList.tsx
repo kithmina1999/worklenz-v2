@@ -30,7 +30,7 @@ import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update
 import { SocketEvents } from '@/shared/socket-events';
 import logger from '@/utils/errorLogger';
 import TaskListTable from '../taskListTable/TaskListTable';
-import Collapsible from '@/components/Collapsible/Collapsible';
+import Collapsible from '@/components/collapsible/collapsible';
 import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
 import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
 import { createPortal } from 'react-dom';

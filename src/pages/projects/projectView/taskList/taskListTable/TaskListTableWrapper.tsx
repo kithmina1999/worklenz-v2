@@ -16,8 +16,8 @@ import './taskListTableWrapper.css';
 import TaskListTable from './TaskListTable';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import Collapsible from '@/components/Collapsible/Collapsible';
-import { IGroupBy } from '@/features/tasks/tasks.slice';
+import Collapsible from '@/components/collapsible/collapsible';
+import { IGroupBy, updateTaskGroupColor } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { ITaskStatusUpdateModel } from '@/types/tasks/task-status-update-model.types';
@@ -27,6 +27,9 @@ import { ITaskPhase } from '@/types/tasks/taskPhase.types';
 import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
 import logger from '@/utils/errorLogger';
 import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
+import { evt_project_board_column_setting_click } from '@/shared/worklenz-analytics-events';
+import { ALPHA_CHANNEL } from '@/shared/constants';
 
 interface TaskListTableWrapperProps {
   taskList: IProjectTask[];
@@ -35,7 +38,6 @@ interface TaskListTableWrapperProps {
   groupBy: string;
   color: string;
   statusCategory?: string | null;
-  onStatusCategoryChange?: (category: string) => void;
   activeId?: string | null;
 }
 
@@ -46,11 +48,11 @@ const TaskListTableWrapper = ({
   groupBy,
   color,
   statusCategory = null,
-  onStatusCategoryChange,
   activeId,
 }: TaskListTableWrapperProps) => {
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
   const currentSession = useAuthService().getCurrentSession();
+  const { trackMixpanelEvent } = useMixpanelTracking();
   const dispatch = useAppDispatch();
 
   const [tableName, setTableName] = useState<string>(name);
@@ -80,9 +82,27 @@ const TaskListTableWrapper = ({
     }
   };
 
+  const updateStatus = async (categoryId = currentCategory) => {
+    if (!categoryId || !projectId || !tableId) return;
+    const body: ITaskStatusUpdateModel = {
+      name: tableName.trim(),
+      project_id: projectId,
+      category_id: categoryId,
+    };
+    const res = await statusApiService.updateStatus(tableId, body, projectId);
+    if (res.done) {
+      trackMixpanelEvent(evt_project_board_column_setting_click, {
+        Rename: 'Status',
+      });
+      if (res.body.color_code) {
+        dispatch(updateTaskGroupColor({groupId: tableId, colorCode: res.body.color_code + ALPHA_CHANNEL}));
+      }
+      dispatch(fetchStatuses(projectId));
+    }
+  };
+
   const handleRename = async () => {
-    if (!projectId || isRenaming || !(isOwnerOrAdmin || isProjectManager()) || !tableId)
-      return;
+    if (!projectId || isRenaming || !(isOwnerOrAdmin || isProjectManager()) || !tableId) return;
 
     if (tableName.trim() === name.trim()) {
       setShowRenameInput(false);
@@ -94,23 +114,21 @@ const TaskListTableWrapper = ({
 
     try {
       if (groupBy === IGroupBy.STATUS) {
-        if (!statusCategory) return;
-        const body: ITaskStatusUpdateModel = {
-          name: tableName.trim(),
-          project_id: projectId,
-          category_id: statusCategory,
-        };
-        const res = await statusApiService.updateStatus(tableId, body, projectId);
-        if (res.done) {
-          dispatch(fetchStatuses(projectId));
-        }
+        await updateStatus();
       } else if (groupBy === IGroupBy.PHASE) {
         const body = {
           id: tableId,
           name: tableName.trim(),
         };
-        const res = await phasesApiService.updateNameOfPhase(tableId, body as ITaskPhase, projectId);
+        const res = await phasesApiService.updateNameOfPhase(
+          tableId,
+          body as ITaskPhase,
+          projectId
+        );
         if (res.done) {
+          trackMixpanelEvent(evt_project_board_column_setting_click, {
+            Rename: 'Phase',
+          });
           dispatch(fetchPhasesByProjectId(projectId));
         }
       }
@@ -129,11 +147,12 @@ const TaskListTableWrapper = ({
     setShowRenameInput(false);
   };
 
-  const handleCategoryChange = (category: string) => {
-    setCurrentCategory(category);
-    if (onStatusCategoryChange) {
-      onStatusCategoryChange(category);
-    }
+  const handleCategoryChange = async (categoryId: string) => {
+    setCurrentCategory(categoryId);
+    trackMixpanelEvent(evt_project_board_column_setting_click, {
+      'Change category': 'Status',
+    });
+    await updateStatus(categoryId);
   };
 
   const items: MenuProps['items'] = [
@@ -150,12 +169,15 @@ const TaskListTableWrapper = ({
       children: statusCategories?.map(status => ({
         key: status.id,
         label: (
-          <Flex gap={8} onClick={() => status.id && handleCategoryChange(status.id)}>
+          <Flex
+            gap={8}
+            onClick={() => status.id && handleCategoryChange(status.id)}
+            style={statusCategory === status.id ? { fontWeight: 700 } : {}}
+          >
             <Badge color={status.color_code} />
             {status.name}
           </Flex>
         ),
-        type: 'group',
       })),
     },
   ].filter(Boolean) as MenuProps['items'];
@@ -185,7 +207,6 @@ const TaskListTableWrapper = ({
               }}
               icon={<RightOutlined rotate={isExpanded ? 90 : 0} />}
               onClick={handlToggleExpand}
-              disabled={showRenameInput}
             >
               {showRenameInput ? (
                 <Input
@@ -218,7 +239,7 @@ const TaskListTableWrapper = ({
           </Flex>
           <Collapsible
             isOpen={isExpanded}
-            className={`border-l-[3px] relative after:content after:absolute after:h-full after:w-1 after:z-10 after:top-0 after:left-0 mt-1`}
+            className={`border-l-[3px] relative after:content after:absolute after:h-full after:w-1 after:z-10 after:top-0 after:left-0`}
             color={color}
           >
             <TaskListTable taskList={taskList} tableId={tableId} activeId={activeId} />
