@@ -12,7 +12,7 @@ import { IGroupBy, GROUP_BY_OPTIONS, setCurrentGroup, setGroup } from '@features
 const GroupByFilterDropdown = () => {
   const { t } = useTranslation('task-list-filters');
   const dispatch = useAppDispatch();
-  const { group: groupBy } = useAppSelector(state => state.taskReducer);
+  const { groupBy } = useAppSelector(state => state.taskReducer);
   const { project, projectView } = useAppSelector(state => state.projectReducer);
 
   const items = useMemo(

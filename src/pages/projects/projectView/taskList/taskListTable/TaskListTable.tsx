@@ -99,13 +99,14 @@ const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
 const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, activeId }) => {
   const { t } = useTranslation('task-list-table');
   const dispatch = useAppDispatch();
+  const currentSession = useAuthService().getCurrentSession();
+
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const columnList = useAppSelector(state => state.taskReducer.columns);
+  const visibleColumns = columnList.filter(column => column.pinned);
   const taskGroups = useAppSelector(state => state.taskReducer.taskGroups);
   const { project } = useAppSelector(state => state.projectReducer);
-  const visibleColumns = columnList.filter(column => column.pinned);
   const selectedTaskIdsList = useAppSelector(state => state.bulkActionReducer.selectedTaskIdsList);
-  const currentSession = useAuthService().getCurrentSession();
 
   const isDarkMode = themeMode === 'dark';
   const customBorderColor = isDarkMode ? 'border-[#303030]' : '';

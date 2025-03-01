@@ -43,6 +43,7 @@ import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-a
 import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
 import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
 import { setTaskStatus } from '@/features/task-drawer/task-drawer.slice';
+import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -133,6 +134,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     const handleTaskStatusChange = (response: ITaskListStatusChangeResponse) => {
       dispatch(updateTaskStatus(response));
       dispatch(setTaskStatus(response));
+      dispatch(deselectAll());
     };
 
     const handleTaskProgress = (data: unknown) => {
@@ -154,6 +156,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
     const handlePriorityChange = (response: ITaskListPriorityChangeResponse) => {
       dispatch(updateTaskPriority(response));
+      dispatch(deselectAll());
     };
 
     socket.on(SocketEvents.TASK_PRIORITY_CHANGE.toString(), handlePriorityChange);
@@ -203,6 +206,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
     const handlePhaseChange = (data: ITaskPhaseChangeResponse) => {
       dispatch(updateTaskPhase(data));
+      dispatch(deselectAll());
     };
 
     socket.on(SocketEvents.TASK_PHASE_CHANGE.toString(), handlePhaseChange);

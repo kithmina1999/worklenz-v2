@@ -56,7 +56,7 @@ export const setCurrentGroup = (group: IGroupBy): void => {
 interface ITaskState {
   search: string | null;
   archived: boolean;
-  group: IGroupBy;
+  groupBy: IGroupBy;
   isSubtasksInclude: boolean;
   fields: ITaskListSortableColumn[];
   tasks: IProjectTask[];
@@ -78,7 +78,7 @@ interface ITaskState {
 const initialState: ITaskState = {
   search: null,
   archived: false,
-  group: getCurrentGroup().value as IGroupBy,
+  groupBy: getCurrentGroup().value as IGroupBy,
   isSubtasksInclude: false,
   fields: [],
   tasks: [],
@@ -143,7 +143,7 @@ export const fetchTaskGroups = createAsyncThunk(
       const config: ITaskListConfigV2 = {
         id: projectId,
         archived: taskReducer.archived,
-        group: taskReducer.group,
+        group: taskReducer.groupBy,
         field: taskReducer.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
         order: '',
         search: taskReducer.search || '',
@@ -335,7 +335,7 @@ const taskSlice = createSlice({
     },
 
     setGroup: (state, action: PayloadAction<IGroupBy>) => {
-      state.group = action.payload;
+      state.groupBy = action.payload;
       setCurrentGroup(action.payload);
     },
 
@@ -510,7 +510,7 @@ const taskSlice = createSlice({
       task.status_category = statusCategory;
 
       // If grouped by status and not a subtask, move the task to the new status group
-      if (state.group === GROUP_BY_STATUS_VALUE && !task.is_sub_task && groupId !== status_id) {
+      if (state.groupBy === GROUP_BY_STATUS_VALUE && !task.is_sub_task && groupId !== status_id) {
         // Remove from current group
         deleteTaskFromGroup(state.taskGroups, task, groupId);
 
@@ -566,7 +566,7 @@ const taskSlice = createSlice({
       task.phase_id = phase_id;
       task.phase_color = color_code;
 
-      if (state.group === GROUP_BY_PHASE_VALUE && !task.is_sub_task && groupId !== phase_id) {
+      if (state.groupBy === GROUP_BY_PHASE_VALUE && !task.is_sub_task && groupId !== phase_id) {
         deleteTaskFromGroup(state.taskGroups, task, groupId);
         addTaskToGroup(state.taskGroups, task, phase_id, false);
       }
@@ -628,7 +628,7 @@ const taskSlice = createSlice({
       task.priority_color_dark = color_code_dark;
 
       // If grouped by priority and not a subtask, move the task to the new priority group
-      if (state.group === GROUP_BY_PRIORITY_VALUE && !task.is_sub_task && groupId !== priority_id) {
+      if (state.groupBy === GROUP_BY_PRIORITY_VALUE && !task.is_sub_task && groupId !== priority_id) {
         // Remove from current group
         deleteTaskFromGroup(state.taskGroups, task, groupId);
 
@@ -653,7 +653,7 @@ const taskSlice = createSlice({
     resetTaskListData: state => {
       return {
         ...initialState,
-        group: state.group // Preserve the current grouping
+        group: state.groupBy // Preserve the current grouping
       };
     },
   },

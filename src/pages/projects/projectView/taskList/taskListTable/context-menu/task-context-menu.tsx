@@ -21,9 +21,17 @@ import {
   evt_project_task_list_context_menu_assign_me,
   evt_project_task_list_context_menu_delete,
 } from '@/shared/worklenz-analytics-events';
-import { deleteTask, fetchTaskAssignees, updateTaskAssignees } from '@/features/tasks/tasks.slice';
+import {
+  deleteTask,
+  fetchTaskAssignees,
+  IGroupBy,
+  updateTaskAssignees,
+} from '@/features/tasks/tasks.slice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 import { useAuthService } from '@/hooks/useAuth';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
+import logger from '@/utils/errorLogger';
 
 type TaskContextMenuProps = {
   visible: boolean;
@@ -34,27 +42,17 @@ type TaskContextMenuProps = {
 };
 
 const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskContextMenuProps) => {
-  const statusList = useAppSelector(state => state.statusReducer.status);
+  const statusList = useAppSelector(state => state.taskStatusReducer.status);
+  const priorityList = useAppSelector(state => state.priorityReducer.priorities);
+  const phaseList = useAppSelector(state => state.phaseReducer.phaseList);
+  const { socket } = useSocket();
   const dispatch = useAppDispatch();
   const { trackMixpanelEvent } = useMixpanelTracking();
   const currentSession = useAuthService().getCurrentSession();
 
   const { projectId } = useAppSelector(state => state.projectReducer);
-  const { taskGroups, archived } = useAppSelector(state => state.taskReducer);
+  const { taskGroups, archived, groupBy } = useAppSelector(state => state.taskReducer);
   const [updatingAssignToMe, setUpdatingAssignToMe] = useState(false);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'todo':
-        return '#d8d7d8';
-      case 'doing':
-        return '#c0d5f6';
-      case 'done':
-        return '#c2e4d0';
-      default:
-        return '#d8d7d8';
-    }
-  };
 
   const handleAssignToMe = async () => {
     if (!projectId || !selectedTask) return;
@@ -133,6 +131,99 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
     }
   };
 
+  const handleStatusMoveTo = async (targetId: string | undefined) => {
+    if (!projectId || !selectedTask || !targetId) return;
+
+    try {
+      socket?.emit(
+        SocketEvents.TASK_STATUS_CHANGE.toString(),
+        JSON.stringify({
+          task_id: selectedTask,
+          status_id: targetId,
+          parent_task: null,
+          team_id: currentSession?.team_id,
+        })
+      );
+      socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), selectedTask);
+    } catch (error) {
+      logger.error('Error moving status', error);
+    }
+  };
+
+  const handlePriorityMoveTo = async (targetId: string | undefined) => {
+    if (!projectId || !selectedTask || !targetId) return;
+
+    try {
+      socket?.emit(
+        SocketEvents.TASK_PRIORITY_CHANGE.toString(),
+        JSON.stringify({
+          task_id: selectedTask,
+          priority_id: targetId,
+          team_id: currentSession?.team_id,
+        })
+      );
+    } catch (error) {
+      logger.error('Error moving priority', error);
+    }
+  };
+
+  const handlePhaseMoveTo = async (targetId: string | undefined) => {
+    if (!projectId || !selectedTask || !targetId) return;
+
+    try {
+      socket?.emit(
+        SocketEvents.TASK_PHASE_CHANGE.toString(),
+        {
+          task_id: selectedTask,
+          phase_id: targetId,
+          team_id: currentSession?.team_id,
+        }
+      );
+    } catch (error) {
+      logger.error('Error moving phase', error);
+    }
+  };
+
+  const getMoveToOptions = () => {
+    if (groupBy === IGroupBy.STATUS) {
+      return statusList?.map(status => ({
+        key: status.id,
+        label: (
+          <Flex align="center" gap={8}>
+            <Badge color={status.color_code} />
+            <Typography.Text>{status.name}</Typography.Text>
+          </Flex>
+        ),
+        onClick: () => handleStatusMoveTo(status.id),
+      }));
+    }
+    if (groupBy === IGroupBy.PRIORITY) {
+      return priorityList?.map(priority => ({
+        key: priority.id,
+        label: (
+          <Flex align="center" gap={8}>
+            <Badge color={priority.color_code} />
+            <Typography.Text>{priority.name}</Typography.Text>
+          </Flex>
+        ),
+        onClick: () => handlePriorityMoveTo(priority.id),
+      }));
+    }
+    if (groupBy === IGroupBy.PHASE) {
+      return phaseList?.map(phase => ({
+        key: phase.id,
+        label: (
+          <Flex align="center" gap={8}>
+            <Badge color={phase.color_code} />
+            <Typography.Text>{phase.name}</Typography.Text>
+          </Flex>
+        ),
+        onClick: () => handlePhaseMoveTo(phase.id),
+      }));
+    }
+    return [];
+  };
+
   const items: MenuProps['items'] = [
     {
       key: '1',
@@ -145,15 +236,7 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
       key: '2',
       icon: <RetweetOutlined />,
       label: t('contextMenu.moveTo'),
-      children: statusList?.map(status => ({
-        key: status.id,
-        label: (
-          <Flex gap={8}>
-            <Badge color={getStatusColor(status.category)} />
-            {status.name}
-          </Flex>
-        ),
-      })),
+      children: getMoveToOptions(),
     },
     {
       key: '3',
