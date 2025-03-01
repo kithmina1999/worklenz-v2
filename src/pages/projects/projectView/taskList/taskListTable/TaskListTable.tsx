@@ -428,6 +428,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                   backgroundColor: getRowBackgroundColor(task.id),
                 }}
                 data-task-cell
+                onContextMenu={e => handleContextMenu(e, task)}
               >
                 {column.custom_column
                   ? renderCustomColumnContent(
@@ -554,6 +555,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
           position={contextMenuPosition}
           selectedTask={selectedTaskIdsList[0]}
           onClose={() => setContextMenuVisible(false)}
+          t={t}
         />,
         document.body,
         'task-context-menu'

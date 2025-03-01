@@ -2,14 +2,17 @@ import {
   DeleteOutlined,
   DoubleRightOutlined,
   InboxOutlined,
+  LoadingOutlined,
   RetweetOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
 import { Badge, Dropdown, Flex, Typography, Modal } from 'antd';
 import { MenuProps } from 'antd/lib';
-import React, { useState } from 'react';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
+import { useState } from 'react';
+import { TFunction } from 'i18next';
+
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { taskListBulkActionsApiService } from '@/api/tasks/task-list-bulk-actions.api.service';
 import { IBulkAssignRequest } from '@/types/tasks/bulk-action-bar.types';
@@ -18,23 +21,26 @@ import {
   evt_project_task_list_context_menu_assign_me,
   evt_project_task_list_context_menu_delete,
 } from '@/shared/worklenz-analytics-events';
-import { colors } from '@/styles/colors';
-import { ExclamationCircleFilled } from '@ant-design/icons';
-import { deleteTask } from '@/features/tasks/tasks.slice';
+import { deleteTask, fetchTaskAssignees, updateTaskAssignees } from '@/features/tasks/tasks.slice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
+import { useAuthService } from '@/hooks/useAuth';
 
 type TaskContextMenuProps = {
   visible: boolean;
   position: { x: number; y: number };
   selectedTask: string;
   onClose: () => void;
+  t: TFunction;
 };
 
-const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskContextMenuProps) => {
+const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskContextMenuProps) => {
   const statusList = useAppSelector(state => state.statusReducer.status);
   const dispatch = useAppDispatch();
   const { trackMixpanelEvent } = useMixpanelTracking();
-  const projectId = useAppSelector(state => state.projectReducer.projectId);
+  const currentSession = useAuthService().getCurrentSession();
+
+  const { projectId } = useAppSelector(state => state.projectReducer);
+  const { taskGroups, archived } = useAppSelector(state => state.taskReducer);
   const [updatingAssignToMe, setUpdatingAssignToMe] = useState(false);
 
   const getStatusColor = (status: string) => {
@@ -61,8 +67,23 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskConte
       };
       const res = await taskListBulkActionsApiService.assignToMe(body);
       if (res.done) {
+        const { id: taskId, assignees } = res.body;
         trackMixpanelEvent(evt_project_task_list_context_menu_assign_me);
-        // Note: You may need to implement a way to update the task assignee in your state management
+        const groupId = taskGroups.find(group => group.tasks.some(task => task.id === taskId))?.id;
+
+        if (groupId) {
+          dispatch(
+            updateTaskAssignees({
+              groupId,
+              taskId,
+              assignees,
+            })
+          );
+
+          if (currentSession?.team_id) {
+            dispatch(fetchTaskAssignees(currentSession.team_id));
+          }
+        }
       }
     } catch (error) {
       console.error(error);
@@ -80,12 +101,13 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskConte
           tasks: [selectedTask],
           project_id: projectId,
         },
-        false
+        archived ? true : false
       );
 
       if (res.done) {
         trackMixpanelEvent(evt_project_task_list_context_menu_archive);
-        // Note: You may need to implement a way to remove the task from your state management
+        dispatch(deleteTask({ taskId: selectedTask }));
+        dispatch(deselectAll());
       }
     } catch (error) {
       console.error(error);
@@ -96,11 +118,14 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskConte
     if (!projectId || !selectedTask) return;
 
     try {
-      const res = await taskListBulkActionsApiService.deleteTasks({ tasks: [selectedTask] }, projectId);
+      const res = await taskListBulkActionsApiService.deleteTasks(
+        { tasks: [selectedTask] },
+        projectId
+      );
 
       if (res.done) {
         trackMixpanelEvent(evt_project_task_list_context_menu_delete);
-        dispatch(deleteTask({taskId: selectedTask}));
+        dispatch(deleteTask({ taskId: selectedTask }));
         dispatch(deselectAll());
       }
     } catch (error) {
@@ -111,14 +136,15 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskConte
   const items: MenuProps['items'] = [
     {
       key: '1',
-      icon: <UserAddOutlined />,
-      label: 'Assign to me',
+      icon: updatingAssignToMe ? <LoadingOutlined /> : <UserAddOutlined />,
+      label: t('contextMenu.assignToMe'),
       onClick: handleAssignToMe,
+      disabled: updatingAssignToMe,
     },
     {
       key: '2',
       icon: <RetweetOutlined />,
-      label: 'Move to',
+      label: t('contextMenu.moveTo'),
       children: statusList?.map(status => ({
         key: status.id,
         label: (
@@ -132,18 +158,18 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose }: TaskConte
     {
       key: '3',
       icon: <InboxOutlined />,
-      label: 'Archive',
+      label: archived ? t('contextMenu.unarchive') : t('contextMenu.archive'),
       onClick: handleArchive,
     },
     {
       key: '4',
       icon: <DoubleRightOutlined />,
-      label: 'Convert to Sub task',
+      label: t('contextMenu.convertToSubTask'),
     },
     {
       key: '5',
       icon: <DeleteOutlined />,
-      label: 'Delete',
+      label: t('contextMenu.delete'),
       onClick: handleDelete,
     },
   ];
