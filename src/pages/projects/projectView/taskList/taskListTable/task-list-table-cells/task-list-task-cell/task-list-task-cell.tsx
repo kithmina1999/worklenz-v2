@@ -157,9 +157,9 @@ const TaskListTaskCell = ({
         <div ref={wrapperRef} style={{ flex: 1 }}>
           {!editTaskName && (
             <Typography.Text
-              ellipsis={{ expanded: false }}
+              ellipsis={{ tooltip: task.name }}
               onClick={() => setEditTaskName(true)}
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', width: 350 }}
             >
               {task.name}
             </Typography.Text>
@@ -174,7 +174,7 @@ const TaskListTaskCell = ({
               autoFocus
               onPressEnter={handleTaskNameSave}
               style={{
-                width: '100%',
+                width: 350,
                 padding: 0,
               }}
             />

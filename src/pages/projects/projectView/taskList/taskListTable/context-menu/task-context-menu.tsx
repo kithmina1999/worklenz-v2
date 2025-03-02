@@ -25,6 +25,7 @@ import {
   deleteTask,
   fetchTaskAssignees,
   IGroupBy,
+  setConvertToSubtaskDrawerOpen,
   updateTaskAssignees,
 } from '@/features/tasks/tasks.slice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
@@ -32,11 +33,12 @@ import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import logger from '@/utils/errorLogger';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 type TaskContextMenuProps = {
   visible: boolean;
   position: { x: number; y: number };
-  selectedTask: string;
+  selectedTask: IProjectTask;
   onClose: () => void;
   t: TFunction;
 };
@@ -55,12 +57,12 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
   const [updatingAssignToMe, setUpdatingAssignToMe] = useState(false);
 
   const handleAssignToMe = async () => {
-    if (!projectId || !selectedTask) return;
+    if (!projectId || !selectedTask.id) return;
 
     try {
       setUpdatingAssignToMe(true);
       const body: IBulkAssignRequest = {
-        tasks: [selectedTask],
+        tasks: [selectedTask.id],
         project_id: projectId,
       };
       const res = await taskListBulkActionsApiService.assignToMe(body);
@@ -91,12 +93,12 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
   };
 
   const handleArchive = async () => {
-    if (!projectId || !selectedTask) return;
+    if (!projectId || !selectedTask.id) return;
 
     try {
       const res = await taskListBulkActionsApiService.archiveTasks(
         {
-          tasks: [selectedTask],
+          tasks: [selectedTask.id],
           project_id: projectId,
         },
         archived ? true : false
@@ -104,7 +106,7 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
 
       if (res.done) {
         trackMixpanelEvent(evt_project_task_list_context_menu_archive);
-        dispatch(deleteTask({ taskId: selectedTask }));
+        dispatch(deleteTask({ taskId: selectedTask.id }));
         dispatch(deselectAll());
       }
     } catch (error) {
@@ -113,17 +115,17 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
   };
 
   const handleDelete = async () => {
-    if (!projectId || !selectedTask) return;
+    if (!projectId || !selectedTask.id) return;
 
     try {
       const res = await taskListBulkActionsApiService.deleteTasks(
-        { tasks: [selectedTask] },
+        { tasks: [selectedTask.id] },
         projectId
       );
 
       if (res.done) {
         trackMixpanelEvent(evt_project_task_list_context_menu_delete);
-        dispatch(deleteTask({ taskId: selectedTask }));
+        dispatch(deleteTask({ taskId: selectedTask.id }));
         dispatch(deselectAll());
       }
     } catch (error) {
@@ -247,7 +249,8 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
     {
       key: '4',
       icon: <DoubleRightOutlined />,
-      label: t('contextMenu.convertToSubTask'),
+      label: selectedTask?.parent_task_id ? t('convertToTask') : t('contextMenu.convertToSubTask'),
+      onClick: () => dispatch(setConvertToSubtaskDrawerOpen(true)),
     },
     {
       key: '5',

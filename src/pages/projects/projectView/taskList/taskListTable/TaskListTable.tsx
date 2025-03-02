@@ -50,6 +50,7 @@ import AddCustomColumnButton from './custom-columns/custom-column-modal/add-cust
 import { toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import ConfigPhaseButton from '@/features/projects/singleProject/phase/ConfigPhaseButton';
+import ConvertToSubtaskDrawer from '@/components/task-list-common/convert-to-subtask-drawer/convert-to-subtask-drawer';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -106,7 +107,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const visibleColumns = columnList.filter(column => column.pinned);
   const taskGroups = useAppSelector(state => state.taskReducer.taskGroups);
   const { project } = useAppSelector(state => state.projectReducer);
-  const selectedTaskIdsList = useAppSelector(state => state.bulkActionReducer.selectedTaskIdsList);
+  const { selectedTaskIdsList, selectedTasks } = useAppSelector(state => state.bulkActionReducer);
 
   const isDarkMode = themeMode === 'dark';
   const customBorderColor = isDarkMode ? 'border-[#303030]' : '';
@@ -429,7 +430,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                   backgroundColor: getRowBackgroundColor(task.id),
                 }}
                 data-task-cell
-                onContextMenu={e => handleContextMenu(e, task)}
+                onContextMenu={e => handleContextMenu(e, task, )}
               >
                 {column.custom_column
                   ? renderCustomColumnContent(
@@ -554,7 +555,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         <TaskContextMenu
           visible={contextMenuVisible}
           position={contextMenuPosition}
-          selectedTask={selectedTaskIdsList[0]}
+          selectedTask={selectedTasks[0]}
           onClose={() => setContextMenuVisible(false)}
           t={t}
         />,

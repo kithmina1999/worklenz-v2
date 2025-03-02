@@ -73,6 +73,7 @@ interface ITaskState {
   priorities: string[];
   members: string[];
   activeTimers: Record<string, number | null>;
+  convertToSubtaskDrawerOpen: boolean;
 }
 
 const initialState: ITaskState = {
@@ -95,6 +96,7 @@ const initialState: ITaskState = {
   priorities: [],
   members: [],
   activeTimers: {},
+  convertToSubtaskDrawerOpen: false,
 };
 
 export const COLUMN_KEYS = {
@@ -361,6 +363,10 @@ const taskSlice = createSlice({
 
     setSearch: (state, action: PayloadAction<string>) => {
       state.search = action.payload;
+    },
+
+    setConvertToSubtaskDrawerOpen: (state, action: PayloadAction<boolean>) => {
+      state.convertToSubtaskDrawerOpen = action.payload;
     },
 
     addTask: (
@@ -758,6 +764,7 @@ export const {
   resetTaskListData,
   updateTaskStatusColor,
   updateTaskGroupColor,
+  setConvertToSubtaskDrawerOpen,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;
