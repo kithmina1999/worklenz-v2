@@ -7,6 +7,7 @@ import logger from '@/utils/errorLogger';
 import { Flex, DatePicker, Typography, Button, Form, FormInstance } from 'antd';
 import { t, TFunction } from 'i18next';
 import { useState } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
 
 interface TaskDrawerDueDateProps {
   task: IProjectTask;
@@ -17,9 +18,12 @@ interface TaskDrawerDueDateProps {
 const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
   const { socket } = useSocket();
   const [isShowStartDate, setIsShowStartDate] = useState(false);
+  const [startDate, setStartDate] = useState<Dayjs | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Dayjs | undefined>(undefined);
   const currentSession = useAuthService().getCurrentSession();
 
   const handleDueDateChange = (date: Date) => {
+    setEndDate(dayjs(date));
     if (!socket || !task.id || !task.parent_task_id || !currentSession?.timezone_name) {
       return;
     }
@@ -39,6 +43,7 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
   };
 
   const handleStartDateChange = (date: Date) => {
+    setStartDate(dayjs(date));
     if (!socket || !task.id || !task.parent_task_id || !currentSession?.timezone_name) {
       return;
     }
@@ -57,16 +62,32 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
     }
   };
 
+  const disabledStartDate = (current: Dayjs) => {
+    return current && endDate ? current > endDate : false;
+  };
+
+  const disabledEndDate = (current: Dayjs) => {
+    return current && startDate ? current < startDate : false;
+  };
+
   return (
     <Form.Item name="dueDate" label="Due Date">
       <Flex align="center" gap={8}>
         {isShowStartDate && (
           <>
-            <DatePicker placeholder={t('details.start-date')} />
+            <DatePicker
+              placeholder={t('details.start-date')}
+              disabledDate={disabledStartDate}
+              onChange={handleStartDateChange}
+            />
             <Typography.Text>-</Typography.Text>
           </>
         )}
-        <DatePicker placeholder={t('details.end-date')} />
+        <DatePicker
+          placeholder={t('details.end-date')}
+          disabledDate={disabledEndDate}
+          onChange={handleDueDateChange}
+        />
         <Button
           type="text"
           onClick={() => setIsShowStartDate(prev => !prev)}
