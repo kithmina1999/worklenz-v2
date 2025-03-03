@@ -53,10 +53,6 @@ const TaskDrawerAssigneeSelector = ({ task }: TaskDrawerAssigneeSelectorProps) =
     );
   }, [teamMembers, searchQuery]);
 
-  const handleInviteProjectMemberDrawer = () => {
-    dispatch(toggleProjectMemberDrawer());
-  };
-
   const handleMembersDropdownOpen = (open: boolean) => {
     if (open) {
       const membersData = (members?.data || []).map(member => ({
