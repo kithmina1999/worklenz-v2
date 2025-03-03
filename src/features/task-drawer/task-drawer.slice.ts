@@ -5,6 +5,7 @@ import { ITaskFormViewModel } from '@/types/tasks/task.types';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
+import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
 
 interface ITaskDrawerState {
   selectedTaskId: string | null;
@@ -75,6 +76,12 @@ const taskDrawerSlice = createSlice({
         state.taskFormViewModel.task.priority_id = priority_id;
       }
     },
+    setTaskLabels: (state, action: PayloadAction<ILabelsChangeResponse>) => {
+      const { labels, id: taskId } = action.payload;
+      if (state.taskFormViewModel?.task && state.taskFormViewModel.task.id === taskId) {
+        state.taskFormViewModel.task.labels = labels || [];
+      }
+    },
   },
   extraReducers: builder => {
     builder.addCase(fetchTask.pending, state => {
@@ -100,5 +107,6 @@ export const {
   setTaskEndDate,
   setTaskAssignee,
   setTaskPriority,
+  setTaskLabels,
 } = taskDrawerSlice.actions;
 export default taskDrawerSlice.reducer;

@@ -46,6 +46,7 @@ import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-respon
 import {
   setStartDate,
   setTaskEndDate,
+  setTaskLabels,
   setTaskPriority,
   setTaskStatus,
 } from '@/features/task-drawer/task-drawer.slice';
@@ -119,6 +120,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     const handleLabelsChange = async (labels: ILabelsChangeResponse) => {
       await Promise.all([
         dispatch(updateTaskLabel(labels)),
+        dispatch(setTaskLabels(labels)),
         dispatch(fetchLabels()),
         projectId && dispatch(fetchLabelsByProject(projectId)),
       ]);

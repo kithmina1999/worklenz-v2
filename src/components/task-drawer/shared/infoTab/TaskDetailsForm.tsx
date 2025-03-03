@@ -68,7 +68,7 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
     } catch (error) {
       console.error('Form validation failed:', error);
     }
-    };
+  };
 
   return (
     <ConfigProvider
@@ -95,7 +95,10 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
           taskKey={taskFormViewModel?.task?.task_key || 'NEW-TASK'}
           label={t('details.task-key')}
         />
-        <TaskDrawerPhaseSelector phases={taskFormViewModel?.phases || []} task={taskFormViewModel?.task as ITaskViewModel} />
+        <TaskDrawerPhaseSelector
+          phases={taskFormViewModel?.phases || []}
+          task={taskFormViewModel?.task as ITaskViewModel}
+        />
 
         <Form.Item name="assignees" label={t('details.assignees')}>
           <Flex gap={4} align="center">
@@ -106,24 +109,15 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
           </Flex>
         </Form.Item>
 
-        <TaskDrawerDueDate
-          task={taskFormViewModel?.task as ITaskViewModel}
-          t={t}
-          form={form}
-        />
+        <TaskDrawerDueDate task={taskFormViewModel?.task as ITaskViewModel} t={t} form={form} />
 
         <TaskDrawerEstimation t={t} task={taskFormViewModel?.task as ITaskViewModel} form={form} />
 
         <Form.Item name="priority" label={t('details.priority')}>
-          <TaskDrawerPrioritySelector
-            task={taskFormViewModel?.task as ITaskViewModel}
-          />
+          <TaskDrawerPrioritySelector task={taskFormViewModel?.task as ITaskViewModel} />
         </Form.Item>
 
-        <TaskDrawerLabels
-          labels={taskFormViewModel?.task?.labels || []}
-          taskId={taskFormViewModel?.task?.id || null}
-        />
+        <TaskDrawerLabels task={taskFormViewModel?.task as ITaskViewModel} t={t} />
 
         <Form.Item name="billable" label={t('details.billable')}>
           <Switch defaultChecked={false} />
