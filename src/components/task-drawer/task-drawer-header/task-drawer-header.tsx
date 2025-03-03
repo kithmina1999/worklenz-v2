@@ -3,6 +3,8 @@ import React, { ChangeEvent, useEffect, useState, useTransition } from 'react';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { TFunction } from 'i18next';
 
+import './task-drawer-header.css';
+
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAuthService } from '@/hooks/useAuth';
 import TaskDrawerStatusDropdown from '../task-drawer-status-dropdown/task-drawer-status-dropdown';
@@ -68,7 +70,7 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
     socket?.emit(
       SocketEvents.TASK_NAME_CHANGE.toString(),
       JSON.stringify({
-        taskId: selectedTaskId,
+        task_id: selectedTaskId,
         name: taskName,
         parent_task: taskFormViewModel?.task?.parent_task_id,
       })
@@ -85,7 +87,11 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
           onChange={e => onTaskNameChange(e)}
           onBlur={handleInputBlur}
           placeholder={t('taskHeader.taskNamePlaceholder')}
-          style={{ width: '100%', border: 'none' }}
+          className="task-name-input"
+          style={{ 
+            width: '100%', 
+            border: 'none',
+          }}
           showCount={false}
           maxLength={250}
         />
