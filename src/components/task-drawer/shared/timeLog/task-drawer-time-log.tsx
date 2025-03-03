@@ -1,6 +1,8 @@
 import { DownloadOutlined, PlayCircleFilled, PlusOutlined } from '@ant-design/icons';
 import { Button, Divider, Flex, Skeleton, Typography } from 'antd';
 import { useEffect, useState } from 'react';
+import { TFunction } from 'i18next';
+
 import EmptyListPlaceholder from '@/components/EmptyListPlaceholder';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -11,7 +13,11 @@ import { ITaskLogViewModel } from '@/types/tasks/task-log-view.types';
 import TaskTimer from '@/components/taskListCommon/task-timer/task-timer';
 import { useTaskTimer } from '@/hooks/useTaskTimer';
 
-const TaskDrawerTimeLog = () => {
+interface TaskDrawerTimeLogProps {
+  t: TFunction;
+}
+
+const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
   const [timeLoggedList, setTimeLoggedList] = useState<ITaskLogViewModel[]>([]);
   const [totalTimeText, setTotalTimeText] = useState<string>('0m 0s');
   const [loading, setLoading] = useState<boolean>(false);
@@ -68,7 +74,7 @@ const TaskDrawerTimeLog = () => {
     <Flex vertical justify="space-between" style={{ width: '100%', height: '78vh' }}>
       <Flex vertical>
         <Flex align="center" justify="space-between" style={{ width: '100%' }}>
-          <Typography.Text type="secondary">Total Logged: {totalTimeText}</Typography.Text>
+          <Typography.Text type="secondary">{t('taskTimeLogTab.totalLogged')}: {totalTimeText}</Typography.Text>
           <Flex gap={8} align="center">
             <TaskTimer
               started={started}
@@ -78,7 +84,7 @@ const TaskDrawerTimeLog = () => {
               timeTrackingLogCard={<div>Time Tracking Log</div>}
             />
             <Button size="small" icon={<DownloadOutlined />}>
-              Export to Excel
+              {t('taskTimeLogTab.exportToExcel')}
             </Button>
           </Flex>
         </Flex>
@@ -89,14 +95,14 @@ const TaskDrawerTimeLog = () => {
           </Skeleton>
         ) : (
           <Flex vertical gap={8} align="center">
-            <EmptyListPlaceholder text="No time logs found in the task." imageHeight={120} />
+            <EmptyListPlaceholder text={t('taskTimeLogTab.noTimeLogsFound')} imageHeight={120} />
             <Button
               type="primary"
               icon={<PlusOutlined />}
               style={{ width: 'fit-content' }}
               onClick={() => setIsTimeLogFormShow(true)}
             >
-              Add Timelog
+              {t('taskTimeLogTab.addTimeLog')}
             </Button>
           </Flex>
         )}

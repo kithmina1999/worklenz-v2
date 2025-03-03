@@ -1,17 +1,27 @@
+import { TabsProps, Tabs } from 'antd';
 import Drawer from 'antd/es/drawer';
 import { InputRef } from 'antd/es/input';
-
+import { useTranslation } from 'react-i18next';
 import { useEffect, useRef, useState } from 'react';
+
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
+import {
+  setSelectedTaskId,
+  setShowTaskDrawer,
+  setTaskFormViewModel,
+} from '@/features/task-drawer/task-drawer.slice';
 
 import './task-drawer.css';
 import TaskDrawerHeader from './shared/TaskDrawerHeader';
-import TaskDrawerTabs from './shared/TaskDrawerTabs';
+import TaskDrawerActivityLog from './shared/activity-log/task-drawer-activity-log';
+import TaskDrawerInfoTab from './shared/infoTab/TaskDrawerInfoTab';
+import TaskDrawerTimeLog from './shared/timeLog/task-drawer-time-log';
 
 const TaskDrawer = () => {
-  const { showTaskDrawer, taskFormViewModel } = useAppSelector(state => state.taskDrawerReducer);
+  const { t } = useTranslation('task-drawer/task-drawer');
+
+  const { showTaskDrawer } = useAppSelector(state => state.taskDrawerReducer);
 
   const taskNameInputRef = useRef<InputRef>(null);
 
@@ -24,7 +34,26 @@ const TaskDrawer = () => {
   const handleOnClose = () => {
     dispatch(setShowTaskDrawer(false));
     dispatch(setSelectedTaskId(null));
+    dispatch(setTaskFormViewModel({}));
   };
+
+  const tabItems: TabsProps['items'] = [
+    {
+      key: 'info',
+      label: t('taskInfoTab.title'),
+      children: <TaskDrawerInfoTab t={t} />,
+    },
+    {
+      key: 'timeLog',
+      label: t('taskTimeLogTab.title'),
+      children: <TaskDrawerTimeLog t={t} />,
+    },
+    {
+      key: 'activityLog',
+      label: t('taskActivityLogTab.title'),
+      children: <TaskDrawerActivityLog />,
+    },
+  ];
 
   return (
     <Drawer
@@ -35,12 +64,12 @@ const TaskDrawer = () => {
       destroyOnClose
       title={
         <TaskDrawerHeader
-          name={taskFormViewModel?.task?.name || 'Untitled Task'}
           inputRef={taskNameInputRef}
+          t={t}
         />
       }
     >
-      <TaskDrawerTabs />
+      <Tabs type="card" items={tabItems} destroyInactiveTabPane />
     </Drawer>
   );
 };

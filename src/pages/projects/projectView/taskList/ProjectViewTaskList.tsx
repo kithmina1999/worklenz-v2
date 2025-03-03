@@ -17,7 +17,7 @@ const ProjectViewTaskList = () => {
   const {
     taskGroups,
     loadingGroups,
-    group: groupBy,
+    groupBy,
     archived,
     fields,
     search,
