@@ -54,6 +54,8 @@ import {
 } from '@/features/task-drawer/task-drawer.slice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 import { InlineMember } from '@/types/teamMembers/inlineMember.types';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
+import { evt_project_task_list_drag_and_move } from '@/shared/worklenz-analytics-events';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -67,6 +69,9 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
   const dispatch = useAppDispatch();
   const { socket } = useSocket();
   const currentSession = useAuthService().getCurrentSession();
+  const { trackMixpanelEvent } = useMixpanelTracking(); 
+
+
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const loadingAssignees = useAppSelector(state => state.taskReducer.loadingAssignees);
   const { projectId } = useAppSelector(state => state.projectReducer);
@@ -341,6 +346,8 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     setTimeout(resetStyles, 0);  // Immediate
     setTimeout(resetStyles, 50); // After potential DnD cleanup
     setTimeout(resetStyles, 100); // Final cleanup
+    
+    trackMixpanelEvent(evt_project_task_list_drag_and_move);
   };
 
   // Replace existing useEffect with this version
