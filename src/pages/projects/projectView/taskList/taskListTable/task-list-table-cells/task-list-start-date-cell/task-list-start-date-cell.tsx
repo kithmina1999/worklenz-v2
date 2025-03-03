@@ -9,6 +9,7 @@ import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 const TaskListStartDateCell = ({ task }: { task: IProjectTask }) => {
   const { socket } = useSocket();
   const startDayjs = task.start_date ? dayjs(task.start_date) : null;
+  const dueDayjs = task.end_date ? dayjs(task.end_date) : null;
 
   const handleStartDateChange = (date: Dayjs | null) => {
     socket?.emit(
@@ -24,13 +25,18 @@ const TaskListStartDateCell = ({ task }: { task: IProjectTask }) => {
     );
   };
 
+  const disabledStartDate = (current: Dayjs) => {
+    return current && dueDayjs ? current > dueDayjs : false;
+  };
+
   return (
     <DatePicker
-      placeholder="Set  Date"
+      placeholder="Set Date"
       value={startDayjs}
       onChange={handleStartDateChange}
       format={'MMM DD, YYYY'}
       suffixIcon={null}
+      disabledDate={disabledStartDate}
       style={{
         backgroundColor: colors.transparent,
         border: 'none',
