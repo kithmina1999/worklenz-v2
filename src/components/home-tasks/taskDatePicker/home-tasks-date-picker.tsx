@@ -2,12 +2,16 @@ import { useSocket } from "@/socket/socketContext";
 import { IProjectTask } from "@/types/project/projectTasksViewModel.types";
 import { DatePicker } from "antd";
 import dayjs from 'dayjs';
+import calendar from 'dayjs/plugin/calendar';
 import { SocketEvents } from '@/shared/socket-events';
 import type { Dayjs } from 'dayjs';
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { useGetMyTasksQuery } from "@/api/home-page/home-page.api.service";
+
+// Extend dayjs with the calendar plugin
+dayjs.extend(calendar);
 
 type HomeTasksDatePickerProps = {
     record: IProjectTask;
@@ -48,17 +52,18 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
         socket?.emit(SocketEvents.TASK_END_DATE_CHANGE.toString(), JSON.stringify(body));
     };
 
-    const getDateText = () => {
-        if (!selectedDate) return null;
-        const today = dayjs();
-        if (selectedDate.isSame(today, 'day')) {
-            return <span style={{ color: 'green' }}>Today</span>;
-        } else if (selectedDate.isSame(today.add(1, 'day'), 'day')) {
-            return <span style={{ color: 'green' }}>Tomorrow</span>;
-        } else if (selectedDate.isSame(today.subtract(1, 'day'), 'day')) {
-            return <span style={{ color: 'red' }}>Yesterday</span>;
-        }
-        return null;
+    // Function to dynamically format the date based on the calendar rules
+    const getFormattedDate = (date: Dayjs | null) => {
+        if (!date) return '';
+
+        return date.calendar(null, {
+            sameDay: '[Today]', 
+            nextDay: '[Tomorrow]', 
+            nextWeek: '[Next] dddd', 
+            lastDay: '[Yesterday]', 
+            lastWeek: '[Last] dddd', 
+            sameElse: 'MMM DD YYYY',
+        });
     };
 
     return (
@@ -68,10 +73,10 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
                 record.start_date ? current => current.isBefore(dayjs(record.start_date)) : undefined
             }
             placeholder={t('tasks.dueDatePlaceholder')}
-            format={'MMM DD'}
-            defaultValue={selectedDate}
+            value={selectedDate}
             onChange={value => handleEndDateChanged(value || null, record.id || '')}
-            suffixIcon={selectedDate ? getDateText() : null}
+            format={(value) => getFormattedDate(value)} // Dynamically format the displayed value
+            style={{ color: selectedDate && selectedDate.isBefore(dayjs(), 'day') ? 'red' : 'green' }}
         />
     );
 };
