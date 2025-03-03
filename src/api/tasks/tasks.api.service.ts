@@ -9,6 +9,7 @@ import { IServerResponse } from '@/types/common.types';
 import { toQueryString } from '@/utils/toQueryString';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { ITaskFormViewModel } from '@/types/tasks/task.types';
+import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 
 const rootUrl = `${API_BASE_URL}/tasks`;
 
@@ -67,6 +68,11 @@ export const tasksApiService = {
 
   toggleColumnVisibility: async (projectId: string, item: ITaskListColumn): Promise<IServerResponse<ITaskListColumn>> => {
     const response = await apiClient.put(`${rootUrl}/list/columns/${projectId}`, item);
+    return response.data;
+  },
+
+  getSubscribers: async (taskId: string): Promise<IServerResponse<InlineMember[]>> => {
+    const response = await apiClient.get(`${rootUrl}/subscribers/${taskId}`);
     return response.data;
   },
 };

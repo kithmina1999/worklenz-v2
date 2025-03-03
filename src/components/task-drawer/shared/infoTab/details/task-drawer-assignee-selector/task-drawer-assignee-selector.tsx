@@ -108,7 +108,7 @@ const TaskDrawerAssigneeSelector = ({ task }: TaskDrawerAssigneeSelectorProps) =
           placeholder={t('searchInputPlaceholder')}
         />
 
-        <List style={{ padding: 0, maxHeight: 250, overflow: 'auto' }}>
+        <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
           {filteredMembersData?.length ? (
             filteredMembersData.map(member => (
               <List.Item
@@ -127,7 +127,7 @@ const TaskDrawerAssigneeSelector = ({ task }: TaskDrawerAssigneeSelectorProps) =
                 <Checkbox
                   id={member.id}
                   checked={checkMemberSelected(member.id || '')}
-                  onChange={e => e.preventDefault()}
+                  onChange={e => handleMemberChange(e, member.id || '')}
                   disabled={member.pending_invitation}
                 />
                 <div>
@@ -138,16 +138,16 @@ const TaskDrawerAssigneeSelector = ({ task }: TaskDrawerAssigneeSelectorProps) =
                   />
                 </div>
                 <Flex vertical>
-                  <Typography.Text>{member.name}</Typography.Text>
-                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                    {member.email}&nbsp;
-                    {member.pending_invitation && (
-                      <Typography.Text type="danger" style={{ fontSize: 10 }}>
-                        ({t('pendingInvitation')})
-                      </Typography.Text>
-                    )}
-                  </Typography.Text>
-                </Flex>
+                    <Typography.Text>{member.name}</Typography.Text>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                      {member.email}&nbsp;
+                      {member.pending_invitation && (
+                        <Typography.Text type="danger" style={{ fontSize: 10 }}>
+                          ({t('pendingInvitation')})
+                        </Typography.Text>
+                      )}
+                    </Typography.Text>
+                  </Flex>
               </List.Item>
             ))
           ) : (

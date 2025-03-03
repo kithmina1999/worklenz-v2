@@ -50,8 +50,10 @@ import {
   setTaskLabels,
   setTaskPriority,
   setTaskStatus,
+  setTaskSubscribers,
 } from '@/features/task-drawer/task-drawer.slice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
+import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -246,6 +248,21 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
     return () => {
       socket.off(SocketEvents.TASK_START_DATE_CHANGE.toString(), handleStartDateChange);
+    };
+  }, [socket, dispatch]);
+
+  // Socket handlers for task subscribers updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleTaskSubscribersChange = (data: InlineMember[]) => {
+      dispatch(setTaskSubscribers(data));
+    };
+
+    socket.on(SocketEvents.TASK_SUBSCRIBERS_CHANGE.toString(), handleTaskSubscribersChange);
+
+    return () => {
+      socket.off(SocketEvents.TASK_SUBSCRIBERS_CHANGE.toString(), handleTaskSubscribersChange);
     };
   }, [socket, dispatch]);
 

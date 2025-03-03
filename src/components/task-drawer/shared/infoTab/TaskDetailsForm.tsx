@@ -125,7 +125,7 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
         </Form.Item>
 
         <Form.Item name="notify" label={t('taskInfoTab.details.notify')}>
-          <NotifyMemberSelector />
+          <NotifyMemberSelector task={taskFormViewModel?.task as ITaskViewModel} t={t} />
         </Form.Item>
       </Form>
     </ConfigProvider>
