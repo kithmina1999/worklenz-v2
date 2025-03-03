@@ -76,7 +76,7 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
         {isShowStartDate && (
           <>
             <DatePicker
-              placeholder={t('details.start-date')}
+              placeholder={t('Start Date')}
               disabledDate={disabledStartDate}
               onChange={handleStartDateChange}
             />
@@ -84,7 +84,7 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
           </>
         )}
         <DatePicker
-          placeholder={t('details.end-date')}
+          placeholder={t('End Date')}
           disabledDate={disabledEndDate}
           onChange={handleDueDateChange}
         />
