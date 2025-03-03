@@ -46,6 +46,7 @@ import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-respon
 import {
   setStartDate,
   setTaskEndDate,
+  setTaskPriority,
   setTaskStatus,
 } from '@/features/task-drawer/task-drawer.slice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
@@ -161,6 +162,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
     const handlePriorityChange = (response: ITaskListPriorityChangeResponse) => {
       dispatch(updateTaskPriority(response));
+      dispatch(setTaskPriority(response));
       dispatch(deselectAll());
     };
 

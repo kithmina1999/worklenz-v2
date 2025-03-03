@@ -24,6 +24,7 @@ import TaskDrawerAssigneeSelector from './details/task-drawer-assignee-selector/
 import Avatars from '@/components/avatars/avatars';
 import TaskDrawerDueDate from './details/task-drawer-due-date/task-drawer-due-date';
 import TaskDrawerEstimation from './details/task-drawer-estimation/task-drawer-estimation';
+import TaskDrawerPrioritySelector from './details/task-drawer-priority-selector/task-drawer-priority-selector';
 
 interface TaskDetailsFormProps {
   taskFormViewModel?: ITaskFormViewModel | null;
@@ -114,7 +115,9 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
         <TaskDrawerEstimation t={t} task={taskFormViewModel?.task as ITaskViewModel} form={form} />
 
         <Form.Item name="priority" label={t('details.priority')}>
-          <Select options={priorityMenuItems} style={{ width: 'fit-content' }} />
+          <TaskDrawerPrioritySelector
+            task={taskFormViewModel?.task as ITaskViewModel}
+          />
         </Form.Item>
 
         <TaskDrawerLabels
