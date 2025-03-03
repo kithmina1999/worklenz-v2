@@ -85,8 +85,8 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
         {isShowStartDate && (
           <>
             <DatePicker
-              placeholder={useTranslationT('details.start-date')}
-              disabledDate={(current: Dayjs) => disabledStartDate(current) ?? false}
+              placeholder={t('Start Date')}
+              disabledDate={disabledStartDate}
               onChange={handleStartDateChange}
               value={isValidStartDate ? startDayjs : null}
               format={'MMM DD, YYYY'}
@@ -96,12 +96,11 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
           </>
         )}
         <DatePicker
-          placeholder={useTranslationT('details.end-date')}
-          disabledDate={(current: Dayjs) => disabledEndDate(current) ?? false}
-          onChange={handleEndDateChange}
+          placeholder={t('End Date')}
+          disabledDate={disabledEndDate}
+          onChange={handleDueDateChange}
           value={isValidDueDate ? dueDayjs : null}
           format={'MMM DD, YYYY'}
-          suffixIcon={null}
         />
         <Button
           type="text"

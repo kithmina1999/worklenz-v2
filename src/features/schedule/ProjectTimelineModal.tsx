@@ -1,9 +1,9 @@
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { ScheduleData } from '@/types/schedule/schedule-v2.types';
 import { Button, Col, DatePicker, Flex, Form, Input, Row } from 'antd';
-import React, { use, useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createSchedule, fetchTeamData, getWorking } from './scheduleSlice';
+import { createSchedule, fetchTeamData } from './scheduleSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { getDayName } from '@/utils/schedule';
 import dayjs from 'dayjs';
@@ -52,6 +52,16 @@ const ProjectTimelineModal = ({ setIsModalOpen, defaultData, projectId, memberId
     }
   };
 
+  const disabledStartDate = (current: dayjs.Dayjs) => {
+    const endDate = form.getFieldValue('allocated_to');
+    return current && endDate ? current > dayjs(endDate) : false;
+  };
+
+  const disabledEndDate = (current: dayjs.Dayjs) => {
+    const startDate = form.getFieldValue('allocated_from');
+    return current && startDate ? current < dayjs(startDate) : false;
+  };
+
   useEffect(() => {
     form.setFieldsValue({ allocated_from: dayjs(defaultData?.allocated_from) });
     form.setFieldsValue({ allocated_to: dayjs(defaultData?.allocated_to) });
@@ -72,7 +82,7 @@ const ProjectTimelineModal = ({ setIsModalOpen, defaultData, projectId, memberId
           >
             <span>{t('startDate')}</span>
             <Form.Item name="allocated_from">
-              <DatePicker onChange={e => calTotalHours()} />
+              <DatePicker disabledDate={disabledStartDate} onChange={e => calTotalHours()} />
             </Form.Item>
           </Col>
           <Col
@@ -85,7 +95,7 @@ const ProjectTimelineModal = ({ setIsModalOpen, defaultData, projectId, memberId
           >
             <span>{t('endDate')}</span>
             <Form.Item name="allocated_to">
-              <DatePicker onChange={e => calTotalHours()}/>
+              <DatePicker disabledDate={disabledEndDate} onChange={e => calTotalHours()}/>
             </Form.Item>
           </Col>
         </Row>

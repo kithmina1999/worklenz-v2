@@ -196,6 +196,16 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
     hours_per_day: project?.hours_per_day || 8,
   };
 
+  const disabledStartDate = (current: dayjs.Dayjs) => {
+    const endDate = form.getFieldValue('end_date');
+    return current && endDate ? current > dayjs(endDate) : false;
+  };
+
+  const disabledEndDate = (current: dayjs.Dayjs) => {
+    const startDate = form.getFieldValue('start_date');
+    return current && startDate ? current < dayjs(startDate) : false;
+  };
+
   return (
     <Drawer
       title={
@@ -270,10 +280,10 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
           <Form.Item name="date" layout="horizontal">
             <Flex gap={8}>
               <Form.Item name="start_date" label={t('startDate')}>
-                <DatePicker />
+                <DatePicker disabledDate={disabledStartDate} />
               </Form.Item>
               <Form.Item name="end_date" label={t('endDate')}>
-                <DatePicker />
+                <DatePicker disabledDate={disabledEndDate} />
               </Form.Item>
             </Flex>
           </Form.Item>
