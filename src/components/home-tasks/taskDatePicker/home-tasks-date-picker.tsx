@@ -59,10 +59,10 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
         return date.calendar(null, {
             sameDay: '[Today]', 
             nextDay: '[Tomorrow]', 
-            nextWeek: '[Next] dddd', 
+            nextWeek: 'MMM DD', 
             lastDay: '[Yesterday]', 
-            lastWeek: '[Last] dddd', 
-            sameElse: 'MMM DD YYYY',
+            lastWeek: 'MMM DD', 
+            sameElse: 'MMM DD',
         });
     };
 
