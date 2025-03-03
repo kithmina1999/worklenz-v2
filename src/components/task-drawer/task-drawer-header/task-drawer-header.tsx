@@ -1,27 +1,38 @@
 import { Button, Dropdown, Flex, Input, InputRef, MenuProps } from 'antd';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState, useTransition } from 'react';
 import { EllipsisOutlined } from '@ant-design/icons';
+import { TFunction } from 'i18next';
+
+import './task-drawer-header.css';
+
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAuthService } from '@/hooks/useAuth';
 import TaskDrawerStatusDropdown from '../task-drawer-status-dropdown/task-drawer-status-dropdown';
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
 
 type TaskDrawerHeaderProps = {
-  name: string;
   inputRef: React.RefObject<InputRef | null>;
+  t: TFunction;
 };
 
-const TaskDrawerHeader = ({ name, inputRef }: TaskDrawerHeaderProps) => {
+const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
   const dispatch = useAppDispatch();
-  const [characterLength, setCharacterLength] = useState<number>(name.length);
-  const [isTaskNameFocused, setTaskNameFocused] = useState<boolean>(false);
+  const { socket, connected } = useSocket();
+
   const { taskFormViewModel, selectedTaskId } = useAppSelector(state => state.taskDrawerReducer);
+  const [taskName, setTaskName] = useState<string>(taskFormViewModel?.task?.name ?? '');
   const currentSession = useAuthService().getCurrentSession();
 
+  useEffect(() => {
+    setTaskName(taskFormViewModel?.task?.name ?? '');
+  }, [taskFormViewModel?.task?.name]);
+
   const onTaskNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setCharacterLength(e.currentTarget.value.length);
+    setTaskName(e.currentTarget.value);
   };
 
   const handleDeleteTask = async () => {
@@ -39,19 +50,31 @@ const TaskDrawerHeader = ({ name, inputRef }: TaskDrawerHeaderProps) => {
       label: (
         <Flex gap={8} align="center">
           <Button type="text" danger onClick={handleDeleteTask}>
-            Delete Task
+            {t('taskHeader.deleteTask')}
           </Button>
         </Flex>
       ),
     },
   ];
 
-  const handleInputFocus = () => {
-    setTaskNameFocused(true);
-  };
-
   const handleInputBlur = () => {
-    setTaskNameFocused(false);
+    if (
+      !selectedTaskId ||
+      !connected ||
+      taskName === taskFormViewModel?.task?.name ||
+      taskName === undefined ||
+      taskName === null ||
+      taskName === ''
+    )
+      return;
+    socket?.emit(
+      SocketEvents.TASK_NAME_CHANGE.toString(),
+      JSON.stringify({
+        task_id: selectedTaskId,
+        name: taskName,
+        parent_task: taskFormViewModel?.task?.parent_task_id,
+      })
+    );
   };
 
   return (
@@ -60,12 +83,15 @@ const TaskDrawerHeader = ({ name, inputRef }: TaskDrawerHeaderProps) => {
         <Input
           ref={inputRef}
           size="large"
-          value={name}
+          value={taskName}
           onChange={e => onTaskNameChange(e)}
-          onFocus={handleInputFocus}
           onBlur={handleInputBlur}
-          placeholder="Type your Task"
-          style={{ width: '100%', border: 'none' }}
+          placeholder={t('taskHeader.taskNamePlaceholder')}
+          className="task-name-input"
+          style={{ 
+            width: '100%', 
+            border: 'none',
+          }}
           showCount={false}
           maxLength={250}
         />

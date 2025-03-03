@@ -172,9 +172,9 @@ const ProjectList: React.FC = () => {
     dispatch(setProject({} as IProjectViewModel));
     dispatch(setProjectId(null));
   };
-  const navigateToProject = (projectId: string | undefined) => {
-    if (projectId) {
-      navigate(`/worklenz/projects/${projectId}`); // Update the route as per your project structure
+  const navigateToProject = (project_id: string | undefined, default_view: string | undefined) => {
+    if (project_id) {
+      navigate(`/worklenz/projects/${project_id}?tab=${default_view === 'BOARD' ? 'board' : 'tasks-list'}&pinned_tab=${default_view === 'BOARD' ? 'board' : 'tasks-list'}`); // Update the route as per your project structure
     }
   };
 
@@ -231,7 +231,7 @@ const ProjectList: React.FC = () => {
           pagination={paginationConfig}
           locale={{ emptyText: <Empty description={t('noProjects')} /> }}
           onRow={record => ({
-            onClick: () => navigateToProject(record.id), // Navigate to project on row click
+            onClick: () => navigateToProject(record.id, record.team_member_default_view), // Navigate to project on row click
           })}
         />
       </Card>

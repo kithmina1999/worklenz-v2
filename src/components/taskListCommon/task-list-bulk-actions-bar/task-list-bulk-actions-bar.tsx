@@ -57,6 +57,7 @@ import AssigneesDropdown from './components/AssigneesDropdown';
 import LabelsDropdown from './components/LabelsDropdown';
 import { sortTeamMembers } from '@/utils/sort-team-members';
 import logger from '@/utils/errorLogger';
+import ConvertToSubtaskDrawer from '@/components/task-list-common/convert-to-subtask-drawer/convert-to-subtask-drawer';
 
 interface ITaskAssignee {
   id: string;
@@ -494,6 +495,11 @@ const TaskListBulkActionsBar = () => {
           />,
           document.body,
           'create-task-template'
+        )}
+        {createPortal(
+          <ConvertToSubtaskDrawer t={t} />,
+          document.body,
+          'convert-to-subtask-modal'
         )}
       </Flex>
     </div>

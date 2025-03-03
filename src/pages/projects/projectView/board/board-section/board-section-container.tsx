@@ -1,16 +1,17 @@
 import { Flex } from 'antd';
-import BoardSectionCard from './board-section-card/board-section-card';
-import BoardCreateSectionCard from './board-section-card/board-create-section-card';
 import {
   SortableContext,
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import BoardSectionCard from './board-section-card/board-section-card';
+import BoardCreateSectionCard from './board-section-card/board-create-section-card';
+import { ITaskListGroup } from '@/types/tasks/taskList.types';
 
 const BoardSectionCardContainer = ({
   datasource,
   group,
 }: {
-  datasource: any;
+  datasource: ITaskListGroup[];
   group: 'status' | 'priority' | 'phases' | 'members';
 }) => {
   return (

@@ -59,7 +59,7 @@ const ProjectViewHeader = () => {
     projectId,
     projectView,
   } = useAppSelector(state => state.projectReducer);
-  const { loadingGroups, group } = useAppSelector(state => state.taskReducer);
+  const { loadingGroups, groupBy } = useAppSelector(state => state.taskReducer);
 
   const [creatingTask, setCreatingTask] = useState(false);
 
@@ -109,7 +109,7 @@ const ProjectViewHeader = () => {
           dispatch(setSelectedTaskId(task.id));
           dispatch(setShowTaskDrawer(true));
 
-          const groupId = group === IGroupBy.PHASE ? UNMAPPED : getGroupIdByGroupedColumn(task);
+          const groupId = groupBy === IGroupBy.PHASE ? UNMAPPED : getGroupIdByGroupedColumn(task);
           if (groupId) {
             dispatch(addTask({ task, groupId }));
           }

@@ -6,8 +6,7 @@ import { useSocket } from '@/socket/socketContext';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 import { ITaskViewModel } from '@/types/tasks/task.types';
 import { ITaskStatus } from '@/types/tasks/taskStatus.types';
-import { Badge, Select } from 'antd';
-import { Flex } from 'antd';
+import { Select } from 'antd';
 import { useEffect, useMemo } from 'react';
 
 interface TaskDrawerStatusDropdownProps {
@@ -25,14 +24,6 @@ const TaskDrawerStatusDropdown = ({ statuses, task, teamId }: TaskDrawerStatusDr
     socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), taskId);
   };
 
-  useEffect(() => {
-    socket?.on(SocketEvents.TASK_STATUS_CHANGE.toString(), handleTaskStatusChange);
-
-    return () => {
-      socket?.removeListener(SocketEvents.TASK_STATUS_CHANGE.toString(), handleTaskStatusChange);
-    };
-  }, [task.status, connected]);
-
   const handleStatusChange = (statusId: string) => {
     if (!task.id || !statusId) return;
 
@@ -46,10 +37,6 @@ const TaskDrawerStatusDropdown = ({ statuses, task, teamId }: TaskDrawerStatusDr
       })
     );
     getTaskProgress(task.id);
-  };
-
-  const handleTaskStatusChange = (response: ITaskListStatusChangeResponse) => {
-    dispatch(updateTaskStatus(response));
   };
 
   const options = useMemo(
