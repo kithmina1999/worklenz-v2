@@ -31,7 +31,7 @@ interface TaskDetailsFormProps {
 }
 
 const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => {
-  const { t } = useTranslation('task-drawer/task-drawer-info-tab');
+  const { t } = useTranslation('task-drawer/task-drawer');
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -93,14 +93,14 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
       >
         <TaskDrawerKey
           taskKey={taskFormViewModel?.task?.task_key || 'NEW-TASK'}
-          label={t('details.task-key')}
+          label={t('taskInfoTab.details.task-key')}
         />
         <TaskDrawerPhaseSelector
           phases={taskFormViewModel?.phases || []}
           task={taskFormViewModel?.task as ITaskViewModel}
         />
 
-        <Form.Item name="assignees" label={t('details.assignees')}>
+        <Form.Item name="assignees" label={t('taskInfoTab.details.assignees')}>
           <Flex gap={4} align="center">
             <Avatars members={taskFormViewModel?.task?.names || []} />
             <TaskDrawerAssigneeSelector
@@ -113,17 +113,17 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
 
         <TaskDrawerEstimation t={t} task={taskFormViewModel?.task as ITaskViewModel} form={form} />
 
-        <Form.Item name="priority" label={t('details.priority')}>
+        <Form.Item name="priority" label={t('taskInfoTab.details.priority')}>
           <TaskDrawerPrioritySelector task={taskFormViewModel?.task as ITaskViewModel} />
         </Form.Item>
 
         <TaskDrawerLabels task={taskFormViewModel?.task as ITaskViewModel} t={t} />
 
-        <Form.Item name="billable" label={t('details.billable')}>
+        <Form.Item name="billable" label={t('taskInfoTab.details.billable')}>
           <Switch defaultChecked={false} />
         </Form.Item>
 
-        <Form.Item name="notify" label={t('details.notify')}>
+        <Form.Item name="notify" label={t('taskInfoTab.details.notify')}>
           <NotifyMemberSelector />
         </Form.Item>
       </Form>
