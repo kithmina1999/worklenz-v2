@@ -6,11 +6,12 @@ import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.ty
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
 import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
-
+import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 interface ITaskDrawerState {
   selectedTaskId: string | null;
   showTaskDrawer: boolean;
   taskFormViewModel: ITaskFormViewModel | null;
+  subscribers: InlineMember[];
   loadingTask: boolean;
 }
 
@@ -18,6 +19,7 @@ const initialState: ITaskDrawerState = {
   selectedTaskId: null,
   showTaskDrawer: false,
   taskFormViewModel: null,
+  subscribers: [],
   loadingTask: false,
 };
 
@@ -83,6 +85,9 @@ const taskDrawerSlice = createSlice({
         state.taskFormViewModel.task.labels = all_labels || [];
       }
     },
+    setTaskSubscribers: (state, action: PayloadAction<InlineMember[]>) => {
+      state.subscribers = action.payload;
+    },
   },
   extraReducers: builder => {
     builder.addCase(fetchTask.pending, state => {
@@ -109,5 +114,6 @@ export const {
   setTaskAssignee,
   setTaskPriority,
   setTaskLabels,
+  setTaskSubscribers,
 } = taskDrawerSlice.actions;
 export default taskDrawerSlice.reducer;
