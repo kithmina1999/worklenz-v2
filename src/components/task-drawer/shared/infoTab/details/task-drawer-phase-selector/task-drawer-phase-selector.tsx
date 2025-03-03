@@ -5,10 +5,11 @@ import { Select } from 'antd';
 
 import { Form } from 'antd';
 import { SocketEvents } from '@/shared/socket-events';
+import { ITaskViewModel } from '@/types/tasks/task.types';
 
 interface TaskDrawerPhaseSelectorProps {
   phases: ITaskPhase[];
-  task: IProjectTask;
+  task: ITaskViewModel;
 }
 
 const TaskDrawerPhaseSelector = ({ phases, task }: TaskDrawerPhaseSelectorProps) => {

@@ -56,7 +56,15 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
   ];
 
   const handleInputBlur = () => {
-    if (!selectedTaskId || !connected || taskName === taskFormViewModel?.task?.name) return;
+    if (
+      !selectedTaskId ||
+      !connected ||
+      taskName === taskFormViewModel?.task?.name ||
+      taskName === undefined ||
+      taskName === null ||
+      taskName === ''
+    )
+      return;
     socket?.emit(
       SocketEvents.TASK_NAME_CHANGE.toString(),
       JSON.stringify({

@@ -12,7 +12,7 @@ import {
 } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { colors } from '@/styles/colors';
-import { ITaskFormViewModel } from '@/types/tasks/task.types';
+import { ITaskFormViewModel, ITaskViewModel } from '@/types/tasks/task.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { simpleDateFormat } from '@/utils/simpleDateFormat';
 
@@ -20,9 +20,10 @@ import NotifyMemberSelector from './NotifyMemberSelector';
 import TaskDrawerPhaseSelector from './details/task-drawer-phase-selector/task-drawer-phase-selector';
 import TaskDrawerKey from './details/task-drawer-key/task-drawer-key';
 import TaskDrawerLabels from './details/task-drawer-labels/task-drawer-labels';
-import AssigneeSelector from '@/components/taskListCommon/assignee-selector/assignee-selector';
+import TaskDrawerAssigneeSelector from './details/task-drawer-assignee-selector/task-drawer-assignee-selector';
 import Avatars from '@/components/avatars/avatars';
 import TaskDrawerDueDate from './details/task-drawer-due-date/task-drawer-due-date';
+import TaskDrawerEstimation from './details/task-drawer-estimation/task-drawer-estimation';
 
 interface TaskDetailsFormProps {
   taskFormViewModel?: ITaskFormViewModel | null;
@@ -43,7 +44,7 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
       taskId: task?.id,
       phase: task?.phase_id,
       assignees: task?.assignees,
-      // dueDate: task?.end_date ? simpleDateFormat(task.end_date) : null,
+      dueDate: task?.end_date ?? null,
       hours: task?.total_hours || 0,
       minutes: task?.total_minutes || 0,
       priority: task?.priority || 'medium',
@@ -66,23 +67,7 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
     } catch (error) {
       console.error('Form validation failed:', error);
     }
-  };
-
-  const renderTimeEstimationInput = (name: string, label: string, max?: number) => (
-    <Form.Item
-      name={name}
-      label={
-        <Typography.Text style={{ color: colors.lightGray, fontSize: 12 }}>
-          {t(`details.${label}`)}
-        </Typography.Text>
-      }
-      style={{ marginBottom: 36 }}
-      labelCol={{ style: { paddingBlock: 0 } }}
-      layout="vertical"
-    >
-      <InputNumber min={0} max={max} placeholder={label} />
-    </Form.Item>
-  );
+    };
 
   return (
     <ConfigProvider
@@ -109,30 +94,24 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
           taskKey={taskFormViewModel?.task?.task_key || 'NEW-TASK'}
           label={t('details.task-key')}
         />
-        <TaskDrawerPhaseSelector phases={taskFormViewModel?.phases || []} task={taskFormViewModel?.task} />
+        <TaskDrawerPhaseSelector phases={taskFormViewModel?.phases || []} task={taskFormViewModel?.task as ITaskViewModel} />
 
-        <Form.Item name="assignees" label="Assignees">
+        <Form.Item name="assignees" label={t('details.assignees')}>
           <Flex gap={4} align="center">
             <Avatars members={taskFormViewModel?.task?.names || []} />
-            <AssigneeSelector
-              task={(taskFormViewModel?.task as IProjectTask) || null}
-              groupId={null}
+            <TaskDrawerAssigneeSelector
+              task={(taskFormViewModel?.task as ITaskViewModel) || null}
             />
           </Flex>
         </Form.Item>
 
         <TaskDrawerDueDate
-          task={taskFormViewModel?.task as IProjectTask}
+          task={taskFormViewModel?.task as ITaskViewModel}
           t={t}
           form={form}
         />
 
-        <Form.Item name="timeEstimation" label={t('details.time-estimation')}>
-          <Flex gap={8}>
-            {renderTimeEstimationInput('hours', 'hours')}
-            {renderTimeEstimationInput('minutes', 'minutes', 60)}
-          </Flex>
-        </Form.Item>
+        <TaskDrawerEstimation t={t} task={taskFormViewModel?.task as ITaskViewModel} form={form} />
 
         <Form.Item name="priority" label={t('details.priority')}>
           <Select options={priorityMenuItems} style={{ width: 'fit-content' }} />

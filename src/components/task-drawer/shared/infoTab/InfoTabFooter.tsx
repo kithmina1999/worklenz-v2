@@ -63,29 +63,31 @@ const InfoTabFooter = () => {
 
       <Form form={form} style={{ width: '100%' }}>
         <Form.Item name={'comment'} style={{ marginBlock: 12 }}>
-          <Mentions
-            placeholder={'Add a comment..'}
-            options={mentionsOptions}
-            autoSize
-            maxLength={5000}
-            onClick={() => setIsCommentBoxExpand(true)}
-            onChange={e => setCharacterLength(e.length)}
-            style={{
-              minHeight: isCommentBoxExpand ? 180 : 60,
-              maxHeight: 480,
-              overflow: 'scroll',
-              paddingBlockEnd: 24,
-            }}
-          />
+          <div>
+            <Mentions
+              placeholder={'Add a comment..'}
+              options={mentionsOptions}
+              autoSize
+              maxLength={5000}
+              onClick={() => setIsCommentBoxExpand(true)}
+              onChange={e => setCharacterLength(e.length)}
+              style={{
+                minHeight: isCommentBoxExpand ? 180 : 60,
+                maxHeight: 480,
+                overflow: 'scroll',
+                paddingBlockEnd: 24,
+              }}
+            />
 
-          <span
-            style={{
-              position: 'absolute',
-              bottom: 4,
-              right: 12,
-              color: colors.lightGray,
-            }}
-          >{`${characterLength}/5000`}</span>
+            <span
+              style={{
+                position: 'absolute',
+                bottom: 4,
+                right: 12,
+                color: colors.lightGray,
+              }}
+            >{`${characterLength}/5000`}</span>
+          </div>
         </Form.Item>
 
         {isCommentBoxExpand && (

@@ -35,6 +35,7 @@ import {
   updateTaskEndDate,
   updateTaskName,
   updateTaskPhase,
+  updateTaskStartDate,
 } from '@/features/tasks/tasks.slice';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 
@@ -42,7 +43,11 @@ import TaskListTableWrapper from '@/pages/projects/projectView/taskList/taskList
 import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
 import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
 import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
-import { setTaskStatus } from '@/features/task-drawer/task-drawer.slice';
+import {
+  setStartDate,
+  setTaskEndDate,
+  setTaskStatus,
+} from '@/features/task-drawer/task-drawer.slice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 
 interface TaskGroupWrapperProps {
@@ -176,6 +181,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       end_date: string;
     }) => {
       dispatch(updateTaskEndDate({ task }));
+      dispatch(setTaskEndDate(task));
     };
 
     socket.on(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleEndDateChange);
@@ -213,6 +219,26 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
     return () => {
       socket.off(SocketEvents.TASK_PHASE_CHANGE.toString(), handlePhaseChange);
+    };
+  }, [socket, dispatch]);
+
+  // Add socket handler for start date updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleStartDateChange = (task: {
+      id: string;
+      parent_task: string | null;
+      start_date: string;
+    }) => {
+      dispatch(updateTaskStartDate({ task }));
+      dispatch(setStartDate(task));
+    };
+
+    socket.on(SocketEvents.TASK_START_DATE_CHANGE.toString(), handleStartDateChange);
+
+    return () => {
+      socket.off(SocketEvents.TASK_START_DATE_CHANGE.toString(), handleStartDateChange);
     };
   }, [socket, dispatch]);
 

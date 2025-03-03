@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import { ITaskFormViewModel } from '@/types/tasks/task.types';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 interface ITaskDrawerState {
   selectedTaskId: string | null;
@@ -49,6 +50,24 @@ const taskDrawerSlice = createSlice({
         state.taskFormViewModel.task.status_color = color_code;
       }
     },
+    setStartDate: (state, action: PayloadAction<IProjectTask>) => {
+      const { start_date, id: taskId } = action.payload;
+      if (state.taskFormViewModel?.task && state.taskFormViewModel.task.id === taskId) {
+        state.taskFormViewModel.task.start_date = start_date;
+      }
+    },
+    setTaskEndDate: (state, action: PayloadAction<IProjectTask>) => {
+      const { end_date, id: taskId } = action.payload;
+      if (state.taskFormViewModel?.task && state.taskFormViewModel.task.id === taskId) {
+        state.taskFormViewModel.task.end_date = end_date;
+      }
+    },
+    setTaskAssignee: (state, action: PayloadAction<IProjectTask>) => {
+      const { assignees, id: taskId } = action.payload;
+      if (state.taskFormViewModel?.task && state.taskFormViewModel.task.id === taskId) {
+        state.taskFormViewModel.task.assignees = assignees;
+      }
+    },
   },
   extraReducers: builder => {
     builder.addCase(fetchTask.pending, state => {
@@ -70,5 +89,8 @@ export const {
   setTaskFormViewModel,
   setLoadingTask,
   setTaskStatus,
+  setStartDate,
+  setTaskEndDate,
+  setTaskAssignee,
 } = taskDrawerSlice.actions;
 export default taskDrawerSlice.reducer;

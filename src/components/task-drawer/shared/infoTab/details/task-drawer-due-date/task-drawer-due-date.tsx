@@ -1,73 +1,82 @@
-import { useAuthService } from '@/hooks/useAuth';
+import { useState } from 'react';
+import { Flex, DatePicker, Typography, Button, Form, FormInstance } from 'antd';
+import { t, TFunction } from 'i18next';
+import dayjs, { Dayjs } from 'dayjs';
+import { useTranslation } from 'react-i18next';
+
 import { SocketEvents } from '@/shared/socket-events';
 import { useSocket } from '@/socket/socketContext';
 import { colors } from '@/styles/colors';
-import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import logger from '@/utils/errorLogger';
-import { Flex, DatePicker, Typography, Button, Form, FormInstance } from 'antd';
-import { t, TFunction } from 'i18next';
-import { useState } from 'react';
-import dayjs, { Dayjs } from 'dayjs';
 
+import { getUserSession } from '@/utils/session-helper';
+import { ITaskViewModel } from '@/types/tasks/task.types';
 interface TaskDrawerDueDateProps {
-  task: IProjectTask;
+  task: ITaskViewModel;
   t: TFunction;
   form: FormInstance;
 }
 
 const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
   const { socket } = useSocket();
+  const { t: useTranslationT } = useTranslation();
   const [isShowStartDate, setIsShowStartDate] = useState(false);
-  const [startDate, setStartDate] = useState<Dayjs | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Dayjs | undefined>(undefined);
-  const currentSession = useAuthService().getCurrentSession();
 
-  const handleDueDateChange = (date: Date) => {
-    setEndDate(dayjs(date));
-    if (!socket || !task.id || !task.parent_task_id || !currentSession?.timezone_name) {
-      return;
-    }
+  // Date handling
+  const startDayjs = task?.start_date ? dayjs(task.start_date) : null;
+  const dueDayjs = task?.end_date ? dayjs(task.end_date) : null;
+  const isValidStartDate = startDayjs?.isValid();
+  const isValidDueDate = dueDayjs?.isValid();
 
-    try {
-      socket?.emit(SocketEvents.TASK_END_DATE_CHANGE.toString(), {
-        task_id: task.id,
-        end_date: date,
-        parent_id: task.parent_task_id,
-        time_zone: currentSession?.timezone_name
-          ? currentSession?.timezone_name
-          : Intl.DateTimeFormat().resolvedOptions().timeZone,
-      });
-    } catch (error) {
-      logger.error('Failed to update due date:', error);
+  // Date validation
+  const disabledStartDate = (current: Dayjs) => {
+    if (isValidDueDate && current && dueDayjs && current > dueDayjs) {
+      return true;
     }
+    return false;
   };
 
-  const handleStartDateChange = (date: Date) => {
-    setStartDate(dayjs(date));
-    if (!socket || !task.id || !task.parent_task_id || !currentSession?.timezone_name) {
-      return;
+  const disabledEndDate = (current: Dayjs) => {
+    if (!isShowStartDate || !isValidStartDate) {
+      return current && current < dayjs().startOf('day');
     }
+    return current && startDayjs && current < startDayjs;
+  };
 
+  const handleStartDateChange = (date: Dayjs | null) => {
     try {
-      socket?.emit(SocketEvents.TASK_START_DATE_CHANGE.toString(), {
-        task_id: task.id,
-        start_date: date,
-        parent_id: task.parent_task_id,
-        time_zone: currentSession?.timezone_name
-          ? currentSession?.timezone_name
-          : Intl.DateTimeFormat().resolvedOptions().timeZone,
-      });
-    } catch (error) {
+      socket?.emit(
+        SocketEvents.TASK_START_DATE_CHANGE.toString(),
+        JSON.stringify({
+          task_id: task.id,
+          start_date: date?.format(),
+          parent_task: task.parent_task_id,
+          time_zone: getUserSession()?.timezone_name
+            ? getUserSession()?.timezone_name
+            : Intl.DateTimeFormat().resolvedOptions().timeZone,
+        })
+      );
+    } catch (error) { 
       logger.error('Failed to update start date:', error);
     }
   };
 
-  const disabledStartDate = (current: Dayjs) => {
-    return current && endDate ? current > endDate : false;
-  };
-
-  const disabledEndDate = (current: Dayjs) => {
-    return current && startDate ? current < startDate : false;
+  const handleEndDateChange = (date: Dayjs | null) => {
+    try {
+      socket?.emit(
+        SocketEvents.TASK_END_DATE_CHANGE.toString(),
+        JSON.stringify({
+          task_id: task.id,
+          end_date: date?.format(),
+          parent_task: task.parent_task_id,
+          time_zone: getUserSession()?.timezone_name
+            ? getUserSession()?.timezone_name
+            : Intl.DateTimeFormat().resolvedOptions().timeZone,
+        })
+      );
+    } catch (error) {
+      logger.error('Failed to update due date:', error);
+    }
   };
 
   return (
@@ -76,17 +85,23 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
         {isShowStartDate && (
           <>
             <DatePicker
-              placeholder={t('details.start-date')}
-              disabledDate={disabledStartDate}
+              placeholder={useTranslationT('details.start-date')}
+              disabledDate={(current: Dayjs) => disabledStartDate(current) ?? false}
               onChange={handleStartDateChange}
+              value={isValidStartDate ? startDayjs : null}
+              format={'MMM DD, YYYY'}
+              suffixIcon={null}
             />
             <Typography.Text>-</Typography.Text>
           </>
         )}
         <DatePicker
-          placeholder={t('details.end-date')}
-          disabledDate={disabledEndDate}
-          onChange={handleDueDateChange}
+          placeholder={useTranslationT('details.end-date')}
+          disabledDate={(current: Dayjs) => disabledEndDate(current) ?? false}
+          onChange={handleEndDateChange}
+          value={isValidDueDate ? dueDayjs : null}
+          format={'MMM DD, YYYY'}
+          suffixIcon={null}
         />
         <Button
           type="text"
