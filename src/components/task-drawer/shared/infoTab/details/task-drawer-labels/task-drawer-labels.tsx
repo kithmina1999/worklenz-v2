@@ -110,7 +110,9 @@ const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
                   gap: 8,
                   padding: '4px 8px',
                   border: 'none',
+                  cursor: 'pointer',
                 }}
+                onClick={() => handleLabelChange(label)}
               >
                 <Checkbox
                   id={label.id}
@@ -119,7 +121,7 @@ const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
                       ? task?.labels.some(existingLabel => existingLabel.id === label.id)
                       : false
                   }
-                  onChange={() => handleLabelChange(label)}
+                  onChange={e => e.preventDefault()}
                 >
                   <Flex gap={8}>
                     <Badge color={label.color_code} />
@@ -152,7 +154,7 @@ const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
 
   return (
     <Form.Item name="labels" label={t('details.labels')}>
-      <Flex gap={8}>
+      <Flex gap={8} wrap="wrap" align="center">
         {task?.labels?.map((label, index) => (
           <Tag
             key={label.id}
@@ -163,6 +165,7 @@ const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
               justifyItems: 'center',
               height: 18,
               fontSize: 11,
+              marginBottom: 4,
             }}
           >
             {label.name}
@@ -176,7 +179,7 @@ const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
           <Button
             type="dashed"
             icon={<PlusOutlined style={{ fontSize: 11 }} />}
-            style={{ height: 18 }}
+            style={{ height: 18, marginBottom: 4 }}
             size="small"
           />
         </Dropdown>

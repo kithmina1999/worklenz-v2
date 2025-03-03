@@ -77,9 +77,9 @@ const taskDrawerSlice = createSlice({
       }
     },
     setTaskLabels: (state, action: PayloadAction<ILabelsChangeResponse>) => {
-      const { labels, id: taskId } = action.payload;
+      const { all_labels, id: taskId } = action.payload;
       if (state.taskFormViewModel?.task && state.taskFormViewModel.task.id === taskId) {
-        state.taskFormViewModel.task.labels = labels || [];
+        state.taskFormViewModel.task.labels = all_labels || [];
       }
     },
   },
