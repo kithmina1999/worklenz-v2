@@ -19,6 +19,7 @@ import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priorit
 import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service';
 import { ITaskLabel, ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
 import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
+import produce from 'immer';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -662,6 +663,34 @@ const taskSlice = createSlice({
         group: state.groupBy // Preserve the current grouping
       };
     },
+
+    reorderTasks: (
+      state,
+      action: PayloadAction<{
+        activeGroupId: string;
+        overGroupId: string;
+        fromIndex: number;
+        toIndex: number;
+        task: IProjectTask;
+      }>
+    ) => {
+      const { activeGroupId, overGroupId, fromIndex, toIndex } = action.payload;
+      
+      const sourceGroup = state.taskGroups.find(g => g.id === activeGroupId);
+      const targetGroup = state.taskGroups.find(g => g.id === overGroupId);
+      
+      if (!sourceGroup || !targetGroup) return;
+
+      // Remove from source group
+      const [movedTask] = sourceGroup.tasks.splice(fromIndex, 1);
+      
+      // Add to target group
+      if (activeGroupId === overGroupId) {
+        sourceGroup.tasks.splice(toIndex, 0, movedTask);
+      } else {
+        targetGroup.tasks.splice(toIndex, 0, movedTask);
+      }
+    },
   },
 
   extraReducers: builder => {
@@ -765,6 +794,7 @@ export const {
   updateTaskStatusColor,
   updateTaskGroupColor,
   setConvertToSubtaskDrawerOpen,
+  reorderTasks,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

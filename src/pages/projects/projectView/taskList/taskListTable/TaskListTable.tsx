@@ -79,9 +79,9 @@ const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.3 : undefined,
+    opacity: isDragging ? 0.3 : 1,
     position: 'relative' as const,
-    zIndex: isDragging ? 1 : undefined,
+    zIndex: isDragging ? 1 : 'auto',
     backgroundColor: isDragging ? 'var(--dragging-bg)' : undefined,
     border: isDragging ? '1px solid var(--border-color)' : undefined,
   };
@@ -91,6 +91,7 @@ const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
       ref={setNodeRef}
       style={style}
       className={`task-row h-[42px] ${isDragging ? 'shadow-lg' : ''}`}
+      data-is-dragging={isDragging ? 'true' : 'false'}
     >
       {children(attributes, listeners!)}
     </tr>
