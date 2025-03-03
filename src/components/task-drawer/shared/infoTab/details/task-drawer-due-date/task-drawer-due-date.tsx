@@ -19,7 +19,6 @@ interface TaskDrawerDueDateProps {
 
 const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
   const { socket } = useSocket();
-  const { t: useTranslationT } = useTranslation();
   const [isShowStartDate, setIsShowStartDate] = useState(false);
 
   // Date handling
@@ -85,7 +84,7 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
         {isShowStartDate && (
           <>
             <DatePicker
-              placeholder={useTranslationT('details.start-date')}
+              placeholder={t('taskInfoTab.details.start-date')}
               disabledDate={(current: Dayjs) => disabledStartDate(current) ?? false}
               onChange={handleStartDateChange}
               value={isValidStartDate ? startDayjs : null}
@@ -96,7 +95,7 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
           </>
         )}
         <DatePicker
-          placeholder={useTranslationT('details.end-date')}
+          placeholder={t('taskInfoTab.details.end-date')}
           disabledDate={(current: Dayjs) => disabledEndDate(current) ?? false}
           onChange={handleEndDateChange}
           value={isValidDueDate ? dueDayjs : null}
@@ -108,7 +107,7 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
           onClick={() => setIsShowStartDate(prev => !prev)}
           style={{ color: isShowStartDate ? 'red' : colors.skyBlue }}
         >
-          {isShowStartDate ? t('details.hide-start-date') : t('details.show-start-date')}
+          {isShowStartDate ? t('taskInfoTab.details.hide-start-date') : t('taskInfoTab.details.show-start-date')}
         </Button>
       </Flex>
     </Form.Item>

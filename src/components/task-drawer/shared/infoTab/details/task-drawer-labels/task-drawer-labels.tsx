@@ -85,7 +85,7 @@ const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
           ref={labelInputRef}
           value={searchQuery}
           onChange={e => setSearchQuery(e.currentTarget.value)}
-          placeholder={t('labelInputPlaceholder')}
+          placeholder={t('taskInfoTab.labels.labelInputPlaceholder')}
           onKeyDown={e => {
             const isLabel = filteredLabelData.findIndex(
               label => label.name?.toLowerCase() === searchQuery.toLowerCase()
@@ -135,7 +135,7 @@ const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
               style={{ color: colors.lightGray }}
               onClick={() => handleCreateLabel()}
             >
-              {t('labelsSelectorInputTip')}
+              {t('taskInfoTab.labels.labelsSelectorInputTip')}
             </Typography.Text>
           )}
         </List>
@@ -153,7 +153,7 @@ const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
   };
 
   return (
-    <Form.Item name="labels" label={t('details.labels')}>
+    <Form.Item name="labels" label={t('taskInfoTab.details.labels')}>
       <Flex gap={8} wrap="wrap" align="center">
         {task?.labels?.map((label, index) => (
           <Tag
