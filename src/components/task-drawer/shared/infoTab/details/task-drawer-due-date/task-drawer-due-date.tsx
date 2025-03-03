@@ -100,7 +100,6 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
           onChange={handleEndDateChange}
           value={isValidDueDate ? dueDayjs : null}
           format={'MMM DD, YYYY'}
-          suffixIcon={null}
         />
         <Button
           type="text"
