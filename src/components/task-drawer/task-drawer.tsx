@@ -13,10 +13,11 @@ import {
 } from '@/features/task-drawer/task-drawer.slice';
 
 import './task-drawer.css';
-import TaskDrawerHeader from './shared/TaskDrawerHeader';
+import TaskDrawerHeader from './task-drawer-header/task-drawer-header';
 import TaskDrawerActivityLog from './shared/activity-log/task-drawer-activity-log';
 import TaskDrawerInfoTab from './shared/infoTab/TaskDrawerInfoTab';
 import TaskDrawerTimeLog from './shared/timeLog/task-drawer-time-log';
+import { DEFAULT_TASK_NAME } from '@/shared/constants';
 
 const TaskDrawer = () => {
   const { t } = useTranslation('task-drawer/task-drawer');
@@ -26,7 +27,9 @@ const TaskDrawer = () => {
   const taskNameInputRef = useRef<InputRef>(null);
 
   useEffect(() => {
-    taskNameInputRef.current?.focus();
+    if (taskNameInputRef.current?.input?.value === DEFAULT_TASK_NAME) {
+      taskNameInputRef.current.focus();
+    }
   }, [showTaskDrawer]);
 
   const dispatch = useAppDispatch();

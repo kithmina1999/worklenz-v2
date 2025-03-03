@@ -31,13 +31,13 @@ const TaskDrawerEstimation = ({ t, task, form }: TaskDrawerEstimationProps) => {
   };
 
   return (
-    <Form.Item name="timeEstimation" label={t('details.time-estimation')}>
+    <Form.Item name="timeEstimation" label={t('taskInfoTab.details.time-estimation')}>
       <Flex gap={8}>
         <Form.Item
           name={'hours'}
           label={
             <Typography.Text style={{ color: colors.lightGray, fontSize: 12 }}>
-              {t(`details.hours`)}
+              {t('taskInfoTab.details.hours')}
             </Typography.Text>
           }
           style={{ marginBottom: 36 }}
@@ -47,7 +47,7 @@ const TaskDrawerEstimation = ({ t, task, form }: TaskDrawerEstimationProps) => {
           <InputNumber
             min={0}
             max={24}
-            placeholder={t('details.hours')}
+            placeholder={t('taskInfoTab.details.hours')}    
             onBlur={handleTimeEstimationBlur}
             onChange={value => setHours(value || 0)}
           />
@@ -56,7 +56,7 @@ const TaskDrawerEstimation = ({ t, task, form }: TaskDrawerEstimationProps) => {
           name={'minutes'}
           label={
             <Typography.Text style={{ color: colors.lightGray, fontSize: 12 }}>
-              {t(`details.minutes`)}
+              {t('taskInfoTab.details.minutes')}
             </Typography.Text>
           }
           style={{ marginBottom: 36 }}
@@ -66,7 +66,7 @@ const TaskDrawerEstimation = ({ t, task, form }: TaskDrawerEstimationProps) => {
           <InputNumber
             min={0}
             max={60}
-            placeholder={t('details.minutes')}
+            placeholder={t('taskInfoTab.details.minutes')}
             onBlur={handleTimeEstimationBlur}
             onChange={value => setMinutes(value || 0)}
           />

@@ -24,6 +24,10 @@
       "hours": "Hours",
       "minutes": "Minutes"
     },
+    "labels": {
+      "labelInputPlaceholder": "Search or create",
+      "labelsSelectorInputTip": "Hit Enter to create"
+    },
     "description": {
       "title": "Description",
       "placeholder": "Add a more detailed description..."
