@@ -45,6 +45,7 @@ import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer
 import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
 import {
   setStartDate,
+  setTaskAssignee,
   setTaskEndDate,
   setTaskLabels,
   setTaskPriority,
@@ -100,6 +101,8 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
             assignees: updatedAssignees,
           })
         );
+
+        dispatch(setTaskAssignee(data));
 
         if (currentSession?.team_id && !loadingAssignees) {
           dispatch(fetchTaskAssignees(currentSession.team_id));
