@@ -32,7 +32,7 @@ const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => 
     if (projectId) {
       dispatch(fetchTaskGroups(projectId));
     }
-  }, [dispatch, projectId]);
+  }, [dispatch, projectId, selectedPriorities]);
 
   const handleSelectedPriority = (priorityId: string) => {
     const newPriorities = selectedPriorities.includes(priorityId)
