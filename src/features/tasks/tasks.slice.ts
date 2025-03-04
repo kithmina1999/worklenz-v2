@@ -50,8 +50,8 @@ export const getCurrentGroup = (): IGroupByOption => {
   return GROUP_BY_OPTIONS[0];
 };
 
-export const setCurrentGroup = (group: IGroupBy): void => {
-  localStorage.setItem(LOCALSTORAGE_GROUP_KEY, group);
+export const setCurrentGroup = (groupBy: IGroupBy): void => {
+  localStorage.setItem(LOCALSTORAGE_GROUP_KEY, groupBy);
 };
 
 interface ITaskState {
@@ -723,7 +723,7 @@ const taskSlice = createSlice({
     resetTaskListData: state => {
       return {
         ...initialState,
-        group: state.groupBy, // Preserve the current grouping
+        groupBy: state.groupBy, // Preserve the current grouping
       };
     },
 
