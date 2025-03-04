@@ -10,6 +10,7 @@ import {
   setSelectedTaskId,
   setShowTaskDrawer,
   setTaskFormViewModel,
+  setTaskSubscribers,
 } from '@/features/task-drawer/task-drawer.slice';
 
 import './task-drawer.css';
@@ -38,6 +39,7 @@ const TaskDrawer = () => {
     dispatch(setShowTaskDrawer(false));
     dispatch(setSelectedTaskId(null));
     dispatch(setTaskFormViewModel({}));
+    dispatch(setTaskSubscribers([]));
   };
 
   const tabItems: TabsProps['items'] = [
