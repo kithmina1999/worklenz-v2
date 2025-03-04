@@ -29,8 +29,8 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
     };
 
     useEffect(() => {
-        refetch();
-    }, [homeTasksConfig]);
+        setSelectedDate(record.end_date ? dayjs(record.end_date) : null);
+    }, [record.end_date,homeTasksConfig]);
 
     useEffect(() => {
         socket?.on(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleChangeReceived);
@@ -39,7 +39,7 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
             socket?.removeListener(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleChangeReceived);
             socket?.removeListener(SocketEvents.TASK_STATUS_CHANGE.toString(), handleChangeReceived);
         };
-    }, [connected]);
+    }, [record.end_date,connected]);
 
     const handleEndDateChanged = (value: Dayjs | null, taskId: string) => {
         setSelectedDate(value);
