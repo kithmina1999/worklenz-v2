@@ -7,7 +7,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { StarFilled } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, ConfigProvider } from 'antd';
 import { TFunction } from 'i18next';
 import { useCallback, useMemo } from 'react';
 
@@ -28,21 +28,24 @@ export const ProjectRateCell: React.FC<{
   }, [dispatch, record.id]);
 
   const checkIconColor = useMemo(
-      () => (record.favorite ? colors.yellow : colors.lightGray),
-      [record.favorite]
-    );
+    () => (record.favorite ? colors.yellow : colors.lightGray),
+    [record.favorite]
+  );
 
   return (
-    <Button
-      type="text"
-      className="borderless-icon-btn"
-      style={{ backgroundColor: colors.transparent }}
-      shape="circle"
-      icon={<StarFilled style={{ color: checkIconColor, fontSize: '20px' }} />}
-      onClick={(e) => {
-        e.stopPropagation();
-        handleFavorite();
-      }}
-    />
+    <ConfigProvider wave={{ disabled: true }}>
+      <Button
+        type="text"
+        className="borderless-icon-btn"
+        style={{ backgroundColor: colors.transparent }}
+        shape="circle"
+        icon={<StarFilled style={{ color: checkIconColor, fontSize: '20px' }} />}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleFavorite();
+        }}
+      />
+    </ConfigProvider>
+
   );
 };
