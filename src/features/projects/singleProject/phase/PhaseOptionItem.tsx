@@ -10,7 +10,7 @@ import logger from '@/utils/errorLogger';
 import { useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { fetchTaskGroups } from '@/features/board/board-slice';
+import { fetchBoardTaskGroups } from '@/features/board/board-slice';
 import { updatePhaseLabel } from '@/features/project/project.slice';
 
 const PhaseOptionItem = ({
@@ -64,7 +64,7 @@ const PhaseOptionItem = ({
         })).unwrap();
         if (response.done) {
           dispatch(fetchPhasesByProjectId(projectId));
-          await dispatch(fetchTaskGroups(projectId));
+          await dispatch(fetchBoardTaskGroups(projectId));
         }
       } catch (error) {
         logger.error('Error updating phase name', error);
@@ -82,7 +82,7 @@ const PhaseOptionItem = ({
       ).unwrap();
       if (response.done) {
         dispatch(fetchPhasesByProjectId(projectId || ''));
-        await dispatch(fetchTaskGroups(projectId || ''));
+        await dispatch(fetchBoardTaskGroups(projectId || ''));
       }
     } catch (error) {
       logger.error('Error deleting phase option', error);
@@ -96,7 +96,7 @@ const PhaseOptionItem = ({
       const response = await dispatch(updatePhaseColor({ projectId, body: phase })).unwrap();
       if (response.done) {
         dispatch(fetchPhasesByProjectId(projectId || ''));
-        await dispatch(fetchTaskGroups(projectId || ''));
+        await dispatch(fetchBoardTaskGroups(projectId || ''));
       }
     } catch (error) {
       logger.error('Error changing phase color', error);

@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import debounce from 'lodash/debounce';
+import { useSearchParams } from 'react-router-dom';
 
 import { InputRef } from 'antd/es/input';
 import Button from 'antd/es/button';
@@ -14,19 +15,30 @@ import Dropdown from 'antd/es/dropdown';
 import { setSearch } from '@/features/tasks/tasks.slice';
 import { SearchOutlined } from '@ant-design/icons';
 
+import { setBoardSearch } from '@/features/board/board-slice';
+
+
 const SearchDropdown = () => {
   const { t } = useTranslation('task-list-filters');
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const searchInputRef = useRef<InputRef>(null);
+  const [searchParams] = useSearchParams();
+
+  const tab = searchParams.get('tab');
+  const projectView = tab === 'tasks-list' ? 'list' : 'kanban';
 
   // Debounced search dispatch
   const debouncedSearch = useCallback(
     debounce((value: string) => {
-      dispatch(setSearch(value));
+      if (projectView === 'list') {
+        dispatch(setSearch(value));
+      } else {
+        dispatch(setBoardSearch(value));
+      }
     }, 300),
-    [dispatch]
+    [dispatch, projectView]
   );
 
   const handleSearch = useCallback(() => {
@@ -35,8 +47,12 @@ const SearchDropdown = () => {
 
   const handleReset = useCallback(() => {
     setSearchValue('');
-    dispatch(setSearch(''));
-  }, [dispatch]);
+    if (projectView === 'list') {
+      dispatch(setSearch(''));
+    } else {
+      dispatch(setBoardSearch(''));
+    }
+  }, [dispatch, projectView]);
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);

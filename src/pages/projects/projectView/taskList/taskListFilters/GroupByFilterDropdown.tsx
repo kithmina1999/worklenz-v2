@@ -2,46 +2,56 @@ import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CaretDownFilled } from '@ant-design/icons';
 import { ConfigProvider, Flex, Dropdown, Button } from 'antd/es';
-import { colors } from '@/styles/colors';
+import { useSearchParams } from 'react-router-dom';
+
 import ConfigPhaseButton from '@features/projects/singleProject/phase/ConfigPhaseButton';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import CreateStatusButton from '@/components/project-task-filters/create-status-button/create-status-button';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { IGroupBy, GROUP_BY_OPTIONS, setCurrentGroup, setGroup } from '@features/tasks/tasks.slice';
+import { IGroupBy, setCurrentGroup, setGroup } from '@features/tasks/tasks.slice';
+import { setBoardGroupBy, setCurrentBoardGroup } from '@/features/board/board-slice';
 
 const GroupByFilterDropdown = () => {
   const { t } = useTranslation('task-list-filters');
   const dispatch = useAppDispatch();
+  const [searchParams] = useSearchParams();
+
   const { groupBy } = useAppSelector(state => state.taskReducer);
-  const { project, projectView } = useAppSelector(state => state.projectReducer);
+  const { groupBy: boardGroupBy } = useAppSelector(state => state.boardReducer);
+  const { project } = useAppSelector(state => state.projectReducer);
 
-  const items = useMemo(
-    () => {
-      const menuItems = [
-        { key: IGroupBy.STATUS, label: t('statusText') },
-        { key: IGroupBy.PRIORITY, label: t('priorityText') },
-        { key: IGroupBy.PHASE, label: project?.phase_label || t('phaseText') },
-      ];
+  const tab = searchParams.get('tab');
+  const projectView = tab === 'tasks-list' ? 'list' : 'kanban';
 
-      if (projectView !== 'list') {
-        menuItems.push({ key: IGroupBy.MEMBERS, label: t('memberText') });
-      }
+  const currentGroup = projectView === 'list' ? groupBy : boardGroupBy;
 
-      return menuItems;
-    },
-    [t, project, projectView]
-  );
+  const items = useMemo(() => {
+    const baseItems = [
+      { key: IGroupBy.STATUS, label: t('statusText') },
+      { key: IGroupBy.PRIORITY, label: t('priorityText') },
+      { key: IGroupBy.PHASE, label: project?.phase_label || t('phaseText') },
+    ];
 
-  const handleMenuClick = ({ key }: { key: string }) => {
-    setCurrentGroup(key as IGroupBy);
-    dispatch(setGroup(key as IGroupBy));
+    if (projectView === 'kanban') {
+      return [...baseItems, { key: IGroupBy.MEMBERS, label: t('memberText') }];
+    }
+
+    return baseItems;
+  }, [t, project?.phase_label, projectView]);
+
+  const handleGroupChange = (key: string) => {
+    const group = key as IGroupBy;
+    
+    if (projectView === 'list') {
+      setCurrentGroup(group);
+      dispatch(setGroup(group));
+    } else {
+      setCurrentBoardGroup(group);
+      dispatch(setBoardGroupBy(group));
+    }
   };
 
-  useEffect(() => {
-    if (projectView === 'list') {
-      ;
-    }
-  }, [projectView]);
+  const selectedLabel = items.find(item => item.key === currentGroup)?.label;
 
   return (
     <Flex align="center" gap={4} style={{ marginInlineStart: 12 }}>
@@ -50,18 +60,19 @@ const GroupByFilterDropdown = () => {
         trigger={['click']}
         menu={{
           items,
-          onClick: handleMenuClick,
-          selectedKeys: [groupBy],
+          onClick: (info) => handleGroupChange(info.key),
+          selectedKeys: [currentGroup],
         }}
       >
         <Button>
-          {items.find(item => item.key === groupBy)?.label} <CaretDownFilled />
+          {selectedLabel} <CaretDownFilled />
         </Button>
       </Dropdown>
-      {(groupBy === IGroupBy.STATUS || groupBy === IGroupBy.PHASE) && (
+      
+      {(currentGroup === IGroupBy.STATUS || currentGroup === IGroupBy.PHASE) && (
         <ConfigProvider wave={{ disabled: true }}>
-          {groupBy === IGroupBy.PHASE && <ConfigPhaseButton />}
-          {groupBy === IGroupBy.STATUS && <CreateStatusButton />}
+          {currentGroup === IGroupBy.PHASE && <ConfigPhaseButton />}
+          {currentGroup === IGroupBy.STATUS && <CreateStatusButton />}
         </ConfigProvider>
       )}
     </Flex>

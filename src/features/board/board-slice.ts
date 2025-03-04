@@ -13,6 +13,7 @@ import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
 import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
 import { ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
+import { ITaskLabel } from '@/types/label.type';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -31,20 +32,20 @@ export const GROUP_BY_OPTIONS: IGroupByOption[] = [
   { label: 'Phase', value: GROUP_BY_PHASE_VALUE },
 ];
 
-const LOCALSTORAGE_GROUP_KEY = 'worklenz.tasklist.group_by';
+const LOCALSTORAGE_BOARD_GROUP_KEY = 'worklenz.board.group_by';
 
-export const getCurrentGroup = (): IGroupByOption => {
-  const key = localStorage.getItem(LOCALSTORAGE_GROUP_KEY);
+export const getCurrentGroupBoard = (): IGroupByOption => {
+  const key = localStorage.getItem(LOCALSTORAGE_BOARD_GROUP_KEY);
   if (key) {
     const group = GROUP_BY_OPTIONS.find(option => option.value === key);
     if (group) return group;
   }
-  setCurrentGroup(GROUP_BY_STATUS_VALUE);
+  setCurrentBoardGroup(GROUP_BY_STATUS_VALUE);
   return GROUP_BY_OPTIONS[0];
 };
 
-export const setCurrentGroup = (groupBy: IGroupBy): void => {
-  localStorage.setItem(LOCALSTORAGE_GROUP_KEY, groupBy);
+export const setCurrentBoardGroup = (groupBy: IGroupBy): void => {
+  localStorage.setItem(LOCALSTORAGE_BOARD_GROUP_KEY, groupBy);
 };
 
 interface ITaskState {
@@ -75,7 +76,7 @@ interface ITaskState {
 const initialState: ITaskState = {
   search: null,
   archived: false,
-  groupBy: getCurrentGroup().value as IGroupBy,
+  groupBy: getCurrentGroupBoard().value as IGroupBy,
   isSubtasksInclude: false,
   fields: [],
   tasks: [],
@@ -101,8 +102,8 @@ export const fetchTaskData = createAsyncThunk('board/fetchTaskData', async (endp
   return await response.json();
 });
 
-export const fetchTaskGroups = createAsyncThunk(
-  'tasks/fetchTaskGroups',
+export const fetchBoardTaskGroups = createAsyncThunk(
+  'board/fetchBoardTaskGroups',
   async (projectId: string, { rejectWithValue, getState }) => {
     try {
       const state = getState() as { boardReducer: ITaskState };
@@ -149,7 +150,8 @@ const boardSlice = createSlice({
   name: 'boardReducer',
   initialState,
   reducers: {
-    setGroupBy: (state, action: PayloadAction<ITaskState['groupBy']>) => {
+    setBoardGroupBy: (state, action: PayloadAction<ITaskState['groupBy']>) => {
+      console.log('action.payload', action.payload);
       state.groupBy = action.payload;
     },
 
@@ -219,7 +221,7 @@ const boardSlice = createSlice({
       state.taskGroups = state.taskGroups.filter(section => section.id !== action.payload.sectionId);
     },
 
-    updateTaskAssignee: (state, action: PayloadAction<{body: ITaskAssigneesUpdateResponse, sectionId: string, taskId: string}>) => {
+    updateBoardTaskAssignee: (state, action: PayloadAction<{body: ITaskAssigneesUpdateResponse, sectionId: string, taskId: string}>) => {
       const section = state.taskGroups.find(sec => sec.id === action.payload.sectionId);
       if (section) {
         const task = section.tasks.find((task: any) => task.id === action.payload.taskId);
@@ -241,18 +243,38 @@ const boardSlice = createSlice({
       state.loadingColumns = false;
       state.error = null;
     },
+
+    setBoardLabels: (state, action: PayloadAction<ITaskLabelFilter[]>) => {
+      state.labels = action.payload;
+    },
+
+    setBoardMembers: (state, action: PayloadAction<ITaskListMemberFilter[]>) => {
+      state.taskAssignees = action.payload;
+    },
+
+    setBoardPriorities: (state, action: PayloadAction<string[]>) => {
+      state.priorities = action.payload;
+    },
+
+    setBoardStatuses: (state, action: PayloadAction<ITaskStatusViewModel[]>) => {
+      state.statuses = action.payload;
+    },
+
+    setBoardSearch: (state, action: PayloadAction<string>) => {
+      state.search = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
-      .addCase(fetchTaskGroups.pending, state => {
+      .addCase(fetchBoardTaskGroups.pending, state => {
         state.loadingGroups = true;
         state.error = null;
       })
-      .addCase(fetchTaskGroups.fulfilled, (state, action) => {
+      .addCase(fetchBoardTaskGroups.fulfilled, (state, action) => {
         state.loadingGroups = false;
         state.taskGroups = action.payload;
       })
-      .addCase(fetchTaskGroups.rejected, (state, action) => {
+      .addCase(fetchBoardTaskGroups.rejected, (state, action) => {
         state.loadingGroups = false;
         state.error = action.error.message || 'Failed to fetch task groups';
       });
@@ -260,7 +282,7 @@ const boardSlice = createSlice({
 });
 
 export const {
-  setGroupBy,
+  setBoardGroupBy,
   addBoardSectionCard,
   setEditableSection,
   addTaskCardToTheTop,
@@ -268,8 +290,13 @@ export const {
   addSubtask,
   deleteSection,
   deleteBoardTask,
-  updateTaskAssignee,
+  updateBoardTaskAssignee,
   reorderTaskGroups,
   resetBoardData,
+  setBoardLabels,
+  setBoardMembers,
+  setBoardPriorities,
+  setBoardStatuses,
+  setBoardSearch,
 } = boardSlice.actions;
 export default boardSlice.reducer;

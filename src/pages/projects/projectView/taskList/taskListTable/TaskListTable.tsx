@@ -431,10 +431,12 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                     : '#fff',
               }}
             >
-              <Flex gap={8} align="center">
-                <div {...attributes} {...listeners}>
-                  <HolderOutlined style={{ cursor: 'grab' }} />
-                </div>
+              <Flex gap={8} align="center" justify={isSubtask ? 'flex-end' : 'flex-start'}>
+                {!isSubtask && (
+                  <div {...attributes} {...listeners}>
+                    <HolderOutlined style={{ cursor: 'grab' }} />
+                  </div>
+                )}
                 <Checkbox
                   checked={selectedTaskIdsList.includes(task.id || '')}
                   onChange={() => toggleRowSelection(task)}
