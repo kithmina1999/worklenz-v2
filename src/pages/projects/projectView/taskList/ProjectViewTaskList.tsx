@@ -13,22 +13,19 @@ import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/
 const ProjectViewTaskList = () => {
   const dispatch = useAppDispatch();
 
-  const { projectId } = useAppSelector(state => state.projectReducer);
-  const {
-    taskGroups,
-    loadingGroups,
-    groupBy,
-    archived,
-    fields,
-    search,
-  } = useAppSelector(state => state.taskReducer);
-  const { statusCategories, loading: loadingStatusCategories } = useAppSelector(state => state.taskStatusReducer);
+  const { projectId, projectView } = useAppSelector(state => state.projectReducer);
+  const { taskGroups, loadingGroups, groupBy, archived, fields, search } = useAppSelector(
+    state => state.taskReducer
+  );
+  const { statusCategories, loading: loadingStatusCategories } = useAppSelector(
+    state => state.taskStatusReducer
+  );
   const { loadingPhases } = useAppSelector(state => state.phaseReducer);
   const { loadingColumns } = useAppSelector(state => state.taskReducer);
 
   useEffect(() => {
     if (projectId && groupBy) {
-      if (!loadingGroups) {
+      if (!loadingGroups && projectView === 'list') {
         dispatch(fetchTaskGroups(projectId));
       }
       if (!loadingColumns) dispatch(fetTaskListColumns(projectId));

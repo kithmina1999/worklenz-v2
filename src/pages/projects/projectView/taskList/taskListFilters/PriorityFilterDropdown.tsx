@@ -16,6 +16,7 @@ import { ITaskPriority } from '@/types/tasks/taskPriority.types';
 import { setPriorities } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchTaskGroups } from '@/features/board/board-slice';
+import { fetchTaskGroups as fetchTaskGroupsList } from '@/features/tasks/tasks.slice';
 
 interface PriorityFilterDropdownProps {
   priorities: ITaskPriority[];
@@ -24,15 +25,19 @@ interface PriorityFilterDropdownProps {
 const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('task-list-filters');
-  const { priorities: selectedPriorities } = useAppSelector(state => state.taskReducer);
+  const { priorities: selectedPriorities, loadingGroups } = useAppSelector(state => state.taskReducer);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const { projectId } = useAppSelector(state => state.projectReducer);
+  const { projectId, projectView } = useAppSelector(state => state.projectReducer);
 
   useEffect(() => {
-    if (projectId) {
-      dispatch(fetchTaskGroups(projectId));
+    if (projectId && !loadingGroups) {
+      if (projectView === 'list') {
+        dispatch(fetchTaskGroupsList(projectId));
+      } else {
+        dispatch(fetchTaskGroups(projectId));
+      }
     }
-  }, [dispatch, projectId, selectedPriorities]);
+  }, [dispatch, projectId, selectedPriorities, projectView]);
 
   const handleSelectedPriority = (priorityId: string) => {
     const newPriorities = selectedPriorities.includes(priorityId)
