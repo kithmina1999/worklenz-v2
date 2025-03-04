@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk, createAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import {
   IGroupByOption,
   ITaskListColumn,
@@ -9,7 +9,6 @@ import {
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import logger from '@/utils/errorLogger';
 import { ITaskListMemberFilter } from '@/types/tasks/taskListFilters.types';
-import { ITaskFormViewModel } from '@/types/tasks/task.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
 import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
@@ -44,14 +43,14 @@ export const getCurrentGroup = (): IGroupByOption => {
   return GROUP_BY_OPTIONS[0];
 };
 
-export const setCurrentGroup = (group: IGroupBy): void => {
-  localStorage.setItem(LOCALSTORAGE_GROUP_KEY, group);
+export const setCurrentGroup = (groupBy: IGroupBy): void => {
+  localStorage.setItem(LOCALSTORAGE_GROUP_KEY, groupBy);
 };
 
 interface ITaskState {
   search: string | null;
   archived: boolean;
-  group: IGroupBy;
+  groupBy: IGroupBy;
   isSubtasksInclude: boolean;
   fields: ITaskListSortableColumn[];
   tasks: IProjectTask[];
@@ -76,7 +75,7 @@ interface ITaskState {
 const initialState: ITaskState = {
   search: null,
   archived: false,
-  group: getCurrentGroup().value as IGroupBy,
+  groupBy: getCurrentGroup().value as IGroupBy,
   isSubtasksInclude: false,
   fields: [],
   tasks: [],
@@ -106,32 +105,32 @@ export const fetchTaskGroups = createAsyncThunk(
   'tasks/fetchTaskGroups',
   async (projectId: string, { rejectWithValue, getState }) => {
     try {
-      const state = getState() as { taskReducer: ITaskState };
-      const { taskReducer } = state;
+      const state = getState() as { boardReducer: ITaskState };
+      const { boardReducer } = state;
 
-      const selectedMembers = taskReducer.taskAssignees
+      const selectedMembers = boardReducer.taskAssignees
         .filter(member => member.selected)
         .map(member => member.id)
         .join(' ');
 
-      const selectedLabels = taskReducer.labels
+      const selectedLabels = boardReducer.labels
         .filter(label => label.selected)
         .map(label => label.id)
         .join(' ');
 
       const config: ITaskListConfigV2 = {
         id: projectId,
-        archived: taskReducer.archived,
-        group: taskReducer.group,
-        field: taskReducer.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
+        archived: boardReducer.archived,
+        group: boardReducer.groupBy,
+        field: boardReducer.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
         order: '',
-        search: taskReducer.search || '',
+        search: boardReducer.search || '',
         statuses: '',
         members: selectedMembers,
         projects: '',
         isSubtasksInclude: true,
         labels: selectedLabels,
-        priorities: taskReducer.priorities.join(' '),
+        priorities: boardReducer.priorities.join(' '),
       };
 
       const response = await tasksApiService.getTaskList(config);
@@ -150,8 +149,8 @@ const boardSlice = createSlice({
   name: 'boardReducer',
   initialState,
   reducers: {
-    setGroup: (state, action: PayloadAction<ITaskState['group']>) => {
-      state.group = action.payload;
+    setGroupBy: (state, action: PayloadAction<ITaskState['groupBy']>) => {
+      state.groupBy = action.payload;
     },
 
     addBoardSectionCard: (
@@ -261,7 +260,7 @@ const boardSlice = createSlice({
 });
 
 export const {
-  setGroup,
+  setGroupBy,
   addBoardSectionCard,
   setEditableSection,
   addTaskCardToTheTop,
