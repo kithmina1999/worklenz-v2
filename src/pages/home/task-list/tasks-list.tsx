@@ -3,7 +3,6 @@ import {
   Badge,
   Button,
   Card,
-  // DatePicker,
   Flex,
   Segmented,
   Select,
@@ -16,8 +15,7 @@ import {
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-// import dayjs from 'dayjs';
-// import type { Dayjs } from 'dayjs';
+
 
 import ListView from './list-view';
 import CalendarView from './calendar-view';
@@ -30,8 +28,6 @@ import { IMyTask } from '@/types/home/my-tasks.types';
 import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 import { useGetMyTasksQuery } from '@/api/home-page/home-page.api.service';
 import { IHomeTasksModel } from '@/types/home/home-page.types';
-// import { useSocket } from '@/socket/socketContext';
-// import { SocketEvents } from '@/shared/socket-events';
 import './tasks-list.css';
 import HomeTasksStatusDropdown from '@/components/home-tasks/statusDropdown/home-tasks-status-dropdown';
 import TaskDrawer from '@/components/task-drawer/task-drawer';
@@ -39,7 +35,6 @@ import HomeTasksDatePicker from '@/components/home-tasks/taskDatePicker/home-tas
 
 const TasksList: React.FC = React.memo(() => {
   const dispatch = useAppDispatch();
-  // const { socket, connected } = useSocket();
 
   const [viewOptions, setViewOptions] = useState<'List' | 'Calendar'>('List');
   const themeMode = useAppSelector(state => state.themeReducer.mode);
@@ -75,41 +70,9 @@ const TasksList: React.FC = React.memo(() => {
     refetch();
   };
 
-  // const handleEndDateChanged = (value: Dayjs | null, taskId: string) => {
-  //   if (!taskId) return;
-
-  //   const body = {
-  //     task_id: taskId,
-  //     end_date: value?.format('YYYY-MM-DD'),
-  //   };
-  //   socket?.emit(SocketEvents.TASK_END_DATE_CHANGE.toString(), JSON.stringify(body));
-  // };
-
-  // const handleStatusChange = (value: string, taskId: string) => {
-  //   if (!value || !taskId) return;
-  //   const body = {
-  //     task_id: taskId,
-  //     status: value,
-  //   };
-  //   socket?.emit(SocketEvents.TASK_STATUS_CHANGE.toString(), JSON.stringify(body));
-  // };
-
-  // const handleChangeReceived = (value: any) => {
-  //   refetch();
-  // };
-
   useEffect(() => {
     refetch();
   }, [homeTasksConfig]);
-
-  // useEffect(() => {
-  //   socket?.on(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleChangeReceived);
-  //   socket?.on(SocketEvents.TASK_STATUS_CHANGE.toString(), handleChangeReceived);
-  //   return () => {
-  //     socket?.removeListener(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleChangeReceived);
-  //     socket?.removeListener(SocketEvents.TASK_STATUS_CHANGE.toString(), handleChangeReceived);
-  //   };
-  // }, [connected]);
 
   const columns: TableProps<IMyTask>['columns'] = useMemo(
     () => [
