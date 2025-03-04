@@ -10,15 +10,17 @@ import BoardViewTaskCard from './board-section/board-task-card/board-view-task-c
 
 const ProjectViewBoard = () => {
   const { projectId } = useAppSelector(state => state.projectReducer);
-  const { taskGroups, group, loadingGroups, error } = useAppSelector(state => state.boardReducer);
+  const { taskGroups, groupBy, loadingGroups, error } = useAppSelector(state => state.boardReducer);
   const dispatch = useAppDispatch();
   const [activeItem, setActiveItem] = useState<any>(null);
 
   useEffect(() => {
-    if (projectId && !loadingGroups) {
-      dispatch(fetchTaskGroups(projectId));
+    if (projectId && groupBy) {
+      if (!loadingGroups) {
+        dispatch(fetchTaskGroups(projectId))
+      }
     }
-  }, [dispatch, projectId]);
+  }, [dispatch, projectId, groupBy]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
