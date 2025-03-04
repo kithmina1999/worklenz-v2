@@ -1,15 +1,16 @@
 import { CaretDownFilled } from '@ant-design/icons';
 import { useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
 
 import { Badge, Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
-import { ITaskPriority } from '@/types/tasks/taskPriority.types';
+import { ITaskPriority } from '@/types/tasks/taskPriority.types';   
 import { setPriorities } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
+
 import { fetchBoardTaskGroups, setBoardPriorities } from '@/features/board/board-slice';
 import { fetchTaskGroups as fetchTaskGroupsList } from '@/features/tasks/tasks.slice';
 
@@ -20,7 +21,6 @@ interface PriorityFilterDropdownProps {
 const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('task-list-filters');
-  const [searchParams] = useSearchParams();
 
   const { priorities: selectedPriorities, loadingGroups } = useAppSelector(
     state => state.taskReducer
@@ -32,8 +32,7 @@ const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const { projectId } = useAppSelector(state => state.projectReducer);
 
-  const tab = searchParams.get('tab');
-  const projectView = tab === 'tasks-list' ? 'list' : 'kanban';
+  const { projectView } = useTabSearchParam();
 
   const selectedCount = projectView === 'list' 
     ? selectedPriorities.length 

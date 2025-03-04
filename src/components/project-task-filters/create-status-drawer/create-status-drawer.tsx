@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Flex from 'antd/es/flex';
 import Badge from 'antd/es/badge';
@@ -17,12 +17,15 @@ import './create-status-drawer.css';
 import { createStatus, fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { ITaskStatusCategory } from '@/types/status.types';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
 import { evt_project_board_create_status } from '@/shared/worklenz-analytics-events';
 import { fetchTaskGroups } from '@/features/tasks/tasks.slice';
+import { fetchBoardTaskGroups } from '@/features/board/board-slice';
 
 const StatusDrawer: React.FC = () => {
   const dispatch = useAppDispatch();
   const { trackMixpanelEvent } = useMixpanelTracking();
+  const { projectView } = useTabSearchParam();
   const [form] = Form.useForm();
   const { t } = useTranslation('task-list-filters');
 
@@ -32,6 +35,12 @@ const StatusDrawer: React.FC = () => {
   const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
   const { projectId } = useAppSelector(state => state.projectReducer);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+
+  const refreshTasks = useCallback(() => {
+    if (!projectId) return;
+    const fetchAction = projectView === 'list' ? fetchTaskGroups : fetchBoardTaskGroups;
+    dispatch(fetchAction(projectId));
+  }, [projectId, projectView, dispatch]);
 
   const handleFormSubmit = async (values: { name: string; category: string }) => {
     if (!projectId) return;
@@ -45,7 +54,7 @@ const StatusDrawer: React.FC = () => {
       trackMixpanelEvent(evt_project_board_create_status);
       form.resetFields();
       dispatch(toggleDrawer());
-      dispatch(fetchTaskGroups(projectId));
+      refreshTasks();
       dispatch(fetchStatusesCategories());
     }
   };
