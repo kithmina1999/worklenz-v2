@@ -10,15 +10,19 @@ import CreateStatusButton from '@/components/project-task-filters/create-status-
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { IGroupBy, setCurrentGroup, setGroup } from '@features/tasks/tasks.slice';
 import { setBoardGroupBy, setCurrentBoardGroup } from '@/features/board/board-slice';
+import { useAuthService } from '@/hooks/useAuth';
+import useIsProjectManager from '@/hooks/useIsProjectManager';
 
 const GroupByFilterDropdown = () => {
   const { t } = useTranslation('task-list-filters');
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
+  const isProjectManager = useIsProjectManager();
 
   const { groupBy } = useAppSelector(state => state.taskReducer);
   const { groupBy: boardGroupBy } = useAppSelector(state => state.boardReducer);
   const { project } = useAppSelector(state => state.projectReducer);
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
   const tab = searchParams.get('tab');
   const projectView = tab === 'tasks-list' ? 'list' : 'kanban';
@@ -69,7 +73,7 @@ const GroupByFilterDropdown = () => {
         </Button>
       </Dropdown>
       
-      {(currentGroup === IGroupBy.STATUS || currentGroup === IGroupBy.PHASE) && (
+      {(currentGroup === IGroupBy.STATUS || currentGroup === IGroupBy.PHASE) && (isOwnerOrAdmin || isProjectManager) && (
         <ConfigProvider wave={{ disabled: true }}>
           {currentGroup === IGroupBy.PHASE && <ConfigPhaseButton />}
           {currentGroup === IGroupBy.STATUS && <CreateStatusButton />}
