@@ -130,8 +130,12 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         // If already expanded, just collapse it
         dispatch(toggleTaskRowExpansion(taskId));
       } else {
-        // If collapsed, fetch subtasks and expand
-        dispatch(fetchSubTasks({ taskId, projectId: project?.id || '' }));
+        // Only fetch subtasks if the task has subtasks
+        if (task.sub_tasks && task.sub_tasks.length > 0) {
+          dispatch(fetchSubTasks({ taskId, projectId: project?.id || '' }));
+        }
+        // Toggle expansion regardless of whether we fetch subtasks
+        dispatch(toggleTaskRowExpansion(taskId));
       }
     }
   };
