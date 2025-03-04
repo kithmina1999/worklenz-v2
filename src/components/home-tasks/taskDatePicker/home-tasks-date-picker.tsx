@@ -29,8 +29,8 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
     };
 
     useEffect(() => {
-        refetch();
-    }, [homeTasksConfig]);
+        setSelectedDate(record.end_date ? dayjs(record.end_date) : null);
+    }, [record.end_date,homeTasksConfig]);
 
     useEffect(() => {
         socket?.on(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleChangeReceived);
@@ -39,7 +39,7 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
             socket?.removeListener(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleChangeReceived);
             socket?.removeListener(SocketEvents.TASK_STATUS_CHANGE.toString(), handleChangeReceived);
         };
-    }, [connected]);
+    }, [record.end_date,connected]);
 
     const handleEndDateChanged = (value: Dayjs | null, taskId: string) => {
         setSelectedDate(value);
@@ -59,10 +59,10 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
         return date.calendar(null, {
             sameDay: '[Today]', 
             nextDay: '[Tomorrow]', 
-            nextWeek: '[Next] dddd', 
+            nextWeek: 'MMM DD, YYYY', 
             lastDay: '[Yesterday]', 
-            lastWeek: '[Last] dddd', 
-            sameElse: 'MMM DD YYYY',
+            lastWeek: 'MMM DD, YYYY', 
+            sameElse: 'MMM DD, YYYY',
         });
     };
 
@@ -76,7 +76,15 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
             value={selectedDate}
             onChange={value => handleEndDateChanged(value || null, record.id || '')}
             format={(value) => getFormattedDate(value)} // Dynamically format the displayed value
-            style={{ color: selectedDate && selectedDate.isBefore(dayjs(), 'day') ? 'red' : 'green' }}
+            style={{ 
+                color: selectedDate 
+                    ? selectedDate.isSame(dayjs(), 'day') || selectedDate.isSame(dayjs().add(1, 'day'), 'day') 
+                        ? '#52c41a' 
+                        : selectedDate.isAfter(dayjs().add(1, 'day'), 'day') 
+                            ? undefined
+                            : '#ff4d4f' 
+                    : undefined 
+            }}
         />
     );
 };
