@@ -15,6 +15,10 @@ import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
 import { DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { createPortal } from 'react-dom';
+import { CSS as DndKitCSS } from '@dnd-kit/utilities';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { DragEndEvent } from '@dnd-kit/core';
+import clsx from 'clsx';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -79,9 +83,9 @@ const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.3 : undefined,
+    opacity: isDragging ? 0.3 : 1,
     position: 'relative' as const,
-    zIndex: isDragging ? 1 : undefined,
+    zIndex: isDragging ? 1 : 'auto',
     backgroundColor: isDragging ? 'var(--dragging-bg)' : undefined,
     border: isDragging ? '1px solid var(--border-color)' : undefined,
   };
@@ -91,6 +95,7 @@ const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
       ref={setNodeRef}
       style={style}
       className={`task-row h-[42px] ${isDragging ? 'shadow-lg' : ''}`}
+      data-is-dragging={isDragging ? 'true' : 'false'}
     >
       {children(attributes, listeners!)}
     </tr>
@@ -452,6 +457,24 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
 
   // Use the tasks from the current group if available, otherwise fall back to taskList prop
   const displayTasks = currentGroup?.tasks || taskList || [];
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const activeIndex = displayTasks.findIndex(task => task.id === active.id);
+    const overIndex = displayTasks.findIndex(task => task.id === over.id);
+
+    if (activeIndex !== -1 && overIndex !== -1) {
+      dispatch(reorderTasks({
+        activeGroupId: tableId,
+        overGroupId: tableId,
+        fromIndex: activeIndex,
+        toIndex: overIndex,
+        task: displayTasks[activeIndex]
+      }));
+    }
+  };
 
   return (
     <div className={`border-x border-b ${customBorderColor}`}>

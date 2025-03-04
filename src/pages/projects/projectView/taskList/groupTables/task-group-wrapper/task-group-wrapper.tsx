@@ -45,12 +45,17 @@ import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer
 import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
 import {
   setStartDate,
+  setTaskAssignee,
   setTaskEndDate,
   setTaskLabels,
   setTaskPriority,
   setTaskStatus,
+  setTaskSubscribers,
 } from '@/features/task-drawer/task-drawer.slice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
+import { InlineMember } from '@/types/teamMembers/inlineMember.types';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
+import { evt_project_task_list_drag_and_move } from '@/shared/worklenz-analytics-events';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -64,6 +69,9 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
   const dispatch = useAppDispatch();
   const { socket } = useSocket();
   const currentSession = useAuthService().getCurrentSession();
+  const { trackMixpanelEvent } = useMixpanelTracking(); 
+
+
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const loadingAssignees = useAppSelector(state => state.taskReducer.loadingAssignees);
   const { projectId } = useAppSelector(state => state.projectReducer);
@@ -100,6 +108,8 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
             assignees: updatedAssignees,
           })
         );
+
+        dispatch(setTaskAssignee(data));
 
         if (currentSession?.team_id && !loadingAssignees) {
           dispatch(fetchTaskAssignees(currentSession.team_id));
@@ -246,6 +256,21 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, dispatch]);
 
+  // Socket handlers for task subscribers updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleTaskSubscribersChange = (data: InlineMember[]) => {
+      dispatch(setTaskSubscribers(data));
+    };
+
+    socket.on(SocketEvents.TASK_SUBSCRIBERS_CHANGE.toString(), handleTaskSubscribersChange);
+
+    return () => {
+      socket.off(SocketEvents.TASK_SUBSCRIBERS_CHANGE.toString(), handleTaskSubscribersChange);
+    };
+  }, [socket, dispatch]);
+
   const handleDragStart = ({ active }: DragStartEvent) => {
     setActiveId(active.id as string);
   };
@@ -259,8 +284,8 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     const activeTaskId = active.id;
     const overTaskId = over.id;
 
-    const sourceGroup = groups.find(g => g.id === activeGroupId);
-    const targetGroup = groups.find(g => g.id === overGroupId);
+    const sourceGroup = taskGroups.find(g => g.id === activeGroupId);
+    const targetGroup = taskGroups.find(g => g.id === overGroupId);
 
     if (!sourceGroup || !targetGroup) return;
 
@@ -272,7 +297,19 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     const task = sourceGroup.tasks[fromIndex];
     const toPos = targetGroup.tasks[toIndex]?.sort_order;
 
-    // Emit reordering event
+    // Update Redux state first
+    dispatch({
+      type: 'taskReducer/reorderTasks',
+      payload: {
+        activeGroupId,
+        overGroupId,
+        fromIndex,
+        toIndex,
+        task
+      }
+    });
+
+    // Then emit socket event
     socket?.emit(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), {
       project_id: projectId,
       from_index: sourceGroup.tasks[fromIndex].sort_order,
@@ -290,30 +327,69 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       socket.emit(SocketEvents.GET_TASK_PROGRESS.toString(), task.id);
     });
 
-    // Update local state
-    setGroups(prevGroups => {
-      return prevGroups.map(group => {
-        if (group.id === activeGroupId) {
-          const newTasks = [...group.tasks];
-          newTasks.splice(fromIndex, 1);
-          return { ...group, tasks: newTasks };
-        }
-
-        if (group.id === overGroupId) {
-          const newTasks = [...group.tasks];
-          if (activeGroupId === overGroupId) {
-            const [movedTask] = newTasks.splice(fromIndex, 1);
-            newTasks.splice(toIndex, 0, movedTask);
-          } else {
-            newTasks.splice(toIndex, 0, task);
-          }
-          return { ...group, tasks: newTasks };
-        }
-
-        return group;
+    // Nuclear reset approach
+    const resetStyles = () => {
+      document.querySelectorAll('.task-row').forEach(row => {
+        // Remove all inline styles
+        row.removeAttribute('style');
+        // Force CSS recalculation
+        void row.offsetHeight; // Trigger reflow
+        // Apply important styles via CSSOM
+        row.style.setProperty('opacity', '1', 'important');
+        row.style.setProperty('position', 'relative', 'important');
+        row.style.setProperty('z-index', 'auto', 'important');
+        row.style.setProperty('transform', 'none', 'important');
       });
-    });
+    };
+
+    // Reset in phases
+    setTimeout(resetStyles, 0);  // Immediate
+    setTimeout(resetStyles, 50); // After potential DnD cleanup
+    setTimeout(resetStyles, 100); // Final cleanup
+    
+    trackMixpanelEvent(evt_project_task_list_drag_and_move);
   };
+
+  // Replace existing useEffect with this version
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .task-row {
+        opacity: 1 !important;
+        position: relative !important;
+        z-index: auto !important;
+        transform: none !important;
+        transition: opacity 0.3s ease !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => document.head.removeChild(style);
+  }, []);
+
+  // Modified drag cancel handler
+  const handleDragCancel = () => {
+    setActiveId(null);
+    setTimeout(() => {
+      document.querySelectorAll('.task-row').forEach(row => {
+        row.style.cssText = 'opacity: 1 !important; position: relative !important; z-index: auto !important; transform: none !important;';
+        row.setAttribute('data-is-dragging', 'false');
+      });
+    }, 0);
+  };
+
+  // Add this useEffect hook
+  useEffect(() => {
+    if (activeId === null) {
+      // Final cleanup after React updates DOM
+      setTimeout(() => {
+        document.querySelectorAll('.task-row').forEach(row => {
+          row.style.opacity = '1';
+          row.style.transform = 'none';
+        });
+      }, 50);
+    }
+  }, [activeId]);
 
   return (
     <DndContext
@@ -321,9 +397,10 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
     >
       <Flex gap={24} vertical>
-        {groups?.map(taskGroup => (
+        {taskGroups?.map(taskGroup => (
           <TaskListTableWrapper
             key={taskGroup.id}
             taskList={taskGroup.tasks}

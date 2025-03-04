@@ -19,6 +19,7 @@ import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priorit
 import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service';
 import { ITaskLabel, ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
 import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
+import { produce } from 'immer';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -662,6 +663,55 @@ const taskSlice = createSlice({
         group: state.groupBy // Preserve the current grouping
       };
     },
+
+    reorderTasks: (
+      state,
+      action: PayloadAction<{
+        activeGroupId: string;
+        overGroupId: string;
+        fromIndex: number;
+        toIndex: number;
+        task: IProjectTask;
+      }>
+    ) => {
+      return produce(state, draft => {
+        const { activeGroupId, overGroupId, fromIndex, toIndex, task } = action.payload;
+        
+        const sourceGroup = draft.taskGroups.find(g => g.id === activeGroupId);
+        const targetGroup = draft.taskGroups.find(g => g.id === overGroupId);
+        
+        if (!sourceGroup || !targetGroup) return;
+
+        // Remove from source group
+        const [movedTask] = sourceGroup.tasks.splice(fromIndex, 1);
+        
+        // If moving between groups, update the task properties based on the group type
+        if (activeGroupId !== overGroupId) {
+          // Update task properties based on the grouping type
+          switch (draft.groupBy) {
+            case GROUP_BY_STATUS_VALUE:
+              movedTask.status = overGroupId;
+              movedTask.status_color = targetGroup.color_code;
+              break;
+            case GROUP_BY_PRIORITY_VALUE:
+              movedTask.priority = overGroupId;
+              movedTask.priority_color = targetGroup.color_code;
+              break;
+            case GROUP_BY_PHASE_VALUE:
+              movedTask.phase_id = overGroupId;
+              movedTask.phase_color = targetGroup.color_code;
+              break;
+          }
+        }
+        
+        // Add to target group
+        if (activeGroupId === overGroupId) {
+          sourceGroup.tasks.splice(toIndex, 0, movedTask);
+        } else {
+          targetGroup.tasks.splice(toIndex, 0, movedTask);
+        }
+      });
+    },
   },
 
   extraReducers: builder => {
@@ -765,6 +815,7 @@ export const {
   updateTaskStatusColor,
   updateTaskGroupColor,
   setConvertToSubtaskDrawerOpen,
+  reorderTasks,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

@@ -25,6 +25,7 @@ import Avatars from '@/components/avatars/avatars';
 import TaskDrawerDueDate from './details/task-drawer-due-date/task-drawer-due-date';
 import TaskDrawerEstimation from './details/task-drawer-estimation/task-drawer-estimation';
 import TaskDrawerPrioritySelector from './details/task-drawer-priority-selector/task-drawer-priority-selector';
+import TaskDrawerBillable from './details/task-drawer-billable/task-drawer-billable';
 
 interface TaskDetailsFormProps {
   taskFormViewModel?: ITaskFormViewModel | null;
@@ -120,11 +121,11 @@ const TaskDetailsForm = ({ taskFormViewModel = null }: TaskDetailsFormProps) => 
         <TaskDrawerLabels task={taskFormViewModel?.task as ITaskViewModel} t={t} />
 
         <Form.Item name="billable" label={t('taskInfoTab.details.billable')}>
-          <Switch defaultChecked={false} />
+          <TaskDrawerBillable task={taskFormViewModel?.task as ITaskViewModel} />
         </Form.Item>
 
         <Form.Item name="notify" label={t('taskInfoTab.details.notify')}>
-          <NotifyMemberSelector />
+          <NotifyMemberSelector task={taskFormViewModel?.task as ITaskViewModel} t={t} />
         </Form.Item>
       </Form>
     </ConfigProvider>

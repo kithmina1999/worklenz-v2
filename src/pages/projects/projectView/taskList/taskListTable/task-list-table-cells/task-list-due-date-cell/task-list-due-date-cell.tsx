@@ -10,6 +10,7 @@ import logger from '@/utils/errorLogger';
 const TaskListDueDateCell = ({ task }: { task: IProjectTask }) => {
   const { socket } = useSocket();
   const dueDayjs = task.end_date ? dayjs(task.end_date) : null;
+  const startDayjs = task.start_date ? dayjs(task.start_date) : null;
 
   const handleEndDateChange = (date: Dayjs | null) => {
     try {
@@ -29,6 +30,10 @@ const TaskListDueDateCell = ({ task }: { task: IProjectTask }) => {
     }
   };
 
+  const disabledEndDate = (current: Dayjs) => {
+    return current && startDayjs ? current < startDayjs : false;
+  };
+
   return (
     <DatePicker
       placeholder="Set Date"
@@ -36,6 +41,7 @@ const TaskListDueDateCell = ({ task }: { task: IProjectTask }) => {
       format={'MMM DD, YYYY'}
       suffixIcon={null}
       onChange={handleEndDateChange}
+      disabledDate={disabledEndDate}
       style={{
         backgroundColor: colors.transparent,
         border: 'none',
