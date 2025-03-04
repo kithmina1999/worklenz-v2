@@ -9,6 +9,7 @@ import Flex from 'antd/es/flex';
 import Input, { InputRef } from 'antd/es/input';
 import List from 'antd/es/list';
 import Space from 'antd/es/space';
+import { useSearchParams } from 'react-router-dom';
 
 import { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -16,32 +17,62 @@ import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { fetchLabelsByProject, fetchTaskGroups, setLabels } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setBoardLabels } from '@/features/board/board-slice';
+import { fetchBoardTaskGroups } from '@/features/board/board-slice';
 
 const LabelsFilterDropdown = () => {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation('task-list-filters');
+  const [searchParams] = useSearchParams();
   const labelInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const { labels, loadingLabels } = useAppSelector(state => state.taskReducer);
+  const { labels: boardLabels, loadingLabels: boardLoadingLabels } = useAppSelector(
+    state => state.boardReducer
+  );
   const { projectId } = useAppSelector(state => state.projectReducer);
-  const { t } = useTranslation('task-list-filters');
+
+  const tab = searchParams.get('tab');
+  const projectView = tab === 'tasks-list' ? 'list' : 'kanban';
 
   const filteredLabelData = useMemo(() => {
-    return labels.filter(label =>
-      label.name?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [labels, searchQuery]);
+    if (projectView === 'list') {
+      return labels.filter(label => label.name?.toLowerCase().includes(searchQuery.toLowerCase()));
+    } else {
+      return boardLabels.filter(label =>
+        label.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+  }, [labels, boardLabels, searchQuery, projectView]);
 
   const labelsCount = useMemo(() => {
-    return labels.filter(label => label.selected).length;
-  }, [labels]);
+    if (projectView === 'list') {
+      return labels.filter(label => label.selected).length;
+    } else {
+      return boardLabels.filter(label => label.selected).length;
+    }
+  }, [labels, boardLabels, projectView]);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // handle selected filters count
   const handleLabelSelect = (checked: boolean, labelId: string) => {
-    dispatch(setLabels(labels.map(label => label.id === labelId ? { ...label, selected: checked } : label)));
-    if (projectId) dispatch(fetchTaskGroups(projectId));
+    if (projectView === 'list') {
+      dispatch(
+        setLabels(
+          labels.map(label => (label.id === labelId ? { ...label, selected: checked } : label))
+        )
+      );
+      if (projectId) dispatch(fetchTaskGroups(projectId));
+    } else {
+      dispatch(
+        setBoardLabels(
+          boardLabels.map(label => (label.id === labelId ? { ...label, selected: checked } : label))
+        )
+      );
+      if (projectId) dispatch(fetchBoardTaskGroups(projectId));
+    }
   };
 
   // function to focus labels input
@@ -50,6 +81,9 @@ const LabelsFilterDropdown = () => {
       setTimeout(() => {
         labelInputRef.current?.focus();
       }, 0);
+      if (projectView === 'kanban') {
+        dispatch(setBoardLabels(labels));
+      }
     }
   };
 

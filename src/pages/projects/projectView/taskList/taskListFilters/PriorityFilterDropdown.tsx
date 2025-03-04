@@ -1,21 +1,16 @@
 import { CaretDownFilled } from '@ant-design/icons';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 
-import Badge from 'antd/es/badge';
-import Button from 'antd/es/button';
-import Card from 'antd/es/card';
-import Checkbox from 'antd/es/checkbox';
-import Dropdown from 'antd/es/dropdown';
-import List from 'antd/es/list';
-import Space from 'antd/es/space';
+import { Badge, Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { ITaskPriority } from '@/types/tasks/taskPriority.types';
 import { setPriorities } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchTaskGroups } from '@/features/board/board-slice';
+import { fetchBoardTaskGroups, setBoardPriorities } from '@/features/board/board-slice';
 import { fetchTaskGroups as fetchTaskGroupsList } from '@/features/tasks/tasks.slice';
 
 interface PriorityFilterDropdownProps {
@@ -25,64 +20,94 @@ interface PriorityFilterDropdownProps {
 const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('task-list-filters');
-  const { priorities: selectedPriorities, loadingGroups } = useAppSelector(state => state.taskReducer);
+  const [searchParams] = useSearchParams();
+
+  const { priorities: selectedPriorities, loadingGroups } = useAppSelector(
+    state => state.taskReducer
+  );
+  const { priorities: boardSelectedPriorities, loadingGroups: boardLoadingGroups } = useAppSelector(
+    state => state.boardReducer
+  );
+
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const { projectId, projectView } = useAppSelector(state => state.projectReducer);
+  const { projectId } = useAppSelector(state => state.projectReducer);
 
-  useEffect(() => {
-    if (projectId && !loadingGroups) {
-      if (projectView === 'list') {
-        dispatch(fetchTaskGroupsList(projectId));
-      } else {
-        dispatch(fetchTaskGroups(projectId));
-      }
-    }
-  }, [dispatch, projectId, selectedPriorities, projectView]);
+  const tab = searchParams.get('tab');
+  const projectView = tab === 'tasks-list' ? 'list' : 'kanban';
 
-  const handleSelectedPriority = (priorityId: string) => {
-    const newPriorities = selectedPriorities.includes(priorityId)
-      ? selectedPriorities.filter(id => id !== priorityId)
-      : [...selectedPriorities, priorityId];
+  const selectedCount = projectView === 'list' 
+    ? selectedPriorities.length 
+    : boardSelectedPriorities.length;
 
-    dispatch(setPriorities(newPriorities));
-    if (projectId) {
-      dispatch(fetchTaskGroups(projectId));
-    }
+  const buttonStyle = {
+    backgroundColor: selectedCount > 0
+      ? themeMode === 'dark' ? '#003a5c' : colors.paleBlue
+      : colors.transparent,
+    color: selectedCount > 0 ? (themeMode === 'dark' ? 'white' : colors.darkGray) : 'inherit',
   };
 
-  const priorityDropdownContent = useMemo(
-    () => (
-      <Card className="custom-card" style={{ width: 120 }} styles={{ body: { padding: 0 } }}>
-        <List style={{ padding: 0, maxHeight: 250, overflow: 'auto' }}>
-          {priorities?.map(priority => (
-            <List.Item
-              className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
-              key={priority.id}
-              onClick={() => handleSelectedPriority(priority.id)}
-              style={{
-                display: 'flex',
-                gap: 8,
-                padding: '4px 8px',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              <Space>
-                <Checkbox
-                  id={priority.id}
-                  checked={selectedPriorities.includes(priority.id)}
-                  onChange={() => handleSelectedPriority(priority.id)}
-                />
-                <Badge color={priority.color_code} />
-                {priority.name}
-              </Space>
-            </List.Item>
-          ))}
-        </List>
-      </Card>
-    ),
-    [priorities, selectedPriorities, themeMode]
-  );
+  useEffect(() => {
+    if (projectId) {
+      if (projectView === 'list' && !loadingGroups) {
+        dispatch(fetchTaskGroupsList(projectId));
+      } else if (projectView === 'kanban' && !boardLoadingGroups) {
+        dispatch(fetchBoardTaskGroups(projectId));
+      }
+    }
+  }, [dispatch, projectId, selectedPriorities, boardSelectedPriorities, projectView]);
+
+  const handleSelectedPriority = useCallback((priorityId: string) => {
+    if (!projectId) return;
+
+    const updatePriorities = (currentPriorities: string[], setAction: any, fetchAction: any) => {
+      const newPriorities = currentPriorities.includes(priorityId)
+        ? currentPriorities.filter(id => id !== priorityId)
+        : [...currentPriorities, priorityId];
+      dispatch(setAction(newPriorities));
+      dispatch(fetchAction(projectId));
+    };
+
+    if (projectView === 'list') {
+      updatePriorities(selectedPriorities, setPriorities, fetchTaskGroupsList);
+    } else {
+      updatePriorities(boardSelectedPriorities, setBoardPriorities, fetchBoardTaskGroups);
+    }
+  }, [dispatch, projectId, projectView, selectedPriorities, boardSelectedPriorities]);
+
+  const priorityDropdownContent = useMemo(() => (
+    <Card className="custom-card" style={{ width: 120 }} styles={{ body: { padding: 0 } }}>
+      <List style={{ padding: 0, maxHeight: 250, overflow: 'auto' }}>
+        {priorities?.map(priority => (
+          <List.Item
+            className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
+            key={priority.id}
+            onClick={() => handleSelectedPriority(priority.id)}
+            style={{
+              display: 'flex',
+              gap: 8,
+              padding: '4px 8px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            <Space>
+              <Checkbox
+                id={priority.id}
+                checked={
+                  projectView === 'list'
+                    ? selectedPriorities.includes(priority.id)
+                    : boardSelectedPriorities.includes(priority.id)
+                }
+                onChange={() => handleSelectedPriority(priority.id)}
+              />
+              <Badge color={priority.color_code} />
+              {priority.name}
+            </Space>
+          </List.Item>
+        ))}
+      </List>
+    </Card>
+  ), [priorities, selectedPriorities, boardSelectedPriorities, themeMode, handleSelectedPriority]);
 
   return (
     <Dropdown
@@ -93,16 +118,12 @@ const PriorityFilterDropdown = ({ priorities }: PriorityFilterDropdownProps) => 
       <Button
         icon={<CaretDownFilled />}
         iconPosition="end"
-        style={{
-          backgroundColor: selectedPriorities.length > 0 ? colors.paleBlue : colors.transparent,
-
-          color: selectedPriorities.length > 0 ? colors.darkGray : 'inherit',
-        }}
+        style={buttonStyle}
       >
         <Space>
           {t('priorityText')}
-          {selectedPriorities.length > 0 && (
-            <Badge size="small" count={selectedPriorities.length} color={colors.skyBlue} />
+          {selectedCount > 0 && (
+            <Badge size="small" count={selectedCount} color={colors.skyBlue} />
           )}
         </Space>
       </Button>

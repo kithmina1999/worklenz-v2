@@ -37,7 +37,7 @@ import BoardSubTaskCard from '../board-sub-task-card/board-sub-task-card';
 import CustomAvatarGroup from '@/components/board/custom-avatar-group';
 import CustomDueDatePicker from '@/components/board/custom-due-date-picker';
 import { colors } from '@/styles/colors';
-import { deleteBoardTask, updateTaskAssignee } from '@features/board/board-slice';
+import { deleteBoardTask, updateBoardTaskAssignee } from '@features/board/board-slice';
 import BoardCreateSubtaskCard from '../board-sub-task-card/board-create-sub-task-card';
 import { setShowTaskDrawer, setSelectedTaskId } from '@/features/task-drawer/task-drawer.slice';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
@@ -81,7 +81,7 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
       if (res.done) {
         trackMixpanelEvent(evt_project_task_list_context_menu_assign_me);
         dispatch(
-          updateTaskAssignee({
+          updateBoardTaskAssignee({
             body: res.body,
             sectionId,
             taskId: task.id,

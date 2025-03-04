@@ -20,7 +20,7 @@ import { taskListBulkActionsApiService } from '@/api/tasks/task-list-bulk-action
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { fetchTaskGroups } from '@/features/board/board-slice';
+import { fetchBoardTaskGroups } from '@/features/board/board-slice';
 import logger from '@/utils/errorLogger';
 
 interface IBoardSectionCardProps {
@@ -100,7 +100,7 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
     socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
       setCreatingTempTask(false);
       if (task && task.id) {
-        dispatch(fetchTaskGroups(projectId));
+        dispatch(fetchBoardTaskGroups(projectId));
       }
     });
   };

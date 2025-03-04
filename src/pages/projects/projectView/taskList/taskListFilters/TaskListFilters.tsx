@@ -15,7 +15,7 @@ import {
   toggleArchived,
 } from '@/features/tasks/tasks.slice';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
-import { fetchTaskGroups } from '@/features/board/board-slice';
+import { fetchBoardTaskGroups } from '@/features/board/board-slice';
 
 const SearchDropdown = React.lazy(() => import('./SearchDropdown'));
 const SortFilterDropdown = React.lazy(() => import('./SortFilterDropdown'));
