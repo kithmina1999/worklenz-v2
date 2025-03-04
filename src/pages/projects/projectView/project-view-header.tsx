@@ -16,7 +16,6 @@ import { Button, Dropdown, Flex, Tag, Tooltip, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import ProjectMemberInviteButton from '@features/projects/singleProject/members/ProjectMemberInviteButton';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';

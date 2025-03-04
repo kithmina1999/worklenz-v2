@@ -64,6 +64,8 @@ interface ITaskAssignee {
   name?: string;
   email?: string;
   avatar_url?: string;
+  team_member_id: string;
+  project_member_id: string;
 }
 
 const TaskListBulkActionsBar = () => {
@@ -101,6 +103,16 @@ const TaskListBulkActionsBar = () => {
   const [assigneeDropdownOpen, setAssigneeDropdownOpen] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [selectedLabels, setSelectedLabels] = useState<ITaskLabel[]>([]);
+
+  // Add refs for tooltip elements
+  const changeStatusRef = useRef(null);
+  const changeLabelRef = useRef(null);
+  const assignToMeRef = useRef(null);
+  const changeAssigneesRef = useRef(null);
+  const archiveRef = useRef(null);
+  const deleteRef = useRef(null);
+  const moreOptionsRef = useRef(null);
+  const deselectAllRef = useRef(null);
 
   // Handlers
   const handleChangeStatus = async (status: ITaskStatus) => {
@@ -372,117 +384,136 @@ const TaskListBulkActionsBar = () => {
         </Flex>
 
         <Flex align="center">
-          <Tooltip title={t('changeStatus')}>
-            <Dropdown
-              menu={{ items: getChangeOptionsMenu() }}
-              placement="bottom"
-              arrow
-              trigger={['click']}
-            >
+          <Tooltip title={t('changeStatus')} getPopupContainer={() => changeStatusRef.current!}>
+            <div ref={changeStatusRef}>
+              <Dropdown
+                menu={{ items: getChangeOptionsMenu() }}
+                placement="bottom"
+                arrow
+                trigger={['click']}
+                getPopupContainer={() => changeStatusRef.current!}
+              >
+                <Button
+                  icon={<RetweetOutlined />}
+                  className="borderless-icon-btn"
+                  style={buttonStyle}
+                  loading={loading}
+                />
+              </Dropdown>
+            </div>
+          </Tooltip>
+
+          <Tooltip title={t('changeLabel')} getPopupContainer={() => changeLabelRef.current!}>
+            <div ref={changeLabelRef}>
+              <Dropdown
+                dropdownRender={() => labelsDropdownContent}
+                placement="top"
+                arrow
+                trigger={['click']}
+                destroyPopupOnHide
+                onOpenChange={value => {
+                  if (!value) {
+                    setSelectedLabels([]);
+                  }
+                }}
+                getPopupContainer={() => changeLabelRef.current!}
+              >
+                <Button
+                  icon={<TagsOutlined />}
+                  className="borderless-icon-btn"
+                  style={buttonStyle}
+                  loading={updatingLabels}
+                />
+              </Dropdown>
+            </div>
+          </Tooltip>
+
+          <Tooltip title={t('assignToMe')} getPopupContainer={() => assignToMeRef.current!}>
+            <div ref={assignToMeRef}>
               <Button
-                icon={<RetweetOutlined />}
+                icon={<UserAddOutlined />}
                 className="borderless-icon-btn"
                 style={buttonStyle}
-                loading={loading}
+                onClick={handleAssignToMe}
+                loading={updatingAssignToMe}
               />
-            </Dropdown>
+            </div>
           </Tooltip>
 
-          <Tooltip title={t('changeLabel')}>
-            <Dropdown
-              dropdownRender={() => labelsDropdownContent}
-              placement="top"
-              arrow
-              trigger={['click']}
-              destroyPopupOnHide
-              onOpenChange={value => {
-                if (!value) {
-                  setSelectedLabels([]);
-                }
-              }}
-            >
+          <Tooltip title={t('changeAssignees')} getPopupContainer={() => changeAssigneesRef.current!}>
+            <div ref={changeAssigneesRef}>
+              <Dropdown
+                dropdownRender={getAssigneesMenu}
+                open={assigneeDropdownOpen}
+                onOpenChange={onAssigneeDropdownOpenChange}
+                placement="top"
+                arrow
+                trigger={['click']}
+                getPopupContainer={() => changeAssigneesRef.current!}
+              >
+                <Button
+                  icon={<UsergroupAddOutlined />}
+                  className="borderless-icon-btn"
+                  style={buttonStyle}
+                  loading={updatingAssignees}
+                />
+              </Dropdown>
+            </div>
+          </Tooltip>
+
+          <Tooltip title={archived ? t('unarchive') : t('archive')} getPopupContainer={() => archiveRef.current!}>
+            <div ref={archiveRef}>
               <Button
-                icon={<TagsOutlined />}
+                icon={<InboxOutlined />}
                 className="borderless-icon-btn"
                 style={buttonStyle}
-                loading={updatingLabels}
+                onClick={handleArchive}
+                loading={updatingArchive}
               />
-            </Dropdown>
+            </div>
           </Tooltip>
 
-          <Tooltip title={t('assignToMe')}>
-            <Button
-              icon={<UserAddOutlined />}
-              className="borderless-icon-btn"
-              style={buttonStyle}
-              onClick={handleAssignToMe}
-              loading={updatingAssignToMe}
-            />
-          </Tooltip>
-
-          <Tooltip title={t('changeAssignees')}>
-            <Dropdown
-              dropdownRender={getAssigneesMenu}
-              open={assigneeDropdownOpen}
-              onOpenChange={onAssigneeDropdownOpenChange}
-              placement="top"
-              arrow
-              trigger={['click']}
-            >
+          <Tooltip title={t('delete')} getPopupContainer={() => deleteRef.current!}>
+            <div ref={deleteRef}>
               <Button
-                icon={<UsergroupAddOutlined />}
+                icon={<DeleteOutlined />}
                 className="borderless-icon-btn"
                 style={buttonStyle}
-                loading={updatingAssignees}
+                onClick={handleDelete}
+                loading={updatingDelete}
               />
-            </Dropdown>
-          </Tooltip>
-
-          <Tooltip title={archived ? t('unarchive') : t('archive')}>
-            <Button
-              icon={<InboxOutlined />}
-              className="borderless-icon-btn"
-              style={buttonStyle}
-              onClick={handleArchive}
-              loading={updatingArchive}
-            />
-          </Tooltip>
-
-          <Tooltip title={t('delete')}>
-            <Button
-              icon={<DeleteOutlined />}
-              className="borderless-icon-btn"
-              style={buttonStyle}
-              onClick={handleDelete}
-              loading={updatingDelete}
-            />
+            </div>
           </Tooltip>
         </Flex>
 
-        <Tooltip title={t('moreOptions')}>
-          <Dropdown
-            trigger={['click']}
-            menu={{
-              items: [
-                {
-                  key: '1',
-                  label: t('createTaskTemplate'),
-                  onClick: () => setShowDrawer(true),
-                },
-              ],
-            }}
-          >
-            <Button icon={<MoreOutlined />} className="borderless-icon-btn" style={buttonStyle} />
-          </Dropdown>
+        <Tooltip title={t('moreOptions')} getPopupContainer={() => moreOptionsRef.current!}>
+          <div ref={moreOptionsRef}>
+            <Dropdown
+              trigger={['click']}
+              menu={{
+                items: [
+                  {
+                    key: '1',
+                    label: t('createTaskTemplate'),
+                    onClick: () => setShowDrawer(true),
+                  },
+                ],
+              }}
+            >
+              <Button icon={<MoreOutlined />} className="borderless-icon-btn" style={buttonStyle} />
+            </Dropdown>
+          </div>
         </Tooltip>
 
-        <Tooltip title={t('deselectAll')}>
-          <Button
-            icon={<CloseCircleOutlined />}
-            onClick={() => dispatch(deselectAll())}
-            className="borderless-icon-btn"
-            style={buttonStyle}
-          />
+        <Tooltip title={t('deselectAll')} getPopupContainer={() => deselectAllRef.current!}>
+          <div ref={deselectAllRef}>
+            <Button
+              icon={<CloseCircleOutlined />}
+              onClick={() => dispatch(deselectAll())}
+              className="borderless-icon-btn"
+              style={buttonStyle}
+            />
+          </div>
         </Tooltip>
         {createPortal(
           <TaskTemplateDrawer

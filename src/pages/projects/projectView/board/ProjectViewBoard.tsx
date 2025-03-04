@@ -5,22 +5,29 @@ import { Empty, Flex, Skeleton } from 'antd';
 import BoardSectionCardContainer from './board-section/board-section-container';
 import { fetchTaskGroups, reorderTaskGroups } from '@features/board/board-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, closestCorners, DragOverlay } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragStartEvent,
+  closestCorners,
+  DragOverlay,
+} from '@dnd-kit/core';
 import BoardViewTaskCard from './board-section/board-task-card/board-view-task-card';
 
 const ProjectViewBoard = () => {
-  const { projectId } = useAppSelector(state => state.projectReducer);
+  const { projectId, projectView } = useAppSelector(state => state.projectReducer);
   const { taskGroups, groupBy, loadingGroups, error } = useAppSelector(state => state.boardReducer);
   const dispatch = useAppDispatch();
   const [activeItem, setActiveItem] = useState<any>(null);
 
   useEffect(() => {
-    if (projectId && groupBy) {
+    if (projectId && groupBy && projectView === 'kanban') {
       if (!loadingGroups) {
-        dispatch(fetchTaskGroups(projectId))
+        dispatch(fetchTaskGroups(projectId));
       }
     }
-  }, [dispatch, projectId, groupBy]);
+  }, [dispatch, projectId, groupBy, projectView]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
@@ -44,27 +51,25 @@ const ProjectViewBoard = () => {
     if (isActiveTask && (isOverTask || isOverSection)) {
       const updatedGroups = taskGroups.map(group => {
         // If dropping over a task, use its section id
-        const targetSectionId = isOverTask 
-          ? over.data.current?.sectionId 
-          : over.id;
+        const targetSectionId = isOverTask ? over.data.current?.sectionId : over.id;
 
         if (group.id === targetSectionId) {
           const activeTask = active.data.current?.task;
           return {
             ...group,
-            tasks: [...group.tasks, { ...activeTask, status_id: group.id }]
+            tasks: [...group.tasks, { ...activeTask, status_id: group.id }],
           };
         }
-        
+
         if (group.id === active.data.current?.sectionId) {
           return {
             ...group,
-            tasks: group.tasks.filter(task => task.id !== active.data.current?.task.id)
+            tasks: group.tasks.filter(task => task.id !== active.data.current?.task.id),
           };
         }
         return group;
       });
-      
+
       dispatch(reorderTaskGroups(updatedGroups));
     }
   };
@@ -93,14 +98,11 @@ const ProjectViewBoard = () => {
         >
           <BoardSectionCardContainer
             datasource={taskGroups}
-            group={group as 'status' | 'priority' | 'phases' | 'members'}
+            group={groupBy as 'status' | 'priority' | 'phases' | 'members'}
           />
           <DragOverlay>
             {activeItem?.type === 'task' && (
-              <BoardViewTaskCard 
-                task={activeItem.task} 
-                sectionId={activeItem.sectionId} 
-              />
+              <BoardViewTaskCard task={activeItem.task} sectionId={activeItem.sectionId} />
             )}
           </DragOverlay>
         </DndContext>
