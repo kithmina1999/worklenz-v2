@@ -205,7 +205,6 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
             suffixIcon={null}
             options={dueDateOptions}
             defaultOpen
-            autoFocus
             onSelect={() => {
               setIsProjectFieldShowing(true);
             }}
