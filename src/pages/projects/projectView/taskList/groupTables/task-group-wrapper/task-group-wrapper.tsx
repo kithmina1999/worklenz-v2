@@ -295,7 +295,11 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     if (fromIndex === -1) return;
 
     const task = sourceGroup.tasks[fromIndex];
-    const toPos = targetGroup.tasks[toIndex]?.sort_order;
+    
+    // Handle empty group case
+    const toPos = targetGroup.tasks.length > 0 
+      ? (targetGroup.tasks[toIndex]?.sort_order || targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order)
+      : -1;
 
     // Update Redux state first
     dispatch({
@@ -313,8 +317,8 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     socket?.emit(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), {
       project_id: projectId,
       from_index: sourceGroup.tasks[fromIndex].sort_order,
-      to_index: toPos || targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order || -1,
-      to_last_index: !toPos,
+      to_index: toPos,
+      to_last_index: targetGroup.tasks.length === 0, // Mark as last index if group is empty
       from_group: sourceGroup.id,
       to_group: targetGroup.id,
       group_by: groupBy,
