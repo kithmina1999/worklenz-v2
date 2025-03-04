@@ -30,6 +30,7 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
 
     useEffect(() => {
         setSelectedDate(record.end_date ? dayjs(record.end_date) : null);
+        refetch();
     }, [record.end_date,homeTasksConfig]);
 
     useEffect(() => {
