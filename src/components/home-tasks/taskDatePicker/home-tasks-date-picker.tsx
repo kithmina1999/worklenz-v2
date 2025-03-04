@@ -59,10 +59,10 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
         return date.calendar(null, {
             sameDay: '[Today]', 
             nextDay: '[Tomorrow]', 
-            nextWeek: 'MMM DD', 
+            nextWeek: 'MMM DD, YYYY', 
             lastDay: '[Yesterday]', 
-            lastWeek: 'MMM DD', 
-            sameElse: 'MMM DD',
+            lastWeek: 'MMM DD, YYYY', 
+            sameElse: 'MMM DD, YYYY',
         });
     };
 
@@ -76,7 +76,15 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
             value={selectedDate}
             onChange={value => handleEndDateChanged(value || null, record.id || '')}
             format={(value) => getFormattedDate(value)} // Dynamically format the displayed value
-            style={{ color: selectedDate && selectedDate.isBefore(dayjs(), 'day') ? 'red' : 'green' }}
+            style={{ 
+                color: selectedDate 
+                    ? selectedDate.isSame(dayjs(), 'day') || selectedDate.isSame(dayjs().add(1, 'day'), 'day') 
+                        ? '#52c41a' 
+                        : selectedDate.isAfter(dayjs().add(1, 'day'), 'day') 
+                            ? undefined
+                            : '#ff4d4f' 
+                    : undefined 
+            }}
         />
     );
 };
