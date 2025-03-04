@@ -4,10 +4,12 @@ import {
 } from '@/api/projects/projects.v1.api.service';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
-import { Rate } from 'antd';
+import { StarFilled } from '@ant-design/icons';
+import { Button, ConfigProvider } from 'antd';
 import { TFunction } from 'i18next';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export const ProjectRateCell: React.FC<{
   record: IProjectViewModel;
@@ -21,22 +23,29 @@ export const ProjectRateCell: React.FC<{
   const handleFavorite = useCallback(async () => {
     if (record.id) {
       await toggleFavoriteProject(record.id);
+      refetchProjects();
     }
   }, [dispatch, record.id]);
 
+  const checkIconColor = useMemo(
+    () => (record.favorite ? colors.yellow : colors.lightGray),
+    [record.favorite]
+  );
+
   return (
-    <div className="flex items-center"
-    onClick={e => {
-      e.stopPropagation();
-      handleFavorite();
-      refetchProjects();
-    }}>
-      <Rate
-        value={record.favorite ? 1 : 0}
-        count={1}
-        className="mr-2"
-        tooltips={[t('addToFavourites')]}
+    <ConfigProvider wave={{ disabled: true }}>
+      <Button
+        type="text"
+        className="borderless-icon-btn"
+        style={{ backgroundColor: colors.transparent }}
+        shape="circle"
+        icon={<StarFilled style={{ color: checkIconColor, fontSize: '20px' }} />}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleFavorite();
+        }}
       />
-    </div>
+    </ConfigProvider>
+
   );
 };

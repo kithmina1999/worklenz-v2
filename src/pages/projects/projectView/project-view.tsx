@@ -98,31 +98,32 @@ const ProjectView = () => {
             <Button
               className="borderless-icon-btn"
               style={{
-          backgroundColor: colors.transparent,
-          boxShadow: 'none',
+                backgroundColor: colors.transparent,
+                boxShadow: 'none',
               }}
               icon={
-          item.key === pinnedTab? (
-            <PushpinFilled
-              size={20}
-              style={{
-                color: colors.skyBlue,
-                rotate: '-45deg',
-                transition: 'transform ease-in 300ms',
-              }}
-            />
-          ) : (
-            <PushpinOutlined
-              size={20}
-              style={{
-                color: colors.skyBlue,
-              }}
-            />
-          )
+                item.key === pinnedTab ? (
+                  <PushpinFilled
+                    size={20}
+                    style={{
+                      color: colors.skyBlue,
+                      rotate: '-45deg',
+                      transition: 'transform ease-in 300ms',
+                    }}
+                  />
+                ) : (
+                  <PushpinOutlined
+                    size={20}
+                    style={{
+                      color: colors.skyBlue,
+                    }}
+                  />
+                )
               }
               onClick={(e) => {
                 e.stopPropagation()
-                pinToDefaultTab(item.key)}}
+                pinToDefaultTab(item.key)
+              }}
             />
           </ConfigProvider>
         ) : null}
@@ -154,6 +155,7 @@ const ProjectView = () => {
         onChange={handleTabChange}
         items={tabMenuItems}
         tabBarStyle={{ paddingInline: 0 }}
+        destroyInactiveTabPane={true}
         tabBarExtraContent={
           <div>
             <span style={{ position: 'relative', top: '-10px' }}>
