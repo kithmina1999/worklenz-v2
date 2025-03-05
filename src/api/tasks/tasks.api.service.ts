@@ -87,4 +87,12 @@ export const tasksApiService = {
     return response.data;
   },
 
+  convertToTask: async (taskId: string, projectId: string): Promise<IServerResponse<void>> => {
+    const response = await apiClient.post(`${rootUrl}/convert`, {
+      id: taskId,
+      project_id: projectId
+    });
+    return response.data;
+  },
+
 };

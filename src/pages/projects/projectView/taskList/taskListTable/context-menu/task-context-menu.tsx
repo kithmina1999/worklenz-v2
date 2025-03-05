@@ -24,6 +24,7 @@ import {
 import {
   deleteTask,
   fetchTaskAssignees,
+  fetchTaskGroups,
   IGroupBy,
   setConvertToSubtaskDrawerOpen,
   updateTaskAssignees,
@@ -34,6 +35,7 @@ import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import logger from '@/utils/errorLogger';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { tasksApiService } from '@/api/tasks/tasks.api.service';
 
 type TaskContextMenuProps = {
   visible: boolean;
@@ -173,14 +175,11 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
     if (!projectId || !selectedTask.id || !targetId) return;
 
     try {
-      socket?.emit(
-        SocketEvents.TASK_PHASE_CHANGE.toString(),
-        {
-          task_id: selectedTask.id,
-          phase_id: targetId,
-          team_id: currentSession?.team_id,
-        }
-      );
+      socket?.emit(SocketEvents.TASK_PHASE_CHANGE.toString(), {
+        task_id: selectedTask.id,
+        phase_id: targetId,
+        team_id: currentSession?.team_id,
+      });
     } catch (error) {
       logger.error('Error moving phase', error);
     }
@@ -226,6 +225,23 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
     return [];
   };
 
+  const handleConvertToTask = async () => {
+    if (!selectedTask?.id || !projectId) return;
+
+    try {
+      const res = await tasksApiService.convertToTask(
+        selectedTask.id as string,
+        projectId as string
+      );
+      if (res.done) {
+        dispatch(deselectAll());
+        dispatch(fetchTaskGroups(projectId));
+      }
+    } catch (error) {
+      logger.error('Error converting to task', error);
+    }
+  };
+
   const items: MenuProps['items'] = [
     {
       key: '1',
@@ -246,20 +262,28 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
       label: archived ? t('contextMenu.unarchive') : t('contextMenu.archive'),
       onClick: handleArchive,
     },
-    ...(selectedTask?.sub_tasks_count === 0 && !selectedTask?.parent_task_id ? [{
-      key: '4',
-      icon: <DoubleRightOutlined />,
-      label: t('contextMenu.convertToSubTask'),
-      onClick: () => dispatch(setConvertToSubtaskDrawerOpen(true)),
-    }] : []),
-    ...(selectedTask?.parent_task_id ? [{
-      key: '5',
-      icon: <DoubleRightOutlined />,
-      label: t('contextMenu.convertToTask'),
-      onClick: () => {
-        // Implement the logic to convert to task here
-      },
-    }] : []),
+    ...(selectedTask?.sub_tasks_count === 0 && !selectedTask?.parent_task_id
+      ? [
+          {
+            key: '4',
+            icon: <DoubleRightOutlined />,
+            label: t('contextMenu.convertToSubTask'),
+            onClick: () => dispatch(setConvertToSubtaskDrawerOpen(true)),
+          },
+        ]
+      : []),
+    ...(selectedTask?.parent_task_id
+      ? [
+          {
+            key: '5',
+            icon: <DoubleRightOutlined />,
+            label: t('contextMenu.convertToTask'),
+            onClick: () => {
+              handleConvertToTask();
+            },
+          },
+        ]
+      : []),
     {
       key: '6',
       icon: <DeleteOutlined />,

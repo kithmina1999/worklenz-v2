@@ -3,7 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { fetchTaskGroups, IGroupBy, setConvertToSubtaskDrawerOpen, updateTaskStatus } from '@/features/tasks/tasks.slice';
+import {
+  fetchTaskGroups,
+  IGroupBy,
+  setConvertToSubtaskDrawerOpen,
+  updateTaskStatus,
+} from '@/features/tasks/tasks.slice';
 import { RightOutlined } from '@ant-design/icons';
 import CustomSearchbar from '@/components/CustomSearchbar';
 import { ITaskListConfigV2, tasksApiService } from '@/api/tasks/tasks.api.service';
@@ -20,15 +25,13 @@ const ConvertToSubtaskDrawer = () => {
   const currentSession = useAuthService().getCurrentSession();
 
   const dispatch = useAppDispatch();
-  const { convertToSubtaskDrawerOpen, groupBy } = useAppSelector(
-    state => state.taskReducer
-  );
+  const { convertToSubtaskDrawerOpen, groupBy } = useAppSelector(state => state.taskReducer);
   const selectedTask = useAppSelector(state => state.bulkActionReducer.selectedTasks[0]);
   const [searchText, setSearchText] = useState('');
   const [expandedGroups, setExpandedGroups] = useState<boolean[]>([]);
   const [converting, setConverting] = useState(false);
   const [taskGroups, setTaskGroups] = useState<ITaskListGroup[]>([]);
-  const {projectId} = useAppSelector(state => state.projectReducer);
+  const { projectId } = useAppSelector(state => state.projectReducer);
 
   const fetchTasks = async () => {
     if (!projectId) return;
@@ -57,7 +60,7 @@ const ConvertToSubtaskDrawer = () => {
     setExpandedGroups(newExpanded);
   };
 
-  const handleStatusChange = (statusId: string, ) => {
+  const handleStatusChange = (statusId: string) => {
     if (!selectedTask?.id || !statusId) return;
 
     socket?.emit(
@@ -84,24 +87,31 @@ const ConvertToSubtaskDrawer = () => {
     );
   };
 
-  const convertToSubTask = async (toGroupId: string | undefined, parentTaskId: string | undefined) => {
+  const convertToSubTask = async (
+    toGroupId: string | undefined,
+    parentTaskId: string | undefined
+  ) => {
     if (!toGroupId || !parentTaskId || !selectedTask?.id || !projectId) return;
     try {
-      setConverting(true);
-      if (groupBy === IGroupBy.STATUS) {
-        handleStatusChange(toGroupId);
-      }
-      if (groupBy === IGroupBy.PRIORITY) {
-        handlePriorityChange(toGroupId);
-      }
+      // setConverting(true);
+      // if (groupBy === IGroupBy.STATUS) {
+      //   handleStatusChange(toGroupId);
+      // }
+      // if (groupBy === IGroupBy.PRIORITY) {
+      //   handlePriorityChange(toGroupId);
+      // }
 
-      const res = await tasksApiService.convertToSubtask(selectedTask?.id, projectId, parentTaskId, groupBy, toGroupId);
+      const res = await tasksApiService.convertToSubtask(
+        selectedTask?.id,
+        projectId,
+        parentTaskId,
+        groupBy,
+        toGroupId
+      );
       if (res.done) {
-       if (groupBy === IGroupBy.PHASE) {
+        dispatch(deselectAll());
         dispatch(fetchTaskGroups(projectId));
         fetchTasks();
-        dispatch(deselectAll());
-       }
       }
       setConverting(false);
     } catch (error) {
@@ -158,9 +168,7 @@ const ConvertToSubtaskDrawer = () => {
           >
             <Flex key={`group-flex-${item.id}`} align="center" gap={8}>
               <RightOutlined rotate={expandedGroups[index] ? 90 : 0} />
-              <Typography.Text strong>
-                {item.name}
-              </Typography.Text>
+              <Typography.Text strong>{item.name}</Typography.Text>
             </Flex>
           </Button>
           <div
@@ -203,8 +211,8 @@ const ConvertToSubtaskDrawer = () => {
                   ),
                 },
               ]}
-              dataSource={item.tasks.filter(task => 
-                !task.parent_task_id && selectedTask?.id !== task.id
+              dataSource={item.tasks.filter(
+                task => !task.parent_task_id && selectedTask?.id !== task.id
               )}
               pagination={false}
               scroll={{ x: 'max-content' }}
