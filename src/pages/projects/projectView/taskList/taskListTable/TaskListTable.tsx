@@ -51,10 +51,9 @@ import { selectTaskIds, selectTasks } from '@/features/projects/bulkActions/bulk
 import StatusDropdown from '@/components/task-list-common/status-dropdown/status-dropdown';
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/priority-dropdown';
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
-import { fetchSubTasks, toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
+import { fetchSubTasks, reorderTasks, toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import ConfigPhaseButton from '@/features/projects/singleProject/phase/ConfigPhaseButton';
-import ConvertToSubtaskDrawer from '@/components/task-list-common/convert-to-subtask-drawer/convert-to-subtask-drawer';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -96,6 +95,7 @@ const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
       style={style}
       className={`task-row h-[42px] ${isDragging ? 'shadow-lg' : ''}`}
       data-is-dragging={isDragging ? 'true' : 'false'}
+      data-group-id={groupId}
     >
       {children(attributes, listeners!)}
     </tr>
@@ -451,7 +451,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                   backgroundColor: getRowBackgroundColor(task.id),
                 }}
                 data-task-cell
-                onContextMenu={e => handleContextMenu(e, task, )}
+                onContextMenu={e => handleContextMenu(e, task)}
               >
                 {column.custom_column
                   ? renderCustomColumnContent(
@@ -487,7 +487,9 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         overGroupId: tableId,
         fromIndex: activeIndex,
         toIndex: overIndex,
-        task: displayTasks[activeIndex]
+        task: displayTasks[activeIndex],
+        updatedSourceTasks: displayTasks,
+        updatedTargetTasks: displayTasks
       }));
     }
   };

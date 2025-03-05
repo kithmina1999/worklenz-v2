@@ -1,31 +1,58 @@
-import {
-  Drawer,
-  Tag,
-  Typography,
-  Flex,
-  Table,
-  Button,
-  Tooltip,
-} from 'antd/es';
-import { TFunction } from 'i18next';
+import { Drawer, Tag, Typography, Flex, Table, Button, Tooltip } from 'antd/es';
+import { useTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { setConvertToSubtaskDrawerOpen } from '@/features/tasks/tasks.slice';
+import {
+  fetchTaskGroups,
+  IGroupBy,
+  setConvertToSubtaskDrawerOpen,
+  updateTaskStatus,
+} from '@/features/tasks/tasks.slice';
 import { RightOutlined } from '@ant-design/icons';
 import CustomSearchbar from '@/components/CustomSearchbar';
+import { ITaskListConfigV2, tasksApiService } from '@/api/tasks/tasks.api.service';
+import { SocketEvents } from '@/shared/socket-events';
+import { useSocket } from '@/socket/socketContext';
+import { useAuthService } from '@/hooks/useAuth';
+import logger from '@/utils/errorLogger';
+import { ITaskListGroup } from '@/types/tasks/taskList.types';
+import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 
-interface ConvertToSubtaskDrawerProps {
-  t: TFunction;
-}
+const ConvertToSubtaskDrawer = () => {
+  const { t } = useTranslation('task-list-table');
+  const { socket, connected } = useSocket();
+  const currentSession = useAuthService().getCurrentSession();
 
-const ConvertToSubtaskDrawer = ({ t }: ConvertToSubtaskDrawerProps) => {
   const dispatch = useAppDispatch();
-  const { convertToSubtaskDrawerOpen, taskGroups } = useAppSelector(state => state.taskReducer);
+  const { convertToSubtaskDrawerOpen, groupBy } = useAppSelector(state => state.taskReducer);
   const selectedTask = useAppSelector(state => state.bulkActionReducer.selectedTasks[0]);
   const [searchText, setSearchText] = useState('');
   const [expandedGroups, setExpandedGroups] = useState<boolean[]>([]);
   const [converting, setConverting] = useState(false);
+  const [taskGroups, setTaskGroups] = useState<ITaskListGroup[]>([]);
+  const { projectId } = useAppSelector(state => state.projectReducer);
+
+  const fetchTasks = async () => {
+    if (!projectId) return;
+
+    const config: ITaskListConfigV2 = {
+      id: projectId,
+      group: groupBy,
+      field: null,
+      order: null,
+      search: null,
+      statuses: null,
+      members: null,
+      projects: null,
+      isSubtasksInclude: false,
+    };
+
+    const response = await tasksApiService.getTaskList(config);
+    if (response.done) {
+      setTaskGroups(response.body);
+    }
+  };
 
   const toggleGroup = (index: number) => {
     const newExpanded = [...expandedGroups];
@@ -33,22 +60,77 @@ const ConvertToSubtaskDrawer = ({ t }: ConvertToSubtaskDrawerProps) => {
     setExpandedGroups(newExpanded);
   };
 
-  const convertToSubTask = (groupId: string | undefined, taskId: string | undefined) => {
-    console.log('groupId', groupId);
-    console.log('taskId', taskId);
-    if (!groupId || !taskId) return;
-    setConverting(true);
-    // Add your conversion logic here
-    // After conversion:
-    setConverting(false);
+  const handleStatusChange = (statusId: string) => {
+    if (!selectedTask?.id || !statusId) return;
+
+    socket?.emit(
+      SocketEvents.TASK_STATUS_CHANGE.toString(),
+      JSON.stringify({
+        task_id: selectedTask?.id,
+        status_id: statusId,
+        team_id: currentSession?.team_id,
+      })
+    );
+    socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), selectedTask?.id);
+  };
+
+  const handlePriorityChange = (priorityId: string) => {
+    if (!selectedTask?.id || !priorityId) return;
+
+    socket?.emit(
+      SocketEvents.TASK_PRIORITY_CHANGE.toString(),
+      JSON.stringify({
+        task_id: selectedTask?.id,
+        priority_id: priorityId,
+        team_id: currentSession?.team_id,
+      })
+    );
+  };
+
+  const convertToSubTask = async (
+    toGroupId: string | undefined,
+    parentTaskId: string | undefined
+  ) => {
+    if (!toGroupId || !parentTaskId || !selectedTask?.id || !projectId) return;
+    try {
+      // setConverting(true);
+      // if (groupBy === IGroupBy.STATUS) {
+      //   handleStatusChange(toGroupId);
+      // }
+      // if (groupBy === IGroupBy.PRIORITY) {
+      //   handlePriorityChange(toGroupId);
+      // }
+
+      const res = await tasksApiService.convertToSubtask(
+        selectedTask?.id,
+        projectId,
+        parentTaskId,
+        groupBy,
+        toGroupId
+      );
+      if (res.done) {
+        dispatch(deselectAll());
+        dispatch(fetchTaskGroups(projectId));
+        fetchTasks();
+      }
+      setConverting(false);
+    } catch (error) {
+      logger.error('Error converting to subtask:', error);
+    } finally {
+      setConverting(false);
+    }
   };
 
   const filteredTasks = useMemo(
     () =>
-      taskGroups.map(group => ({
-        ...group,
-        tasks: group.tasks.filter(task => task?.name?.toLowerCase().includes(searchText.toLowerCase()))
-      })).filter(group => group.tasks.length > 0),
+      taskGroups
+        .map(group => ({
+          ...group,
+          tasks: group.tasks.filter(task =>
+            task?.name?.toLowerCase().includes(searchText.toLowerCase())
+          ),
+        }))
+        .filter(group => group.tasks.length > 0),
     [searchText, taskGroups]
   );
 
@@ -56,18 +138,19 @@ const ConvertToSubtaskDrawer = ({ t }: ConvertToSubtaskDrawerProps) => {
     <Drawer
       open={convertToSubtaskDrawerOpen}
       onClose={() => dispatch(setConvertToSubtaskDrawerOpen(false))}
-      title={t('convertToSubtask')}
+      title={t('contextMenu.convertToSubTask')}
       width={700}
+      afterOpenChange={() => fetchTasks()}
     >
       <Flex vertical gap={12}>
         <CustomSearchbar
           searchQuery={searchText}
           setSearchQuery={setSearchText}
-          placeholderText={t('searchByNameInputPlaceholder')}
+          placeholderText={t('contextMenu.searchByNameInputPlaceholder')}
         />
       </Flex>
       {filteredTasks.map((item, index) => (
-        <div key={item.id}>
+        <div key={`group-${item.id}`}>
           <Button
             key={`group-button-${item.id}`}
             className="w-full"
@@ -77,7 +160,7 @@ const ConvertToSubtaskDrawer = ({ t }: ConvertToSubtaskDrawerProps) => {
               borderBottomLeftRadius: expandedGroups[index] ? 0 : 4,
               borderBottomRightRadius: expandedGroups[index] ? 0 : 4,
               color: '#000',
-              marginTop: 6,
+              marginTop: 8,
               justifyContent: 'flex-start',
               width: 'auto',
             }}
@@ -128,14 +211,17 @@ const ConvertToSubtaskDrawer = ({ t }: ConvertToSubtaskDrawerProps) => {
                   ),
                 },
               ]}
-              dataSource={item.tasks}
+              dataSource={item.tasks.filter(
+                task => !task.parent_task_id && selectedTask?.id !== task.id
+              )}
               pagination={false}
               scroll={{ x: 'max-content' }}
-              onRow={record => {    
+              onRow={record => {
                 return {
                   onClick: () => convertToSubTask(item.id, record.id),
                   style: { height: 38, cursor: 'pointer' },
                   className: 'group even:bg-[#4e4e4e10]',
+                  key: `task-row-${record.id}`,
                 };
               }}
             />

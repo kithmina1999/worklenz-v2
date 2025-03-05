@@ -735,43 +735,25 @@ const taskSlice = createSlice({
         fromIndex: number;
         toIndex: number;
         task: IProjectTask;
+        updatedSourceTasks: IProjectTask[];
+        updatedTargetTasks: IProjectTask[];
       }>
     ) => {
+      console.log('reorderTasks', JSON.stringify(action.payload));
       return produce(state, draft => {
-        const { activeGroupId, overGroupId, fromIndex, toIndex, task } = action.payload;
+        const { activeGroupId, overGroupId, updatedSourceTasks, updatedTargetTasks } = action.payload;
 
         const sourceGroup = draft.taskGroups.find(g => g.id === activeGroupId);
         const targetGroup = draft.taskGroups.find(g => g.id === overGroupId);
 
         if (!sourceGroup || !targetGroup) return;
 
-        // Remove from source group
-        const [movedTask] = sourceGroup.tasks.splice(fromIndex, 1);
-
-        // If moving between groups, update the task properties based on the group type
+        // Simply replace the arrays with the updated ones
+        sourceGroup.tasks = updatedSourceTasks;
+        
+        // Only update target if it's different from source
         if (activeGroupId !== overGroupId) {
-          // Update task properties based on the grouping type
-          switch (draft.groupBy) {
-            case GROUP_BY_STATUS_VALUE:
-              movedTask.status = overGroupId;
-              movedTask.status_color = targetGroup.color_code;
-              break;
-            case GROUP_BY_PRIORITY_VALUE:
-              movedTask.priority = overGroupId;
-              movedTask.priority_color = targetGroup.color_code;
-              break;
-            case GROUP_BY_PHASE_VALUE:
-              movedTask.phase_id = overGroupId;
-              movedTask.phase_color = targetGroup.color_code;
-              break;
-          }
-        }
-
-        // Add to target group
-        if (activeGroupId === overGroupId) {
-          sourceGroup.tasks.splice(toIndex, 0, movedTask);
-        } else {
-          targetGroup.tasks.splice(toIndex, 0, movedTask);
+          targetGroup.tasks = updatedTargetTasks;
         }
       });
     },

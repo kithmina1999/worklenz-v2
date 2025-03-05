@@ -38,6 +38,7 @@ import {
   updateTaskName,
   updateTaskPhase,
   updateTaskStartDate,
+  IGroupBy,
 } from '@/features/tasks/tasks.slice';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 
@@ -287,11 +288,6 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     setActiveId(null);
     if (!over) return;
 
-    // Add smooth transition to all rows
-    document.querySelectorAll<HTMLElement>('.task-row').forEach(row => {
-      row.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
-    });
-
     const activeGroupId = active.data.current?.groupId;
     const overGroupId = over.data.current?.groupId;
     const activeTaskId = active.id;
@@ -303,59 +299,103 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     if (!sourceGroup || !targetGroup) return;
 
     const fromIndex = sourceGroup.tasks.findIndex(t => t.id === activeTaskId);
-    const toIndex = targetGroup.tasks.findIndex(t => t.id === overTaskId);
-
     if (fromIndex === -1) return;
 
-    const task = sourceGroup.tasks[fromIndex];
+    // Create a deep clone of the task to avoid reference issues
+    const task = JSON.parse(JSON.stringify(sourceGroup.tasks[fromIndex]));
     
-    // Handle empty group case
-    const isTargetGroupEmpty = targetGroup.tasks.length === 0;
-    const toPos = isTargetGroupEmpty 
-      ? -1 
-      : (targetGroup.tasks[toIndex]?.sort_order || targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order);
-
-    // Create a temporary task array for the target group
-    const updatedTargetTasks = isTargetGroupEmpty
-      ? [task] // If empty, just add the task
-      : [
-          ...targetGroup.tasks.slice(0, toIndex),
-          task,
-          ...targetGroup.tasks.slice(toIndex)
-        ];
-
-    // Update Redux state first with the new task positions
-    dispatch({
-      type: 'taskReducer/reorderTasks',
-      payload: {
-        activeGroupId,
-        overGroupId,
-        fromIndex,
-        toIndex: isTargetGroupEmpty ? 0 : toIndex, // Use 0 for empty groups
-        task,
-        updatedTargetTasks // Pass the new task array
+    // Update task properties based on target group
+    if (activeGroupId !== overGroupId) {
+      switch (groupBy) {
+        case IGroupBy.STATUS:
+          task.status = overGroupId;
+          task.status_color = targetGroup.color_code;
+          break;
+        case IGroupBy.PRIORITY:
+          task.priority = overGroupId;
+          task.priority_color = targetGroup.color_code;
+          break;
+        case IGroupBy.PHASE:
+          task.phase_id = overGroupId;
+          task.phase_color = targetGroup.color_code;
+          break;
       }
-    });
+    }
+    
+    const isTargetGroupEmpty = targetGroup.tasks.length === 0;
+    
+    // Calculate toIndex - for empty groups, always add at index 0
+    const toIndex = isTargetGroupEmpty ? 0 : 
+      (overTaskId ? targetGroup.tasks.findIndex(t => t.id === overTaskId) : targetGroup.tasks.length);
+    
+    // Calculate toPos similar to Angular implementation
+    const toPos = isTargetGroupEmpty ? -1 : 
+      (targetGroup.tasks[toIndex]?.sort_order || targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order || -1);
+
+    // First update Redux state directly
+    if (activeGroupId === overGroupId) {
+      // Same group - move within array
+      const updatedTasks = [...sourceGroup.tasks];
+      updatedTasks.splice(fromIndex, 1);
+      updatedTasks.splice(toIndex, 0, task);
+      
+      dispatch({
+        type: 'taskReducer/reorderTasks',
+        payload: {
+          activeGroupId,
+          overGroupId,
+          fromIndex,
+          toIndex,
+          task,
+          updatedSourceTasks: updatedTasks,
+          updatedTargetTasks: updatedTasks
+        }
+      });
+    } else {
+      // Different groups - transfer between arrays
+      const updatedSourceTasks = sourceGroup.tasks.filter((_, i) => i !== fromIndex);
+      let updatedTargetTasks;
+      
+      if (isTargetGroupEmpty) {
+        updatedTargetTasks = [task]; // For empty groups, just add the task
+      } else {
+        updatedTargetTasks = [...targetGroup.tasks];
+        // Insert at the correct position
+        if (toIndex >= 0 && toIndex <= updatedTargetTasks.length) {
+          updatedTargetTasks.splice(toIndex, 0, task);
+        } else {
+          updatedTargetTasks.push(task); // Fallback to adding at the end
+        }
+      }
+      
+      dispatch({
+        type: 'taskReducer/reorderTasks',
+        payload: {
+          activeGroupId,
+          overGroupId,
+          fromIndex,
+          toIndex,
+          task,
+          updatedSourceTasks,
+          updatedTargetTasks
+        }
+      });
+    }
 
     // Then emit socket event
     socket?.emit(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), {
       project_id: projectId,
       from_index: sourceGroup.tasks[fromIndex].sort_order,
       to_index: toPos,
-      to_last_index: isTargetGroupEmpty, // Mark as last index if group is empty
+      to_last_index: isTargetGroupEmpty,
       from_group: sourceGroup.id,
       to_group: targetGroup.id,
       group_by: groupBy,
-      task,
+      task: sourceGroup.tasks[fromIndex], // Send original task to maintain references
       team_id: currentSession?.team_id,
     });
 
-    // Request progress update after reordering
-    socket?.once(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), () => {
-      socket.emit(SocketEvents.GET_TASK_PROGRESS.toString(), task.id);
-    });
-
-    // Reset styles with smoother transitions
+    // Reset styles
     setTimeout(() => {
       document.querySelectorAll<HTMLElement>('.task-row').forEach(row => {
         row.style.transition = 'transform 0.2s ease, opacity 0.2s ease';

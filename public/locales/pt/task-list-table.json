@@ -10,8 +10,8 @@
   "phaseColumn": "Fase",
   "statusColumn": "Status",
   "priorityColumn": "Prioridade",
-  "timeTrackingColumn": "Controle de Tempo",
-  "timetrackingColumn": "Controle de Tempo",
+  "timeTrackingColumn": "Acompanhamento de Tempo",
+  "timetrackingColumn": "Acompanhamento de Tempo",
   "estimationColumn": "Estimativa",
   "startDateColumn": "Data de Início",
   "startdateColumn": "Data de Início",
@@ -23,15 +23,15 @@
   "createddateColumn": "Data de Criação",
   "lastUpdatedColumn": "Última Atualização",
   "lastupdatedColumn": "Última Atualização",
-  "reporterColumn": "Repórter",
+  "reporterColumn": "Reportador",
   "dueTimeColumn": "Hora de Vencimento",
   "todoSelectorText": "A Fazer",
-  "doingSelectorText": "Em Progresso",
-  "doneSelectorText": "Concluído",
+  "doingSelectorText": "Fazendo",
+  "doneSelectorText": "Feito",
 
-  "lowSelectorText": "Baixa",
-  "mediumSelectorText": "Média",
-  "highSelectorText": "Alta",
+  "lowSelectorText": "Baixo",
+  "mediumSelectorText": "Médio",
+  "highSelectorText": "Alto",
 
   "selectText": "Selecionar",
   "labelsSelectorInputTip": "Pressione enter para criar!",
@@ -44,9 +44,9 @@
   "okButton": "Ok",
 
   "noLabelsFound": "Nenhuma etiqueta encontrada",
-  "searchInputPlaceholder": "Pesquisar ou criar",
-  "assigneeSelectorInviteButton": "Convidar novo membro por e-mail",
-  "labelInputPlaceholder": "Pesquisar ou criar",
+  "searchInputPlaceholder": "Buscar ou criar",
+  "assigneeSelectorInviteButton": "Convide um novo membro por e-mail",
+  "labelInputPlaceholder": "Buscar ou criar",
   
   "pendingInvitation": "Convite Pendente",
 
@@ -56,6 +56,8 @@
     "unarchive": "Desarquivar",
     "archive": "Arquivar",
     "convertToSubTask": "Converter em Subtarefa",
-    "delete": "Excluir"
+    "convertToTask": "Converter em Tarefa",
+    "delete": "Excluir",
+    "searchByNameInputPlaceholder": "Buscar por nome"
   }
 }
