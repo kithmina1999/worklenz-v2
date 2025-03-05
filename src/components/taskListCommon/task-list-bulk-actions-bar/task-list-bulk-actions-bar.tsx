@@ -366,6 +366,7 @@ const TaskListBulkActionsBar = () => {
       onCreateLabelTextChange={value => setCreateLabelText(value)}
       onApply={applyLabels}
       t={t}
+      loading={updatingLabels}
     />
   );
 
