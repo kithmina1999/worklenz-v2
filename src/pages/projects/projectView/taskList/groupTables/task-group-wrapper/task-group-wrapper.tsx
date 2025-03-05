@@ -2,10 +2,9 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useSocket } from '@/socket/socketContext';
 import { useAuthService } from '@/hooks/useAuth';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import Flex from 'antd/es/flex';
-import { CSS } from '@dnd-kit/utilities';
 import useIsomorphicLayoutEffect from '@/hooks/useIsomorphicLayoutEffect';
 
 import {
@@ -26,6 +25,8 @@ import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update
 import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
+import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
+import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 
 import {
   fetchTaskAssignees,
@@ -45,7 +46,6 @@ import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 import TaskListTableWrapper from '@/pages/projects/projectView/taskList/taskListTable/TaskListTableWrapper';
 import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
 import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
-import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
 import {
   setStartDate,
   setTaskAssignee,
@@ -56,7 +56,6 @@ import {
   setTaskSubscribers,
 } from '@/features/task-drawer/task-drawer.slice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
-import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_project_task_list_drag_and_move } from '@/shared/worklenz-analytics-events';
 
@@ -74,7 +73,6 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
   const currentSession = useAuthService().getCurrentSession();
   const { trackMixpanelEvent } = useMixpanelTracking(); 
 
-
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const loadingAssignees = useAppSelector(state => state.taskReducer.loadingAssignees);
   const { projectId } = useAppSelector(state => state.projectReducer);
@@ -89,7 +87,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     setGroups(taskGroups);
   }, [taskGroups]);
 
-  // Socket handlers for assignee updates
+  // Socket handler for assignee updates
   useEffect(() => {
     if (!socket) return;
 
@@ -126,7 +124,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, currentSession?.team_id, loadingAssignees, groups, dispatch]);
 
-  // Socket handlers for label updates
+  // Socket handler for label updates
   useEffect(() => {
     if (!socket) return;
 
@@ -148,7 +146,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, dispatch, projectId]);
 
-  // Socket handlers for status updates
+  // Socket handler for status updates
   useEffect(() => {
     if (!socket) return;
 
@@ -171,7 +169,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, dispatch]);
 
-  // Add socket handlers for priority updates
+  // Socket handler for priority updates
   useEffect(() => {
     if (!socket) return;
 
@@ -188,7 +186,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, dispatch]);
 
-  // Add socket handlers for due date updates
+  // Socket handler for due date updates
   useEffect(() => {
     if (!socket) return;
 
@@ -208,7 +206,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, dispatch]);
 
-  // Socket handlers for task name updates
+  // Socket handler for task name updates
   useEffect(() => {
     if (!socket) return;
 
@@ -223,7 +221,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, dispatch]);
 
-  // Socket handlers for phase updates
+  // Socket handler for phase updates
   useEffect(() => {
     if (!socket) return;
 
@@ -239,7 +237,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, dispatch]);
 
-  // Add socket handler for start date updates
+  // Socket handler for start date updates
   useEffect(() => {
     if (!socket) return;
 
@@ -259,7 +257,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, dispatch]);
 
-  // Socket handlers for task subscribers updates
+  // Socket handler for task subscribers updates
   useEffect(() => {
     if (!socket) return;
 
@@ -274,7 +272,15 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, dispatch]);
 
-  const handleDragStart = ({ active }: DragStartEvent) => {
+  const resetTaskRowStyles = useCallback(() => {
+    document.querySelectorAll<HTMLElement>('.task-row').forEach(row => {
+      row.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+      row.style.cssText = 'opacity: 1 !important; position: relative !important; z-index: auto !important; transform: none !important;';
+      row.setAttribute('data-is-dragging', 'false');
+    });
+  }, []);
+
+  const handleDragStart = useCallback(({ active }: DragStartEvent) => {
     setActiveId(active.id as string);
     
     // Add smooth transition to the dragged item
@@ -282,9 +288,9 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     if (draggedElement) {
       (draggedElement as HTMLElement).style.transition = 'transform 0.2s ease';
     }
-  };
+  }, []);
 
-  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+  const handleDragEnd = useCallback(({ active, over }: DragEndEvent) => {
     setActiveId(null);
     if (!over) return;
 
@@ -310,14 +316,17 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
         case IGroupBy.STATUS:
           task.status = overGroupId;
           task.status_color = targetGroup.color_code;
+          task.status_color_dark = targetGroup.color_code_dark;
           break;
         case IGroupBy.PRIORITY:
           task.priority = overGroupId;
           task.priority_color = targetGroup.color_code;
+          task.priority_color_dark = targetGroup.color_code_dark;
           break;
         case IGroupBy.PHASE:
           task.phase_id = overGroupId;
           task.phase_color = targetGroup.color_code;
+          task.phase_color_dark = targetGroup.color_code_dark;
           break;
       }
     }
@@ -332,7 +341,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     const toPos = isTargetGroupEmpty ? -1 : 
       (targetGroup.tasks[toIndex]?.sort_order || targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order || -1);
 
-    // First update Redux state directly
+    // Update Redux state
     if (activeGroupId === overGroupId) {
       // Same group - move within array
       const updatedTasks = [...sourceGroup.tasks];
@@ -354,18 +363,14 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     } else {
       // Different groups - transfer between arrays
       const updatedSourceTasks = sourceGroup.tasks.filter((_, i) => i !== fromIndex);
-      let updatedTargetTasks;
+      const updatedTargetTasks = [...targetGroup.tasks];
       
       if (isTargetGroupEmpty) {
-        updatedTargetTasks = [task]; // For empty groups, just add the task
+        updatedTargetTasks.push(task);
+      } else if (toIndex >= 0 && toIndex <= updatedTargetTasks.length) {
+        updatedTargetTasks.splice(toIndex, 0, task);
       } else {
-        updatedTargetTasks = [...targetGroup.tasks];
-        // Insert at the correct position
-        if (toIndex >= 0 && toIndex <= updatedTargetTasks.length) {
-          updatedTargetTasks.splice(toIndex, 0, task);
-        } else {
-          updatedTargetTasks.push(task); // Fallback to adding at the end
-        }
+        updatedTargetTasks.push(task);
       }
       
       dispatch({
@@ -382,7 +387,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       });
     }
 
-    // Then emit socket event
+    // Emit socket event
     socket?.emit(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), {
       project_id: projectId,
       from_index: sourceGroup.tasks[fromIndex].sort_order,
@@ -396,18 +401,12 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     });
 
     // Reset styles
-    setTimeout(() => {
-      document.querySelectorAll<HTMLElement>('.task-row').forEach(row => {
-        row.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
-        row.style.cssText = 'opacity: 1 !important; position: relative !important; z-index: auto !important; transform: none !important;';
-        row.setAttribute('data-is-dragging', 'false');
-      });
-    }, 0);
+    setTimeout(resetTaskRowStyles, 0);
 
     trackMixpanelEvent(evt_project_task_list_drag_and_move);
-  };
+  }, [taskGroups, groupBy, projectId, currentSession?.team_id, dispatch, socket, resetTaskRowStyles, trackMixpanelEvent]);
 
-  // Replace the existing useEffect with this version
+  // Add CSS styles for drag and drop animations
   useIsomorphicLayoutEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
@@ -427,22 +426,19 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     `;
     document.head.appendChild(style);
     
-    return () => document.head.removeChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
-  // Add this new hook for better animation handling
+  // Handle animation cleanup after drag ends
   useIsomorphicLayoutEffect(() => {
     if (activeId === null) {
       // Final cleanup after React updates DOM
-      setTimeout(() => {
-        document.querySelectorAll<HTMLElement>('.task-row').forEach(row => {
-          row.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
-          row.style.opacity = '1';
-          row.style.transform = 'none';
-        });
-      }, 50);
+      const timeoutId = setTimeout(resetTaskRowStyles, 50);
+      return () => clearTimeout(timeoutId);
     }
-  }, [activeId]);
+  }, [activeId, resetTaskRowStyles]);
 
   return (
     <DndContext

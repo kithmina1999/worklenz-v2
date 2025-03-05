@@ -148,7 +148,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         form.resetFields();
         dispatch(toggleProjectDrawer());
         if (!editMode) {
-          navigate(`/worklenz/projects/${response.data.body.id}`);
+          navigate(`/worklenz/projects/${response.data.body.id}?tab=tasks-list&pinned_tab=tasks-list`);
         }
         refetchProjects();
       } else {

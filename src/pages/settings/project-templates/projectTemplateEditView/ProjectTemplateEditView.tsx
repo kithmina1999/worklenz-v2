@@ -1,12 +1,12 @@
 import { Button, Flex, Select, Typography } from 'antd';
 import { useState } from 'react';
-import StatusGroupTables from '../../../projects/project-view/taskList/statusTables/StatusGroupTables';
+import StatusGroupTables from '../../../projects/project-view-1/taskList/statusTables/StatusGroupTables';
 import { TaskType } from '../../../../types/task.types';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { PageHeader } from '@ant-design/pro-components';
 import { ArrowLeftOutlined, CaretDownFilled } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
-import SearchDropdown from '../../../projects/project-view/taskList/taskListFilters/SearchDropdown';
+import SearchDropdown from '../../../projects/project-view-1/taskList/taskListFilters/SearchDropdown';
 import { useSelectedProject } from '../../../../hooks/useSelectedProject';
 import { useTranslation } from 'react-i18next';
 import { toggleDrawer as togglePhaseDrawer } from '../../../../features/projects/singleProject/phase/phases.slice';

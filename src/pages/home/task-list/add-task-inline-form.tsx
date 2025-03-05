@@ -241,6 +241,7 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
             options={projectOptions}
             defaultOpen
             showSearch
+            autoFocus={!calendarView}
             optionFilterProp="label"
             filterSort={(optionA, optionB) =>
               (optionA?.label ?? '')

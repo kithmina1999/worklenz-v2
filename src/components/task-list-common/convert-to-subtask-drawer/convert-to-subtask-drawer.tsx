@@ -1,4 +1,4 @@
-import { Drawer, Tag, Typography, Flex, Table, Button, Tooltip } from 'antd/es';
+import { Drawer, Tag, Typography, Flex, Table, Button, Tooltip, Skeleton } from 'antd/es';
 import { useTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -31,26 +31,34 @@ const ConvertToSubtaskDrawer = () => {
   const [expandedGroups, setExpandedGroups] = useState<boolean[]>([]);
   const [converting, setConverting] = useState(false);
   const [taskGroups, setTaskGroups] = useState<ITaskListGroup[]>([]);
+  const [loading, setLoading] = useState(false);
   const { projectId } = useAppSelector(state => state.projectReducer);
 
   const fetchTasks = async () => {
     if (!projectId) return;
 
-    const config: ITaskListConfigV2 = {
-      id: projectId,
-      group: groupBy,
-      field: null,
-      order: null,
-      search: null,
-      statuses: null,
-      members: null,
-      projects: null,
-      isSubtasksInclude: false,
-    };
+    try {
+      setLoading(true);
+      const config: ITaskListConfigV2 = {
+        id: projectId,
+        group: groupBy,
+        field: null,
+        order: null,
+        search: null,
+        statuses: null,
+        members: null,
+        projects: null,
+        isSubtasksInclude: false,
+      };
 
-    const response = await tasksApiService.getTaskList(config);
-    if (response.done) {
-      setTaskGroups(response.body);
+      const response = await tasksApiService.getTaskList(config);
+      if (response.done) {
+        setTaskGroups(response.body);
+      }
+    } catch (error) {
+      logger.error('Error fetching tasks:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -112,6 +120,7 @@ const ConvertToSubtaskDrawer = () => {
         dispatch(deselectAll());
         dispatch(fetchTaskGroups(projectId));
         fetchTasks();
+        dispatch(setConvertToSubtaskDrawerOpen(false));
       }
       setConverting(false);
     } catch (error) {
@@ -137,7 +146,11 @@ const ConvertToSubtaskDrawer = () => {
   return (
     <Drawer
       open={convertToSubtaskDrawerOpen}
-      onClose={() => dispatch(setConvertToSubtaskDrawerOpen(false))}
+      onClose={() => {
+        dispatch(setConvertToSubtaskDrawerOpen(false));
+        setSearchText('');
+        setTaskGroups([]);
+      }}
       title={t('contextMenu.convertToSubTask')}
       width={700}
       afterOpenChange={() => fetchTasks()}
@@ -149,85 +162,89 @@ const ConvertToSubtaskDrawer = () => {
           placeholderText={t('contextMenu.searchByNameInputPlaceholder')}
         />
       </Flex>
-      {filteredTasks.map((item, index) => (
-        <div key={`group-${item.id}`}>
-          <Button
-            key={`group-button-${item.id}`}
-            className="w-full"
-            style={{
-              backgroundColor: item.color_code,
-              border: 'none',
-              borderBottomLeftRadius: expandedGroups[index] ? 0 : 4,
-              borderBottomRightRadius: expandedGroups[index] ? 0 : 4,
-              color: '#000',
-              marginTop: 8,
-              justifyContent: 'flex-start',
-              width: 'auto',
-            }}
-            onClick={() => toggleGroup(index)}
-          >
-            <Flex key={`group-flex-${item.id}`} align="center" gap={8}>
-              <RightOutlined rotate={expandedGroups[index] ? 90 : 0} />
-              <Typography.Text strong>{item.name}</Typography.Text>
-            </Flex>
-          </Button>
-          <div
-            key={`group-content-${item.id}`}
-            style={{
-              borderLeft: `3px solid ${item.color_code}`,
-              transition: 'all 0.3s ease-in-out',
-              maxHeight: expandedGroups[index] ? '2000px' : '0',
-              opacity: expandedGroups[index] ? 1 : 0,
-              overflow: expandedGroups[index] ? 'visible' : 'hidden',
-            }}
-          >
-            <Table
-              key={`group-table-${item.id}`}
-              size="small"
-              columns={[
-                {
-                  title: '',
-                  dataIndex: 'task_key',
-                  key: 'task_key',
-                  width: 100,
-                  className: 'text-center',
-                  render: (text: string) => <Tag key={`tag-${text}`}>{text}</Tag>,
-                },
-                {
-                  title: 'Task',
-                  dataIndex: 'name',
-                  key: 'name',
-                  render: (text: string) => (
-                    <Tooltip title={text}>
-                      <Typography.Text
-                        style={{
-                          width: 520,
-                        }}
-                        ellipsis={{ tooltip: text }}
-                      >
-                        {text}
-                      </Typography.Text>
-                    </Tooltip>
-                  ),
-                },
-              ]}
-              dataSource={item.tasks.filter(
-                task => !task.parent_task_id && selectedTask?.id !== task.id
-              )}
-              pagination={false}
-              scroll={{ x: 'max-content' }}
-              onRow={record => {
-                return {
-                  onClick: () => convertToSubTask(item.id, record.id),
-                  style: { height: 38, cursor: 'pointer' },
-                  className: 'group even:bg-[#4e4e4e10]',
-                  key: `task-row-${record.id}`,
-                };
+      {loading ? (
+        <Skeleton active className="mt-4" />
+      ) : (
+        filteredTasks.map((item, index) => (
+          <div key={`group-${item.id}`}>
+            <Button
+              key={`group-button-${item.id}`}
+              className="w-full"
+              style={{
+                backgroundColor: item.color_code,
+                border: 'none',
+                borderBottomLeftRadius: expandedGroups[index] ? 0 : 4,
+                borderBottomRightRadius: expandedGroups[index] ? 0 : 4,
+                color: '#000',
+                marginTop: 8,
+                justifyContent: 'flex-start',
+                width: 'auto',
               }}
-            />
+              onClick={() => toggleGroup(index)}
+            >
+              <Flex key={`group-flex-${item.id}`} align="center" gap={8}>
+                <RightOutlined rotate={expandedGroups[index] ? 90 : 0} />
+                <Typography.Text strong>{item.name}</Typography.Text>
+              </Flex>
+            </Button>
+            <div
+              key={`group-content-${item.id}`}
+              style={{
+                borderLeft: `3px solid ${item.color_code}`,
+                transition: 'all 0.3s ease-in-out',
+                maxHeight: expandedGroups[index] ? '2000px' : '0',
+                opacity: expandedGroups[index] ? 1 : 0,
+                overflow: expandedGroups[index] ? 'visible' : 'hidden',
+              }}
+            >
+              <Table
+                key={`group-table-${item.id}`}
+                size="small"
+                columns={[
+                  {
+                    title: '',
+                    dataIndex: 'task_key',
+                    key: 'task_key',
+                    width: 100,
+                    className: 'text-center',
+                    render: (text: string) => <Tag key={`tag-${text}`}>{text}</Tag>,
+                  },
+                  {
+                    title: 'Task',
+                    dataIndex: 'name',
+                    key: 'name',
+                    render: (text: string) => (
+                      <Tooltip title={text}>
+                        <Typography.Text
+                          style={{
+                            width: 520,
+                          }}
+                          ellipsis={{ tooltip: text }}
+                        >
+                          {text}
+                        </Typography.Text>
+                      </Tooltip>
+                    ),
+                  },
+                ]}
+                dataSource={item.tasks.filter(
+                  task => !task.parent_task_id && selectedTask?.id !== task.id
+                )}
+                pagination={false}
+                scroll={{ x: 'max-content' }}
+                onRow={record => {
+                  return {
+                    onClick: () => convertToSubTask(item.id, record.id),
+                    style: { height: 38, cursor: 'pointer' },
+                    className: 'group even:bg-[#4e4e4e10]',
+                    key: `task-row-${record.id}`,
+                  };
+                }}
+              />
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
     </Drawer>
   );
 };
