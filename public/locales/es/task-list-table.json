@@ -51,11 +51,13 @@
   "pendingInvitation": "Invitación pendiente",
 
   "contextMenu": {
-    "assignToMe": "Asignarme",
+    "assignToMe": "Asignar a mí",
     "moveTo": "Mover a",
     "unarchive": "Desarchivar",
     "archive": "Archivar",
     "convertToSubTask": "Convertir en subtarea",
-    "delete": "Eliminar"
+    "convertToTask": "Convertir en tarea",
+    "delete": "Eliminar",
+    "searchByNameInputPlaceholder": "Buscar por nombre"
   }
 }
