@@ -30,6 +30,7 @@ import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_project_board_column_setting_click } from '@/shared/worklenz-analytics-events';
 import { ALPHA_CHANNEL } from '@/shared/constants';
+import useIsProjectManager from '@/hooks/useIsProjectManager';
 
 interface TaskListTableWrapperProps {
   taskList: IProjectTask[];
@@ -54,6 +55,7 @@ const TaskListTableWrapper = ({
   const currentSession = useAuthService().getCurrentSession();
   const { trackMixpanelEvent } = useMixpanelTracking();
   const dispatch = useAppDispatch();
+  const isProjectManager = useIsProjectManager();
 
   const [tableName, setTableName] = useState<string>(name);
   const [showRenameInput, setShowRenameInput] = useState<boolean>(false);
@@ -69,10 +71,6 @@ const TaskListTableWrapper = ({
   const handlToggleExpand = () => {
     if (isRenaming) return;
     setIsExpanded(!isExpanded);
-  };
-
-  const isProjectManager = () => {
-    return currentSession?.team_member_id === project?.project_manager?.id;
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -102,7 +100,7 @@ const TaskListTableWrapper = ({
   };
 
   const handleRename = async () => {
-    if (!projectId || isRenaming || !(isOwnerOrAdmin || isProjectManager()) || !tableId) return;
+    if (!projectId || isRenaming || !(isOwnerOrAdmin || isProjectManager) || !tableId) return;
 
     if (tableName.trim() === name.trim()) {
       setShowRenameInput(false);

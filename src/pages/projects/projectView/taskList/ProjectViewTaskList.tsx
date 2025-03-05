@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import Flex from 'antd/es/flex';
 import Skeleton from 'antd/es/skeleton';
+import { useSearchParams } from 'react-router-dom';
 
 import TaskListFilters from './taskListFilters/TaskListFilters';
 import TaskGroupWrapper from './groupTables/task-group-wrapper/task-group-wrapper';
@@ -12,8 +13,11 @@ import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/
 
 const ProjectViewTaskList = () => {
   const dispatch = useAppDispatch();
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get('tab');
+  const projectView = tab === 'tasks-list' ? 'list' : 'kanban';
 
-  const { projectId, projectView } = useAppSelector(state => state.projectReducer);
+  const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskGroups, loadingGroups, groupBy, archived, fields, search } = useAppSelector(
     state => state.taskReducer
   );

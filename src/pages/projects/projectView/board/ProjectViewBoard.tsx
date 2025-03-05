@@ -3,7 +3,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import TaskListFilters from '../taskList/taskListFilters/TaskListFilters';
 import { Empty, Flex, Skeleton } from 'antd';
 import BoardSectionCardContainer from './board-section/board-section-container';
-import { fetchTaskGroups, reorderTaskGroups } from '@features/board/board-slice';
+import { fetchBoardTaskGroups, reorderTaskGroups } from '@features/board/board-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   DndContext,
@@ -14,17 +14,21 @@ import {
   DragOverlay,
 } from '@dnd-kit/core';
 import BoardViewTaskCard from './board-section/board-task-card/board-view-task-card';
+import { useSearchParams } from 'react-router-dom';
 
 const ProjectViewBoard = () => {
-  const { projectId, projectView } = useAppSelector(state => state.projectReducer);
+  const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskGroups, groupBy, loadingGroups, error } = useAppSelector(state => state.boardReducer);
   const dispatch = useAppDispatch();
   const [activeItem, setActiveItem] = useState<any>(null);
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get('tab');
+  const projectView = tab === 'list' ? 'list' : 'kanban';
 
   useEffect(() => {
     if (projectId && groupBy && projectView === 'kanban') {
       if (!loadingGroups) {
-        dispatch(fetchTaskGroups(projectId));
+        dispatch(fetchBoardTaskGroups(projectId));
       }
     }
   }, [dispatch, projectId, groupBy, projectView]);

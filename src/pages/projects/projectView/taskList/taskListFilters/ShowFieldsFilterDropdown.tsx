@@ -1,10 +1,8 @@
 import { MoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import Button from 'antd/es/button';
-import Card from 'antd/es/card';
 import Checkbox from 'antd/es/checkbox';
 import Dropdown from 'antd/es/dropdown';
-import List from 'antd/es/list';
 import Space from 'antd/es/space';
 
 import { useAppSelector } from '@/hooks/useAppSelector';

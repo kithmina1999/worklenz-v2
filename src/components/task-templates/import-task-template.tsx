@@ -19,7 +19,7 @@ import { ITaskTemplatesGetResponse } from '@/types/settings/task-templates.types
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { taskTemplatesApiService } from '@/api/task-templates/task-templates.api.service';
 import logger from '@/utils/errorLogger';
-import { fetchTaskGroups } from '@/features/board/board-slice';
+import { fetchBoardTaskGroups } from '@/features/board/board-slice';
 import { setImportTaskTemplateDrawerOpen } from '@/features/project/project.slice';
 
 const ImportTaskTemplate = () => {
@@ -86,7 +86,7 @@ const ImportTaskTemplate = () => {
       setImporting(true);
       const res = await taskTemplatesApiService.importTemplate(projectId, tasks);
       if (res.done) {
-        dispatch(fetchTaskGroups(projectId));
+        dispatch(fetchBoardTaskGroups(projectId));
         dispatch(setImportTaskTemplateDrawerOpen(false));
       }
     } catch (error) {

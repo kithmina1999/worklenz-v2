@@ -15,7 +15,7 @@ import {
   toggleArchived,
 } from '@/features/tasks/tasks.slice';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
-import { fetchTaskGroups } from '@/features/board/board-slice';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
 
 const SearchDropdown = React.lazy(() => import('./SearchDropdown'));
 const SortFilterDropdown = React.lazy(() => import('./SortFilterDropdown'));
@@ -32,6 +32,7 @@ interface TaskListFiltersProps {
 const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
   const { t } = useTranslation('task-list-filters');
   const dispatch = useAppDispatch();
+  const { projectView } = useTabSearchParam();
 
   const priorities = useAppSelector(state => state.priorityReducer.priorities);
 
@@ -63,7 +64,7 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
     <Flex gap={8} align="center" justify="space-between">
       <Flex gap={8} wrap={'wrap'}>
         <SearchDropdown />
-        <SortFilterDropdown />
+        {projectView === 'list' && <SortFilterDropdown />}
         <PriorityFilterDropdown priorities={priorities} />
         <LabelsFilterDropdown />
         <MembersFilterDropdown />
