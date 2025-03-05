@@ -54,7 +54,6 @@ import AddCustomColumnButton from './custom-columns/custom-column-modal/add-cust
 import { fetchSubTasks, reorderTasks, toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import ConfigPhaseButton from '@/features/projects/singleProject/phase/ConfigPhaseButton';
-import ConvertToSubtaskDrawer from '@/components/task-list-common/convert-to-subtask-drawer/convert-to-subtask-drawer';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -488,7 +487,9 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         overGroupId: tableId,
         fromIndex: activeIndex,
         toIndex: overIndex,
-        task: displayTasks[activeIndex]
+        task: displayTasks[activeIndex],
+        updatedSourceTasks: displayTasks,
+        updatedTargetTasks: displayTasks
       }));
     }
   };

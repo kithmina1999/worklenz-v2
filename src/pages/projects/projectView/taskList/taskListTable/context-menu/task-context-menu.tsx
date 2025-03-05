@@ -134,13 +134,13 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
   };
 
   const handleStatusMoveTo = async (targetId: string | undefined) => {
-    if (!projectId || !selectedTask || !targetId) return;
+    if (!projectId || !selectedTask.id || !targetId) return;
 
     try {
       socket?.emit(
         SocketEvents.TASK_STATUS_CHANGE.toString(),
         JSON.stringify({
-          task_id: selectedTask,
+          task_id: selectedTask.id,
           status_id: targetId,
           parent_task: null,
           team_id: currentSession?.team_id,
@@ -153,13 +153,13 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
   };
 
   const handlePriorityMoveTo = async (targetId: string | undefined) => {
-    if (!projectId || !selectedTask || !targetId) return;
+    if (!projectId || !selectedTask.id || !targetId) return;
 
     try {
       socket?.emit(
         SocketEvents.TASK_PRIORITY_CHANGE.toString(),
         JSON.stringify({
-          task_id: selectedTask,
+          task_id: selectedTask.id,
           priority_id: targetId,
           team_id: currentSession?.team_id,
         })
@@ -170,13 +170,13 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
   };
 
   const handlePhaseMoveTo = async (targetId: string | undefined) => {
-    if (!projectId || !selectedTask || !targetId) return;
+    if (!projectId || !selectedTask.id || !targetId) return;
 
     try {
       socket?.emit(
         SocketEvents.TASK_PHASE_CHANGE.toString(),
         {
-          task_id: selectedTask,
+          task_id: selectedTask.id,
           phase_id: targetId,
           team_id: currentSession?.team_id,
         }
@@ -246,14 +246,22 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
       label: archived ? t('contextMenu.unarchive') : t('contextMenu.archive'),
       onClick: handleArchive,
     },
-    {
+    ...(selectedTask?.sub_tasks_count === 0 && !selectedTask?.parent_task_id ? [{
       key: '4',
       icon: <DoubleRightOutlined />,
-      label: selectedTask?.parent_task_id ? t('convertToTask') : t('contextMenu.convertToSubTask'),
+      label: t('contextMenu.convertToSubTask'),
       onClick: () => dispatch(setConvertToSubtaskDrawerOpen(true)),
-    },
-    {
+    }] : []),
+    ...(selectedTask?.parent_task_id ? [{
       key: '5',
+      icon: <DoubleRightOutlined />,
+      label: t('contextMenu.convertToTask'),
+      onClick: () => {
+        // Implement the logic to convert to task here
+      },
+    }] : []),
+    {
+      key: '6',
       icon: <DeleteOutlined />,
       label: t('contextMenu.delete'),
       onClick: handleDelete,

@@ -75,4 +75,16 @@ export const tasksApiService = {
     const response = await apiClient.get(`${rootUrl}/subscribers/${taskId}`);
     return response.data;
   },
+
+  convertToSubtask: async (taskId: string, projectId: string, parentTaskId: string, groupBy: string, toGroupId: string): Promise<IServerResponse<void>> => {
+    const response = await apiClient.post(`${rootUrl}/convert-to-subtask`, {
+      id: taskId,
+      project_id: projectId,
+      parent_task_id: parentTaskId,
+      group_by: groupBy,
+      to_group_id: toGroupId
+    });
+    return response.data;
+  },
+
 };
