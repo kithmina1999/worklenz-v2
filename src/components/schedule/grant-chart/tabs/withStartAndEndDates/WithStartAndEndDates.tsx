@@ -2,7 +2,7 @@ import { TaskType } from '@/types/task.types';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import GroupByFilterDropdown from '@/pages/projects/projectView/taskList/taskListFilters/GroupByFilterDropdown';
 import { useTranslation } from 'react-i18next';
-import StatusGroupTables from '@/pages/projects/project-view/taskList/statusTables/StatusGroupTables';
+import StatusGroupTables from '@/pages/projects/project-view-1/taskList/statusTables/StatusGroupTables';
 import PriorityGroupTables from '@/pages/projects/projectView/taskList/groupTables/priorityTables/PriorityGroupTables';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskListGroup } from '@/types/tasks/taskList.types';

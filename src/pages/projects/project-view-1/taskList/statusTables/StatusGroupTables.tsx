@@ -1,7 +1,7 @@
 import { TaskType } from '@/types/task.types';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { Flex } from 'antd';
-import TaskListTableWrapper from '@/pages/projects/project-view/taskList/taskListTable/TaskListTableWrapper';
+import TaskListTableWrapper from '@/pages/projects/project-view-1/taskList/taskListTable/TaskListTableWrapper';
 import { createPortal } from 'react-dom';
 import BulkTasksActionContainer from '@/features/projects/bulkActions/BulkTasksActionContainer';
 import { useAppDispatch } from '@/hooks/useAppDispatch';

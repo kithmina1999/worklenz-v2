@@ -1,12 +1,12 @@
 import React, { ReactNode } from 'react';
 // import ProjectViewBoard from '@/pages/projects/project-view/board/project-view-board';
-import ProjectViewWorkload from '@/pages/projects/project-view/workload/ProjectViewWorkload';
-import ProjectViewInsights from '@/pages/projects/project-view/insights/project-view-insights';
-import ProjectViewFiles from '@/pages/projects/project-view/files/project-view-files';
-import ProjectViewMembers from '@/pages/projects/project-view/members/project-view-members';
-import ProjectViewUpdates from '@/pages/projects/project-view/updates/project-view-updates';
-import TaskList from '@/pages/projects/project-view/task-list/task-list';
-import ProjectViewRoadmap from '@/pages/projects/project-view/roadmap/project-view-roadmap';
+import ProjectViewWorkload from '@/pages/projects/project-view-1/workload/ProjectViewWorkload';
+import ProjectViewInsights from '@/pages/projects/project-view-1/insights/project-view-insights';
+import ProjectViewFiles from '@/pages/projects/project-view-1/files/project-view-files';
+import ProjectViewMembers from '@/pages/projects/project-view-1/members/project-view-members';
+import ProjectViewUpdates from '@/pages/projects/project-view-1/updates/project-view-updates';
+import TaskList from '@/pages/projects/project-view-1/task-list/task-list';
+import ProjectViewRoadmap from '@/pages/projects/project-view-1/roadmap/project-view-roadmap';
 import ProjectViewTaskList from '@/pages/projects/projectView/taskList/ProjectViewTaskList';
 import ProjectViewBoard from '@/pages/projects/projectView/board/ProjectViewBoard';
 

@@ -739,7 +739,6 @@ const taskSlice = createSlice({
         updatedTargetTasks: IProjectTask[];
       }>
     ) => {
-      console.log('reorderTasks', JSON.stringify(action.payload));
       return produce(state, draft => {
         const { activeGroupId, overGroupId, updatedSourceTasks, updatedTargetTasks } = action.payload;
 
