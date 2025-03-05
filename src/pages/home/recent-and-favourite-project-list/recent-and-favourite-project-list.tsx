@@ -17,11 +17,13 @@ import { useTranslation } from 'react-i18next';
 import AddFavouriteProjectButton from './add-favourite-project-button';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { useGetProjectsQuery } from '@/api/home-page/home-page.api.service';
-
+import { useNavigate } from 'react-router-dom';
 const MY_PROJECTS_FILTER_KEY = 'my-dashboard-active-projects-filter';
 
 const RecentAndFavouriteProjectList = () => {
   const { t } = useTranslation('home');
+  const navigate = useNavigate();
+  
   const [projectSegment, setProjectSegment] = useState<'Recent' | 'Favourites'>('Recent');
 
   const getActiveProjectsFilter = useCallback(() => {
@@ -32,6 +34,12 @@ const RecentAndFavouriteProjectList = () => {
     localStorage.setItem(MY_PROJECTS_FILTER_KEY, value.toString());
   }, []);
 
+  // Initialize projectSegment from localStorage on component mount
+  useEffect(() => {
+    const filterValue = getActiveProjectsFilter();
+    setProjectSegment(filterValue === 0 ? 'Recent' : 'Favourites');
+  }, [getActiveProjectsFilter]);
+
   const {
     data: projectsData,
     isFetching: projectsIsFetching,
@@ -39,6 +47,7 @@ const RecentAndFavouriteProjectList = () => {
     refetch,
   } = useGetProjectsQuery({ view: getActiveProjectsFilter() });
 
+  // Refetch data when projectSegment changes
   useEffect(() => {
     refetch();
   }, [projectSegment, refetch]);
@@ -65,7 +74,11 @@ const RecentAndFavouriteProjectList = () => {
       {
         key: 'name',
         render: (record: IProjectViewModel) => (
-          <Typography.Paragraph key={record.id} style={{ margin: 0, paddingInlineEnd: 6 }}>
+          <Typography.Paragraph
+            key={record.id}
+            style={{ margin: 0, paddingInlineEnd: 6, cursor: 'pointer' }}
+            onClick={() => navigate(`/worklenz/projects/${record.id}`)}
+          >
             <Badge color={record.color_code} style={{ marginInlineEnd: 4 }} />
             {record.name}
           </Typography.Paragraph>
@@ -105,7 +118,7 @@ const RecentAndFavouriteProjectList = () => {
       </Tooltip>
       <Segmented<'Recent' | 'Favourites'>
         options={['Recent', 'Favourites']}
-        defaultValue={projectSegment}
+        defaultValue={getActiveProjectsFilter() === 0 ? 'Recent' : 'Favourites'}
         onChange={handleSegmentChange}
       />
     </Flex>

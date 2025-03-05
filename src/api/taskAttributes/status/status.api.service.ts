@@ -4,6 +4,7 @@ import { API_BASE_URL } from '@/shared/constants';
 import { ITaskStatus, ITaskStatusCategory } from '@/types/status.types';
 import { ITaskStatusCreateRequest } from '@/types/tasks/task-status-create-request';
 import { toQueryString } from '@/utils/toQueryString';
+import { ITaskStatusUpdateModel } from '@/types/tasks/task-status-update-model.types';
 
 const rootUrl = `${API_BASE_URL}/statuses`;
 
@@ -28,6 +29,13 @@ export const statusApiService = {
   ): Promise<IServerResponse<ITaskStatus>> => {
     const q = toQueryString({ current_project_id: currentProjectId });
     const response = await apiClient.post<IServerResponse<ITaskStatus>>(`${rootUrl}?${q}`, body);
+    return response.data;
+  },
+
+  updateStatus: async (statusId: string, body: ITaskStatusUpdateModel, currentProjectId: string): Promise<IServerResponse<ITaskStatus>> => {
+    const q = toQueryString({current_project_id: currentProjectId})
+
+    const response = await apiClient.put<IServerResponse<ITaskStatus>>(`${rootUrl}/${statusId}${q}`, body);
     return response.data;
   },
 };

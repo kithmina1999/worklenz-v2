@@ -1,11 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { PlusOutlined } from '@ant-design/icons';
 import {
   Badge,
   Button,
   Card,
   Checkbox,
-  Divider,
   Dropdown,
   Flex,
   Input,
@@ -14,19 +12,14 @@ import {
   Typography,
 } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { colors } from '../../../styles/colors';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { ITaskLabel } from '../../../types/label.type';
-import { toggleLabel } from '../../../features/tasks/taskSlice';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
+import { ITaskLabel } from '@/types/label.type';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { updateTaskLabel } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import { SocketEvents } from '@/shared/socket-events';
 import { useSocket } from '@/socket/socketContext';
-import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
-import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 
 interface LabelsSelectorProps {
   task: IProjectTask;
@@ -34,8 +27,7 @@ interface LabelsSelectorProps {
 
 const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   const { t } = useTranslation('task-list-table');
-  const { socket, connected } = useSocket();
-  const dispatch = useAppDispatch();
+  const { socket } = useSocket();
 
   const labelInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -45,12 +37,6 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
 
   const currentSession = useAuthService().getCurrentSession();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-
-  const handleLabelsChange = async (labels: ILabelsChangeResponse) => {
-    await dispatch(updateTaskLabel(labels));
-    await dispatch(fetchLabels());
-    setSearchQuery('');
-  };
 
   const handleLabelChange = (label: ITaskLabel) => {
     const labelData = {
@@ -64,9 +50,10 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   };
 
   const handleCreateLabel = () => {
+    if (!searchQuery.trim()) return;
     const labelData = {
       task_id: task.id,
-      label: searchQuery,
+      label: searchQuery.trim(),
       parent_task: task.parent_task_id,
       team_id: currentSession?.team_id,
     };
@@ -76,18 +63,6 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
   useEffect(() => {
     setLabelList(labels as ITaskLabel[]);
   }, [labels, task.labels]);
-
-  useEffect(() => {
-    if (connected) {
-      socket?.on(SocketEvents.TASK_LABELS_CHANGE.toString(), handleLabelsChange);
-      socket?.on(SocketEvents.CREATE_LABEL.toString(), handleLabelsChange);
-    }
-
-    return () => {
-      socket?.removeListener(SocketEvents.TASK_LABELS_CHANGE.toString(), handleLabelsChange);
-      socket?.removeListener(SocketEvents.CREATE_LABEL.toString(), handleLabelsChange);
-    };
-  }, [connected]);
 
   // used useMemo hook for re render the list when searching
   const filteredLabelData = useMemo(() => {
@@ -157,15 +132,15 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
           )}
         </List>
 
-        <Divider style={{ margin: 0 }} />
+        {/* <Divider style={{ margin: 0 }} /> */}
 
-        <Button
+        {/* <Button
           type="primary"
           style={{ alignSelf: 'flex-end' }}
           onClick={() => handleCreateLabel()}
         >
           {t('okButton')}
-        </Button>
+        </Button> */}
       </Flex>
     </Card>
   );

@@ -4,10 +4,14 @@ import { PaperClipOutlined } from '@ant-design/icons';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { themeWiseColor } from '@/utils/themeWiseColor';
+import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
+import { calculateTimeGap } from '@/utils/calculate-time-gap';
+import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 
 const InfoTabFooter = () => {
   const [characterLength, setCharacterLength] = useState<number>(0);
   const [isCommentBoxExpand, setIsCommentBoxExpand] = useState<boolean>(false);
+  const { taskFormViewModel } = useAppSelector(state => state.taskDrawerReducer);
 
   const [form] = Form.useForm();
 
@@ -27,8 +31,8 @@ const InfoTabFooter = () => {
   // mentions options
   const mentionsOptions = projectMembersList
     ? projectMembersList.map(member => ({
-        value: member.memberName,
-        label: member.memberName,
+        value: member.id,
+        label: member.name,
       }))
     : [];
 
@@ -59,29 +63,31 @@ const InfoTabFooter = () => {
 
       <Form form={form} style={{ width: '100%' }}>
         <Form.Item name={'comment'} style={{ marginBlock: 12 }}>
-          <Mentions
-            placeholder={'Add a comment..'}
-            options={mentionsOptions}
-            autoSize
-            maxLength={5000}
-            onClick={() => setIsCommentBoxExpand(true)}
-            onChange={e => setCharacterLength(e.length)}
-            style={{
-              minHeight: isCommentBoxExpand ? 180 : 60,
-              maxHeight: 480,
-              overflow: 'scroll',
-              paddingBlockEnd: 24,
-            }}
-          />
+          <div>
+            <Mentions
+              placeholder={'Add a comment..'}
+              options={mentionsOptions}
+              autoSize
+              maxLength={5000}
+              onClick={() => setIsCommentBoxExpand(true)}
+              onChange={e => setCharacterLength(e.length)}
+              style={{
+                minHeight: isCommentBoxExpand ? 180 : 60,
+                maxHeight: 480,
+                overflow: 'scroll',
+                paddingBlockEnd: 24,
+              }}
+            />
 
-          <span
-            style={{
-              position: 'absolute',
-              bottom: 4,
-              right: 12,
-              color: colors.lightGray,
-            }}
-          >{`${characterLength}/5000`}</span>
+            <span
+              style={{
+                position: 'absolute',
+                bottom: 4,
+                right: 12,
+                color: colors.lightGray,
+              }}
+            >{`${characterLength}/5000`}</span>
+          </div>
         </Form.Item>
 
         {isCommentBoxExpand && (
@@ -103,12 +109,34 @@ const InfoTabFooter = () => {
       </Form>
 
       <Flex align="center" justify="space-between" style={{ width: '100%' }}>
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          Created in a few seconds by Dev prasad
-        </Typography.Text>
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          Updated in a few seconds
-        </Typography.Text>
+        <Tooltip
+          title={
+            taskFormViewModel?.task?.created_at
+              ? formatDateTimeWithLocale(taskFormViewModel.task.created_at)
+              : 'N/A'
+          }
+        >
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            Created{' '}
+            {taskFormViewModel?.task?.created_at
+              ? calculateTimeDifference(taskFormViewModel.task.created_at)
+              : 'N/A'} by {taskFormViewModel?.task?.reporter}
+          </Typography.Text>
+        </Tooltip>
+        <Tooltip
+          title={
+            taskFormViewModel?.task?.updated_at
+              ? formatDateTimeWithLocale(taskFormViewModel.task.updated_at)
+              : 'N/A'
+          }
+        >
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            Updated{' '}
+            {taskFormViewModel?.task?.updated_at
+              ? calculateTimeDifference(taskFormViewModel.task.updated_at)
+              : 'N/A'}
+          </Typography.Text>
+        </Tooltip>
       </Flex>
     </Flex>
   );

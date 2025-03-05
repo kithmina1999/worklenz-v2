@@ -7,7 +7,7 @@ import {
   MoreOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import { setTaskCardDisabled, initializeStatus } from '../../../features/board/createCardSlice';
+import { setTaskCardDisabled, initializeStatus } from '../../../features/board/create-card.slice';
 import { TaskType } from '../../../types/task.types';
 import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
 import TaskCard from '../taskCard/TaskCard';
@@ -56,7 +56,7 @@ const CommonPhaseSection: React.FC<CommonPhaseSectionProps> = ({
   const inputRef = useRef<InputRef>(null);
   const [isLoading, setIsLoading] = useState(false);
   const taskCardRef = useRef<HTMLDivElement>(null);
-  const { t } = useTranslation('kanbanBoard');
+  const { t } = useTranslation('kanban-board');
 
   const handleAddTaskClick = () => {
     dispatch(setTaskCardDisabled({ status, position: 'bottom', disabled: false }));

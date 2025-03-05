@@ -6,9 +6,9 @@ import { simpleDateFormat } from '@/utils/simpleDateFormat';
 import { colors } from '@/styles/colors';
 import { statusData } from '@/lib/project/projectConstants';
 import { toCamelCase } from '@/utils/toCamelCase';
-import ProjectCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-cell/project-cell';
-import ProjectDaysLeftAndOverdueCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-days-left-and-overdue-cell/project-days-left-and-overdue-cell';
-import ProjectManagerCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-manager-cell/project-manager-cell';
+import ProjectCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-cell/project-cell';
+import ProjectDaysLeftAndOverdueCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-days-left-and-overdue-cell/project-days-left-and-overdue-cell';
+import ProjectManagerCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-manager-cell/project-manager-cell';
 
 type ProjectReportsTableProps = {
   projectList: any[];

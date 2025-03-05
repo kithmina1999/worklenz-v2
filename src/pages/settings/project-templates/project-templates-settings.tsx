@@ -1,22 +1,44 @@
 import { Button, Card, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import jsonData from './ProjectTemplates.json';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { projectTemplatesApiService } from '@/api/project-templates/project-templates.api.service';
+import logger from '@/utils/errorLogger';
+import { ICustomTemplate } from '@/types/project-templates/project-templates.types';
 
 const ProjectTemplatesSettings = () => {
-  // localization
   const { t } = useTranslation('settings/project-templates');
+
+  const [projectTemplates, setProjectTemplates] = useState<ICustomTemplate[]>([]);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const navigate = useNavigate();
 
   useDocumentTitle('Project Templates');
 
-  // table columns
-  const columns: TableProps['columns'] = [
+  const fetchProjectTemplates = async () => {
+    try {
+      const response = await projectTemplatesApiService.getCustomTemplates();
+      setProjectTemplates(response.body);
+    } catch (error) {
+      logger.error('Failed to fetch project templates:', error);
+    }
+  };
+
+  const deleteProjectTemplate = async (id: string) => {
+    try {
+      const res = await projectTemplatesApiService.deleteCustomTemplate(id);
+      if (res.done) {
+        fetchProjectTemplates();
+      } 
+    } catch (error) {
+      logger.error('Failed to delete project template:', error);
+    }
+  };
+
+  const columns: TableProps<ICustomTemplate>['columns'] = [
     {
       key: 'name',
       title: t('nameColumn'),
@@ -46,6 +68,7 @@ const ProjectTemplatesSettings = () => {
               }
               okText={t('okText')}
               cancelText={t('cancelText')}
+              onConfirm={() => deleteProjectTemplate(record.id)}
             >
               <Button size="small">
                 <DeleteOutlined />
@@ -57,11 +80,15 @@ const ProjectTemplatesSettings = () => {
     },
   ];
 
+  useEffect(() => {
+    fetchProjectTemplates();
+  }, []);
+
   return (
     <Card style={{ width: '100%' }}>
       <Table
         columns={columns}
-        dataSource={jsonData}
+        dataSource={projectTemplates}
         size="small"
         pagination={{ size: 'small' }}
         rowClassName={(_, index) =>

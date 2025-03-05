@@ -9,45 +9,69 @@ import Flex from 'antd/es/flex';
 import Input, { InputRef } from 'antd/es/input';
 import List from 'antd/es/list';
 import Space from 'antd/es/space';
+import { useSearchParams } from 'react-router-dom';
 
 import { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
-import { ITaskLabel } from '@/types/tasks/taskLabel.types';
-import { setLabels } from '@/features/tasks/tasks.slice';
+import { fetchLabelsByProject, fetchTaskGroups, setLabels } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setBoardLabels } from '@/features/board/board-slice';
+import { fetchBoardTaskGroups } from '@/features/board/board-slice';
 
-interface LabelsFilterDropdownProps {
-  labels: ITaskLabel[];
-}
-
-const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
+const LabelsFilterDropdown = () => {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation('task-list-filters');
+  const [searchParams] = useSearchParams();
   const labelInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const { labels } = useAppSelector(state => state.taskReducer);
+  const { labels, loadingLabels } = useAppSelector(state => state.taskReducer);
+  const { labels: boardLabels, loadingLabels: boardLoadingLabels } = useAppSelector(
+    state => state.boardReducer
+  );
+  const { projectId } = useAppSelector(state => state.projectReducer);
 
-  const { t } = useTranslation('task-list-filters');
+  const tab = searchParams.get('tab');
+  const projectView = tab === 'tasks-list' ? 'list' : 'kanban';
 
   const filteredLabelData = useMemo(() => {
-    return props.labels.filter(label =>
-      label.name?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [props.labels, searchQuery]);
+    if (projectView === 'list') {
+      return labels.filter(label => label.name?.toLowerCase().includes(searchQuery.toLowerCase()));
+    } else {
+      return boardLabels.filter(label =>
+        label.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+  }, [labels, boardLabels, searchQuery, projectView]);
+
+  const labelsCount = useMemo(() => {
+    if (projectView === 'list') {
+      return labels.filter(label => label.selected).length;
+    } else {
+      return boardLabels.filter(label => label.selected).length;
+    }
+  }, [labels, boardLabels, projectView]);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // handle selected filters count
-  const handleSelectedFiltersCount = (checked: boolean, labelId: string) => {
-    let newLabels = [...labels];
-    if (checked) {
-      newLabels.push(labelId);
-      dispatch(setLabels(newLabels));
+  const handleLabelSelect = (checked: boolean, labelId: string) => {
+    if (projectView === 'list') {
+      dispatch(
+        setLabels(
+          labels.map(label => (label.id === labelId ? { ...label, selected: checked } : label))
+        )
+      );
+      if (projectId) dispatch(fetchTaskGroups(projectId));
     } else {
-      newLabels.splice(newLabels.indexOf(labelId), 1);
-      dispatch(setLabels(newLabels));
+      dispatch(
+        setBoardLabels(
+          boardLabels.map(label => (label.id === labelId ? { ...label, selected: checked } : label))
+        )
+      );
+      if (projectId) dispatch(fetchBoardTaskGroups(projectId));
     }
   };
 
@@ -57,6 +81,9 @@ const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
       setTimeout(() => {
         labelInputRef.current?.focus();
       }, 0);
+      if (projectView === 'kanban') {
+        dispatch(setBoardLabels(labels));
+      }
     }
   };
 
@@ -87,8 +114,8 @@ const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
               >
                 <Checkbox
                   id={label.id}
-                  checked={labels.includes(label.id || '')}
-                  onChange={e => handleSelectedFiltersCount(e.target.checked, label.id || '')}
+                  checked={label.selected}
+                  onChange={e => handleLabelSelect(e.target.checked, label.id || '')}
                 >
                   <Flex gap={8}>
                     <Badge color={label.color_code} />
@@ -115,20 +142,21 @@ const LabelsFilterDropdown = (props: LabelsFilterDropdownProps) => {
       <Button
         icon={<CaretDownFilled />}
         iconPosition="end"
+        loading={loadingLabels}
         style={{
           backgroundColor:
-            labels.length > 0
+            labelsCount > 0
               ? themeMode === 'dark'
                 ? '#003a5c'
                 : colors.paleBlue
               : colors.transparent,
 
-          color: labels.length > 0 ? (themeMode === 'dark' ? 'white' : colors.darkGray) : 'inherit',
+          color: labelsCount > 0 ? (themeMode === 'dark' ? 'white' : colors.darkGray) : 'inherit',
         }}
       >
         <Space>
           {t('labelsText')}
-          {labels.length > 0 && <Badge size="small" count={labels.length} color={colors.skyBlue} />}
+          {labelsCount > 0 && <Badge size="small" count={labelsCount} color={colors.skyBlue} />}
         </Space>
       </Button>
     </Dropdown>

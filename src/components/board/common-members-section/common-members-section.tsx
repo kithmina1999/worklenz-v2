@@ -7,7 +7,7 @@ import {
   MoreOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import { setTaskCardDisabled, initializeStatus } from '../../../features/board/createCardSlice';
+import { setTaskCardDisabled, initializeStatus } from '../../../features/board/create-card.slice';
 import { TaskType } from '../../../types/task.types';
 import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
 import TaskCard from '../taskCard/TaskCard';
@@ -40,12 +40,11 @@ const CommonMembersSection: React.FC<CommonMembersSectionProps> = ({
 
   const getRandomColorFromPalette = () =>
     colorPalette[Math.floor(Math.random() * colorPalette.length)];
-  // Initialize status in the Redux store if not already set
+
   useEffect(() => {
     dispatch(initializeStatus(status));
   }, [dispatch, status]);
 
-  // Get status-specific disable controls from Redux state
   const isTopCardDisabled = useAppSelector(
     state => state.createCardReducer.taskCardDisabledStatus[status]?.top
   );
@@ -60,7 +59,7 @@ const CommonMembersSection: React.FC<CommonMembersSectionProps> = ({
   const inputRef = useRef<InputRef>(null);
   const [isLoading, setIsLoading] = useState(false);
   const taskCardRef = useRef<HTMLDivElement>(null);
-  const { t } = useTranslation('kanbanBoard');
+  const { t } = useTranslation('kanban-board');
 
   const handleAddTaskClick = () => {
     dispatch(setTaskCardDisabled({ status, position: 'bottom', disabled: false }));

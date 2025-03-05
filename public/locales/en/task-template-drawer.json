@@ -1,8 +1,11 @@
 {
-  "title": "Edit Task Template",
+  "createTaskTemplate": "Create Task Template",
+  "editTaskTemplate": "Edit Task Template",
   "cancelText": "Cancel",
   "saveText": "Save",
   "templateNameText": "Template Name",
   "selectedTasks": "Selected Tasks",
-  "removeTask": "Remove"
+  "removeTask": "Remove",
+  "cancelButton": "Cancel",
+  "saveButton": "Save"
 }

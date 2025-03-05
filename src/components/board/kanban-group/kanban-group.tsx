@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
-import { setTaskCardDisabled, initializeGroup } from '@features/board/createCardSlice';
+import { setTaskCardDisabled, initializeGroup } from '@/features/board/create-card.slice';
 import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
 import TaskCard from '../taskCard/TaskCard';
 import { useAppSelector } from '@/hooks/useAppSelector';

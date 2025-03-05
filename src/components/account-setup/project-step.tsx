@@ -16,6 +16,7 @@ import { IAccountSetupRequest } from '@/types/project-templates/project-template
 
 import { evt_account_setup_template_complete } from '@/shared/worklenz-analytics-events';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
+import { createPortal } from 'react-dom';
 
 const { Title } = Typography;
 
@@ -113,28 +114,36 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
           {t('templateButton')}
         </Button>
       </div>
-      <Drawer
-        title={t('templateDrawerTitle')}
-        width={1000}
-        onClose={() => toggleTemplateSelector(false)}
-        open={open}
-        footer={
-          <div style={styles.drawerFooter}>
-            <Button style={{ marginRight: '8px' }} onClick={() => toggleTemplateSelector(false)}>
-              {t('cancel')}
-            </Button>
-            <Button
-              type="primary"
-              onClick={() => createFromTemplate()}
-              loading={creatingFromTemplate}
-            >
-              {t('create')}
-            </Button>
-          </div>
-        }
-      >
-        <TemplateDrawer showBothTabs={false} templateSelected={handleTemplateSelected} />
-      </Drawer>
+      {createPortal(
+        <Drawer
+          title={t('templateDrawerTitle')}
+          width={1000}
+          onClose={() => toggleTemplateSelector(false)}
+          open={open}
+          footer={
+            <div style={styles.drawerFooter}>
+              <Button style={{ marginRight: '8px' }} onClick={() => toggleTemplateSelector(false)}>
+                {t('cancel')}
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => createFromTemplate()}
+                loading={creatingFromTemplate}
+              >
+                {t('create')}
+              </Button>
+            </div>
+          }
+        >
+          <TemplateDrawer
+            showBothTabs={false}
+            templateSelected={handleTemplateSelected}
+            selectedTemplateType={() => {}}
+          />
+        </Drawer>,
+        document.body,
+        'template-drawer'
+      )}
     </div>
   );
 };

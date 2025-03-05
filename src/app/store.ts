@@ -20,7 +20,7 @@ import projectReducer from '@features/project/project.slice';
 import projectsReducer from '@features/projects/projectsSlice';
 import projectMemberReducer from '@features/projects/singleProject/members/projectMembersSlice';
 import projectViewTaskListColumnsReducer from '@features/projects/singleProject/taskListColumns/taskColumnsSlice';
-import phaseReducer from '@features/projects/singleProject/phase/phaseSlice';
+import phaseReducer from '@/features/projects/singleProject/phase/phases.slice';
 import updatesReducer from '../features/projects/singleProject/updates/updatesSlice';
 import statusReducer from '@features/projects/status/StatusSlice';
 import bulkActionReducer from '@features/projects/bulkActions/bulkActionSlice';
@@ -36,18 +36,18 @@ import projectHealthReducer from '@features/projects/lookups/projectHealth/proje
 
 // Tasks
 import taskReducer from '@features/tasks/tasks.slice';
-import createCardReducer from '@features/board/createCardSlice';
+import createCardReducer from '@/features/board/create-card.slice';
 import priorityReducer from '@features/taskAttributes/taskPrioritySlice';
 import taskLabelsReducer from '@features/taskAttributes/taskLabelSlice';
 import taskStatusReducer from '@features/taskAttributes/taskStatusSlice';
-import tasksReducer from '@features/tasks/taskSlice';
+import taskDrawerReducer from '@features/task-drawer/task-drawer.slice';
 
 // Settings & Management
 import memberReducer from '@features/settings/member/memberSlice';
 import clientReducer from '@features/settings/client/clientSlice';
 import jobReducer from '@features/settings/job/jobSlice';
 import teamReducer from '@features/teams/teamSlice';
-import billingReducer from '@features/adminCenter/billing/billingSlice';
+import billingReducer from '@/features/admin-center/billing/billing.slice';
 import categoriesReducer from '@features/settings/categories/categoriesSlice';
 import labelReducer from '@features/settings/label/labelSlice';
 
@@ -64,8 +64,8 @@ import scheduleReducer from '../features/schedule/scheduleSlice';
 import reportingReducer from '@features/reporting/reporting.slice';
 import timeLogReducer from '../features/timeReport/projects/timeLogSlice';
 import taskTemplateReducer from '../features/settings/taskTemplates/taskTemplateSlice';
-import projectReportsTableColumnsReducer from '../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
-import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
+import projectReportsTableColumnsReducer from '../features/reporting/projectReports/project-reports-table-column-slice/project-reports-table-column-slice';
+import projectReportsReducer from '../features/reporting/projectReports/project-reports-slice';
 import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
 import roadmapReducer from '../features/roadmap/roadmap-slice';
 import teamMembersReducer from '@features/team-members/team-members.slice';
@@ -117,11 +117,11 @@ export const store = configureStore({
 
     // Tasks
     taskReducer: taskReducer,
-    tasksReducer: tasksReducer,
     createCardReducer: createCardReducer,
     priorityReducer: priorityReducer,
     taskLabelsReducer: taskLabelsReducer,
     taskStatusReducer: taskStatusReducer,
+    taskDrawerReducer: taskDrawerReducer,
 
     // Settings & Management
     memberReducer: memberReducer,

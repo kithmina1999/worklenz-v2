@@ -25,6 +25,9 @@ interface TaskListState {
   selectedTasks: IProjectTask[];
   isLoading: boolean;
   error: string | null;
+  importTaskTemplateDrawerOpen: boolean;
+  createTaskTemplateDrawerOpen: boolean;
+  projectView: 'list' | 'kanban';
 }
 
 const initialState: TaskListState = {
@@ -43,6 +46,9 @@ const initialState: TaskListState = {
   selectedTasks: [],
   isLoading: false,
   error: null,
+  importTaskTemplateDrawerOpen: false,
+  createTaskTemplateDrawerOpen: false,
+  projectView: 'list',
 };
 
 export const getProject = createAsyncThunk(
@@ -98,6 +104,17 @@ const projectSlice = createSlice({
     setActiveMembers: (state, action: PayloadAction<[]>) => {
       state.activeMembers = action.payload;
     },
+    setImportTaskTemplateDrawerOpen: (state, action: PayloadAction<boolean>) => {
+      state.importTaskTemplateDrawerOpen = action.payload;
+    },
+    setCreateTaskTemplateDrawerOpen: (state, action: PayloadAction<boolean>) => {
+      state.createTaskTemplateDrawerOpen = action.payload;
+    },
+    updatePhaseLabel: (state, action: PayloadAction<string>) => {
+      if (state.project) {
+        state.project.phase_label = action.payload;
+      }
+    },
     addTask: (
       state,
       action: PayloadAction<{ task: IProjectTask; groupId: string; insert?: boolean }>
@@ -152,6 +169,9 @@ const projectSlice = createSlice({
       }
     },
     reset: () => initialState,
+    setProjectView: (state, action: PayloadAction<'list' | 'kanban'>) => {
+      state.projectView = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
@@ -186,6 +206,10 @@ export const {
   addTask,
   deleteTask,
   reset,
+  setImportTaskTemplateDrawerOpen,
+  setCreateTaskTemplateDrawerOpen,
+  setProjectView,
+  updatePhaseLabel,
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

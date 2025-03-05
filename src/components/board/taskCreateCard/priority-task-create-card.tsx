@@ -5,7 +5,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import './TaskCreateCard.css';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { addTask, addTaskToTop } from '../../../features/tasks/tasks.slice';
-import { setTaskCardDisabled } from '../../../features/board/createCardSlice';
+import { setTaskCardDisabled } from '../../../features/board/create-card.slice';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 interface PriorityProps {
@@ -22,7 +22,7 @@ const PriorityTaskCreateCard = forwardRef<InputRef, PriorityProps>(({ status, po
   const [taskName, setTaskName] = useState('');
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const { t } = useTranslation('kanbanBoard');
+  const { t } = useTranslation('kanban-board');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCharacterLength(e.target.value.length);

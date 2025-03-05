@@ -20,6 +20,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
+import { createPortal } from 'react-dom';
 
 // React & Hooks
 import { useEffect, useState, useCallback } from 'react';
@@ -42,7 +43,6 @@ import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@/shared/constants';
 import { teamMembersApiService } from '@/api/team-members/teamMembers.api.service';
 import { colors } from '@/styles/colors';
-
 const TeamMembersSettings = () => {
   // Hooks
   const { t } = useTranslation('settings/team-members');
@@ -99,10 +99,10 @@ const TeamMembersSettings = () => {
   };
 
   const handleDeleteMember = async (record: ITeamMemberViewModel) => {
-    if (!record.id || !record.email) return;
+    if (!record.id) return;
     try {
       setIsLoading(true);
-      const res = await teamMembersApiService.delete(record.id, record.email);
+      const res = await teamMembersApiService.delete(record.id);
       if (res.done) {
         await getTeamMembers();
       }
@@ -334,7 +334,7 @@ const TeamMembersSettings = () => {
         }
       </Card>
 
-      <UpdateMemberDrawer selectedMemberId={selectedMemberId} />
+      {createPortal(<UpdateMemberDrawer selectedMemberId={selectedMemberId} />, document.body)}
     </div>
   );
 };

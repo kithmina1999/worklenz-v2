@@ -78,7 +78,7 @@ const VerifyResetEmailPage = () => {
           paddingInline: isMobile ? 24 : 48,
         },
       }}
-      bordered={false}
+      variant="outlined"
     >
       {isSuccess ? (
         <Result status="success" title={t('successTitle')} subTitle={t('successMessage')} />

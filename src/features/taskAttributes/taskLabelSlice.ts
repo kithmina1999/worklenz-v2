@@ -53,23 +53,6 @@ export const fetchLabelsByTask = createAsyncThunk(
   }
 );
 
-// Create async thunk for fetching labels by project
-export const fetchLabelsByProject = createAsyncThunk(
-  'taskLabel/fetchLabelsByProject',
-  async (projectId: string, { rejectWithValue }) => {
-    try {
-      const response = await labelsApiService.getPriorityByProject(projectId);
-      return response.body;
-    } catch (error) {
-      logger.error('Fetch Labels By Project', error);
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue('Failed to fetch project labels');
-    }
-  }
-);
-
 // Initialization thunk
 export const initializeLabels = createAsyncThunk(
   'taskLabel/initialize',
@@ -120,19 +103,6 @@ const taskLabelSlice = createSlice({
         state.labels = action.payload;
       })
       .addCase(fetchLabelsByTask.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-      // Fetch Labels By Project
-      .addCase(fetchLabelsByProject.pending, state => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchLabelsByProject.fulfilled, (state, action: PayloadAction<ITaskLabel[]>) => {
-        state.loading = false;
-        state.labels = action.payload;
-      })
-      .addCase(fetchLabelsByProject.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

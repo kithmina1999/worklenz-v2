@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios';
 
 import alertService from '@/services/alerts/alertService';
+import logger from '@/utils/errorLogger';
 
 export const getCsrfToken = (): string | null => {
   const match = document.cookie.split('; ').find(cookie => cookie.startsWith('XSRF-TOKEN='));
@@ -64,6 +65,14 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const { message, code, name } = error || {};
 
+    // Add 401 unauthorized handling
+    if (error.response?.status === 401) {
+      alertService.error('Session Expired', 'Please log in again');
+      // Redirect to login page or trigger re-authentication
+      window.location.href = '/auth/login'; // Adjust this path as needed
+      return Promise.reject(error);
+    }
+
     const errorMessage = message || 'An unexpected error occurred';
     const errorTitle = 'Error';
 
@@ -73,7 +82,7 @@ apiClient.interceptors.response.use(
 
     // Development logging
     if (import.meta.env.VITE_APP_ENV === 'development') {
-      console.error('API Error:', {
+      logger.error('API Error:', {
         code,
         name,
         message,

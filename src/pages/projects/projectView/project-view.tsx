@@ -2,23 +2,29 @@ import React, { useEffect, useState } from 'react';
 import { PushpinFilled, PushpinOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Badge, Button, ConfigProvider, Flex, Tabs, TabsProps, Tooltip } from 'antd';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { createPortal } from 'react-dom';
+
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { getProject, setProjectId } from '@/features/project/project.slice';
-import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
+import { getProject, setProjectId, setProjectView } from '@/features/project/project.slice';
+import { fetchStatuses, resetStatuses } from '@/features/taskAttributes/taskStatusSlice';
 import { projectsApiService } from '@/api/projects/projects.api.service';
 import { colors } from '@/styles/colors';
 import { tabItems } from '@/lib/project/projectViewConstants';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import ProjectViewHeader from './project-view-header';
 import './project-view.css';
+import { resetTaskListData } from '@/features/tasks/tasks.slice';
+import { resetBoardData } from '@/features/board/board-slice';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
+import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
 const StatusDrawer = React.lazy(
   () => import('@/components/project-task-filters/create-status-drawer/create-status-drawer')
 );
 const ProjectMemberDrawer = React.lazy(
-  () => import('@features/projects/singleProject/members/ProjectMemberDrawer')
+  () => import('@/components/projects/project-member-invite-drawer/project-member-invite-drawer')
 );
 const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
@@ -31,7 +37,6 @@ const ProjectView = () => {
 
   const selectedProject = useAppSelector(state => state.projectReducer.project);
   useDocumentTitle(selectedProject?.name || 'Project View');
-
   const [activeTab, setActiveTab] = useState<string>(searchParams.get('tab') || tabItems[0].key);
   const [pinnedTab, setPinnedTab] = useState<string>(searchParams.get('pinned_tab') || '');
 
@@ -44,6 +49,7 @@ const ProjectView = () => {
           return;
         }
         dispatch(fetchStatuses(projectId));
+        dispatch(fetchLabels());
       });
     }
   }, [dispatch, navigate, projectId]);
@@ -65,19 +71,20 @@ const ProjectView = () => {
 
       navigate({
         pathname: `/worklenz/projects/${projectId}`,
-        search: new URLSearchParams({ pinned_tab: itemKey }).toString()
+        search: new URLSearchParams({ pinned_tab: itemKey }).toString(),
       });
     }
   };
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
+    dispatch(setProjectView(key === 'board' ? 'kanban' : 'list'));
     navigate({
       pathname: location.pathname,
-      search: new URLSearchParams({ 
+      search: new URLSearchParams({
         tab: key,
-        pinned_tab: pinnedTab 
-      }).toString()
+        pinned_tab: pinnedTab,
+      }).toString(),
     });
   };
 
@@ -86,7 +93,7 @@ const ProjectView = () => {
     label: (
       <Flex align="center" style={{ color: colors.skyBlue }}>
         {item.label}
-        {item.isPinned && (
+        {item.key === 'tasks-list' || item.key === 'board' ? (
           <ConfigProvider wave={{ disabled: true }}>
             <Button
               className="borderless-icon-btn"
@@ -95,7 +102,7 @@ const ProjectView = () => {
                 boxShadow: 'none',
               }}
               icon={
-                pinnedTab === item.key ? (
+                item.key === pinnedTab ? (
                   <PushpinFilled
                     size={20}
                     style={{
@@ -113,14 +120,31 @@ const ProjectView = () => {
                   />
                 )
               }
-              onClick={() => pinToDefaultTab(item.key)}
+              onClick={(e) => {
+                e.stopPropagation()
+                pinToDefaultTab(item.key)
+              }}
             />
           </ConfigProvider>
-        )}
+        ) : null}
       </Flex>
     ),
     children: item.element,
   }));
+
+  const resetProjectData = () => {
+    dispatch(setProjectId(null));
+    dispatch(resetStatuses());
+    dispatch(deselectAll());
+    dispatch(resetTaskListData());
+    dispatch(resetBoardData());
+  };
+
+  useEffect(() => {
+    return () => {
+      resetProjectData();
+    };
+  }, []);
 
   return (
     <div style={{ marginBlockStart: 80, marginBlockEnd: 24, minHeight: '80vh' }}>
@@ -131,6 +155,7 @@ const ProjectView = () => {
         onChange={handleTabChange}
         items={tabMenuItems}
         tabBarStyle={{ paddingInline: 0 }}
+        destroyInactiveTabPane={true}
         tabBarExtraContent={
           <div>
             <span style={{ position: 'relative', top: '-10px' }}>
@@ -151,10 +176,10 @@ const ProjectView = () => {
         }
       />
 
-      <ProjectMemberDrawer />
-      <PhaseDrawer />
-      <StatusDrawer />
-      <TaskDrawer />
+      {createPortal(<ProjectMemberDrawer />, document.body, 'project-member-drawer')}
+      {createPortal(<PhaseDrawer />, document.body, 'phase-drawer')}
+      {createPortal(<StatusDrawer />, document.body, 'status-drawer')}
+      {createPortal(<TaskDrawer />, document.body, 'task-drawer')}
     </div>
   );
 };

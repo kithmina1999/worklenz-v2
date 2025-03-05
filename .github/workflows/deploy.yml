@@ -3,7 +3,7 @@ name: Deploy React App to Azure VM
 on:
   push:
     branches:
-      - development # This triggers the action when code is pushed to the main branch
+      - main # This triggers the action when code is pushed to the main branch
 
 jobs:
   deploy:

@@ -3,7 +3,7 @@ import { Button, Checkbox, Dropdown, Space, Typography } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import CustomPageHeader from '../../page-header/custom-page-header';
-import TimeWiseFilter from '../../members-reports/TimeWiseFilter';
+import TimeWiseFilter from '../../members-reports/time-wise-filter';
 
 interface headerState {
   title: string;

@@ -83,31 +83,39 @@ const AddTaskListRow = ({ groupId = null, parentTask = null }: IAddTaskListRowPr
 
   const onNewTaskReceived = (task: IAddNewTask) => {
     if (!groupId) return;
-    task.groupId = groupId;
-    if (groupId && task.id) {
-      dispatch(addTask({ task, groupId, insert: true }));
-      reset(false);
-    }
+    
+    // Ensure we're adding the task with the correct group
+    const taskWithGroup = {
+      ...task,
+      groupId: groupId
+    };
+
+    // Add the task to the state
+    dispatch(addTask({ 
+      task: taskWithGroup, 
+      groupId, 
+      insert: true 
+    }));
+
+    // Reset the input state
+    reset(false);
   };
 
-  const addInstantTask = () => {
-    if (creatingTask) return;
-    if (!projectId || !currentSession || taskName.trim() === '') return;
+  const addInstantTask = async () => {
+    if (creatingTask || !projectId || !currentSession || taskName.trim() === '') return;
 
     try {
       setCreatingTask(true);
       const body = createRequestBody();
       if (!body) return;
+
       socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(body));
       socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
         setCreatingTask(false);
-        if (task.parent_task_id) {
-        }
         onNewTaskReceived(task as IAddNewTask);
       });
     } catch (error) {
-      console.error(error);
-    } finally {
+      console.error('Error adding task:', error);
       setCreatingTask(false);
     }
   };
@@ -133,7 +141,7 @@ const AddTaskListRow = ({ groupId = null, parentTask = null }: IAddTaskListRowPr
         <Input
           onFocus={() => setIsEdit(true)}
           className="w-[300px] border-none"
-          value={t('addTaskText')}
+          value={parentTask ? t('addSubTaskText') : t('addTaskText')}
           ref={taskInputRef}
         />
       )}

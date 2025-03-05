@@ -33,7 +33,7 @@ export const projectCommentsApiService = {
     search: string | null
   ): Promise<IServerResponse<IMentionMemberViewModel[]>> => {
     const s = encodeURIComponent(search || '');
-    const url = `${rootUrl}/${projectId}/project-members${toQueryString({ index, size, field, order, search: s })}`;
+    const url = `${rootUrl}/project-members/${projectId}${toQueryString({ index, size, field, order, search: s })}`;
     const response = await apiClient.get<IServerResponse<IMentionMemberViewModel[]>>(`${url}`);
     return response.data;
   },

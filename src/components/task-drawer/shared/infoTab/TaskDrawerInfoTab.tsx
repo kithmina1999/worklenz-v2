@@ -1,4 +1,4 @@
-import { Button, Collapse, CollapseProps, Flex, Tooltip, Typography, Upload } from 'antd';
+import { Button, Collapse, CollapseProps, Flex, Skeleton, Tooltip, Typography, Upload } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { LoadingOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import DescriptionEditor from './DescriptionEditor';
@@ -9,14 +9,19 @@ import TaskDetailsForm from './TaskDetailsForm';
 import InfoTabFooter from './InfoTabFooter';
 import { fetchTask } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { TFunction } from 'i18next';
 
-const TaskDrawerInfoTab = () => {
+interface TaskDrawerInfoTabProps {
+  t: TFunction;
+}
+
+const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState<boolean>(false);
   const [refreshSubTask, setRefreshSubTask] = useState<boolean>(false);
+
   const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskFormViewModel, loadingTask, selectedTaskId } = useAppSelector(
-    state => state.taskReducer,
+    state => state.taskDrawerReducer,
   );
 
   const handleRefresh = () => {
@@ -25,7 +30,9 @@ const TaskDrawerInfoTab = () => {
   };
 
   const fetchTaskData = () => {
-    if (!loadingTask) dispatch(fetchTask({ taskId: selectedTaskId || '', projectId: projectId || '' }));
+    if (!loadingTask && selectedTaskId && projectId) {
+      dispatch(fetchTask({ taskId: selectedTaskId, projectId }));
+    }
   };
 
   const panelStyle: React.CSSProperties = {
@@ -36,56 +43,56 @@ const TaskDrawerInfoTab = () => {
   const infoItems: CollapseProps['items'] = [
     {
       key: 'details',
-      label: <Typography.Text strong>Details</Typography.Text>,
-      children: <TaskDetailsForm taskFormViewModel={taskFormViewModel || null} />,
+      label: <Typography.Text strong>{t('taskInfoTab.details.title')}</Typography.Text>,
+      children: <TaskDetailsForm taskFormViewModel={taskFormViewModel} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
     {
       key: 'description',
-      label: <Typography.Text strong>Description</Typography.Text>,
+      label: <Typography.Text strong>{t('taskInfoTab.description.title')}</Typography.Text>,
       children: <DescriptionEditor description={taskFormViewModel?.task?.description || null} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
     {
       key: 'subTasks',
-      label: <Typography.Text strong>Sub Tasks</Typography.Text>,
+      label: <Typography.Text strong>{t('taskInfoTab.subTasks.title')}</Typography.Text>,
       extra: (
-        <Tooltip title={'Refresh project'} trigger={'hover'}>
+        <Tooltip title={t('taskInfoTab.subTasks.refreshSubTasks')} trigger={'hover'}>
           <Button
             shape="circle"
             icon={<ReloadOutlined spin={refreshSubTask} />}
-            onClick={() => handleRefresh()}
+            onClick={handleRefresh}
           />
         </Tooltip>
       ),
-      children: <SubTaskTable datasource={taskFormViewModel?.task?.sub_tasks || null} />,
+      children: <SubTaskTable datasource={taskFormViewModel?.task?.sub_tasks} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
     {
       key: 'dependencies',
-      label: <Typography.Text strong>Dependencies</Typography.Text>,
+      label: <Typography.Text strong>{t('taskInfoTab.dependencies.title')}</Typography.Text>,
       children: <DependenciesTable />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
     {
       key: 'attachments',
-      label: <Typography.Text strong>Attachments (0)</Typography.Text>,
+      label: <Typography.Text strong>{t('taskInfoTab.attachments.title')}</Typography.Text>,
       children: (
         <Upload
-          name="avatar"
+          name="attachment"
           listType="picture-card"
           className="avatar-uploader"
           showUploadList={false}
         >
           <button style={{ border: 0, background: 'none' }} type="button">
             <Flex vertical align="center" gap={4}>
-              {loading ? <LoadingOutlined /> : <PlusOutlined />}
+              {loadingTask ? <LoadingOutlined /> : <PlusOutlined />}
               <Typography.Text style={{ fontSize: 12 }}>
-                Choose or drop file to upload
+                {t('taskInfoTab.attachments.chooseOrDropFileToUpload')}
               </Typography.Text>
             </Flex>
           </button>
@@ -96,7 +103,7 @@ const TaskDrawerInfoTab = () => {
     },
     {
       key: 'comments',
-      label: <Typography.Text strong>Comments</Typography.Text>,
+      label: <Typography.Text strong>{t('taskInfoTab.comments.title')}</Typography.Text>,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
@@ -104,10 +111,11 @@ const TaskDrawerInfoTab = () => {
 
   useEffect(() => {
     fetchTaskData();
-  }, [selectedTaskId]);
+  }, [selectedTaskId, projectId]);
 
   return (
-    <Flex vertical justify="space-between" style={{ height: '78vh' }}>
+    <Skeleton active loading={loadingTask}>
+      <Flex vertical justify="space-between" style={{ height: '78vh' }}>
       <Collapse
         items={infoItems}
         bordered={false}
@@ -121,9 +129,9 @@ const TaskDrawerInfoTab = () => {
           'comments',
         ]}
       />
-
       <InfoTabFooter />
     </Flex>
+    </Skeleton>
   );
 };
 
