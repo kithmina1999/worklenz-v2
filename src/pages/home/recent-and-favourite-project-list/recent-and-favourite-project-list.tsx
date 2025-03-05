@@ -77,7 +77,7 @@ const RecentAndFavouriteProjectList = () => {
           <Typography.Paragraph
             key={record.id}
             style={{ margin: 0, paddingInlineEnd: 6, cursor: 'pointer' }}
-            onClick={() => navigate(`/worklenz/projects/${record.id}`)}
+            onClick={() => navigate(`/worklenz/projects/${record.id}?tab=tasks-list&pinned_tab=tasks-list`)}
           >
             <Badge color={record.color_code} style={{ marginInlineEnd: 4 }} />
             {record.name}
