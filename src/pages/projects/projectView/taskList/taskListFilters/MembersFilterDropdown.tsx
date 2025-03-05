@@ -37,7 +37,6 @@ const MembersFilterDropdown = () => {
   const membersInputRef = useRef<InputRef>(null);
   const dispatch = useAppDispatch();
   const { projectView } = useTabSearchParam();
-  const [selectedCount, setSelectedCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const { t } = useTranslation('task-list-filters');
 
@@ -45,6 +44,10 @@ const MembersFilterDropdown = () => {
   const { taskAssignees } = useAppSelector(state => state.taskReducer);
   const { taskAssignees: boardTaskAssignees } = useAppSelector(state => state.boardReducer);
   const { projectId } = useAppSelector(state => state.projectReducer);
+
+  const selectedCount = useMemo(() => {
+    return projectView === 'list' ? taskAssignees.filter(member => member.selected).length : boardTaskAssignees.filter(member => member.selected).length;
+  }, [taskAssignees, boardTaskAssignees, projectView]);
 
   const filteredMembersData = useMemo(() => {
     const members = projectView === 'list' ? taskAssignees : boardTaskAssignees;
@@ -54,8 +57,7 @@ const MembersFilterDropdown = () => {
   }, [taskAssignees, boardTaskAssignees, searchQuery, projectView]);
 
   const handleSelectedFiltersCount = useCallback(async (memberId: string | undefined, checked: boolean) => {
-    setSelectedCount(prev => checked ? prev + 1 : prev - 1);
-    
+    if (!memberId || !projectId) return;
     if (!memberId || !projectId) return;
 
     const updateMembers = async (members: Member[], setAction: any, fetchAction: any) => {
