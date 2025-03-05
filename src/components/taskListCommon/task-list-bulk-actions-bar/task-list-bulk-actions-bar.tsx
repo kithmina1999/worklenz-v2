@@ -528,7 +528,7 @@ const TaskListBulkActionsBar = () => {
           'create-task-template'
         )}
         {createPortal(
-          <ConvertToSubtaskDrawer t={t} />,
+          <ConvertToSubtaskDrawer />,
           document.body,
           'convert-to-subtask-modal'
         )}
