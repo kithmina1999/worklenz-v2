@@ -44,6 +44,7 @@ import { createPortal } from 'react-dom';
 import ImportTaskTemplate from '@/components/task-templates/import-task-template';
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 import { toggleProjectMemberDrawer } from '@/features/projects/singleProject/members/projectMembersSlice';
+import useIsProjectManager from '@/hooks/useIsProjectManager';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
@@ -51,12 +52,13 @@ const ProjectViewHeader = () => {
   const dispatch = useAppDispatch();
   const currentSession = useAuthService().getCurrentSession();
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
+  const isProjectManager = useIsProjectManager();
+
   const { socket } = useSocket();
 
   const {
     project: selectedProject,
     projectId,
-    projectView,
   } = useAppSelector(state => state.projectReducer);
   const { loadingGroups, groupBy } = useAppSelector(state => state.taskReducer);
 
@@ -126,10 +128,6 @@ const ProjectViewHeader = () => {
     dispatch(setImportTaskTemplateDrawerOpen(true));
   };
 
-  const isProjectManager = () => {
-    return currentSession?.team_member_id === selectedProject?.project_manager?.id;
-  };
-
   const dropdownItems = [
     {
       key: 'import',
@@ -193,7 +191,7 @@ const ProjectViewHeader = () => {
         />
       </Tooltip>
 
-      {(isOwnerOrAdmin || isProjectManager()) && (
+      {(isOwnerOrAdmin || isProjectManager) && (
         <Tooltip title="Save as template">
           <Button
             shape="circle"
@@ -217,7 +215,7 @@ const ProjectViewHeader = () => {
         </Button>
       </Tooltip>
 
-      {(isOwnerOrAdmin || isProjectManager()) && (
+      {(isOwnerOrAdmin || isProjectManager) && (
         <Button
           type="primary"
           icon={<UsergroupAddOutlined />}

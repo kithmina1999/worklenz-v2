@@ -15,7 +15,6 @@ import {
   Typography 
 } from 'antd';
 import type { InputRef } from 'antd';
-import { useSearchParams } from 'react-router-dom';
 
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -24,6 +23,7 @@ import { colors } from '@/styles/colors';
 import SingleAvatar from '@components/common/single-avatar/single-avatar';
 import { fetchTaskGroups, setMembers } from '@/features/tasks/tasks.slice';
 import { fetchBoardTaskGroups, setBoardMembers } from '@/features/board/board-slice';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
 
 interface Member {
   id: string;
@@ -36,8 +36,7 @@ interface Member {
 const MembersFilterDropdown = () => {
   const membersInputRef = useRef<InputRef>(null);
   const dispatch = useAppDispatch();
-  const [searchParams] = useSearchParams();
-  const [selectedCount, setSelectedCount] = useState(0);
+  const { projectView } = useTabSearchParam();
   const [searchQuery, setSearchQuery] = useState('');
   const { t } = useTranslation('task-list-filters');
 
@@ -46,8 +45,9 @@ const MembersFilterDropdown = () => {
   const { taskAssignees: boardTaskAssignees } = useAppSelector(state => state.boardReducer);
   const { projectId } = useAppSelector(state => state.projectReducer);
 
-  const tab = searchParams.get('tab');
-  const projectView = tab === 'list' ? 'list' : 'kanban';
+  const selectedCount = useMemo(() => {
+    return projectView === 'list' ? taskAssignees.filter(member => member.selected).length : boardTaskAssignees.filter(member => member.selected).length;
+  }, [taskAssignees, boardTaskAssignees, projectView]);
 
   const filteredMembersData = useMemo(() => {
     const members = projectView === 'list' ? taskAssignees : boardTaskAssignees;
@@ -57,8 +57,7 @@ const MembersFilterDropdown = () => {
   }, [taskAssignees, boardTaskAssignees, searchQuery, projectView]);
 
   const handleSelectedFiltersCount = useCallback(async (memberId: string | undefined, checked: boolean) => {
-    setSelectedCount(prev => checked ? prev + 1 : prev - 1);
-    
+    if (!memberId || !projectId) return;
     if (!memberId || !projectId) return;
 
     const updateMembers = async (members: Member[], setAction: any, fetchAction: any) => {
@@ -86,7 +85,7 @@ const MembersFilterDropdown = () => {
         checked={member.selected}
         onChange={e => handleSelectedFiltersCount(member.id, e.target.checked)}
       >
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <SingleAvatar
             avatarUrl={member.avatar_url}
             name={member.name}

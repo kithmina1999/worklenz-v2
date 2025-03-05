@@ -5,6 +5,8 @@ import { useAuthService } from '@/hooks/useAuth';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Flex from 'antd/es/flex';
+import { CSS } from '@dnd-kit/utilities';
+import useIsomorphicLayoutEffect from '@/hooks/useIsomorphicLayoutEffect';
 
 import {
   DndContext,
@@ -273,11 +275,22 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
   const handleDragStart = ({ active }: DragStartEvent) => {
     setActiveId(active.id as string);
+    
+    // Add smooth transition to the dragged item
+    const draggedElement = document.querySelector(`[data-id="${active.id}"]`);
+    if (draggedElement) {
+      (draggedElement as HTMLElement).style.transition = 'transform 0.2s ease';
+    }
   };
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     setActiveId(null);
     if (!over) return;
+
+    // Add smooth transition to all rows
+    document.querySelectorAll<HTMLElement>('.task-row').forEach(row => {
+      row.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+    });
 
     const activeGroupId = active.data.current?.groupId;
     const overGroupId = over.data.current?.groupId;
@@ -295,17 +308,32 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     if (fromIndex === -1) return;
 
     const task = sourceGroup.tasks[fromIndex];
-    const toPos = targetGroup.tasks[toIndex]?.sort_order;
+    
+    // Handle empty group case
+    const isTargetGroupEmpty = targetGroup.tasks.length === 0;
+    const toPos = isTargetGroupEmpty 
+      ? -1 
+      : (targetGroup.tasks[toIndex]?.sort_order || targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order);
 
-    // Update Redux state first
+    // Create a temporary task array for the target group
+    const updatedTargetTasks = isTargetGroupEmpty
+      ? [task] // If empty, just add the task
+      : [
+          ...targetGroup.tasks.slice(0, toIndex),
+          task,
+          ...targetGroup.tasks.slice(toIndex)
+        ];
+
+    // Update Redux state first with the new task positions
     dispatch({
       type: 'taskReducer/reorderTasks',
       payload: {
         activeGroupId,
         overGroupId,
         fromIndex,
-        toIndex,
-        task
+        toIndex: isTargetGroupEmpty ? 0 : toIndex, // Use 0 for empty groups
+        task,
+        updatedTargetTasks // Pass the new task array
       }
     });
 
@@ -313,8 +341,8 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     socket?.emit(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), {
       project_id: projectId,
       from_index: sourceGroup.tasks[fromIndex].sort_order,
-      to_index: toPos || targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order || -1,
-      to_last_index: !toPos,
+      to_index: toPos,
+      to_last_index: isTargetGroupEmpty, // Mark as last index if group is empty
       from_group: sourceGroup.id,
       to_group: targetGroup.id,
       group_by: groupBy,
@@ -327,31 +355,20 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       socket.emit(SocketEvents.GET_TASK_PROGRESS.toString(), task.id);
     });
 
-    // Nuclear reset approach
-    const resetStyles = () => {
-      document.querySelectorAll('.task-row').forEach(row => {
-        // Remove all inline styles
-        row.removeAttribute('style');
-        // Force CSS recalculation
-        void row.offsetHeight; // Trigger reflow
-        // Apply important styles via CSSOM
-        row.style.setProperty('opacity', '1', 'important');
-        row.style.setProperty('position', 'relative', 'important');
-        row.style.setProperty('z-index', 'auto', 'important');
-        row.style.setProperty('transform', 'none', 'important');
+    // Reset styles with smoother transitions
+    setTimeout(() => {
+      document.querySelectorAll<HTMLElement>('.task-row').forEach(row => {
+        row.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+        row.style.cssText = 'opacity: 1 !important; position: relative !important; z-index: auto !important; transform: none !important;';
+        row.setAttribute('data-is-dragging', 'false');
       });
-    };
+    }, 0);
 
-    // Reset in phases
-    setTimeout(resetStyles, 0);  // Immediate
-    setTimeout(resetStyles, 50); // After potential DnD cleanup
-    setTimeout(resetStyles, 100); // Final cleanup
-    
     trackMixpanelEvent(evt_project_task_list_drag_and_move);
   };
 
-  // Replace existing useEffect with this version
-  useEffect(() => {
+  // Replace the existing useEffect with this version
+  useIsomorphicLayoutEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
       .task-row {
@@ -359,7 +376,13 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
         position: relative !important;
         z-index: auto !important;
         transform: none !important;
-        transition: opacity 0.3s ease !important;
+        transition: transform 0.2s ease, opacity 0.2s ease !important;
+        will-change: transform, opacity;
+      }
+      
+      .task-row[data-is-dragging="true"] {
+        z-index: 100 !important;
+        transition: none !important;
       }
     `;
     document.head.appendChild(style);
@@ -367,23 +390,13 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     return () => document.head.removeChild(style);
   }, []);
 
-  // Modified drag cancel handler
-  const handleDragCancel = () => {
-    setActiveId(null);
-    setTimeout(() => {
-      document.querySelectorAll('.task-row').forEach(row => {
-        row.style.cssText = 'opacity: 1 !important; position: relative !important; z-index: auto !important; transform: none !important;';
-        row.setAttribute('data-is-dragging', 'false');
-      });
-    }, 0);
-  };
-
-  // Add this useEffect hook
-  useEffect(() => {
+  // Add this new hook for better animation handling
+  useIsomorphicLayoutEffect(() => {
     if (activeId === null) {
       // Final cleanup after React updates DOM
       setTimeout(() => {
-        document.querySelectorAll('.task-row').forEach(row => {
+        document.querySelectorAll<HTMLElement>('.task-row').forEach(row => {
+          row.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
           row.style.opacity = '1';
           row.style.transform = 'none';
         });
@@ -397,7 +410,6 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragCancel={handleDragCancel}
     >
       <Flex gap={24} vertical>
         {taskGroups?.map(taskGroup => (
