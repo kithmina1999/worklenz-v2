@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -46,6 +46,8 @@ import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 import logger from '@/utils/errorLogger';
 import { setProjectData, toggleProjectDrawer } from '@/features/project/project-drawer.slice';
+import useIsProjectManager from '@/hooks/useIsProjectManager';
+import { useAuthService } from '@/hooks/useAuth';
 
 const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useAppDispatch();
@@ -53,17 +55,25 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation('project-drawer');
   const [form] = Form.useForm();
 
+  // Auth and permissions
+  const isProjectManager = useIsProjectManager();
+  const isOwnerorAdmin = useAuthService().isOwnerOrAdmin();
+  const isEditable = isProjectManager || isOwnerorAdmin;
+
   // State
   const [editMode, setEditMode] = useState<boolean>(false);
-  const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(null);
+  const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(
+    null
+  );
 
   // Selectors
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
   const { requestParams } = useAppSelector(state => state.projectsReducer);
-  const { isProjectDrawerOpen, projectId, projectLoading, project } = useAppSelector(state => state.projectDrawerReducer);
+  const { isProjectDrawerOpen, projectId, projectLoading, project } = useAppSelector(
+    state => state.projectDrawerReducer
+  );
   const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
   const { projectHealths } = useAppSelector(state => state.projectHealthReducer);
-
   const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
 
   // API Hooks
@@ -72,21 +82,41 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const [updateProject, { isLoading: isUpdatingProject }] = useUpdateProjectMutation();
   const [createProject, { isLoading: isCreatingProject }] = useCreateProjectMutation();
 
-  // Load initial data
+  // Memoized values
+  const defaultFormValues = useMemo(
+    () => ({
+      color_code: project?.color_code || projectColors[0],
+      status_id: project?.status_id || projectStatuses.find(status => status.is_default)?.id,
+      health_id: project?.health_id || projectHealths.find(health => health.is_default)?.id,
+      client_id: project?.client_id || null,
+      client: project?.client_name || null,
+      category_id: project?.category_id || null,
+      working_days: project?.working_days || 0,
+      man_days: project?.man_days || 0,
+      hours_per_day: project?.hours_per_day || 8,
+    }),
+    [project, projectStatuses, projectHealths]
+  );
+
+  // Effects
   useEffect(() => {
     const loadInitialData = async () => {
-      if (projectStatuses.length === 0) await dispatch(fetchProjectStatuses());
-      if (projectCategories.length === 0) await dispatch(fetchProjectCategories());
-      if (projectHealths.length === 0) await dispatch(fetchProjectHealth());
-
+      const fetchPromises = [];
+      if (projectStatuses.length === 0) fetchPromises.push(dispatch(fetchProjectStatuses()));
+      if (projectCategories.length === 0) fetchPromises.push(dispatch(fetchProjectCategories()));
+      if (projectHealths.length === 0) fetchPromises.push(dispatch(fetchProjectHealth()));
       if (!clients.data?.length) {
-        await dispatch(fetchClients({ index: 1, size: 5, field: null, order: null, search: null }));
+        fetchPromises.push(
+          dispatch(fetchClients({ index: 1, size: 5, field: null, order: null, search: null }))
+        );
       }
+      await Promise.all(fetchPromises);
     };
 
     loadInitialData();
   }, [dispatch]);
 
+  // Handlers
   const handleFormSubmit = async (values: any) => {
     try {
       const projectModel: IProjectViewModel = {
@@ -107,64 +137,62 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         project_manager: selectedProjectManager,
       };
 
-      if (editMode && projectId) {
-        const response = await updateProject({ id: projectId, project: projectModel });
-        if (response?.data?.done) {
-          form.resetFields();
-          dispatch(toggleProjectDrawer());
-          refetchProjects();
-        } else {
-          notification.error({
-            message: response?.data?.message,
-          });
-          logger.error('Error updating project', response?.data?.message);
-        }
-      } else {
-        const response = await createProject(projectModel);
-        if (response?.data?.done) {
-          form.resetFields();
-          dispatch(toggleProjectDrawer());
-          navigate(`/worklenz/projects/${response.data.body.id}`);
-        } else {
-          notification.error({
-            message: response?.data?.message,
-          });
-          logger.error('Error creating project', response?.data?.message);
-        }
-      }
+      const action =
+        editMode && projectId
+          ? updateProject({ id: projectId, project: projectModel })
+          : createProject(projectModel);
 
+      const response = await action;
+
+      if (response?.data?.done) {
+        form.resetFields();
+        dispatch(toggleProjectDrawer());
+        if (!editMode) {
+          navigate(`/worklenz/projects/${response.data.body.id}`);
+        }
+        refetchProjects();
+      } else {
+        notification.error({ message: response?.data?.message });
+        logger.error(
+          editMode ? 'Error updating project' : 'Error creating project',
+          response?.data?.message
+        );
+      }
     } catch (error) {
       logger.error('Error saving project', error);
     }
   };
 
-  const handleVisibilityChange = (visible: boolean) => {
-    if (visible && projectId) {
-      setEditMode(true);
-      if (project) {
-        form.setFieldsValue({
-          ...project,
-          start_date: project.start_date ? dayjs(project.start_date) : null,
-          end_date: project.end_date ? dayjs(project.end_date) : null,
-        });
-        setSelectedProjectManager(project.project_manager || null);
+  const handleVisibilityChange = useCallback(
+    (visible: boolean) => {
+      if (visible && projectId) {
+        setEditMode(true);
+        if (project) {
+          form.setFieldsValue({
+            ...project,
+            start_date: project.start_date ? dayjs(project.start_date) : null,
+            end_date: project.end_date ? dayjs(project.end_date) : null,
+          });
+          setSelectedProjectManager(project.project_manager || null);
+        }
+      } else {
+        resetForm();
       }
-    } else {
-      resetForm();
-    }
-  };
+    },
+    [projectId, project]
+  );
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setEditMode(false);
     form.resetFields();
     setSelectedProjectManager(null);
-  };
+  }, [form]);
 
-  const handleDrawerClose = () => {
+  const handleDrawerClose = useCallback(() => {
     resetForm();
     setTimeout(() => dispatch(toggleProjectDrawer()), 300);
     onClose();
-  };
+  }, [resetForm, dispatch, onClose]);
 
   const handleDeleteProject = async () => {
     if (!projectId) return;
@@ -178,33 +206,30 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         dispatch(toggleProjectDrawer());
         navigate('/worklenz/projects');
         refetchProjects();
+      } else {
+        notification.error({ message: res?.data?.message });
+        logger.error('Error deleting project', res?.data?.message);
       }
     } catch (error) {
       logger.error('Error deleting project', error);
     }
   };
 
-  const defaultFormValues = {
-    color_code: project?.color_code || projectColors[0],
-    status_id: project?.status_id || projectStatuses.find(status => status.is_default)?.id,
-    health_id: project?.health_id || projectHealths.find(health => health.is_default)?.id,
-    client_id: project?.client_id || null,
-    client: project?.client_name || null,
-    category_id: project?.category_id || null,
-    working_days: project?.working_days || 0,
-    man_days: project?.man_days || 0,
-    hours_per_day: project?.hours_per_day || 8,
-  };
+  const disabledStartDate = useCallback(
+    (current: dayjs.Dayjs) => {
+      const endDate = form.getFieldValue('end_date');
+      return current && endDate ? current > dayjs(endDate) : false;
+    },
+    [form]
+  );
 
-  const disabledStartDate = (current: dayjs.Dayjs) => {
-    const endDate = form.getFieldValue('end_date');
-    return current && endDate ? current > dayjs(endDate) : false;
-  };
-
-  const disabledEndDate = (current: dayjs.Dayjs) => {
-    const startDate = form.getFieldValue('start_date');
-    return current && startDate ? current < dayjs(startDate) : false;
-  };
+  const disabledEndDate = useCallback(
+    (current: dayjs.Dayjs) => {
+      const startDate = form.getFieldValue('start_date');
+      return current && startDate ? current < dayjs(startDate) : false;
+    },
+    [form]
+  );
 
   return (
     <Drawer
@@ -220,7 +245,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
       footer={
         <Flex justify="space-between">
           <Space>
-            {editMode && (
+            {editMode && (isProjectManager || isOwnerorAdmin) && (
               <Popconfirm
                 title={t('deleteConfirmation')}
                 description={t('deleteConfirmationDescription')}
@@ -253,13 +278,36 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
           onFinish={handleFormSubmit}
           initialValues={defaultFormValues}
         >
-          <ProjectBasicInfo editMode={editMode} project={project} form={form} />
-          <ProjectStatusSection statuses={projectStatuses} form={form} t={t} />
-          <ProjectHealthSection healths={projectHealths} form={form} t={t} />
-          <ProjectCategorySection categories={projectCategories} form={form} t={t} />
+          <ProjectBasicInfo
+            editMode={editMode}
+            project={project}
+            form={form}
+            disabled={!isProjectManager && !isOwnerorAdmin}
+          />
+          <ProjectStatusSection
+            statuses={projectStatuses}
+            form={form}
+            t={t}
+            disabled={!isProjectManager && !isOwnerorAdmin}
+          />
+          <ProjectHealthSection
+            healths={projectHealths}
+            form={form}
+            t={t}
+            disabled={!isProjectManager && !isOwnerorAdmin}
+          />
+          <ProjectCategorySection
+            categories={projectCategories}
+            form={form}
+            t={t}
+            disabled={!isProjectManager && !isOwnerorAdmin}
+          />
 
           <Form.Item name="notes" label={t('notes')}>
-            <Input.TextArea placeholder={t('enterNotes')} />
+            <Input.TextArea
+              placeholder={t('enterNotes')}
+              disabled={!isProjectManager && !isOwnerorAdmin}
+            />
           </Form.Item>
 
           <ProjectClientSection
@@ -268,34 +316,42 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
             t={t}
             project={project}
             loadingClients={loadingClients}
+            disabled={!isProjectManager && !isOwnerorAdmin}
           />
 
           <Form.Item name="project_manager" label={t('projectManager')} layout="horizontal">
             <ProjectManagerDropdown
               selectedProjectManager={selectedProjectManager}
               setSelectedProjectManager={setSelectedProjectManager}
+              disabled={!isProjectManager && !isOwnerorAdmin}
             />
           </Form.Item>
 
           <Form.Item name="date" layout="horizontal">
             <Flex gap={8}>
               <Form.Item name="start_date" label={t('startDate')}>
-                <DatePicker disabledDate={disabledStartDate} />
+                <DatePicker
+                  disabledDate={disabledStartDate}
+                  disabled={!isProjectManager && !isOwnerorAdmin}
+                />
               </Form.Item>
               <Form.Item name="end_date" label={t('endDate')}>
-                <DatePicker disabledDate={disabledEndDate} />
+                <DatePicker
+                  disabledDate={disabledEndDate}
+                  disabled={!isProjectManager && !isOwnerorAdmin}
+                />
               </Form.Item>
             </Flex>
           </Form.Item>
 
           <Form.Item name="working_days" label={t('estimateWorkingDays')}>
-            <Input type="number" />
+            <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
           </Form.Item>
           <Form.Item name="man_days" label={t('estimateManDays')}>
-            <Input type="number" />
+            <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
           </Form.Item>
           <Form.Item name="hours_per_day" label={t('hoursPerDay')}>
-            <Input type="number" />
+            <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
           </Form.Item>
         </Form>
 

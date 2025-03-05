@@ -13,6 +13,7 @@ interface ProjectClientSectionProps {
   t: TFunction;
   project: IProjectViewModel | null;
   loadingClients: boolean;
+  disabled: boolean;
 }
 
 const ProjectClientSection = ({
@@ -21,6 +22,7 @@ const ProjectClientSection = ({
   t,
   project = null,
   loadingClients = false,
+  disabled = false,
 }: ProjectClientSectionProps) => {
   const dispatch = useAppDispatch();
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -112,6 +114,7 @@ const ProjectClientSection = ({
               {menu}
             </>
           )}
+          disabled={disabled}
         />
       </Form.Item>
     </>
