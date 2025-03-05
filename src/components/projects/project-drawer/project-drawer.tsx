@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
+  Alert,
   Button,
   DatePicker,
   Divider,
@@ -271,6 +272,14 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         </Flex>
       }
     >
+      {!isEditable && (
+        <Alert
+          message={t('noPermission')}
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
       <Skeleton active paragraph={{ rows: 12 }} loading={projectLoading}>
         <Form
           form={form}
