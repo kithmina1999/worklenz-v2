@@ -15,7 +15,6 @@ import {
   Typography 
 } from 'antd';
 import type { InputRef } from 'antd';
-import { useSearchParams } from 'react-router-dom';
 
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -24,6 +23,7 @@ import { colors } from '@/styles/colors';
 import SingleAvatar from '@components/common/single-avatar/single-avatar';
 import { fetchTaskGroups, setMembers } from '@/features/tasks/tasks.slice';
 import { fetchBoardTaskGroups, setBoardMembers } from '@/features/board/board-slice';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
 
 interface Member {
   id: string;
@@ -36,7 +36,7 @@ interface Member {
 const MembersFilterDropdown = () => {
   const membersInputRef = useRef<InputRef>(null);
   const dispatch = useAppDispatch();
-  const [searchParams] = useSearchParams();
+  const { projectView } = useTabSearchParam();
   const [selectedCount, setSelectedCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const { t } = useTranslation('task-list-filters');
@@ -45,9 +45,6 @@ const MembersFilterDropdown = () => {
   const { taskAssignees } = useAppSelector(state => state.taskReducer);
   const { taskAssignees: boardTaskAssignees } = useAppSelector(state => state.boardReducer);
   const { projectId } = useAppSelector(state => state.projectReducer);
-
-  const tab = searchParams.get('tab');
-  const projectView = tab === 'list' ? 'list' : 'kanban';
 
   const filteredMembersData = useMemo(() => {
     const members = projectView === 'list' ? taskAssignees : boardTaskAssignees;
@@ -86,7 +83,7 @@ const MembersFilterDropdown = () => {
         checked={member.selected}
         onChange={e => handleSelectedFiltersCount(member.id, e.target.checked)}
       >
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <SingleAvatar
             avatarUrl={member.avatar_url}
             name={member.name}
