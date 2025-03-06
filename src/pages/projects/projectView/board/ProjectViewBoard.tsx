@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import TaskListFilters from '../taskList/taskListFilters/TaskListFilters';
+import TaskListFilters from '../taskList/task-list-filters/task-list-filters';
 import { Empty, Flex, Skeleton } from 'antd';
 import BoardSectionCardContainer from './board-section/board-section-container';
 import { fetchBoardTaskGroups, reorderTaskGroups } from '@features/board/board-slice';

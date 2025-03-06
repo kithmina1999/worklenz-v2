@@ -6,7 +6,7 @@ import Tooltip from 'antd/es/tooltip';
 import Input from 'antd/es/input';
 import Typography from 'antd/es/typography';
 import Flex from 'antd/es/flex';
-import { HolderOutlined, SettingOutlined } from '@ant-design/icons';
+import { HolderOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -15,10 +15,7 @@ import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
 import { DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { createPortal } from 'react-dom';
-import { CSS as DndKitCSS } from '@dnd-kit/utilities';
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { DragEndEvent } from '@dnd-kit/core';
-import clsx from 'clsx';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -482,15 +479,17 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     const overIndex = displayTasks.findIndex(task => task.id === over.id);
 
     if (activeIndex !== -1 && overIndex !== -1) {
-      dispatch(reorderTasks({
-        activeGroupId: tableId,
-        overGroupId: tableId,
-        fromIndex: activeIndex,
-        toIndex: overIndex,
-        task: displayTasks[activeIndex],
-        updatedSourceTasks: displayTasks,
-        updatedTargetTasks: displayTasks
-      }));
+      dispatch(
+        reorderTasks({
+          activeGroupId: tableId,
+          overGroupId: tableId,
+          fromIndex: activeIndex,
+          toIndex: overIndex,
+          task: displayTasks[activeIndex],
+          updatedSourceTasks: displayTasks,
+          updatedTargetTasks: displayTasks,
+        })
+      );
     }
   };
 

@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
+  Alert,
   Button,
   DatePicker,
   Divider,
@@ -27,7 +28,7 @@ import {
 } from '@/api/projects/projects.v1.api.service';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { projectColors } from '@/lib/project/projectConstants';
+import { projectColors } from '@/lib/project/project-constants';
 import { setProject, setProjectId } from '@/features/project/project.slice';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
@@ -271,6 +272,14 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         </Flex>
       }
     >
+      {!isEditable && (
+        <Alert
+          message={t('noPermission')}
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
       <Skeleton active paragraph={{ rows: 12 }} loading={projectLoading}>
         <Form
           form={form}

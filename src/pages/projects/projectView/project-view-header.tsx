@@ -191,7 +191,7 @@ const ProjectViewHeader = () => {
         />
       </Tooltip>
 
-      {(isOwnerOrAdmin || isProjectManager) && (
+      {(isOwnerOrAdmin) && (
         <Tooltip title="Save as template">
           <Button
             shape="circle"
@@ -225,16 +225,27 @@ const ProjectViewHeader = () => {
         </Button>
       )}
 
-      <Dropdown.Button
-        loading={creatingTask}
-        type="primary"
-        icon={<DownOutlined />}
-        menu={{ items: dropdownItems }}
-        trigger={['click']}
-        onClick={handleCreateTask}
-      >
-        <EditOutlined /> {t('createTask')}
-      </Dropdown.Button>
+      {isOwnerOrAdmin ? (
+        <Dropdown.Button
+          loading={creatingTask}
+          type="primary"
+          icon={<DownOutlined />}
+          menu={{ items: dropdownItems }}
+          trigger={['click']}
+          onClick={handleCreateTask}
+        >
+          <EditOutlined /> {t('createTask')}
+        </Dropdown.Button>
+      ) : (
+        <Button
+          loading={creatingTask}
+          type="primary"
+          icon={<EditOutlined />}
+          onClick={handleCreateTask}
+        >
+          {t('createTask')}
+        </Button>
+      )}
     </Flex>
   );
 
@@ -257,7 +268,7 @@ const ProjectViewHeader = () => {
         style={{ paddingInline: 0, marginBlockEnd: 12 }}
         extra={renderHeaderActions()}
       />
-      {createPortal(<ProjectDrawer onClose={() => {}} />, document.body, 'project-drawer')}
+      {createPortal(<ProjectDrawer onClose={() => { }} />, document.body, 'project-drawer')}
       {createPortal(<ImportTaskTemplate />, document.body, 'import-task-template')}
       {createPortal(<SaveProjectAsTemplate />, document.body, 'save-project-as-template')}
 

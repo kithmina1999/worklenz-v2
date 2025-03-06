@@ -1,12 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Flex from 'antd/es/flex';
 import Checkbox from 'antd/es/checkbox';
 import Typography from 'antd/es/typography';
 
 import { useTranslation } from 'react-i18next';
-import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 import { fetchPriorities } from '@/features/taskAttributes/taskPrioritySlice';
-import { useEffect } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
@@ -17,13 +15,13 @@ import {
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
 import useTabSearchParam from '@/hooks/useTabSearchParam';
 
-const SearchDropdown = React.lazy(() => import('./SearchDropdown'));
-const SortFilterDropdown = React.lazy(() => import('./SortFilterDropdown'));
-const LabelsFilterDropdown = React.lazy(() => import('./LabelsFilterDropdown'));
-const MembersFilterDropdown = React.lazy(() => import('./MembersFilterDropdown'));
-const GroupByFilterDropdown = React.lazy(() => import('./GroupByFilterDropdown'));
-const ShowFieldsFilterDropdown = React.lazy(() => import('./ShowFieldsFilterDropdown'));
-const PriorityFilterDropdown = React.lazy(() => import('./PriorityFilterDropdown'));
+const SearchDropdown = React.lazy(() => import('@components/project-task-filters/filter-dropdowns/search-dropdown'));
+const SortFilterDropdown = React.lazy(() => import('@components/project-task-filters/filter-dropdowns/sort-filter-dropdown'));
+const LabelsFilterDropdown = React.lazy(() => import('@components/project-task-filters/filter-dropdowns/labels-filter-dropdown'));
+const MembersFilterDropdown = React.lazy(() => import('@components/project-task-filters/filter-dropdowns/members-filter-dropdown'));
+const GroupByFilterDropdown = React.lazy(() => import('@components/project-task-filters/filter-dropdowns/group-by-filter-dropdown'));
+const ShowFieldsFilterDropdown = React.lazy(() => import('@components/project-task-filters/filter-dropdowns/show-fields-filter-dropdown'));
+const PriorityFilterDropdown = React.lazy(() => import('@components/project-task-filters/filter-dropdowns/priority-filter-dropdown'));
 
 interface TaskListFiltersProps {
   position: 'board' | 'list';
@@ -39,22 +37,16 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
   const projectId = useAppSelector(state => state.projectReducer.projectId);
   const archived = useAppSelector(state => state.taskReducer.archived);
 
-  const handleShowArchivedChange = () => {
-    dispatch(toggleArchived());
-  };
+  const handleShowArchivedChange = () => dispatch(toggleArchived());
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      if (!priorities.length) {
-        await dispatch(fetchPriorities());
-      }
+      if (!priorities.length) await dispatch(fetchPriorities());
       if (projectId) {
         await dispatch(fetchLabelsByProject(projectId));
         await dispatch(fetchTaskAssignees(projectId));
       }
-      dispatch(
-        getTeamMembers({ index: 0, size: 100, field: null, order: null, search: null, all: true })
-      );
+      dispatch(getTeamMembers({ index: 0, size: 100, field: null, order: null, search: null, all: true }));
     };
 
     fetchInitialData();
