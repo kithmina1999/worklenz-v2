@@ -100,7 +100,10 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
         selected: true,
       }));
 
-      const groupId = groups.find(group => group.tasks.some(task => task.id === data.id))?.id;
+      // Find the group that contains the task or its subtasks
+      const groupId = groups.find(group => 
+        group.tasks.some(task => task.id === data.id || (task.sub_tasks && task.sub_tasks.some(subtask => subtask.id === data.id)))
+      )?.id;
 
       if (groupId) {
         dispatch(
