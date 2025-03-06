@@ -1,6 +1,6 @@
 import { TaskType } from '@/types/task.types';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import GroupByFilterDropdown from '@/pages/projects/projectView/taskList/taskListFilters/GroupByFilterDropdown';
+import GroupByFilterDropdown from '@/components/project-task-filters/filter-dropdowns/group-by-filter-dropdown';
 import { useTranslation } from 'react-i18next';
 import StatusGroupTables from '@/pages/projects/project-view-1/taskList/statusTables/StatusGroupTables';
 import PriorityGroupTables from '@/pages/projects/projectView/taskList/groupTables/priorityTables/PriorityGroupTables';

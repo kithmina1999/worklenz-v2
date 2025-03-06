@@ -27,7 +27,7 @@ import {
 } from '@/api/projects/projects.v1.api.service';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { projectColors } from '@/lib/project/projectConstants';
+import { projectColors } from '@/lib/project/project-constants';
 import { setProject, setProjectId } from '@/features/project/project.slice';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
