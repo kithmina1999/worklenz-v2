@@ -16,10 +16,6 @@ const HomeCalendar = () => {
     dispatch(setHomeTasksConfig({ ...homeTasksConfig, selected_date: newValue }));
   };
 
-  useEffect(() => {
-    console.log('homeTasksConfig', homeTasksConfig);
-  }, [homeTasksConfig]);
-
   return (
     <Calendar
       className="home-calendar"

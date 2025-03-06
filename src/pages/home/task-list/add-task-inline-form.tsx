@@ -240,8 +240,8 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
             placeholder={'Project'}
             options={projectOptions}
             defaultOpen
-            autoFocus
             showSearch
+            autoFocus={!calendarView}
             optionFilterProp="label"
             filterSort={(optionA, optionB) =>
               (optionA?.label ?? '')
@@ -252,7 +252,7 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
               form.submit();
             }}
             onInputKeyDown={e => {
-              if (e.key === 'Enter') {
+              if (e.key === 'Tab' || e.key === 'Enter') {
                 form.submit();
               }
             }}

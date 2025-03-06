@@ -153,7 +153,7 @@ const LoginPage: React.FC = () => {
     <Card
       style={styles.card}
       styles={{ body: { paddingInline: isMobile ? 24 : 48 } }}
-      bordered={false}
+      variant="outlined"
     >
       <PageHeader description={t('headerDescription')} />
 

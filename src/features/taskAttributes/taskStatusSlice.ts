@@ -83,6 +83,12 @@ const taskStatusSlice = createSlice({
     setCategorizedStatuses: (state, action: PayloadAction<ITaskStatusCategory[]>) => {
       state.statusCategories = action.payload;
     },
+    resetStatuses: state => {
+      state.status = [];
+      state.loading = false;
+      state.error = null;
+      state.initialized = false;
+    },
   },
   extraReducers: builder => {
     builder
@@ -119,6 +125,6 @@ const taskStatusSlice = createSlice({
   },
 });
 
-export const { addStatus, updateStatus, deleteStatus, setCategorizedStatuses } =
+export const { addStatus, updateStatus, deleteStatus, setCategorizedStatuses, resetStatuses } =
   taskStatusSlice.actions;
 export default taskStatusSlice.reducer;

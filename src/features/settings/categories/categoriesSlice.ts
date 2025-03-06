@@ -6,23 +6,7 @@ type CategoriesState = {
 };
 
 const initialState: CategoriesState = {
-  categoriesList: [
-    {
-      id: 'category1',
-      name: 'Development',
-      color_code: '#70a6f3',
-    },
-    {
-      id: 'category2',
-      name: 'Management',
-      color_code: '#ee87c5',
-    },
-    {
-      id: 'category3',
-      name: 'Testing',
-      color_code: '#bf4949',
-    },
-  ],
+  categoriesList: [],
 };
 
 const categoriesSlice = createSlice({

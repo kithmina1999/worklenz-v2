@@ -1,4 +1,5 @@
-import { Flex, Typography, Button } from 'antd';
+import { Flex, Typography, Button, Input } from 'antd';
+import type { InputRef } from 'antd';
 import {
   DoubleRightOutlined,
   DownOutlined,
@@ -10,39 +11,71 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import './task-list-task-cell.css';
-import { setSelectedTaskId, setShowTaskDrawer } from '@/features/tasks/tasks.slice';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
+import { useState, useRef, useEffect } from 'react';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
+import { fetchSubTasks } from '@/features/tasks/tasks.slice';
 
 type TaskListTaskCellProps = {
   task: IProjectTask;
   isSubTask?: boolean;
-  expandedTasks: string[];
   toggleTaskExpansion: (taskId: string) => void;
+  projectId: string;
 };
 
 const TaskListTaskCell = ({
   task,
   isSubTask = false,
-  expandedTasks,
   toggleTaskExpansion,
+  projectId,
 }: TaskListTaskCellProps) => {
-  // localization
   const { t } = useTranslation('task-list-table');
+  const { socket, connected } = useSocket();
+
+  const [editTaskName, setEditTaskName] = useState(false);
+  const [taskName, setTaskName] = useState(task.name || '');
+  const inputRef = useRef<InputRef>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        handleTaskNameSave();
+      }
+    };
+
+    if (editTaskName) {
+      document.addEventListener('mousedown', handleClickOutside);
+      inputRef.current?.focus();
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [editTaskName]);
+
+  const handleToggleExpansion = (taskId: string) => {
+    if (task.sub_tasks_count && task.sub_tasks_count > 0 && !task.sub_tasks) {
+      dispatch(fetchSubTasks({ taskId, projectId }));
+    }
+    toggleTaskExpansion(taskId);
+  };
 
   const renderToggleButtonForHasSubTasks = (taskId: string | null, hasSubtasks: boolean) => {
     if (!hasSubtasks || !taskId) return null;
     return (
       <button
-        onClick={() => toggleTaskExpansion(taskId)}
+        onClick={() => handleToggleExpansion(taskId)}
         className="hover flex h-4 w-4 items-center justify-center rounded text-[12px] hover:border hover:border-[#5587f5] hover:bg-[#d0eefa54]"
       >
-        {expandedTasks.includes(taskId) ? <DownOutlined /> : <RightOutlined />}
+        {task.show_sub_tasks ? <DownOutlined /> : <RightOutlined />}
       </button>
     );
   };
 
-  // show expand button on hover for tasks without subtasks
   const renderToggleButtonForNonSubtasks = (
     taskId: string,
     isSubTask: boolean,
@@ -51,33 +84,32 @@ const TaskListTaskCell = ({
     if (subTasksCount > 0) {
       return (
         <button
-          onClick={() => toggleTaskExpansion(taskId)}
+          onClick={() => handleToggleExpansion(taskId)}
           className="hover flex h-4 w-4 items-center justify-center rounded text-[12px] hover:border hover:border-[#5587f5] hover:bg-[#d0eefa54]"
         >
-          {expandedTasks.includes(taskId) ? <DownOutlined /> : <RightOutlined />}
+          {task.show_sub_tasks ? <DownOutlined /> : <RightOutlined />}
         </button>
       );
     }
 
     return !isSubTask ? (
       <button
-        onClick={() => toggleTaskExpansion(taskId)}
+        onClick={() => handleToggleExpansion(taskId)}
         className="hover flex h-4 w-4 items-center justify-center rounded text-[12px] hover:border hover:border-[#5587f5] hover:bg-[#d0eefa54] open-task-button"
       >
-        {expandedTasks.includes(taskId) ? <DownOutlined /> : <RightOutlined />}
+        {task.show_sub_tasks ? <DownOutlined /> : <RightOutlined />}
       </button>
     ) : (
       <div className="h-4 w-4"></div>
     );
   };
 
-  // render the double arrow icon and count label for tasks with subtasks
   const renderSubtasksCountLabel = (taskId: string, isSubTask: boolean, subTasksCount: number) => {
     if (!taskId) return null;
     return (
       !isSubTask && (
         <Button
-          onClick={() => toggleTaskExpansion(taskId)}
+          onClick={() => handleToggleExpansion(taskId)}
           size="small"
           style={{
             display: 'flex',
@@ -95,8 +127,30 @@ const TaskListTaskCell = ({
     );
   };
 
+  const handleTaskNameSave = () => {
+    const taskName = inputRef.current?.input?.value;
+    if (taskName?.trim() !== '' && connected) {
+      socket?.emit(SocketEvents.TASK_NAME_CHANGE.toString(), JSON.stringify({
+        task_id: task.id,
+        name: taskName,
+        parent_task: task.parent_task_id,
+      }));
+      setEditTaskName(false);
+    }
+  };
+
   return (
-    <Flex align="center" justify="space-between">
+    <Flex
+      align="center"
+      justify="space-between"
+      className={editTaskName ? 'edit-mode-cell' : ''}
+      style={{
+        margin: editTaskName ? '-8px' : undefined,
+        border: editTaskName ? '1px solid #1677ff' : undefined,
+        backgroundColor: editTaskName ? 'rgba(22, 119, 255, 0.02)' : undefined,
+        minHeight: editTaskName ? '42px' : undefined,
+      }}
+    >
       <Flex gap={8} align="center">
         {!!task?.sub_tasks?.length ? (
           renderToggleButtonForHasSubTasks(task.id || null, !!task?.sub_tasks?.length)
@@ -108,9 +162,35 @@ const TaskListTaskCell = ({
 
         {isSubTask && <DoubleRightOutlined style={{ fontSize: 12 }} />}
 
-        <Typography.Text ellipsis={{ expanded: false }}>{task.name}</Typography.Text>
+        <div ref={wrapperRef} style={{ flex: 1 }}>
+          {!editTaskName && (
+            <Typography.Text
+              ellipsis={{ tooltip: task.name }}
+              onClick={() => setEditTaskName(true)}
+              style={{ cursor: 'pointer', width: 350 }}
+            >
+              {task.name}
+            </Typography.Text>
+          )}
 
-        {renderSubtasksCountLabel(task.id || '', isSubTask, task.sub_tasks_count || 0)}
+          {editTaskName && (
+            <Input
+              ref={inputRef}
+              variant="borderless"
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
+              autoFocus
+              onPressEnter={handleTaskNameSave}
+              style={{
+                width: 350,
+                padding: 0,
+              }}
+            />
+          )}
+        </div>
+
+        {!editTaskName &&
+          renderSubtasksCountLabel(task.id || '', isSubTask, task.sub_tasks_count || 0)}
       </Flex>
 
       <div className="open-task-button">

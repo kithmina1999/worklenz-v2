@@ -1,5 +1,6 @@
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import { IBillingCharge, IBillingChargesResponse } from '@/types/admin-center/admin-center.types';
+import logger from '@/utils/errorLogger';
 import { formatDate } from '@/utils/timeUtils';
 import { Table, TableProps, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -18,7 +19,7 @@ const ChargesTable: React.FC = () => {
         setCharges(res.body);
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error fetching charges:', error);
     } finally {
       setLoadingCharges(false);
     }

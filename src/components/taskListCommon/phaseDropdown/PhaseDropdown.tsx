@@ -1,101 +1,121 @@
-import { Badge, Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd';
-import React, { useState } from 'react';
-import { DownOutlined } from '@ant-design/icons';
-// custom css file
+import { Badge, Flex, Select, Tooltip, Typography } from 'antd';
+
 import './phaseDropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import { PhaseOption } from '../../../types/phase.types';
 import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { ALPHA_CHANNEL } from '@/shared/constants';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
+import logger from '@/utils/errorLogger';
 
-const PhaseDropdown = ({ projectId }: { projectId: string }) => {
-  const [currentPhaseOption, setCurrentPhaseOption] = useState<PhaseOption | null>(null);
+interface PhaseDropdownProps {
+  task: IProjectTask;
+}
 
-  // localization
+const PhaseDropdown = ({ task }: PhaseDropdownProps) => {
   const { t } = useTranslation('task-list-table');
+  const { socket, connected } = useSocket();
 
-  // get phase data from redux
-  const phaseList = useAppSelector(state => state.phaseReducer.phaseList);
-
-  //get phases details from phases slice
-  const phase = phaseList.find(el => el.projectId === projectId);
-
-  // menu type
-  type MenuItem = Required<MenuProps>['items'][number];
-  // phase menu item
-  const phaseMenuItems: MenuItem[] = phase
-    ? phase.phaseOptions.map(option => ({
-        key: option.optionId,
-        label: (
-          <Flex gap={4}>
-            <Badge color={option.optionColor} /> {option.optionName}
-          </Flex>
-        ),
-      }))
-    : [];
+  const { phaseList } = useAppSelector(state => state.phaseReducer);
 
   // Handle phase select
-  const handlePhaseOptionSelect: MenuProps['onClick'] = e => {
-    const selectedOption = phase?.phaseOptions.find(option => option.optionId === e.key);
-    if (selectedOption) {
-      setCurrentPhaseOption(selectedOption);
+  const handlePhaseOptionSelect = (value: string) => {
+  if (!connected || !task.id || !value) return;
+    try {
+      socket?.emit(
+        SocketEvents.TASK_PHASE_CHANGE.toString(),
+        {
+          task_id: task.id,
+          phase_id: value,
+          parent_task: task.parent_task_id,
+        },
+        (error: Error | null) => {
+          if (error) {
+            logger.error('Phase change failed:', error);
+          }
+        }
+      );
+    } catch (error) {
+      logger.error('Error in handlePhaseOptionSelect:', error);
     }
   };
 
-  //dropdown items
-  const phaseDropdownItems: MenuProps['items'] = [
-    {
-      key: '1',
-      label: (
-        <Card className="phase-dropdown-card" bordered={false}>
-          <Menu className="phase-menu" items={phaseMenuItems} onClick={handlePhaseOptionSelect} />
-        </Card>
-      ),
-    },
-  ];
-
   return (
-    <Dropdown
-      overlayClassName="phase-dropdown"
-      menu={{ items: phaseDropdownItems }}
-      placement="bottomRight"
-      trigger={['click']}
+    <Select
+      className="phase-select"
+      placeholder={
+        <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+          {t('selectText')}
+        </Typography.Text>
+      }
+      value={task.phase_id}
+      onChange={handlePhaseOptionSelect}
+      variant="borderless"
+      dropdownStyle={{ minWidth: 150 }}
+      optionLabelProp="label"
+      popupClassName="phase-select-dropdown"
+      allowClear
+      style={{
+        backgroundColor: task.phase_color + ALPHA_CHANNEL,
+        borderRadius: 16,
+        height: 22,
+        width: 120,
+        textAlign: 'left',
+      }}
     >
-      <Flex
-        gap={6}
-        align="center"
-        justify="space-between"
-        style={{
-          width: 'fit-content',
-          borderRadius: 24,
-          paddingInline: 8,
-          height: 22,
-          fontSize: 13,
-          backgroundColor: currentPhaseOption?.optionColor,
-          color: colors.darkGray,
-          cursor: 'pointer',
-        }}
-      >
-        {currentPhaseOption ? (
-          <Typography.Text
-            ellipsis={{ expanded: false }}
-            style={{
-              textTransform: 'capitalize',
-              color: colors.darkGray,
-              fontSize: 13,
-            }}
-          >
-            {currentPhaseOption?.optionName}
-          </Typography.Text>
-        ) : (
-          <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-            {t('selectText')}
-          </Typography.Text>
-        )}
-
-        <DownOutlined style={{ fontSize: 12 }} />
-      </Flex>
-    </Dropdown>
+      {phaseList?.map(phase => (
+        <Select.Option
+          key={phase.id}
+          value={phase.id}
+          label={
+            <div
+              style={{
+                width: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <Flex
+                gap={6}
+                align="center"
+                style={{
+                  width: 'fit-content',
+                  borderRadius: 24,
+                  paddingInline: 8,
+                  height: 22,
+                  fontSize: 13,
+                  color: colors.darkGray,
+                }}
+              >
+                <Tooltip title={phase.name}>
+                  <Typography.Text
+                    ellipsis
+                    style={{
+                      fontSize: 13,
+                      maxWidth: 90,
+                    }}
+                  >
+                    {phase.name}
+                  </Typography.Text>
+                </Tooltip>
+              </Flex>
+            </div>
+          }
+        >
+          <Flex gap={4} align="center">
+            <Badge color={phase.color_code} />
+            <Tooltip title={phase.name}>
+              <Typography.Text ellipsis style={{ maxWidth: 100 }}>
+                {phase.name}
+              </Typography.Text>
+            </Tooltip>
+          </Flex>
+        </Select.Option>
+      ))}
+    </Select>
   );
 };
 

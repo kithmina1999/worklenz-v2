@@ -3,7 +3,7 @@ import { Divider, Empty, Flex, Popover, Typography } from 'antd';
 import { PlayCircleFilled } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import CustomAvatar from '@components/CustomAvatar';
-import { mockTimeLogs } from '@/pages/projects/project-view/taskList/taskListTable/taskListTableCells/mockTimeLogs';
+import { mockTimeLogs } from '@/pages/projects/project-view-1/taskList/taskListTable/taskListTableCells/mockTimeLogs';
 
 type TaskListTimeTrackerCellProps = {
   taskId: string | null;

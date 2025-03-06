@@ -1,15 +1,30 @@
-export const sortBySelection = (data: Array<{ selected?: boolean }>) => {
+export const sortByBooleanField = <T extends Record<string, any>>(
+  data: T[],
+  field: keyof T,
+  prioritizeTrue: boolean = true
+) => {
   return [...data].sort((a, b) => {
-    if (a.selected && b.selected) return 0;
-    if (a.selected) return -1;
-    return 1;
+    const aValue = !!a[field];
+    const bValue = !!b[field];
+    
+    if (aValue === bValue) return 0;
+    if (prioritizeTrue) {
+      return aValue ? -1 : 1;
+    } else {
+      return !aValue ? -1 : 1;
+    }
   });
 };
 
-export const sortByPending = (data: Array<{ is_pending?: boolean }>) => {
-  return [...data].sort((a, b) => {
-    if (!a.is_pending && !b.is_pending) return 0;
-    if (!a.is_pending) return -1;
-    return 1;
-  });
+export const sortBySelection = (data: Array<{ selected?: boolean }>) => 
+  sortByBooleanField(data, 'selected');
+
+export const sortByPending = (data: Array<{ pending_invitation?: boolean }>) => 
+  sortByBooleanField(data, 'pending_invitation', false);
+
+export const sortTeamMembers = (data: Array<{ selected?: boolean; pending_invitation?: boolean }>) => {
+  return sortByBooleanField(
+    sortByBooleanField(data, 'pending_invitation', false),
+    'selected'
+  );
 };

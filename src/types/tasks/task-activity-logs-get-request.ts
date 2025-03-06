@@ -7,11 +7,13 @@ export interface IActivityLogsUser {
 
 export interface IActivityLogsLabel {
   color_code?: string;
+  color_code_dark?: string;
   name?: string;
 }
 
 export interface IActivityLogsStatus {
   color_code?: string;
+  color_code_dark?: string;
   name?: string;
 }
 

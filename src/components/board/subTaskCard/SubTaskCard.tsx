@@ -15,7 +15,7 @@ const SubTaskCard: React.FC<SubTaskProps> = ({ subtask }) => {
   const [isSubTomorrow, setIsSubTomorrow] = useState(false);
   const [isItSubPrevDate, setIsItSubPrevDate] = useState(false);
   const [subTaskDueDate, setSubTaskDueDate] = useState<Dayjs | null>(null);
-  const { t } = useTranslation('kanbanBoard');
+  const { t } = useTranslation('kanban-board');
 
   const handleSubTaskDateChange = (date: Dayjs | null) => {
     setSubTaskDueDate(date);

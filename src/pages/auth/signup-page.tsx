@@ -230,7 +230,7 @@ const SignupPage = () => {
           paddingInline: isMobile ? 24 : 48,
         },
       }}
-      bordered={false}
+      variant="outlined"
     >
       <PageHeader description={t('headerDescription')} />
       <Form

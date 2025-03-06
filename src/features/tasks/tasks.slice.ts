@@ -14,19 +14,50 @@ import { ITaskAssignee, ITaskFormViewModel } from '@/types/tasks/task.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
-import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.component';
+import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
+import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
+import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service';
+import { ITaskLabel, ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
+import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
+import { produce } from 'immer';
 
 export enum IGroupBy {
   STATUS = 'status',
-  PRIORITY = 'priority', 
+  PRIORITY = 'priority',
   PHASE = 'phase',
-  MEMBERS = 'members'
+  MEMBERS = 'members',
 }
+
+export const GROUP_BY_STATUS_VALUE = IGroupBy.STATUS;
+export const GROUP_BY_PRIORITY_VALUE = IGroupBy.PRIORITY;
+export const GROUP_BY_PHASE_VALUE = IGroupBy.PHASE;
+
+export const GROUP_BY_OPTIONS: IGroupByOption[] = [
+  { label: 'Status', value: GROUP_BY_STATUS_VALUE },
+  { label: 'Priority', value: GROUP_BY_PRIORITY_VALUE },
+  { label: 'Phase', value: GROUP_BY_PHASE_VALUE },
+];
+
+const LOCALSTORAGE_GROUP_KEY = 'worklenz.tasklist.group_by';
+
+export const getCurrentGroup = (): IGroupByOption => {
+  const key = localStorage.getItem(LOCALSTORAGE_GROUP_KEY);
+  if (key) {
+    const group = GROUP_BY_OPTIONS.find(option => option.value === key);
+    if (group) return group;
+  }
+  setCurrentGroup(GROUP_BY_STATUS_VALUE);
+  return GROUP_BY_OPTIONS[0];
+};
+
+export const setCurrentGroup = (groupBy: IGroupBy): void => {
+  localStorage.setItem(LOCALSTORAGE_GROUP_KEY, groupBy);
+};
 
 interface ITaskState {
   search: string | null;
   archived: boolean;
-  group: IGroupBy;
+  groupBy: IGroupBy;
   isSubtasksInclude: boolean;
   fields: ITaskListSortableColumn[];
   tasks: IProjectTask[];
@@ -38,21 +69,18 @@ interface ITaskState {
   taskAssignees: ITaskListMemberFilter[];
   loadingAssignees: boolean;
   statuses: ITaskStatusViewModel[];
-  labels: string[];
+  loadingLabels: boolean;
+  labels: ITaskLabelFilter[];
   priorities: string[];
   members: string[];
-
-  // task drawer
-  selectedTaskId: string | null;
-  showTaskDrawer: boolean;
-  taskFormViewModel: ITaskFormViewModel | null;
-  loadingTask: boolean;
+  activeTimers: Record<string, number | null>;
+  convertToSubtaskDrawerOpen: boolean;
 }
 
 const initialState: ITaskState = {
   search: null,
   archived: false,
-  group: IGroupBy.STATUS,
+  groupBy: getCurrentGroup().value as IGroupBy,
   isSubtasksInclude: false,
   fields: [],
   tasks: [],
@@ -65,29 +93,16 @@ const initialState: ITaskState = {
   loadingAssignees: false,
   statuses: [],
   labels: [],
+  loadingLabels: false,
   priorities: [],
   members: [],
-
-  // task drawer
-  selectedTaskId: null,
-  showTaskDrawer: false,
-  taskFormViewModel: null,
-  loadingTask: false,
+  activeTimers: {},
+  convertToSubtaskDrawerOpen: false,
 };
-
-export const GROUP_BY_STATUS_VALUE = IGroupBy.STATUS;
-export const GROUP_BY_PRIORITY_VALUE = IGroupBy.PRIORITY;
-export const GROUP_BY_PHASE_VALUE = IGroupBy.PHASE;
-
-export const GROUP_BY_OPTIONS: IGroupByOption[] = [
-  { label: 'Status', value: GROUP_BY_STATUS_VALUE },
-  { label: 'Priority', value: GROUP_BY_PRIORITY_VALUE },
-  { label: 'Phase', value: GROUP_BY_PHASE_VALUE },
-];
 
 export const COLUMN_KEYS = {
   KEY: 'KEY',
-  NAME: 'NAME', 
+  NAME: 'NAME',
   DESCRIPTION: 'DESCRIPTION',
   PROGRESS: 'PROGRESS',
   ASSIGNEES: 'ASSIGNEES',
@@ -111,21 +126,6 @@ export const COLUMN_KEYS_LIST = Object.values(COLUMN_KEYS).map(key => ({
   show: true,
 }));
 
-const LOCALSTORAGE_GROUP_KEY = 'worklenz.tasklist.group_by';
-
-export const getCurrentGroup = (): IGroupByOption => {
-  const key = localStorage.getItem(LOCALSTORAGE_GROUP_KEY);
-  if (key) {
-    const group = GROUP_BY_OPTIONS.find(option => option.value === key);
-    if (group) return group;
-  }
-  return GROUP_BY_OPTIONS[0];
-};
-
-export const setCurrentGroup = (group: IGroupByOption): void => {
-  localStorage.setItem(LOCALSTORAGE_GROUP_KEY, group.value);
-};
-
 export const fetchTaskGroups = createAsyncThunk(
   'tasks/fetchTaskGroups',
   async (projectId: string, { rejectWithValue, getState }) => {
@@ -138,18 +138,23 @@ export const fetchTaskGroups = createAsyncThunk(
         .map(member => member.id)
         .join(' ');
 
+      const selectedLabels = taskReducer.labels
+        .filter(label => label.selected)
+        .map(label => label.id)
+        .join(' ');
+
       const config: ITaskListConfigV2 = {
         id: projectId,
         archived: taskReducer.archived,
-        group: taskReducer.group,
+        group: taskReducer.groupBy,
         field: taskReducer.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
         order: '',
         search: taskReducer.search || '',
         statuses: '',
         members: selectedMembers,
         projects: '',
-        isSubtasksInclude: true,
-        labels: taskReducer.labels.join(' '),
+        isSubtasksInclude: false,
+        labels: selectedLabels,
         priorities: taskReducer.priorities.join(' '),
       };
 
@@ -161,6 +166,67 @@ export const fetchTaskGroups = createAsyncThunk(
         return rejectWithValue(error.message);
       }
       return rejectWithValue('Failed to fetch task groups');
+    }
+  }
+);
+
+export const fetchSubTasks = createAsyncThunk(
+  'tasks/fetchSubTasks',
+  async (
+    { taskId, projectId }: { taskId: string; projectId: string },
+    { rejectWithValue, getState, dispatch }
+  ) => {
+    const state = getState() as { taskReducer: ITaskState };
+    const { taskReducer } = state;
+
+    // Check if the task is already expanded
+    const task = taskReducer.taskGroups
+      .flatMap(group => group.tasks)
+      .find(t => t.id === taskId);
+
+    if (task?.show_sub_tasks) {
+      // If already expanded, just return without fetching
+      return [];
+    }
+
+    const selectedMembers = taskReducer.taskAssignees
+      .filter(member => member.selected)
+      .map(member => member.id)
+      .join(' ');
+
+    const selectedLabels = taskReducer.labels
+      .filter(label => label.selected)
+      .map(label => label.id)
+      .join(' ');
+
+    const config: ITaskListConfigV2 = {
+      id: projectId,
+      archived: taskReducer.archived,
+      group: taskReducer.groupBy,
+      field: taskReducer.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
+      order: '',
+      search: taskReducer.search || '',
+      statuses: '',
+      members: selectedMembers,
+      projects: '',
+      isSubtasksInclude: false,
+      labels: selectedLabels,
+      priorities: taskReducer.priorities.join(' '),
+      parent_task: taskId,
+    };
+    try {
+      const response = await tasksApiService.getTaskList(config);
+      // Only expand if we actually fetched subtasks
+      if (response.body.length > 0) {
+        dispatch(toggleTaskRowExpansion(taskId));
+      }
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Sub Tasks', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch sub tasks');
     }
   }
 );
@@ -189,11 +255,54 @@ export const fetchTaskAssignees = createAsyncThunk(
   }
 );
 
+export const fetchLabelsByProject = createAsyncThunk(
+  'taskLabel/fetchLabelsByProject',
+  async (projectId: string, { rejectWithValue }) => {
+    try {
+      const response = await labelsApiService.getPriorityByProject(projectId);
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Labels By Project', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch project labels');
+    }
+  }
+);
+
 export const fetchTask = createAsyncThunk(
   'tasks/fetchTask',
-  async ({taskId, projectId}: {taskId: string, projectId: string}, { rejectWithValue }) => {
-    const response = await tasksApiService.getFormViewModel(taskId, projectId);
-    return response.body;
+  async ({ taskId, projectId }: { taskId: string; projectId: string }, { rejectWithValue }) => {
+    try {
+      const response = await tasksApiService.getFormViewModel(taskId, projectId);
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Task', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch task');
+    }
+  }
+);
+
+export const updateColumnVisibility = createAsyncThunk(
+  'tasks/updateColumnVisibility',
+  async (
+    { projectId, item }: { projectId: string; item: ITaskListColumn },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await tasksApiService.toggleColumnVisibility(projectId, item);
+      return response.body;
+    } catch (error) {
+      logger.error('Update Column Visibility', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to update column visibility');
+    }
   }
 );
 
@@ -251,44 +360,50 @@ const addTaskToGroup = (
     if (parentTask) {
       parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
       if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
-      parentTask.sub_tasks.push({...task});
+      parentTask.sub_tasks.push({ ...task });
     }
   } else {
-    insert ? group.tasks.unshift({...task}) : group.tasks.push({...task});
+    insert ? group.tasks.push(task) : group.tasks.unshift(task);
   }
 };
 
-const updateTaskGroup = (
-  taskGroups: ITaskListGroup[],
-  task: IProjectTask,
-  insert = true
-): void => {
+const updateTaskGroup = (taskGroups: ITaskListGroup[], task: IProjectTask, insert = true): void => {
   if (!task.id) return;
-  
+
   const groupId = getGroupIdByGroupedColumn(task);
   if (groupId) {
     deleteTaskFromGroup(taskGroups, task, groupId);
-    addTaskToGroup(taskGroups, {...task}, groupId, insert);
+    addTaskToGroup(taskGroups, { ...task }, groupId, insert);
   }
+};
+
+const findTaskInGroups = (
+  taskGroups: ITaskListGroup[],
+  taskId: string
+): { task: IProjectTask; groupId: string; index: number } | null => {
+  for (const group of taskGroups) {
+    const taskIndex = group.tasks.findIndex(t => t.id === taskId);
+    if (taskIndex !== -1) {
+      return { task: group.tasks[taskIndex], groupId: group.id, index: taskIndex };
+    }
+  }
+  return null;
 };
 
 const taskSlice = createSlice({
   name: 'taskReducer',
   initialState,
   reducers: {
-    toggleTaskDrawer: state => {
-      state.showTaskDrawer = !state.showTaskDrawer;
-    },
-
     toggleArchived: state => {
       state.archived = !state.archived;
     },
 
     setGroup: (state, action: PayloadAction<IGroupBy>) => {
-      state.group = action.payload;
+      state.groupBy = action.payload;
+      setCurrentGroup(action.payload);
     },
 
-    setLabels: (state, action: PayloadAction<string[]>) => {
+    setLabels: (state, action: PayloadAction<ITaskLabel[]>) => {
       state.labels = action.payload;
     },
 
@@ -312,12 +427,8 @@ const taskSlice = createSlice({
       state.search = action.payload;
     },
 
-    setShowTaskDrawer: (state, action: PayloadAction<boolean>) => {
-      state.showTaskDrawer = action.payload;
-    },
-
-    setSelectedTaskId: (state, action: PayloadAction<string | null>) => {
-      state.selectedTaskId = action.payload;
+    setConvertToSubtaskDrawerOpen: (state, action: PayloadAction<boolean>) => {
+      state.convertToSubtaskDrawerOpen = action.payload;
     },
 
     addTask: (
@@ -332,15 +443,23 @@ const taskSlice = createSlice({
       const group = state.taskGroups.find(g => g.id === groupId);
       if (!group || !task.id) return;
 
+      // Handle subtask addition
       if (task.parent_task_id) {
         const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
         if (parentTask) {
           parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
           if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
-          parentTask.sub_tasks.push(task);
+          parentTask.sub_tasks.push({ ...task });
+          // Ensure sub-tasks are visible when adding a new one
+          parentTask.show_sub_tasks = true;
         }
       } else {
-        insert ? group.tasks.unshift(task) : group.tasks.push(task);
+        // Handle main task addition
+        if (insert) {
+          group.tasks.push(task);
+        } else {
+          group.tasks.unshift(task);
+        }
       }
     },
 
@@ -348,7 +467,7 @@ const taskSlice = createSlice({
       state,
       action: PayloadAction<{
         taskId: string;
-        index?: number;
+        index?: number | null;
       }>
     ) => {
       const { taskId, index } = action.payload;
@@ -374,6 +493,21 @@ const taskSlice = createSlice({
       }
     },
 
+    updateTaskName: (
+      state,
+      action: PayloadAction<{ id: string; parent_task: string; name: string }>
+    ) => {
+      const { id, name } = action.payload;
+
+      for (const group of state.taskGroups) {
+        const task = group.tasks.find(task => task.id === id);
+        if (task) {
+          task.name = name;
+          break;
+        }
+      }
+    },
+
     updateTaskProgress: (
       state,
       action: PayloadAction<{
@@ -384,16 +518,14 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { taskId, progress, totalTasksCount, completedCount } = action.payload;
-      const group = state.taskGroups.find(group => 
-        group.tasks.some(task => task.id === taskId)
-      );
 
-      if (group) {
+      for (const group of state.taskGroups) {
         const task = group.tasks.find(task => task.id === taskId);
         if (task) {
           task.complete_ratio = progress;
           task.total_tasks_count = totalTasksCount;
           task.completed_count = completedCount;
+          break;
         }
       }
     },
@@ -416,48 +548,42 @@ const taskSlice = createSlice({
       }
     },
 
-    updateTaskLabel: (
-      state,
-      action: PayloadAction<ILabelsChangeResponse>
-    ) => {
+    updateTaskLabel: (state, action: PayloadAction<ILabelsChangeResponse>) => {
       const label = action.payload;
-      state.taskGroups.forEach(group => {
+      for (const group of state.taskGroups) {
         const task = group.tasks.find(task => task.id === label.id);
         if (task) {
           task.labels = label.labels || [];
           task.all_labels = label.all_labels || [];
+          break;
         }
-      });
+      }
     },
 
-    updateTaskStatus: (
-      state,
-      action: PayloadAction<ITaskListStatusChangeResponse>
-    ) => {
-      const {
-        id,
-        status_id,
-        color_code,
-        complete_ratio,
-        statusCategory,
-      } = action.payload;
+    updateTaskStatus: (state, action: PayloadAction<ITaskListStatusChangeResponse>) => {
+      const { id, status_id, color_code, color_code_dark, complete_ratio, statusCategory } =
+        action.payload;
 
-      const group = state.taskGroups.find(group => 
-        group.tasks.some(task => task.id === id)
-      );
+      // Find the task in any group
+      const taskInfo = findTaskInGroups(state.taskGroups, id);
+      if (!taskInfo || !status_id) return;
 
-      if (group) {
-        const task = group.tasks.find(task => task.id === id);
-        if (task) {
-          task.status_color = color_code;
-          task.complete_ratio = +complete_ratio;
-          task.status = status_id;
-          task.status_category = statusCategory;
+      const { task, groupId } = taskInfo;
 
-          if (state.group === GROUP_BY_STATUS_VALUE && !task.is_sub_task) {
-            updateTaskGroup(state.taskGroups, task as IProjectTask, false);
-          }
-        }
+      // Update the task properties
+      task.status_color = color_code;
+      task.status_color_dark = color_code_dark;
+      task.complete_ratio = +complete_ratio;
+      task.status = status_id;
+      task.status_category = statusCategory;
+
+      // If grouped by status and not a subtask, move the task to the new status group
+      if (state.groupBy === GROUP_BY_STATUS_VALUE && !task.is_sub_task && groupId !== status_id) {
+        // Remove from current group
+        deleteTaskFromGroup(state.taskGroups, task, groupId);
+
+        // Add to new status group
+        addTaskToGroup(state.taskGroups, task, status_id, false);
       }
     },
 
@@ -468,11 +594,12 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { task } = action.payload;
-      const group = state.taskGroups.find(group => group.tasks.some(t => t.id === task.id));
-      if (group) {
-        const taskIndex = group.tasks.findIndex(t => t.id === task.id);
-        if (taskIndex >= 0) {
-          group.tasks[taskIndex].end_date = task.end_date;
+
+      for (const group of state.taskGroups) {
+        const existingTask = group.tasks.find(t => t.id === task.id);
+        if (existingTask) {
+          existingTask.end_date = task.end_date;
+          break;
         }
       }
     },
@@ -484,36 +611,55 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { task } = action.payload;
-      const group = state.taskGroups.find(group => group.tasks.some(t => t.id === task.id));
-      if (group) {
-        const taskIndex = group.tasks.findIndex(t => t.id === task.id);
-        if (taskIndex >= 0) {
-          group.tasks[taskIndex].start_date = task.start_date;
+
+      for (const group of state.taskGroups) {
+        const existingTask = group.tasks.find(t => t.id === task.id);
+        if (existingTask) {
+          existingTask.start_date = task.start_date;
+          break;
         }
       }
-
     },
 
-    updateTaskGroup: (
+    updateTaskPhase: (state, action: PayloadAction<ITaskPhaseChangeResponse>) => {
+      const { id: phase_id, task_id, color_code } = action.payload;
+
+      if (!task_id || !phase_id) return;
+
+      const taskInfo = findTaskInGroups(state.taskGroups, task_id);
+      if (!taskInfo) return;
+
+      const { task, groupId } = taskInfo;
+
+      task.phase_id = phase_id;
+      task.phase_color = color_code;
+
+      if (state.groupBy === GROUP_BY_PHASE_VALUE && !task.is_sub_task && groupId !== phase_id) {
+        deleteTaskFromGroup(state.taskGroups, task, groupId);
+        addTaskToGroup(state.taskGroups, task, phase_id, false);
+      }
+    },
+
+    updateTaskGroupColor: (
       state,
-      action: PayloadAction<{
-        task: IProjectTask;
-        isSubtasksIncluded: boolean;
-      }>
+      action: PayloadAction<{ groupId: string; colorCode: string }>
     ) => {
-      const { task } = action.payload;
-      const groupId = getGroupIdByGroupedColumn(task);
-      
+      const { colorCode, groupId } = action.payload;
+
       if (groupId) {
         const group = state.taskGroups.find(g => g.id === groupId);
+
         if (group) {
-          const taskIndex = group.tasks.findIndex(t => t.id === task.id);
-          if (taskIndex >= 0) {
-            group.tasks[taskIndex] = task;
-          } else {
-            group.tasks.push(task);
-          }
+          group.color_code = colorCode;
         }
+      }
+    },
+
+    updateTaskStatusColor: (state, action: PayloadAction<{ taskId: string; color: string }>) => {
+      const { taskId, color } = action.payload;
+      const task = state.tasks.find(t => t.id === taskId);
+      if (task) {
+        task.status_color = color;
       }
     },
 
@@ -522,6 +668,93 @@ const taskSlice = createSlice({
       if (column) {
         column.pinned = !column.pinned;
       }
+    },
+
+    updateTaskTimeTracking: (
+      state,
+      action: PayloadAction<{
+        taskId: string;
+        timeTracking: number | null;
+      }>
+    ) => {
+      const { taskId, timeTracking } = action.payload;
+      state.activeTimers[taskId] = timeTracking;
+    },
+
+    updateTaskPriority: (state, action: PayloadAction<ITaskListPriorityChangeResponse>) => {
+      const { id, priority_id, color_code, color_code_dark } = action.payload;
+
+      // Find the task in any group
+      const taskInfo = findTaskInGroups(state.taskGroups, id);
+      if (!taskInfo || !priority_id) return;
+
+      const { task, groupId } = taskInfo;
+
+      // Update the task properties
+      task.priority = priority_id;
+      task.priority_color = color_code;
+      task.priority_color_dark = color_code_dark;
+
+      // If grouped by priority and not a subtask, move the task to the new priority group
+      if (
+        state.groupBy === GROUP_BY_PRIORITY_VALUE &&
+        !task.is_sub_task &&
+        groupId !== priority_id
+      ) {
+        // Remove from current group
+        deleteTaskFromGroup(state.taskGroups, task, groupId);
+
+        // Add to new priority group
+        addTaskToGroup(state.taskGroups, task, priority_id, false);
+      }
+    },
+
+    toggleTaskRowExpansion: (state, action: PayloadAction<string>) => {
+      const taskId = action.payload;
+      for (const group of state.taskGroups) {
+        const task = group.tasks.find(t => t.id === taskId);
+        if (task) {
+          task.show_sub_tasks = !task.show_sub_tasks;
+          break;
+        }
+      }
+    },
+
+    resetTaskListData: state => {
+      return {
+        ...initialState,
+        groupBy: state.groupBy, // Preserve the current grouping
+      };
+    },
+
+    reorderTasks: (
+      state,
+      action: PayloadAction<{
+        activeGroupId: string;
+        overGroupId: string;
+        fromIndex: number;
+        toIndex: number;
+        task: IProjectTask;
+        updatedSourceTasks: IProjectTask[];
+        updatedTargetTasks: IProjectTask[];
+      }>
+    ) => {
+      return produce(state, draft => {
+        const { activeGroupId, overGroupId, updatedSourceTasks, updatedTargetTasks } = action.payload;
+
+        const sourceGroup = draft.taskGroups.find(g => g.id === activeGroupId);
+        const targetGroup = draft.taskGroups.find(g => g.id === overGroupId);
+
+        if (!sourceGroup || !targetGroup) return;
+
+        // Simply replace the arrays with the updated ones
+        sourceGroup.tasks = updatedSourceTasks;
+        
+        // Only update target if it's different from source
+        if (activeGroupId !== overGroupId) {
+          targetGroup.tasks = updatedTargetTasks;
+        }
+      });
     },
   },
 
@@ -538,6 +771,27 @@ const taskSlice = createSlice({
       .addCase(fetchTaskGroups.rejected, (state, action) => {
         state.loadingGroups = false;
         state.error = action.error.message || 'Failed to fetch task groups';
+      })
+      .addCase(fetchSubTasks.pending, state => {
+        state.error = null;
+      })
+      .addCase(fetchSubTasks.fulfilled, (state, action: PayloadAction<IProjectTask[]>) => {
+        if (action.payload.length > 0) {
+          const taskId = action.payload[0].parent_task_id;
+          if (taskId) {
+            for (const group of state.taskGroups) {
+              const task = group.tasks.find(t => t.id === taskId);
+              if (task) {
+                task.sub_tasks = action.payload;
+                task.show_sub_tasks = true;
+                break;
+              }
+            }
+          }
+        }
+      })
+      .addCase(fetchSubTasks.rejected, (state, action) => {
+        state.error = action.error.message || 'Failed to fetch sub tasks';
       })
       .addCase(fetchTaskAssignees.pending, state => {
         state.loadingAssignees = true;
@@ -565,17 +819,36 @@ const taskSlice = createSlice({
         });
         state.columns = action.payload;
       })
-      .addCase(fetchTask.pending, state => {
-        state.loadingTask = true;
+      .addCase(fetTaskListColumns.rejected, (state, action) => {
+        state.loadingColumns = false;
+        state.error = action.error.message || 'Failed to fetch task list columns';
+      })
+      // Fetch Labels By Project
+      .addCase(fetchLabelsByProject.pending, state => {
+        state.loadingLabels = true;
         state.error = null;
       })
-      .addCase(fetchTask.fulfilled, (state, action) => {
-        state.loadingTask = false;
-        state.taskFormViewModel = action.payload;
+      .addCase(fetchLabelsByProject.fulfilled, (state, action: PayloadAction<ITaskLabel[]>) => {
+        const newLabels = action.payload.map(label => ({ ...label, selected: false }));
+        state.labels = newLabels;
+        state.loadingLabels = false;
       })
-      .addCase(fetchTask.rejected, (state, action) => {
-        state.loadingTask = false;
-        state.error = action.error.message || 'Failed to fetch task';
+      .addCase(fetchLabelsByProject.rejected, (state, action) => {
+        state.loadingLabels = false;
+        state.error = action.payload as string;
+      })
+      .addCase(updateColumnVisibility.fulfilled, (state, action) => {
+        const column = state.columns.find(col => col.key === action.payload.key);
+        if (column) {
+          column.pinned = action.payload.pinned;
+        }
+      })
+      .addCase(updateColumnVisibility.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      .addCase(updateColumnVisibility.pending, state => {
+        state.loadingColumns = true;
+        state.error = null;
       });
   },
 });
@@ -584,10 +857,10 @@ export const {
   setGroup,
   addTask,
   deleteTask,
+  updateTaskName,
   updateTaskProgress,
   updateTaskAssignees,
   updateTaskLabel,
-  toggleTaskDrawer,
   toggleArchived,
   setMembers,
   setLabels,
@@ -595,13 +868,19 @@ export const {
   setStatuses,
   setFields,
   setSearch,
-  setSelectedTaskId,
-  setShowTaskDrawer,
   toggleColumnVisibility,
   updateTaskStatus,
-  updateTaskEndDate,  
+  updateTaskPhase,
+  updateTaskPriority,
+  updateTaskEndDate,
   updateTaskStartDate,
+  updateTaskTimeTracking,
+  toggleTaskRowExpansion,
+  resetTaskListData,
+  updateTaskStatusColor,
+  updateTaskGroupColor,
+  setConvertToSubtaskDrawerOpen,
+  reorderTasks,
 } = taskSlice.actions;
-
 
 export default taskSlice.reducer;

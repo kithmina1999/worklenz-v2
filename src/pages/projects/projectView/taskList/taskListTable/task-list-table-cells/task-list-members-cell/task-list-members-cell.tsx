@@ -1,8 +1,7 @@
 import Flex from 'antd/es/flex';
 
 import Avatars from '@/components/avatars/avatars';
-import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
-import { useState } from 'react';
+import AssigneeSelector from '@/components/taskListCommon/assignee-selector/assignee-selector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 type TaskListMembersCellProps = {
@@ -11,12 +10,10 @@ type TaskListMembersCellProps = {
 };
 
 const TaskListMembersCell = ({ groupId, task }: TaskListMembersCellProps) => {
-  const [showDropdown, setShowDropdown] = useState(false);
-
   return (
     <Flex gap={4} align="center" onClick={() => {}}>
       <Avatars members={task.assignees || []} />
-      <AssigneeSelector showDropdown={showDropdown} task={task} groupId={groupId} />
+      <AssigneeSelector task={task} groupId={groupId} />
     </Flex>
   );
 };

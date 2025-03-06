@@ -58,12 +58,12 @@ const NotificationsSettings = () => {
       if (Notification.permission !== 'granted') {
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
-            console.log('Permission granted');
+            logger.info('Permission granted');
           }
         });
       }
     } else {
-      console.log('This browser does not support notification permission.');
+      logger.error('This browser does not support notification permission.');
       return;
     }
   };
