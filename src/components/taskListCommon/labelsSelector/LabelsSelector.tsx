@@ -58,6 +58,7 @@ const LabelsSelector = ({ task }: LabelsSelectorProps) => {
       team_id: currentSession?.team_id,
     };
     socket?.emit(SocketEvents.CREATE_LABEL.toString(), JSON.stringify(labelData));
+    setSearchQuery('');
   };
 
   useEffect(() => {

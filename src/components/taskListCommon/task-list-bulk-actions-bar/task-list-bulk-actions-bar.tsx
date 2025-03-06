@@ -58,6 +58,7 @@ import LabelsDropdown from './components/LabelsDropdown';
 import { sortTeamMembers } from '@/utils/sort-team-members';
 import logger from '@/utils/errorLogger';
 import ConvertToSubtaskDrawer from '@/components/task-list-common/convert-to-subtask-drawer/convert-to-subtask-drawer';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 import { useAuthService } from '@/hooks/useAuth';
 
 interface ITaskAssignee {
@@ -351,6 +352,10 @@ const TaskListBulkActionsBar = () => {
         trackMixpanelEvent(evt_project_task_list_bulk_update_labels);
         dispatch(deselectAll());
         dispatch(fetchTaskGroups(projectId));
+        dispatch(fetchLabels()); // Fallback: refetch all labels
+        dispatch(fetchTaskGroups(projectId));
+        setCreateLabelText('');
+        setSelectedLabels([]);
       }
     } catch (error) {
       logger.error('Error updating labels:', error);
