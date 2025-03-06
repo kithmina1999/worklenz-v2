@@ -18,5 +18,7 @@
     "apply": "Apply",
     "createLabel": "+ Create Label",
     "hitEnterToCreate": "Press Enter to create",
-    "pendingInvitation": "Pending Invitation"
+    "pendingInvitation": "Pending Invitation",
+    "noMatchingLabels": "No matching labels",
+    "noLabels": "No labels"
 }
