@@ -17,6 +17,8 @@ import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { deleteSection, setEditableSection } from '@features/board/board-slice';
 import { themeWiseColor } from '@/utils/themeWiseColor';
+import { useAuthService } from '@/hooks/useAuth';
+import useIsProjectManager from '@/hooks/useIsProjectManager';
 
 interface BoardSectionCardHeaderProps {
   id: string;
@@ -42,6 +44,8 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
   const [isEditable, setIsEditable] = useState(false);
   const [isEllipsisActive, setIsEllipsisActive] = useState(false);
   const inputRef = useRef<InputRef>(null);
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
+  const isProjectMember = useIsProjectManager();
 
   const editableSectionId = useAppSelector(state => state.boardReducer.editableSectionId);
 
@@ -199,22 +203,24 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
           <PlusOutlined />
         </Button>
 
-        <Dropdown
-          overlayClassName="todo-threedot-dropdown"
-          trigger={['click']}
-          menu={{ items }}
-          placement="bottomLeft"
-        >
-          <Button type="text" size="small" shape="circle">
-            <MoreOutlined
-              style={{
-                rotate: '90deg',
-                fontSize: '25px',
-                color: themeMode === 'dark' ? '#383838' : '',
-              }}
-            />
-          </Button>
-        </Dropdown>
+        {(isOwnerOrAdmin || isProjectMember) && (
+          <Dropdown
+            overlayClassName="todo-threedot-dropdown"
+            trigger={['click']}
+            menu={{ items }}
+            placement="bottomLeft"
+          >
+            <Button type="text" size="small" shape="circle">
+              <MoreOutlined
+                style={{
+                  rotate: '90deg',
+                  fontSize: '25px',
+                  color: themeMode === 'dark' ? '#383838' : '',
+                }}
+              />
+            </Button>
+          </Dropdown>
+        )}
       </div>
     </Flex>
   );

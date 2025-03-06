@@ -1,7 +1,7 @@
 import { Avatar, Drawer, Tabs, TabsProps } from 'antd';
 import React from 'react';
-import { useAppSelector } from '../../hooks/useAppSelector';
-import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleScheduleDrawer } from './scheduleSlice';
 import { avatarNamesMap } from '../../shared/constants';
 import WithStartAndEndDates from '../../components/schedule-old/tabs/withStartAndEndDates/WithStartAndEndDates';

@@ -11,8 +11,8 @@ import Typography from 'antd/es/typography';
 import Button from 'antd/es/button';
 
 import { useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleProjectMemberDrawer } from '../../../features/projects/singleProject/members/projectMembersSlice';
 import { colors } from '../../../styles/colors';
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
@@ -202,6 +202,7 @@ const AssigneeSelector = ({ task, groupId = null }: AssigneeSelectorProps) => {
         type="dashed"
         shape="circle"
         size="small"
+        onClick={(e) => e.stopPropagation()}
         icon={
           <PlusOutlined
             style={{

@@ -1,6 +1,6 @@
 import { Flex, Select } from 'antd';
 import './status-dropdown.css';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { useMemo } from 'react';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';

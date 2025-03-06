@@ -63,9 +63,36 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
     task?.end_date ? dayjs(task?.end_date) : null
   );
   const [updatingAssignToMe, setUpdatingAssignToMe] = useState(false);
-  const handleCardClick = (id: string) => {
-    dispatch(setSelectedTaskId(id));
-    dispatch(setShowTaskDrawer(true));
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: task.id || '',
+    data: {
+      type: 'task',
+      task,
+      sectionId,
+    },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const handleCardClick = (e: React.MouseEvent, id: string) => {
+    // Prevent the event from propagating to parent elements
+    e.stopPropagation();
+
+    // Don't handle click if we're dragging
+    if (isDragging) return;
+
+    // Add a small delay to ensure it's a click and not the start of a drag
+    const clickTimeout = setTimeout(() => {
+      dispatch(setSelectedTaskId(id));
+      dispatch(setShowTaskDrawer(true));
+    }, 50);
+
+    return () => clearTimeout(clickTimeout);
   };
 
   const handleAssignToMe = async (task: IProjectTask) => {
@@ -176,28 +203,6 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
     },
   ];
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: task.id || '',
-    data: {
-      type: 'task',
-      task,
-      sectionId,
-    },
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
   return (
     <Dropdown menu={{ items }} trigger={['contextMenu']}>
       <Flex
@@ -216,7 +221,7 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
           overflow: 'hidden',
         }}
         className={`group outline-1 ${themeWiseColor('outline-[#edeae9]', 'outline-[#6a696a]', themeMode)} hover:outline`}
-        onClick={() => handleCardClick(task.id || '')}
+        onClick={e => handleCardClick(e, task.id || '')}
       >
         {/* Labels and Progress */}
         <Flex align="center" justify="space-between">

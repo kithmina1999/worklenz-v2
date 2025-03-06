@@ -1,8 +1,8 @@
 import { Badge, Flex, Select, Tooltip, Typography } from 'antd';
 
 import './phase-dropdown.css';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { colors } from '../../../styles/colors';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ALPHA_CHANNEL } from '@/shared/constants';

@@ -236,6 +236,40 @@ const boardSlice = createSlice({
       state.taskGroups = action.payload;
     },
 
+    moveTaskBetweenGroups: (
+      state,
+      action: PayloadAction<{
+        taskId: string;
+        sourceGroupId: string;
+        targetGroupId: string;
+        targetIndex: number;
+      }>
+    ) => {
+      const { taskId, sourceGroupId, targetGroupId, targetIndex } = action.payload;
+      
+      // Find source and target groups
+      const sourceGroup = state.taskGroups.find(group => group.id === sourceGroupId);
+      const targetGroup = state.taskGroups.find(group => group.id === targetGroupId);
+      
+      if (!sourceGroup || !targetGroup) return;
+      
+      // Find the task to move
+      const taskIndex = sourceGroup.tasks.findIndex(task => task.id === taskId);
+      if (taskIndex === -1) return;
+      
+      // Get the task and remove it from source
+      const task = { ...sourceGroup.tasks[taskIndex], status_id: targetGroupId };
+      sourceGroup.tasks = sourceGroup.tasks.filter(task => task.id !== taskId);
+      
+      // Insert task at the target position
+      if (targetIndex >= 0 && targetIndex <= targetGroup.tasks.length) {
+        targetGroup.tasks.splice(targetIndex, 0, task);
+      } else {
+        // If target index is invalid, append to the end
+        targetGroup.tasks.push(task);
+      }
+    },
+
     resetBoardData: (state) => {
       state.taskGroups = [];
       state.columns = [];
@@ -292,6 +326,7 @@ export const {
   deleteBoardTask,
   updateBoardTaskAssignee,
   reorderTaskGroups,
+  moveTaskBetweenGroups,
   resetBoardData,
   setBoardLabels,
   setBoardMembers,

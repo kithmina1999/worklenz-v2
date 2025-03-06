@@ -3,7 +3,7 @@ import { AvatarNamesMap } from '@/shared/constants';
 import { Member } from '@/types/schedule/schedule.types';
 import { Avatar, Badge, Button, Col, Flex, Popover, Row, Tooltip } from 'antd';
 import { CaretDownOutlined, CaretRightFilled } from '@ant-design/icons';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import './Team.css';
 import { useDispatch } from 'react-redux';
 import { toggleScheduleDrawer } from '../../../features/schedule-old/scheduleSlice';

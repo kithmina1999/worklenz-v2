@@ -1,6 +1,6 @@
 import { Flex, Select, Typography } from 'antd';
 import './priority-dropdown.css';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { useState, useEffect, useMemo } from 'react';
 import { ALPHA_CHANNEL } from '@/shared/constants';
 import { useSocket } from '@/socket/socketContext';
