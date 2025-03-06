@@ -1,6 +1,6 @@
 import { Badge, Flex, Select, Tooltip, Typography } from 'antd';
 
-import './phaseDropdown.css';
+import './phase-dropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,6 @@ import { ALPHA_CHANNEL } from '@/shared/constants';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import logger from '@/utils/errorLogger';
-import { useEffect } from 'react';
 
 interface PhaseDropdownProps {
   task: IProjectTask;
@@ -23,7 +22,7 @@ const PhaseDropdown = ({ task }: PhaseDropdownProps) => {
 
   // Handle phase select
   const handlePhaseOptionSelect = (value: string) => {
-  if (!connected || !task.id || !value) return;
+    if (!connected || !task.id || !value) return;
     try {
       socket?.emit(
         SocketEvents.TASK_PHASE_CHANGE.toString(),
@@ -42,10 +41,6 @@ const PhaseDropdown = ({ task }: PhaseDropdownProps) => {
       logger.error('Error in handlePhaseOptionSelect:', error);
     }
   };
-
-  useEffect(() => {
-    console.log('task', task);
-  }, [task.phase_id]);
 
   return (
     <Select
