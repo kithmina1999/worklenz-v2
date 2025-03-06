@@ -180,6 +180,8 @@ const TaskListTableWrapper = ({
     },
   ].filter(Boolean) as MenuProps['items'];
 
+  const isEditable = isOwnerOrAdmin || isProjectManager;
+
   return (
     <div>
       <ConfigProvider
@@ -229,9 +231,13 @@ const TaskListTableWrapper = ({
                 </Typography.Text>
               )}
             </Button>
-            {groupBy !== IGroupBy.PRIORITY && !showRenameInput && (
+            {groupBy !== IGroupBy.PRIORITY && !showRenameInput && isEditable && (
               <Dropdown menu={{ items }}>
-                <Button icon={<EllipsisOutlined />} className="borderless-icon-btn" />
+                <Button 
+                  icon={<EllipsisOutlined />} 
+                  className="borderless-icon-btn"
+                  title={isEditable ? undefined : t('noPermission')}
+                />
               </Dropdown>
             )}
           </Flex>

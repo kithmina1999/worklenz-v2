@@ -58,6 +58,7 @@ import LabelsDropdown from './components/LabelsDropdown';
 import { sortTeamMembers } from '@/utils/sort-team-members';
 import logger from '@/utils/errorLogger';
 import ConvertToSubtaskDrawer from '@/components/task-list-common/convert-to-subtask-drawer/convert-to-subtask-drawer';
+import { useAuthService } from '@/hooks/useAuth';
 
 interface ITaskAssignee {
   id: string;
@@ -72,6 +73,9 @@ const TaskListBulkActionsBar = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('tasks/task-table-bulk-actions');
   const { trackMixpanelEvent } = useMixpanelTracking();
+
+  // Add permission hooks near other hooks
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
   // loading state
   const [loading, setLoading] = useState(false);
@@ -487,24 +491,26 @@ const TaskListBulkActionsBar = () => {
           </Tooltip>
         </Flex>
 
-        <Tooltip title={t('moreOptions')} getPopupContainer={() => moreOptionsRef.current!}>
-          <div ref={moreOptionsRef}>
-            <Dropdown
-              trigger={['click']}
-              menu={{
-                items: [
-                  {
-                    key: '1',
-                    label: t('createTaskTemplate'),
-                    onClick: () => setShowDrawer(true),
-                  },
-                ],
-              }}
-            >
-              <Button icon={<MoreOutlined />} className="borderless-icon-btn" style={buttonStyle} />
-            </Dropdown>
-          </div>
-        </Tooltip>
+        {isOwnerOrAdmin && (
+          <Tooltip title={t('moreOptions')} getPopupContainer={() => moreOptionsRef.current!}>
+            <div ref={moreOptionsRef}>
+              <Dropdown
+                trigger={['click']}
+                menu={{
+                  items: [
+                    {
+                      key: '1',
+                      label: t('createTaskTemplate'),
+                      onClick: () => setShowDrawer(true),
+                    },
+                  ],
+                }}
+              >
+                <Button icon={<MoreOutlined />} className="borderless-icon-btn" style={buttonStyle} />
+              </Dropdown>
+            </div>
+          </Tooltip>
+        )}
 
         <Tooltip title={t('deselectAll')} getPopupContainer={() => deselectAllRef.current!}>
           <div ref={deselectAllRef}>
