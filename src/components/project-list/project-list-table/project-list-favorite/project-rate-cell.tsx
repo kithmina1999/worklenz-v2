@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   useGetProjectsQuery,
   useToggleFavoriteProjectMutation,
@@ -20,16 +21,19 @@ export const ProjectRateCell: React.FC<{
   const { requestParams } = useAppSelector(state => state.projectsReducer);
   const { refetch: refetchProjects } = useGetProjectsQuery(requestParams);
 
+  const [isFavorite, setIsFavorite] = useState(record.favorite);
+
   const handleFavorite = useCallback(async () => {
     if (record.id) {
+      setIsFavorite(prev => !prev);
       await toggleFavoriteProject(record.id);
       refetchProjects();
     }
   }, [dispatch, record.id]);
 
   const checkIconColor = useMemo(
-    () => (record.favorite ? colors.yellow : colors.lightGray),
-    [record.favorite]
+    () => (isFavorite ? colors.yellow : colors.lightGray),
+    [isFavorite]
   );
 
   return (
@@ -46,6 +50,5 @@ export const ProjectRateCell: React.FC<{
         }}
       />
     </ConfigProvider>
-
   );
 };
