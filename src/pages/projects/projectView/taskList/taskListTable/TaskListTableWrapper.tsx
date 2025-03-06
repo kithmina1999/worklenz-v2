@@ -13,7 +13,7 @@ import { MenuProps } from 'antd/es/menu';
 import { EditOutlined, EllipsisOutlined, RetweetOutlined, RightOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import './taskListTableWrapper.css';
-import TaskListTable from './TaskListTable';
+import TaskListTable from './task-list-table';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import Collapsible from '@/components/collapsible/collapsible';
@@ -52,7 +52,6 @@ const TaskListTableWrapper = ({
   activeId,
 }: TaskListTableWrapperProps) => {
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
-  const currentSession = useAuthService().getCurrentSession();
   const { trackMixpanelEvent } = useMixpanelTracking();
   const dispatch = useAppDispatch();
   const isProjectManager = useIsProjectManager();

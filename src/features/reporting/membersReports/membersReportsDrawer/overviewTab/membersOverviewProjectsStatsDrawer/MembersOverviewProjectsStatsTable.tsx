@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import CustomTableTitle from '@components/CustomTableTitle';
 import { simpleDateFormat } from '@/utils/simpleDateFormat';
 import { colors } from '@/styles/colors';
-import { statusData } from '@/lib/project/projectConstants';
+import { statusData } from '@/lib/project/project-constants';
 import { toCamelCase } from '@/utils/toCamelCase';
 import ProjectCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-cell/project-cell';
 import ProjectDaysLeftAndOverdueCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-days-left-and-overdue-cell/project-days-left-and-overdue-cell';

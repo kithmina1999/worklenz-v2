@@ -9,6 +9,7 @@ import { ALPHA_CHANNEL } from '@/shared/constants';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import logger from '@/utils/errorLogger';
+import { useEffect } from 'react';
 
 interface PhaseDropdownProps {
   task: IProjectTask;
@@ -41,6 +42,10 @@ const PhaseDropdown = ({ task }: PhaseDropdownProps) => {
       logger.error('Error in handlePhaseOptionSelect:', error);
     }
   };
+
+  useEffect(() => {
+    console.log('task', task);
+  }, [task.phase_id]);
 
   return (
     <Select

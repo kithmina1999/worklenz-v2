@@ -58,6 +58,7 @@ import {
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_project_task_list_drag_and_move } from '@/shared/worklenz-analytics-events';
+import { ALPHA_CHANNEL } from '@/shared/constants';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -71,7 +72,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
   const dispatch = useAppDispatch();
   const { socket } = useSocket();
   const currentSession = useAuthService().getCurrentSession();
-  const { trackMixpanelEvent } = useMixpanelTracking(); 
+  const { trackMixpanelEvent } = useMixpanelTracking();
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const loadingAssignees = useAppSelector(state => state.taskReducer.loadingAssignees);
@@ -275,14 +276,15 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
   const resetTaskRowStyles = useCallback(() => {
     document.querySelectorAll<HTMLElement>('.task-row').forEach(row => {
       row.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
-      row.style.cssText = 'opacity: 1 !important; position: relative !important; z-index: auto !important; transform: none !important;';
+      row.style.cssText =
+        'opacity: 1 !important; position: relative !important; z-index: auto !important; transform: none !important;';
       row.setAttribute('data-is-dragging', 'false');
     });
   }, []);
 
   const handleDragStart = useCallback(({ active }: DragStartEvent) => {
     setActiveId(active.id as string);
-    
+
     // Add smooth transition to the dragged item
     const draggedElement = document.querySelector(`[data-id="${active.id}"]`);
     if (draggedElement) {
@@ -290,121 +292,142 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     }
   }, []);
 
-  const handleDragEnd = useCallback(({ active, over }: DragEndEvent) => {
-    setActiveId(null);
-    if (!over) return;
+  const handleDragEnd = useCallback(
+    ({ active, over }: DragEndEvent) => {
+      setActiveId(null);
+      if (!over) return;
 
-    const activeGroupId = active.data.current?.groupId;
-    const overGroupId = over.data.current?.groupId;
-    const activeTaskId = active.id;
-    const overTaskId = over.id;
+      const activeGroupId = active.data.current?.groupId;
+      const overGroupId = over.data.current?.groupId;
+      const activeTaskId = active.id;
+      const overTaskId = over.id;
 
-    const sourceGroup = taskGroups.find(g => g.id === activeGroupId);
-    const targetGroup = taskGroups.find(g => g.id === overGroupId);
+      const sourceGroup = taskGroups.find(g => g.id === activeGroupId);
+      const targetGroup = taskGroups.find(g => g.id === overGroupId);
 
-    if (!sourceGroup || !targetGroup) return;
+      if (!sourceGroup || !targetGroup) return;
 
-    const fromIndex = sourceGroup.tasks.findIndex(t => t.id === activeTaskId);
-    if (fromIndex === -1) return;
+      const fromIndex = sourceGroup.tasks.findIndex(t => t.id === activeTaskId);
+      if (fromIndex === -1) return;
 
-    // Create a deep clone of the task to avoid reference issues
-    const task = JSON.parse(JSON.stringify(sourceGroup.tasks[fromIndex]));
-    
-    // Update task properties based on target group
-    if (activeGroupId !== overGroupId) {
-      switch (groupBy) {
-        case IGroupBy.STATUS:
-          task.status = overGroupId;
-          task.status_color = targetGroup.color_code;
-          task.status_color_dark = targetGroup.color_code_dark;
-          break;
-        case IGroupBy.PRIORITY:
-          task.priority = overGroupId;
-          task.priority_color = targetGroup.color_code;
-          task.priority_color_dark = targetGroup.color_code_dark;
-          break;
-        case IGroupBy.PHASE:
-          task.phase_id = overGroupId;
-          task.phase_color = targetGroup.color_code;
-          task.phase_color_dark = targetGroup.color_code_dark;
-          break;
-      }
-    }
-    
-    const isTargetGroupEmpty = targetGroup.tasks.length === 0;
-    
-    // Calculate toIndex - for empty groups, always add at index 0
-    const toIndex = isTargetGroupEmpty ? 0 : 
-      (overTaskId ? targetGroup.tasks.findIndex(t => t.id === overTaskId) : targetGroup.tasks.length);
-    
-    // Calculate toPos similar to Angular implementation
-    const toPos = isTargetGroupEmpty ? -1 : 
-      (targetGroup.tasks[toIndex]?.sort_order || targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order || -1);
+      // Create a deep clone of the task to avoid reference issues
+      const task = JSON.parse(JSON.stringify(sourceGroup.tasks[fromIndex]));
 
-    // Update Redux state
-    if (activeGroupId === overGroupId) {
-      // Same group - move within array
-      const updatedTasks = [...sourceGroup.tasks];
-      updatedTasks.splice(fromIndex, 1);
-      updatedTasks.splice(toIndex, 0, task);
-      
-      dispatch({
-        type: 'taskReducer/reorderTasks',
-        payload: {
-          activeGroupId,
-          overGroupId,
-          fromIndex,
-          toIndex,
-          task,
-          updatedSourceTasks: updatedTasks,
-          updatedTargetTasks: updatedTasks
+      // Update task properties based on target group
+      if (activeGroupId !== overGroupId) {
+        switch (groupBy) {
+          case IGroupBy.STATUS:
+            task.status = overGroupId;
+            task.status_color = targetGroup.color_code;
+            task.status_color_dark = targetGroup.color_code_dark;
+            break;
+          case IGroupBy.PRIORITY:
+            task.priority = overGroupId;
+            task.priority_color = targetGroup.color_code;
+            task.priority_color_dark = targetGroup.color_code_dark;
+            break;
+          case IGroupBy.PHASE:
+            // Check if ALPHA_CHANNEL is already added
+            const baseColor = targetGroup.color_code.endsWith(ALPHA_CHANNEL)
+              ? targetGroup.color_code.slice(0, -ALPHA_CHANNEL.length) // Remove ALPHA_CHANNEL
+              : targetGroup.color_code; // Use as is if not present
+            task.phase_id = overGroupId;
+            task.phase_color = baseColor; // Set the cleaned color
+            break;
         }
-      });
-    } else {
-      // Different groups - transfer between arrays
-      const updatedSourceTasks = sourceGroup.tasks.filter((_, i) => i !== fromIndex);
-      const updatedTargetTasks = [...targetGroup.tasks];
-      
-      if (isTargetGroupEmpty) {
-        updatedTargetTasks.push(task);
-      } else if (toIndex >= 0 && toIndex <= updatedTargetTasks.length) {
-        updatedTargetTasks.splice(toIndex, 0, task);
+      }
+
+      const isTargetGroupEmpty = targetGroup.tasks.length === 0;
+
+      // Calculate toIndex - for empty groups, always add at index 0
+      const toIndex = isTargetGroupEmpty
+        ? 0
+        : overTaskId
+          ? targetGroup.tasks.findIndex(t => t.id === overTaskId)
+          : targetGroup.tasks.length;
+
+      // Calculate toPos similar to Angular implementation
+      const toPos = isTargetGroupEmpty
+        ? -1
+        : targetGroup.tasks[toIndex]?.sort_order ||
+          targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order ||
+          -1;
+
+      // Update Redux state
+      if (activeGroupId === overGroupId) {
+        // Same group - move within array
+        const updatedTasks = [...sourceGroup.tasks];
+        updatedTasks.splice(fromIndex, 1);
+        updatedTasks.splice(toIndex, 0, task);
+
+        dispatch({
+          type: 'taskReducer/reorderTasks',
+          payload: {
+            activeGroupId,
+            overGroupId,
+            fromIndex,
+            toIndex,
+            task,
+            updatedSourceTasks: updatedTasks,
+            updatedTargetTasks: updatedTasks,
+          },
+        });
       } else {
-        updatedTargetTasks.push(task);
-      }
-      
-      dispatch({
-        type: 'taskReducer/reorderTasks',
-        payload: {
-          activeGroupId,
-          overGroupId,
-          fromIndex,
-          toIndex,
-          task,
-          updatedSourceTasks,
-          updatedTargetTasks
+        // Different groups - transfer between arrays
+        const updatedSourceTasks = sourceGroup.tasks.filter((_, i) => i !== fromIndex);
+        const updatedTargetTasks = [...targetGroup.tasks];
+
+        if (isTargetGroupEmpty) {
+          updatedTargetTasks.push(task);
+        } else if (toIndex >= 0 && toIndex <= updatedTargetTasks.length) {
+          updatedTargetTasks.splice(toIndex, 0, task);
+        } else {
+          updatedTargetTasks.push(task);
         }
+
+        dispatch({
+          type: 'taskReducer/reorderTasks',
+          payload: {
+            activeGroupId,
+            overGroupId,
+            fromIndex,
+            toIndex,
+            task,
+            updatedSourceTasks,
+            updatedTargetTasks,
+          },
+        });
+      }
+
+      // Emit socket event
+      socket?.emit(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), {
+        project_id: projectId,
+        from_index: sourceGroup.tasks[fromIndex].sort_order,
+        to_index: toPos,
+        to_last_index: isTargetGroupEmpty,
+        from_group: sourceGroup.id,
+        to_group: targetGroup.id,
+        group_by: groupBy,
+        task: sourceGroup.tasks[fromIndex], // Send original task to maintain references
+        team_id: currentSession?.team_id,
       });
-    }
 
-    // Emit socket event
-    socket?.emit(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), {
-      project_id: projectId,
-      from_index: sourceGroup.tasks[fromIndex].sort_order,
-      to_index: toPos,
-      to_last_index: isTargetGroupEmpty,
-      from_group: sourceGroup.id,
-      to_group: targetGroup.id,
-      group_by: groupBy,
-      task: sourceGroup.tasks[fromIndex], // Send original task to maintain references
-      team_id: currentSession?.team_id,
-    });
+      // Reset styles
+      setTimeout(resetTaskRowStyles, 0);
 
-    // Reset styles
-    setTimeout(resetTaskRowStyles, 0);
-
-    trackMixpanelEvent(evt_project_task_list_drag_and_move);
-  }, [taskGroups, groupBy, projectId, currentSession?.team_id, dispatch, socket, resetTaskRowStyles, trackMixpanelEvent]);
+      trackMixpanelEvent(evt_project_task_list_drag_and_move);
+    },
+    [
+      taskGroups,
+      groupBy,
+      projectId,
+      currentSession?.team_id,
+      dispatch,
+      socket,
+      resetTaskRowStyles,
+      trackMixpanelEvent,
+    ]
+  );
 
   // Add CSS styles for drag and drop animations
   useIsomorphicLayoutEffect(() => {
@@ -425,7 +448,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       }
     `;
     document.head.appendChild(style);
-    
+
     return () => {
       document.head.removeChild(style);
     };
