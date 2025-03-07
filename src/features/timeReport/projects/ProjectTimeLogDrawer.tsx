@@ -1,7 +1,7 @@
 import { Avatar, Button, Card, Divider, Drawer, Tag, Timeline, Typography } from 'antd';
 import React from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleTimeLogDrawer } from './timeLogSlice';
 import { DownloadOutlined } from '@ant-design/icons';
 import jsonData from './ProjectTimeLog.json';

@@ -1,7 +1,7 @@
 import { Button, Drawer, Form, Input, message, Typography } from 'antd';
 import React from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { addClient, toggleCreateClientDrawer } from './clientSlice';
 import { IClient } from '../../../types/client.types';
 import { nanoid } from '@reduxjs/toolkit';

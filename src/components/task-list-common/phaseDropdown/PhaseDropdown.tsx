@@ -2,7 +2,7 @@ import { Badge, Flex, Select, Typography } from 'antd';
 import React, { useState } from 'react';
 // custom css file
 import './phaseDropdown.css';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { PhaseOption } from '../../../types/phase.types';
 import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';

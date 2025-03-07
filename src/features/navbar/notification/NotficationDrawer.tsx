@@ -1,7 +1,7 @@
 import { Drawer, Empty, Segmented, Typography } from 'antd';
 import { useEffect } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   fetchInvitations,
   fetchNotifications,

@@ -40,7 +40,6 @@ import TaskListCreatedDateCell from './task-list-table-cells/task-list-created-d
 import TaskListLastUpdatedCell from './task-list-table-cells/task-list-last-updated-cell/task-list-last-updated-cell';
 import TaskListReporterCell from './task-list-table-cells/task-list-reporter-cell/task-list-reporter-cell';
 import TaskListDueTimeCell from './task-list-table-cells/task-list-due-time-cell/task-list-due-time-cell';
-import PhaseDropdown from '@/components/taskListCommon/phaseDropdown/PhaseDropdown';
 import AssigneeSelector from '@/components/taskListCommon/assignee-selector/assignee-selector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { CustomFieldsTypes } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
@@ -51,6 +50,7 @@ import AddCustomColumnButton from './custom-columns/custom-column-modal/add-cust
 import { fetchSubTasks, reorderTasks, toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import ConfigPhaseButton from '@/features/projects/singleProject/phase/ConfigPhaseButton';
+import PhaseDropdown from '@/components/taskListCommon/phase-dropdown/phase-dropdown';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;

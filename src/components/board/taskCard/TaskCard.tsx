@@ -24,10 +24,10 @@ import {
 import './TaskCard.css';
 import dayjs, { Dayjs } from 'dayjs';
 import AddMembersDropdown from '../../add-members-dropdown/add-members-dropdown';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { deleteTask } from '../../../features/tasks/tasks.slice';
 import SubTaskCard from '../subTaskCard/SubTaskCard';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import Avatars from '@/components/avatars/avatars';

@@ -1,7 +1,7 @@
 import { ConfigProvider, theme } from 'antd';
 import React, { useEffect, useRef } from 'react';
-import { useAppSelector } from '../../hooks/useAppSelector';
-import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { initializeTheme } from './themeSlice';
 import { colors } from '../../styles/colors';
 

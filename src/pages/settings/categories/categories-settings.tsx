@@ -18,7 +18,7 @@ import CustomColorsCategoryTag from '@features/settings/categories/CustomColorsC
 import { deleteCategory } from '@features/settings/categories/categoriesSlice';
 import { categoriesApiService } from '@/api/settings/categories/categories.api.service';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
-import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 const CategoriesSettings = () => {

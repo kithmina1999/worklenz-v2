@@ -2,7 +2,7 @@ import { Badge, Card, Dropdown, Flex, Menu, MenuProps } from 'antd';
 import React from 'react';
 import { TaskStatusType } from '../../../types/task.types';
 import { colors } from '../../../styles/colors';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { RetweetOutlined, RightOutlined } from '@ant-design/icons';
 import './ChangeCategoryDropdown.css';
 import { updateStatusCategory } from '../../../features/projects/status/StatusSlice';

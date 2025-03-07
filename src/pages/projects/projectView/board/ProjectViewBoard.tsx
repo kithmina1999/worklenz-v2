@@ -3,7 +3,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import TaskListFilters from '../taskList/task-list-filters/task-list-filters';
 import { Empty, Flex, Skeleton } from 'antd';
 import BoardSectionCardContainer from './board-section/board-section-container';
-import { fetchBoardTaskGroups, reorderTaskGroups } from '@features/board/board-slice';
+import { fetchBoardTaskGroups, reorderTaskGroups, moveTaskBetweenGroups } from '@features/board/board-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   DndContext,
@@ -12,6 +12,11 @@ import {
   DragStartEvent,
   closestCorners,
   DragOverlay,
+  pointerWithin,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
 } from '@dnd-kit/core';
 import BoardViewTaskCard from './board-section/board-task-card/board-view-task-card';
 import { useSearchParams } from 'react-router-dom';
@@ -33,6 +38,22 @@ const ProjectViewBoard = () => {
     }
   }, [dispatch, projectId, groupBy, projectView]);
 
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      // Require the mouse to move by 10 pixels before activating
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
+    useSensor(TouchSensor, {
+      // Press delay of 250ms, with tolerance of 5px of movement
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    })
+  );
+
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     setActiveItem(active.data.current);
@@ -53,28 +74,31 @@ const ProjectViewBoard = () => {
 
     // Handle task movement between sections
     if (isActiveTask && (isOverTask || isOverSection)) {
-      const updatedGroups = taskGroups.map(group => {
-        // If dropping over a task, use its section id
-        const targetSectionId = isOverTask ? over.data.current?.sectionId : over.id;
-
-        if (group.id === targetSectionId) {
-          const activeTask = active.data.current?.task;
-          return {
-            ...group,
-            tasks: [...group.tasks, { ...activeTask, status_id: group.id }],
-          };
+      // If we're over a task, we want to insert at that position
+      // If we're over a section, we want to append to the end
+      const activeTaskId = active.data.current?.task.id;
+      const sourceGroupId = active.data.current?.sectionId;
+      const targetGroupId = isOverTask ? over.data.current?.sectionId : over.id;
+      
+      // Find the target index
+      let targetIndex = -1;
+      if (isOverTask) {
+        const overTaskId = over.data.current?.task.id;
+        const targetGroup = taskGroups.find(group => group.id === targetGroupId);
+        if (targetGroup) {
+          targetIndex = targetGroup.tasks.findIndex(task => task.id === overTaskId);
         }
-
-        if (group.id === active.data.current?.sectionId) {
-          return {
-            ...group,
-            tasks: group.tasks.filter(task => task.id !== active.data.current?.task.id),
-          };
-        }
-        return group;
-      });
-
-      dispatch(reorderTaskGroups(updatedGroups));
+      }
+      
+      // Dispatch the action to move the task
+      dispatch(
+        moveTaskBetweenGroups({
+          taskId: activeTaskId,
+          sourceGroupId,
+          targetGroupId,
+          targetIndex,
+        })
+      );
     }
   };
 
@@ -95,6 +119,7 @@ const ProjectViewBoard = () => {
         <Empty />
       ) : (
         <DndContext
+          sensors={sensors}
           collisionDetection={closestCorners}
           onDragStart={handleDragStart}
           onDragOver={handleDragOver}

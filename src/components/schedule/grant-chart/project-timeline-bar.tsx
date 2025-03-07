@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Flex, Popover, Typography } from 'antd';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { getWorking, toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
 import ProjectTimelineModal from '../../../features/schedule/ProjectTimelineModal';
 import { Resizable } from 're-resizable';
