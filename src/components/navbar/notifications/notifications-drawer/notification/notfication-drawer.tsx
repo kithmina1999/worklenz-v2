@@ -1,5 +1,5 @@
-import { Drawer, Empty, Segmented, Typography } from 'antd';
-import { useEffect } from 'react';
+import { Drawer, Empty, Segmented, Typography, Spin } from 'antd';
+import { useEffect, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
@@ -7,31 +7,37 @@ import {
   fetchNotifications,
   setNotificationType,
   toggleDrawer,
-} from './notificationSlice';
+} from '../../../../../features/navbar/notificationSlice';
 import { NOTIFICATION_OPTION_READ, NOTIFICATION_OPTION_UNREAD } from '@/shared/constants';
 import { useTranslation } from 'react-i18next';
-import { useAuthService } from '@/hooks/useAuth';
 import { SocketEvents } from '@/shared/socket-events';
 import { IWorklenzNotification } from '@/types/notifications/notifications.types';
 import { useSocket } from '@/socket/socketContext';
 import { ITeamInvitationViewModel } from '@/types/notifications/notifications.types';
-import { teamsApiService } from '@/api/teams/teams.api.service';
-import { setLoading } from '@/features/projects/insights/project-insights.slice';
 import logger from '@/utils/errorLogger';
+import NotificationItem from './notification-item';
+import InvitationItem from './invitation-item';
 
-const NotficationDrawer = () => {
-  const { isDrawerOpen, notificationType } = useAppSelector(state => state.notificationReducer);
+const NotificationDrawer = () => {
+  const { isDrawerOpen, notificationType, notifications, invitations } = useAppSelector(
+    state => state.notificationReducer
+  );
   const dispatch = useAppDispatch();
   const { t } = useTranslation('navbar');
-  const currentSession = useAuthService().getCurrentSession();
   const { socket, connected } = useSocket();
+
+  const notificationCount = notifications?.length || 0;
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInvitationsUpdate = (data: ITeamInvitationViewModel[]) => {
     logger.info('Invitations updated', data);
+    dispatch(fetchInvitations());
   };
 
   const handleNotificationsUpdate = (data: IWorklenzNotification[]) => {
     logger.info('Notifications updated', data);
+    dispatch(fetchNotifications(notificationType));
   };
 
   const handleTeamInvitationsUpdate = (data: ITeamInvitationViewModel[]) => {
@@ -43,7 +49,7 @@ const NotficationDrawer = () => {
       if (Notification.permission !== 'granted') {
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
-            logger.info('Permission granted');    
+            logger.info('Permission granted');
           }
         });
       }
@@ -72,20 +78,27 @@ const NotficationDrawer = () => {
   }, [socket]);
 
   useEffect(() => {
+    setIsLoading(true);
     askPushPermission();
     dispatch(fetchInvitations());
-    if (notificationType) dispatch(fetchNotifications(notificationType));
-  }, [notificationType]);
+    if (notificationType) {
+      dispatch(fetchNotifications(notificationType)).finally(() => setIsLoading(false));
+    }
+  }, [notificationType, dispatch]);
 
   return (
     <Drawer
       title={
         <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-          {notificationType === NOTIFICATION_OPTION_READ ? 'Read' : ' Unread'} Notifications (0)
+          {notificationType === NOTIFICATION_OPTION_READ
+            ? t('notificationsDrawer.read')
+            : t('notificationsDrawer.unread')}{' '}
+          ({notificationCount})
         </Typography.Text>
       }
       open={isDrawerOpen}
       onClose={() => dispatch(toggleDrawer())}
+      width={400}
     >
       <Segmented<string>
         options={['Unread', 'Read']}
@@ -98,17 +111,43 @@ const NotficationDrawer = () => {
         }}
       />
 
-      <Empty
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          marginBlockStart: 32,
-        }}
-        description={<Typography.Text>You've read all your notifications</Typography.Text>}
-      />
+      {isLoading && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40 }}>
+          <Spin />
+        </div>
+      )}
+      {(invitations && invitations.length > 0) && (notificationType === NOTIFICATION_OPTION_UNREAD) ? (
+        <div className="notification-list mt-3">
+          {invitations.map(invitation => (
+            <InvitationItem
+              key={invitation.id}
+              item={invitation}
+              isUnreadNotifications={notificationType === NOTIFICATION_OPTION_UNREAD}
+              t={t}
+            />
+          ))}
+        </div>
+      ) : null}
+      {notifications && notifications.length > 0 ? (
+        <div className="notification-list mt-3">
+          {notifications.map(notification => (
+            <NotificationItem key={notification.id} notification={notification} />
+          ))}
+        </div>
+      ) : (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={t('notificationsDrawer.noNotifications')}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            marginBlockStart: 32,
+          }}
+        />
+      )}
     </Drawer>
   );
 };
 
-export default NotficationDrawer;
+export default NotificationDrawer;
