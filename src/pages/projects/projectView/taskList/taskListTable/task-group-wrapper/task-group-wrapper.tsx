@@ -40,6 +40,7 @@ import {
   updateTaskPhase,
   updateTaskStartDate,
   IGroupBy,
+  updateTaskDescription,
 } from '@/features/tasks/tasks.slice';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 
@@ -101,8 +102,12 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       }));
 
       // Find the group that contains the task or its subtasks
-      const groupId = groups.find(group => 
-        group.tasks.some(task => task.id === data.id || (task.sub_tasks && task.sub_tasks.some(subtask => subtask.id === data.id)))
+      const groupId = groups.find(group =>
+        group.tasks.some(
+          task =>
+            task.id === data.id ||
+            (task.sub_tasks && task.sub_tasks.some(subtask => subtask.id === data.id))
+        )
       )?.id;
 
       if (groupId) {
@@ -294,6 +299,25 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       (draggedElement as HTMLElement).style.transition = 'transform 0.2s ease';
     }
   }, []);
+
+  // Socket handler for task description updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleTaskDescriptionChange = (data: {
+      id: string;
+      parent_task: string;
+      description: string;
+    }) => {
+      dispatch(updateTaskDescription(data));
+    };
+
+    socket.on(SocketEvents.TASK_DESCRIPTION_CHANGE.toString(), handleTaskDescriptionChange);
+
+    return () => {
+      socket.off(SocketEvents.TASK_DESCRIPTION_CHANGE.toString(), handleTaskDescriptionChange);
+    };
+  }, [socket, dispatch]);
 
   const handleDragEnd = useCallback(
     ({ active, over }: DragEndEvent) => {
