@@ -75,7 +75,9 @@ const ProjectView = () => {
 
       navigate({
         pathname: `/worklenz/projects/${projectId}`,
-        search: new URLSearchParams({ pinned_tab: itemKey }).toString(),
+        search: new URLSearchParams({ 
+          tab: activeTab,
+          pinned_tab: itemKey }).toString(),
       });
     }
   };
