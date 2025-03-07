@@ -21,7 +21,7 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
 
   const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskFormViewModel, loadingTask, selectedTaskId } = useAppSelector(
-    state => state.taskDrawerReducer,
+    state => state.taskDrawerReducer
   );
 
   const handleRefresh = () => {
@@ -51,7 +51,13 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
     {
       key: 'description',
       label: <Typography.Text strong>{t('taskInfoTab.description.title')}</Typography.Text>,
-      children: <DescriptionEditor description={taskFormViewModel?.task?.description || null} />,
+      children: (
+        <DescriptionEditor
+          description={taskFormViewModel?.task?.description || null}
+          taskId={taskFormViewModel?.task?.id || ''}
+          parentTaskId={taskFormViewModel?.task?.parent_task_id || ''}
+        />
+      ),
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
@@ -116,21 +122,21 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
   return (
     <Skeleton active loading={loadingTask}>
       <Flex vertical justify="space-between" style={{ height: '78vh' }}>
-      <Collapse
-        items={infoItems}
-        bordered={false}
-        style={{ maxHeight: 600, overflow: 'auto' }}
-        defaultActiveKey={[
-          'details',
-          'description',
-          'subTasks',
-          'dependencies',
-          'attachments',
-          'comments',
-        ]}
-      />
-      <InfoTabFooter />
-    </Flex>
+        <Collapse
+          items={infoItems}
+          bordered={false}
+          style={{ maxHeight: 600, overflow: 'auto' }}
+          defaultActiveKey={[
+            'details',
+            'description',
+            'subTasks',
+            'dependencies',
+            'attachments',
+            'comments',
+          ]}
+        />
+        <InfoTabFooter />
+      </Flex>
     </Skeleton>
   );
 };

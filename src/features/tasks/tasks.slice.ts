@@ -679,7 +679,8 @@ const taskSlice = createSlice({
 
     updateTaskStatusColor: (state, action: PayloadAction<{ taskId: string; color: string }>) => {
       const { taskId, color } = action.payload;
-      const task = state.tasks.find(t => t.id === taskId) ||
+      const task =
+        state.tasks.find(t => t.id === taskId) ||
         state.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === taskId);
       if (task) {
         task.status_color = color;
@@ -729,6 +730,26 @@ const taskSlice = createSlice({
 
         // Add to new priority group
         addTaskToGroup(state.taskGroups, task, priority_id, false);
+      }
+    },
+
+    updateTaskDescription: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        parent_task: string;
+        description: string;
+      }>
+    ) => {
+      const { id: taskId, description, parent_task } = action.payload;
+      for (const group of state.taskGroups) {
+        const existingTask =
+          group.tasks.find(t => t.id === taskId) ||
+          group.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === taskId);
+        if (existingTask) {
+          existingTask.description = description;
+          break;
+        }
       }
     },
 
@@ -905,6 +926,7 @@ export const {
   updateTaskGroupColor,
   setConvertToSubtaskDrawerOpen,
   reorderTasks,
+  updateTaskDescription,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

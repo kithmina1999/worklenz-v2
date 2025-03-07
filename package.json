@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "vite",
+    "prebuild": "mkdir -p public/tinymce && cp -r node_modules/tinymce/* public/tinymce/",
     "build": "node --max-old-space-size=4096 node_modules/.bin/vite build",
     "dev-build": "vite build",
     "serve": "vite preview",
