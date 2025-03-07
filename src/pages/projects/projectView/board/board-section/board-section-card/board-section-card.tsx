@@ -139,7 +139,9 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
       className="h-[600px] max-h-[600px] overflow-y-scroll"
     >
       <BoardSectionCardHeader
-        id={taskGroup.id}
+        groupId={taskGroup.id}
+        key={taskGroup.id}
+        categoryId={taskGroup.category_id ?? null}
         name={name}
         tasksCount={taskGroup?.tasks.length}
         isLoading={isLoading}

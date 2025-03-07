@@ -37,7 +37,7 @@ import BoardSubTaskCard from '../board-sub-task-card/board-sub-task-card';
 import CustomAvatarGroup from '@/components/board/custom-avatar-group';
 import CustomDueDatePicker from '@/components/board/custom-due-date-picker';
 import { colors } from '@/styles/colors';
-import { deleteBoardTask, updateBoardTaskAssignee } from '@features/board/board-slice';
+import { deleteBoardTask, fetchBoardSubTasks, updateBoardTaskAssignee } from '@features/board/board-slice';
 import BoardCreateSubtaskCard from '../board-sub-task-card/board-create-sub-task-card';
 import { setShowTaskDrawer, setSelectedTaskId } from '@/features/task-drawer/task-drawer.slice';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
@@ -49,6 +49,7 @@ import {
   evt_project_task_list_context_menu_assign_me,
   evt_project_task_list_context_menu_delete,
 } from '@/shared/worklenz-analytics-events';
+import { fetchSubTasks } from '@/features/tasks/tasks.slice';
 
 const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId: string }) => {
   const dispatch = useAppDispatch();
@@ -155,6 +156,20 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleSubTaskExpand = () => {
+    if (task && task.id && projectId) {
+      if (task.show_sub_tasks) {
+        setIsSubTaskShow(prev => !prev);
+      } else {
+        // Only fetch subtasks if the task has subtasks
+        if (task.sub_tasks && task.sub_tasks.length > 0) {
+          dispatch(fetchBoardSubTasks({ taskId: task.id, projectId: projectId }));
+        }
+        setIsSubTaskShow(prev => !prev);
+      }
     }
   };
 
@@ -294,7 +309,7 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
               <Button
                 onClick={e => {
                   e.stopPropagation();
-                  setIsSubTaskShow(prev => !prev);
+                  handleSubTaskExpand();
                 }}
                 size="small"
                 style={{
