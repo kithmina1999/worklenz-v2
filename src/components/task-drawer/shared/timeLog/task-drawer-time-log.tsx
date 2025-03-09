@@ -77,11 +77,11 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
           <Typography.Text type="secondary">{t('taskTimeLogTab.totalLogged')}: {totalTimeText}</Typography.Text>
           <Flex gap={8} align="center">
             <TaskTimer
+              taskId={selectedTaskId || ''}
               started={started}
               handleStartTimer={handleStartTimer}
               handleStopTimer={handleTimerStop}
               timeString={timeString}
-              timeTrackingLogCard={<div>Time Tracking Log</div>}
             />
             <Button size="small" icon={<DownloadOutlined />}>
               {t('taskTimeLogTab.exportToExcel')}
