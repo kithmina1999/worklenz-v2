@@ -9,11 +9,13 @@ import {
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import logger from '@/utils/errorLogger';
 import { ITaskListMemberFilter } from '@/types/tasks/taskListFilters.types';
-import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { IProjectTask, ITaskAssignee } from '@/types/project/projectTasksViewModel.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
 import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
 import { ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
 import { ITaskLabel } from '@/types/label.type';
+import { ITeamMemberViewModel } from '../taskAttributes/taskMemberSlice';
+import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -364,6 +366,48 @@ const boardSlice = createSlice({
         group.color_code = action.payload.colorCode;
       }
     },
+
+    updateTaskAssignees: (
+      state,
+      action: PayloadAction<{
+        groupId: string;
+        taskId: string;
+        assignees: ITeamMemberViewModel[];
+        names: ITeamMemberViewModel[];
+      }>
+    ) => {
+      const { groupId, taskId, assignees, names } = action.payload;
+      const group = state.taskGroups.find(group => group.id === groupId);
+      if (group) {
+        // Find the task or its subtask
+        const task =
+          group.tasks.find(task => task.id === taskId) ||
+          group.tasks.flatMap(task => task.sub_tasks || []).find(subtask => subtask.id === taskId);
+        if (task) {
+          task.assignees = assignees as ITaskAssignee[];
+          task.names = names as InlineMember[];
+        }
+      }
+    },
+
+    updateTaskEndDate: (
+      state,
+      action: PayloadAction<{
+        task: IProjectTask;
+      }>
+    ) => {
+      const { task } = action.payload;
+
+      for (const group of state.taskGroups) {
+        const existingTask =
+          group.tasks.find(t => t.id === task.id) ||
+          group.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === task.id);
+        if (existingTask) {
+          existingTask.end_date = task.end_date;
+          break;
+        }
+      }
+    },
   },
   extraReducers: builder => {
     builder
@@ -423,5 +467,7 @@ export const {
   setBoardStatuses,
   setBoardSearch,
   setBoardGroupName,
+  updateTaskAssignees,
+  updateTaskEndDate,  
 } = boardSlice.actions;
 export default boardSlice.reducer;

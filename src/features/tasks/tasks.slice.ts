@@ -20,6 +20,7 @@ import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service
 import { ITaskLabel, ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
 import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
 import { produce } from 'immer';
+import { tasksCustomColumnsService } from '@/api/tasks/tasks-custom-columns.service';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -75,6 +76,8 @@ interface ITaskState {
   members: string[];
   activeTimers: Record<string, number | null>;
   convertToSubtaskDrawerOpen: boolean;
+  customColumns: ITaskListColumn[];
+  customColumnValues: Record<string, Record<string, any>>;
 }
 
 const initialState: ITaskState = {
@@ -98,6 +101,8 @@ const initialState: ITaskState = {
   members: [],
   activeTimers: {},
   convertToSubtaskDrawerOpen: false,
+  customColumns: [],
+  customColumnValues: {},
 };
 
 export const COLUMN_KEYS = {
@@ -229,11 +234,18 @@ export const fetchSubTasks = createAsyncThunk(
   }
 );
 
-export const fetTaskListColumns = createAsyncThunk(
+export const fetchTaskListColumns = createAsyncThunk(
   'tasks/fetTaskListColumns',
-  async (projectId: string) => {
-    const response = await tasksApiService.fetchTaskListColumns(projectId);
-    return response.body;
+  async (projectId: string, { dispatch }) => {
+    const [standardColumns, customColumns] = await Promise.all([
+      tasksApiService.fetchTaskListColumns(projectId),
+      dispatch(fetchCustomColumns(projectId))
+    ]);
+    
+    return {
+      standard: standardColumns.body,
+      custom: customColumns.payload
+    };
   }
 );
 
@@ -398,6 +410,97 @@ const findTaskInGroups = (
   }
   return null;
 };
+
+export const fetchCustomColumns = createAsyncThunk(
+  'tasks/fetchCustomColumns',
+  async (projectId: string, { rejectWithValue }) => {
+    try {
+      const response = await tasksCustomColumnsService.getCustomColumns(projectId);
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Custom Columns', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch custom columns');
+    }
+  }
+);
+
+export const fetchTaskCustomValues = createAsyncThunk(
+  'tasks/fetchTaskCustomValues',
+  async ({ taskId, projectId }: { taskId: string, projectId: string }, { rejectWithValue }) => {
+    try {
+      const response = await tasksApiService.getTaskCustomValues(taskId, projectId);
+      return { taskId, values: response.body };
+    } catch (error) {
+      logger.error('Fetch Task Custom Values', error);
+      return rejectWithValue('Failed to fetch custom values');
+    }
+  }
+);
+
+export const updateTaskCustomValue = createAsyncThunk(
+  'tasks/updateTaskCustomValue',
+  async ({ 
+    taskId, 
+    columnId, 
+    columnKey,
+    value, 
+    type 
+  }: { 
+    taskId: string, 
+    columnId: string, 
+    columnKey: string,
+    value: any, 
+    type: string 
+  }, { rejectWithValue }) => {
+    try {
+      await tasksApiService.updateTaskCustomValue(taskId, columnId, { value, type });
+      return { taskId, columnKey, value };
+    } catch (error) {
+      logger.error('Update Task Custom Value', error);
+      return rejectWithValue('Failed to update custom value');
+    }
+  }
+);
+
+export const bulkUpdateTaskCustomValues = createAsyncThunk(
+  'tasks/bulkUpdateTaskCustomValues',
+  async ({ 
+    taskId, 
+    values 
+  }: { 
+    taskId: string, 
+    values: Array<{
+      columnId: string,
+      columnKey: string,
+      value: any,
+      type: string
+    }> 
+  }, { rejectWithValue }) => {
+    try {
+      await tasksApiService.bulkUpdateTaskCustomValues(taskId, { 
+        values: values.map(v => ({
+          columnId: v.columnId,
+          value: v.value,
+          type: v.type
+        }))
+      });
+      
+      // Transform for state update
+      const valueMap = values.reduce((acc, item) => {
+        acc[item.columnKey] = item.value;
+        return acc;
+      }, {} as Record<string, any>);
+      
+      return { taskId, values: valueMap };
+    } catch (error) {
+      logger.error('Bulk Update Task Custom Values', error);
+      return rejectWithValue('Failed to update custom values');
+    }
+  }
+);
 
 const taskSlice = createSlice({
   name: 'taskReducer',
@@ -801,6 +904,36 @@ const taskSlice = createSlice({
         }
       });
     },
+
+    addCustomColumn: (state, action: PayloadAction<ITaskListColumn>) => {
+      console.log('action.payload', action.payload);
+      state.customColumns.push(action.payload);
+      // Also add to columns array to maintain visibility
+      state.columns.push({
+        ...action.payload,
+        pinned: true // New columns are visible by default
+      });
+    },
+
+    updateCustomColumn: (state, action: PayloadAction<{ key: string; column: ITaskListColumn }>) => {
+      const { key, column } = action.payload;
+      const index = state.customColumns.findIndex(col => col.key === key);
+      if (index !== -1) {
+        state.customColumns[index] = column;
+        // Update in columns array as well
+        const colIndex = state.columns.findIndex(col => col.key === key);
+        if (colIndex !== -1) {
+          state.columns[colIndex] = { ...column, pinned: state.columns[colIndex].pinned };
+        }
+      }
+    },
+
+    deleteCustomColumn: (state, action: PayloadAction<string>) => {
+      const key = action.payload;
+      state.customColumns = state.customColumns.filter(col => col.key !== key);
+      // Remove from columns array as well
+      state.columns = state.columns.filter(col => col.key !== key);
+    },
   },
 
   extraReducers: builder => {
@@ -850,21 +983,33 @@ const taskSlice = createSlice({
         state.loadingAssignees = false;
         state.error = action.error.message || 'Failed to fetch task assignees';
       })
-      .addCase(fetTaskListColumns.pending, state => {
+      .addCase(fetchTaskListColumns.pending, state => {
         state.loadingColumns = true;
         state.error = null;
       })
-      .addCase(fetTaskListColumns.fulfilled, (state, action) => {
+      .addCase(fetchTaskListColumns.fulfilled, (state, action) => {
         state.loadingColumns = false;
-        action.payload.splice(1, 0, {
+        
+        // Process standard columns
+        const standardColumns = action.payload.standard;
+        standardColumns.splice(1, 0, {
           key: 'TASK',
           name: 'Task',
           index: 1,
           pinned: true,
         });
-        state.columns = action.payload;
+        // Process custom columns
+        const customColumns = (action.payload as { custom: any[] }).custom.map((col: any) => ({
+          ...col,
+          isCustom: true,
+          pinned: true // Default custom columns to visible
+        }));
+
+        // Merge columns
+        state.columns = [...standardColumns, ...customColumns];
+        state.customColumns = customColumns;
       })
-      .addCase(fetTaskListColumns.rejected, (state, action) => {
+      .addCase(fetchTaskListColumns.rejected, (state, action) => {
         state.loadingColumns = false;
         state.error = action.error.message || 'Failed to fetch task list columns';
       })
@@ -894,6 +1039,45 @@ const taskSlice = createSlice({
       .addCase(updateColumnVisibility.pending, state => {
         state.loadingColumns = true;
         state.error = null;
+      })
+      .addCase(fetchCustomColumns.pending, state => {
+        state.loadingColumns = true;
+        state.error = null;
+      })
+      .addCase(fetchCustomColumns.fulfilled, (state, action) => {
+        state.loadingColumns = false;
+        state.customColumns = action.payload;
+        // Add custom columns to the columns array
+        const customColumnsForVisibility = action.payload.map(col => ({
+          ...col,
+          pinned: true // Make custom columns visible by default
+        }));
+        state.columns = [...state.columns, ...customColumnsForVisibility];
+      })
+      .addCase(fetchCustomColumns.rejected, (state, action) => {
+        state.loadingColumns = false;
+        state.error = action.error.message || 'Failed to fetch custom columns';
+      })
+      .addCase(fetchTaskCustomValues.fulfilled, (state, action) => {
+        const { taskId, values } = action.payload;
+        state.customColumnValues[taskId] = values;
+      })
+      .addCase(updateTaskCustomValue.fulfilled, (state, action) => {
+        const { taskId, columnKey, value } = action.payload;
+        if (!state.customColumnValues[taskId]) {
+          state.customColumnValues[taskId] = {};
+        }
+        state.customColumnValues[taskId][columnKey] = value;
+      })
+      .addCase(bulkUpdateTaskCustomValues.fulfilled, (state, action) => {
+        const { taskId, values } = action.payload;
+        if (!state.customColumnValues[taskId]) {
+          state.customColumnValues[taskId] = {};
+        }
+        state.customColumnValues[taskId] = {
+          ...state.customColumnValues[taskId],
+          ...values
+        };
       });
   },
 });
@@ -927,6 +1111,9 @@ export const {
   setConvertToSubtaskDrawerOpen,
   reorderTasks,
   updateTaskDescription,
+  addCustomColumn,
+  updateCustomColumn,
+  deleteCustomColumn,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

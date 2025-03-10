@@ -77,7 +77,15 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
     setDroppableRef(el);
   };
 
-  const getInstantTask = async ({task_id, group_id, task}: {task_id: string, group_id: string, task: IProjectTask}) => {
+  const getInstantTask = async ({
+    task_id,
+    group_id,
+    task,
+  }: {
+    task_id: string;
+    group_id: string;
+    task: IProjectTask;
+  }) => {
     try {
     } catch (error) {
       logger.error('Error creating instant task', error);
@@ -150,7 +158,7 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
         onHoverChange={setIsHover}
         setShowNewCard={setShowNewCardTop}
       />
-      
+
       <Flex
         vertical
         gap={16}

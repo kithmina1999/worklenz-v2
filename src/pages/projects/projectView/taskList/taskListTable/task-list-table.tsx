@@ -450,10 +450,10 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                 data-task-cell
                 onContextMenu={e => handleContextMenu(e, task)}
               >
-                {column.custom_column
+                {column.isCustomColumn && column.customColumnObj
                   ? renderCustomColumnContent(
-                      column.custom_column_obj,
-                      column.custom_column_obj.fieldType,
+                      column.customColumnObj,
+                      column.customColumnObj.fieldType,
                       task
                     )
                   : renderColumnContent(column.key, task, isSubtask)}
@@ -530,8 +530,8 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                         </Flex>
                       )}
                       {column.key !== 'PHASE' &&
-                        (column.key === 'customColumn' || column.custom_column
-                          ? column.name
+                        (column.isCustomColumn
+                          ? column.customColumnObj.columnHeader
                           : t(`${column.key?.replace('_', '').toLowerCase()}Column`))}
                     </Flex>
                   </th>

@@ -14,13 +14,14 @@ import {
 import CustomColumnHeader from '../custom-column-header/custom-column-header';
 import { nanoid } from '@reduxjs/toolkit';
 import {
-  addCustomColumn,
   CustomTableColumnsType,
   deleteCustomColumn,
   updateCustomColumn,
 } from '../../../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice';
 import { themeWiseColor } from '../../../../../../../utils/themeWiseColor';
 import KeyTypeColumn from './key-type-column/key-type-column';
+import logger from '@/utils/errorLogger';
+import { addCustomColumn } from '@/features/tasks/tasks.slice';
 
 type CustomColumnModalProps = {
   modalType: 'create' | 'edit';
@@ -81,41 +82,49 @@ const CustomColumnModal = ({
       key: 'people',
       value: 'people',
       label: 'People',
+      disabled: false,
     },
     {
       key: 'number',
       value: 'number',
       label: 'Number',
+      disabled: false,
     },
     {
       key: 'date',
       value: 'date',
       label: 'Date',
+      disabled: false,
     },
     {
       key: 'selection',
       value: 'selection',
       label: 'Selection',
+      disabled: false,
     },
     {
       key: 'checkbox',
       value: 'checkbox',
       label: 'Checkbox',
+      disabled: true,
     },
     {
       key: 'labels',
       value: 'labels',
       label: 'Labels',
+      disabled: true,
     },
     {
       key: 'key',
       value: 'key',
       label: 'Key',
+      disabled: true,
     },
     {
       key: 'formula',
       value: 'formula',
       label: 'Formula',
+      disabled: true,
     },
   ];
 
@@ -138,9 +147,7 @@ const CustomColumnModal = ({
             selectionsList: value.fieldType === 'selection' ? selectionsList : [],
           },
         };
-
         await dispatch(addCustomColumn(newColumn));
-        message.success('column added!');
       } else if (modalType === 'edit' && columnId) {
         const updatedColumn = openedColumn
           ? {
@@ -169,14 +176,13 @@ const CustomColumnModal = ({
 
         if (updatedColumn) {
           await dispatch(updateCustomColumn({ key: columnId, updatedColumn }));
-          message.success('column updated!');
         }
       }
 
       handleCancel();
       mainForm.resetFields();
     } catch (error) {
-      console.error(error);
+      logger.error('error in custom column modal', error);
     }
   };
 
@@ -249,7 +255,6 @@ const CustomColumnModal = ({
             <Select
               options={fieldTypesOptions}
               defaultValue={fieldType}
-              // disabled={modalType === 'edit'}
               value={fieldType}
               onChange={value => dispatch(setCustomFieldType(value))}
               style={{
