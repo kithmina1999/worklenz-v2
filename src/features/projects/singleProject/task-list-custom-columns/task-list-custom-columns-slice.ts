@@ -19,6 +19,9 @@ export type ExpressionType = 'add' | 'substract' | 'divide' | 'multiply';
 
 type TaskListCustomColumnsState = {
   isCustomColumnModalOpen: boolean;
+  customColumnModalType: 'create' | 'edit';
+  customColumnId: string | null;
+  
   customFieldType: CustomFieldsTypes;
   customFieldNumberType: CustomFieldNumberTypes;
   decimals: number;
@@ -34,6 +37,9 @@ type TaskListCustomColumnsState = {
 
 const initialState: TaskListCustomColumnsState = {
   isCustomColumnModalOpen: false,
+  customColumnModalType: 'create',
+  customColumnId: null,
+
   customFieldType: 'people',
   customFieldNumberType: 'formatted',
   decimals: 0,
@@ -51,8 +57,12 @@ const taskListCustomColumnsSlice = createSlice({
   name: 'taskListCustomColumnsReducer',
   initialState,
   reducers: {
-    toggleCustomColumnModalOpen: state => {
-      state.isCustomColumnModalOpen = !state.isCustomColumnModalOpen;
+    toggleCustomColumnModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isCustomColumnModalOpen = action.payload;
+    },
+    setCustomColumnModalAttributes: (state, action: PayloadAction<{modalType: 'create' | 'edit', columnId: string | null}>) => {
+      state.customColumnModalType = action.payload.modalType;
+      state.customColumnId = action.payload.columnId;
     },
     setCustomFieldType: (state, action: PayloadAction<CustomFieldsTypes>) => {
       state.customFieldType = action.payload;
@@ -92,6 +102,7 @@ const taskListCustomColumnsSlice = createSlice({
 
 export const {
   toggleCustomColumnModalOpen,
+  setCustomColumnModalAttributes,
   setCustomFieldType,
   setCustomFieldNumberType,
   setDecimals,

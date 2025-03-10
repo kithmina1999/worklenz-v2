@@ -427,81 +427,6 @@ export const fetchCustomColumns = createAsyncThunk(
   }
 );
 
-export const fetchTaskCustomValues = createAsyncThunk(
-  'tasks/fetchTaskCustomValues',
-  async ({ taskId, projectId }: { taskId: string, projectId: string }, { rejectWithValue }) => {
-    try {
-      const response = await tasksApiService.getTaskCustomValues(taskId, projectId);
-      return { taskId, values: response.body };
-    } catch (error) {
-      logger.error('Fetch Task Custom Values', error);
-      return rejectWithValue('Failed to fetch custom values');
-    }
-  }
-);
-
-export const updateTaskCustomValue = createAsyncThunk(
-  'tasks/updateTaskCustomValue',
-  async ({ 
-    taskId, 
-    columnId, 
-    columnKey,
-    value, 
-    type 
-  }: { 
-    taskId: string, 
-    columnId: string, 
-    columnKey: string,
-    value: any, 
-    type: string 
-  }, { rejectWithValue }) => {
-    try {
-      await tasksApiService.updateTaskCustomValue(taskId, columnId, { value, type });
-      return { taskId, columnKey, value };
-    } catch (error) {
-      logger.error('Update Task Custom Value', error);
-      return rejectWithValue('Failed to update custom value');
-    }
-  }
-);
-
-export const bulkUpdateTaskCustomValues = createAsyncThunk(
-  'tasks/bulkUpdateTaskCustomValues',
-  async ({ 
-    taskId, 
-    values 
-  }: { 
-    taskId: string, 
-    values: Array<{
-      columnId: string,
-      columnKey: string,
-      value: any,
-      type: string
-    }> 
-  }, { rejectWithValue }) => {
-    try {
-      await tasksApiService.bulkUpdateTaskCustomValues(taskId, { 
-        values: values.map(v => ({
-          columnId: v.columnId,
-          value: v.value,
-          type: v.type
-        }))
-      });
-      
-      // Transform for state update
-      const valueMap = values.reduce((acc, item) => {
-        acc[item.columnKey] = item.value;
-        return acc;
-      }, {} as Record<string, any>);
-      
-      return { taskId, values: valueMap };
-    } catch (error) {
-      logger.error('Bulk Update Task Custom Values', error);
-      return rejectWithValue('Failed to update custom values');
-    }
-  }
-);
-
 const taskSlice = createSlice({
   name: 'taskReducer',
   initialState,
@@ -1056,27 +981,6 @@ const taskSlice = createSlice({
       .addCase(fetchCustomColumns.rejected, (state, action) => {
         state.loadingColumns = false;
         state.error = action.error.message || 'Failed to fetch custom columns';
-      })
-      .addCase(fetchTaskCustomValues.fulfilled, (state, action) => {
-        const { taskId, values } = action.payload;
-        state.customColumnValues[taskId] = values;
-      })
-      .addCase(updateTaskCustomValue.fulfilled, (state, action) => {
-        const { taskId, columnKey, value } = action.payload;
-        if (!state.customColumnValues[taskId]) {
-          state.customColumnValues[taskId] = {};
-        }
-        state.customColumnValues[taskId][columnKey] = value;
-      })
-      .addCase(bulkUpdateTaskCustomValues.fulfilled, (state, action) => {
-        const { taskId, values } = action.payload;
-        if (!state.customColumnValues[taskId]) {
-          state.customColumnValues[taskId] = {};
-        }
-        state.customColumnValues[taskId] = {
-          ...state.customColumnValues[taskId],
-          ...values
-        };
       });
   },
 });
