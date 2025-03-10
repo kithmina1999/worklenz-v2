@@ -339,13 +339,12 @@ const TaskListBulkActionsBar = () => {
 
   const applyLabels = async () => {
     if (!projectId) return;
-
     try {
       setUpdatingLabels(true);
       const body: IBulkTasksLabelsRequest = {
         tasks: selectedTaskIdsList,
         labels: selectedLabels,
-        text: createLabelText.trim() !== '' ? createLabelText.trim() : null,
+        text: selectedLabels.length > 0 ? null : createLabelText.trim() !== '' ? createLabelText.trim() : null,
       };
       const res = await taskListBulkActionsApiService.assignLabels(body, projectId);
       if (res.done) {
