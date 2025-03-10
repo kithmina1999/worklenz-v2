@@ -43,6 +43,10 @@ const LabelsDropdown = ({
     );
   }, [labelsList, createLabelText]);
 
+  const isOnApply = () => {
+    if (!createLabelText.trim() && selectedLabels.length === 0) return;
+    onApply();
+  };
   return (
     <Card className="custom-card" styles={{ body: { padding: 8 } }}>
       <Flex vertical>
@@ -89,7 +93,10 @@ const LabelsDropdown = ({
             value={createLabelText}
             onChange={e => onCreateLabelTextChange(e.currentTarget.value)}
             placeholder={t('createLabel')}
-            onPressEnter={onApply}
+            onPressEnter={()=>{
+              if(filteredLabels.length > 0) return;
+              isOnApply();
+            }}
           />
           {createLabelText && filteredLabels.length === 0 && (
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
@@ -100,7 +107,7 @@ const LabelsDropdown = ({
             <Button
               type="primary"
               size="small"
-              onClick={onApply}
+              onClick={isOnApply}
               style={{ width: '100%' }}
             >
               {t('apply')}

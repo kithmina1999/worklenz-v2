@@ -665,7 +665,6 @@ const taskSlice = createSlice({
 
     updateTaskLabel: (state, action: PayloadAction<ILabelsChangeResponse>) => {
       const label = action.payload;
-      console.log('label', label);
       for (const group of state.taskGroups) {
         // Find the task or its subtask
         const task =
