@@ -858,6 +858,18 @@ const taskSlice = createSlice({
       // Remove from columns array as well
       state.columns = state.columns.filter(col => col.key !== key);
     },
+
+    updateSubTasks: (state, action: PayloadAction<IProjectTask>) => {
+      const { parent_task_id } = action.payload;
+      for (const group of state.taskGroups) {
+        const task = group.tasks.find(t => t.id === parent_task_id);
+        if (task) {
+          task.sub_tasks_count = Number(action.payload.sub_tasks_count) || 0;
+          task.sub_tasks_count += 1;
+          break;
+        }
+      }
+    },
   },
 
   extraReducers: builder => {
@@ -1017,6 +1029,7 @@ export const {
   addCustomColumn,
   updateCustomColumn,
   deleteCustomColumn,
+  updateSubTasks,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

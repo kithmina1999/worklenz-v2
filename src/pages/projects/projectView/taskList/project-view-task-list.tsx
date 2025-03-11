@@ -44,11 +44,9 @@ const ProjectViewTaskList = () => {
     <Flex vertical gap={16} style={{ overflowX: 'hidden' }}>
       <TaskListFilters position="list" />
 
-      {loadingGroups ? (
-        <Skeleton />
-      ) : (
+      <Skeleton active loading={loadingGroups}>
         <TaskGroupWrapper taskGroups={taskGroups} groupBy={groupBy} />
-      )}
+      </Skeleton>
     </Flex>
   );
 };

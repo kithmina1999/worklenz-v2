@@ -18,7 +18,6 @@ interface TaskDrawerInfoTabProps {
 
 const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
   const dispatch = useAppDispatch();
-  const [refreshSubTask, setRefreshSubTask] = useState<boolean>(false);
 
   const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskFormViewModel, loadingTask, selectedTaskId } = useAppSelector(
@@ -26,11 +25,6 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
   );
   const [subTasks, setSubTasks] = useState<ISubTask[]>([]);
   const [loadingSubTasks, setLoadingSubTasks] = useState<boolean>(false);
-
-  const handleRefresh = () => {
-    setRefreshSubTask(true);
-    setTimeout(() => setRefreshSubTask(false), 500);
-  };
 
   const fetchTaskData = () => {
     if (!loadingTask && selectedTaskId && projectId) {
@@ -71,8 +65,8 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
         <Tooltip title={t('taskInfoTab.subTasks.refreshSubTasks')} trigger={'hover'}>
           <Button
             shape="circle"
-            icon={<ReloadOutlined spin={refreshSubTask} />}
-            onClick={handleRefresh}
+            icon={<ReloadOutlined spin={loadingSubTasks} />}
+            onClick={() => fetchSubTasks()}
           />
         </Tooltip>
       ),
@@ -81,6 +75,7 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
           subTasks={subTasks}
           loadingSubTasks={loadingSubTasks}
           refreshSubTasks={() => fetchSubTasks()}
+          t={t}
         />
       ),
       style: panelStyle,
@@ -89,7 +84,7 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
     {
       key: 'dependencies',
       label: <Typography.Text strong>{t('taskInfoTab.dependencies.title')}</Typography.Text>,
-      children: <DependenciesTable />,
+      children: <DependenciesTable task={taskFormViewModel?.task || {}} t={t} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
@@ -142,6 +137,10 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
   useEffect(() => {
     fetchTaskData();
     fetchSubTasks();
+
+    return () => {
+      setSubTasks([]);
+    };
   }, [selectedTaskId, projectId]);
 
   return (

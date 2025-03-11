@@ -17,8 +17,17 @@ import { nanoid } from '@reduxjs/toolkit';
 import { DependencyType } from '@/types/dependencies.types';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { TFunction } from 'i18next';
+import { IDependencyType } from '@/types/tasks/task-dependency.types';
+import { ITaskViewModel } from '@/types/tasks/task.types';
 
-const DependenciesTable = () => {
+interface DependenciesTableProps {
+  task: ITaskViewModel;
+  t: TFunction
+}
+
+const DependenciesTable = ({ task, t }: DependenciesTableProps) => {
   const [hoverRow, setHoverRow] = useState<string | null>(null);
   const [isDependencyInputShow, setIsDependencyInputShow] = useState<boolean>(false);
 
@@ -30,18 +39,13 @@ const DependenciesTable = () => {
 
   // handle adding a new dependency
   const handleAddDependency = (taskId: string) => {
-    // find the selected task from task-list
-    const selectedTask = taskList.find(task => task.taskId === taskId);
+    if (!task.id) return;
 
-    if (!selectedTask) return;
-
-    // create a new dependency with default values
-    const newDependency: DependencyType = {
-      dependencyId: nanoid(),
-      taskId: selectedTask.taskId,
-      task: selectedTask.task,
-      blockedBy: 'blockedBy',
-    };
+    const item = {
+      dependency_type : IDependencyType.BLOCKED_BY,
+      task_id: task.id,
+      related_task_id: taskId
+    }
 
     // update the dependency list
     setDependencyList([...dependencyList, newDependency]);
