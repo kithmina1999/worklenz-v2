@@ -353,7 +353,7 @@ const BoardViewTaskCard = ({ task, sectionId }: IBoardViewTaskCardProps) => {
                 {showNewSubtaskCard && (
                   <BoardCreateSubtaskCard
                     sectionId={sectionId}
-                    taskId={task.id || ''}
+                    parentTaskId={task.id || ''}
                     setShowNewSubtaskCard={setShowNewSubtaskCard}
                   />
                 )}

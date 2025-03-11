@@ -1,4 +1,4 @@
-import { Flex, Typography, Button, Input } from 'antd';
+import { Flex, Typography, Button, Input, Tooltip } from 'antd';
 import type { InputRef } from 'antd';
 import {
   DoubleRightOutlined,
@@ -10,6 +10,7 @@ import {
   PaperClipOutlined,
   MinusCircleOutlined,
   ScheduleOutlined,
+  RetweetOutlined,
 } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -215,7 +216,9 @@ const TaskListTaskCell = ({
         ) : null}
 
         {task?.schedule_id ? (
-          <ScheduleOutlined type="secondary" style={{ fontSize: 14 }} />
+          <Tooltip title="Recurring Task">
+            <RetweetOutlined type="secondary" style={{ fontSize: 14 }} />
+          </Tooltip>
         ) : null}
       </Flex>
 
