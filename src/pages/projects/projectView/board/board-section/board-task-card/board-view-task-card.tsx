@@ -37,7 +37,11 @@ import BoardSubTaskCard from '../board-sub-task-card/board-sub-task-card';
 import CustomAvatarGroup from '@/components/board/custom-avatar-group';
 import CustomDueDatePicker from '@/components/board/custom-due-date-picker';
 import { colors } from '@/styles/colors';
-import { deleteBoardTask, updateBoardTaskAssignee } from '@features/board/board-slice';
+import {
+  deleteBoardTask,
+  fetchBoardSubTasks,
+  updateBoardTaskAssignee,
+} from '@features/board/board-slice';
 import BoardCreateSubtaskCard from '../board-sub-task-card/board-create-sub-task-card';
 import { setShowTaskDrawer, setSelectedTaskId } from '@/features/task-drawer/task-drawer.slice';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
@@ -50,7 +54,12 @@ import {
   evt_project_task_list_context_menu_delete,
 } from '@/shared/worklenz-analytics-events';
 
-const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId: string }) => {
+interface IBoardViewTaskCardProps {
+  task: IProjectTask;
+  sectionId: string;
+}
+
+const BoardViewTaskCard = ({ task, sectionId }: IBoardViewTaskCardProps) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('kanban-board');
   const { trackMixpanelEvent } = useMixpanelTracking();
@@ -155,6 +164,19 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleSubTaskExpand = () => {
+    if (task && task.id && projectId) {
+      if (task.show_sub_tasks) {
+        setIsSubTaskShow(prev => !prev);
+      } else {
+        if (!task.sub_tasks) {
+          dispatch(fetchBoardSubTasks({ taskId: task.id, projectId: projectId }));
+        }
+        setIsSubTaskShow(prev => !prev);
+      }
     }
   };
 
@@ -284,17 +306,17 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
               marginBlock: 8,
             }}
           >
-            <CustomAvatarGroup task={task} sectionId={sectionId} />
+            {task && <CustomAvatarGroup task={task} sectionId={sectionId} />}
 
             <Flex gap={4} align="center">
-              <CustomDueDatePicker dueDate={dueDate} onDateChange={setDueDate} />
+              <CustomDueDatePicker task={task} onDateChange={setDueDate} />
 
               {/* Subtask Section */}
 
               <Button
                 onClick={e => {
                   e.stopPropagation();
-                  setIsSubTaskShow(prev => !prev);
+                  handleSubTaskExpand();
                 }}
                 size="small"
                 style={{
@@ -324,7 +346,9 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
               <Divider style={{ marginBlock: 0 }} />
               <List>
                 {task?.sub_tasks &&
-                  task?.sub_tasks.map((subtask: any) => <BoardSubTaskCard subtask={subtask} />)}
+                  task?.sub_tasks.map((subtask: any) => (
+                    <BoardSubTaskCard key={subtask.id} subtask={subtask} sectionId={sectionId} />
+                  ))}
 
                 {showNewSubtaskCard && (
                   <BoardCreateSubtaskCard

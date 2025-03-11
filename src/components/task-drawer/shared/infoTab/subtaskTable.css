@@ -1,0 +1,8 @@
+/* Subtask Table CSS */
+.subtask-table .action-buttons {
+  visibility: hidden;
+}
+
+.subtask-table tr:hover .action-buttons {
+  visibility: visible;
+} 

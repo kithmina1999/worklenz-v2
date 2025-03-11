@@ -20,15 +20,19 @@ import {
 } from '@dnd-kit/core';
 import BoardViewTaskCard from './board-section/board-task-card/board-view-task-card';
 import { useSearchParams } from 'react-router-dom';
+import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
 
 const ProjectViewBoard = () => {
+  const dispatch = useAppDispatch();
+  const { projectView } = useTabSearchParam();
+  
   const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskGroups, groupBy, loadingGroups, error } = useAppSelector(state => state.boardReducer);
-  const dispatch = useAppDispatch();
+  const { statusCategories, loading: loadingStatusCategories } = useAppSelector(
+    state => state.taskStatusReducer
+  );
   const [activeItem, setActiveItem] = useState<any>(null);
-  const [searchParams] = useSearchParams();
-  const tab = searchParams.get('tab');
-  const projectView = tab === 'list' ? 'list' : 'kanban';
 
   useEffect(() => {
     if (projectId && groupBy && projectView === 'kanban') {
@@ -108,6 +112,12 @@ const ProjectViewBoard = () => {
 
     setActiveItem(null);
   };
+
+  useEffect(() => {
+    if (!statusCategories.length && projectId) {
+      dispatch(fetchStatusesCategories());
+    }
+  }, [dispatch, projectId]);
 
   return (
     <Flex vertical gap={16}>

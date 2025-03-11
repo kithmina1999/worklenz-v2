@@ -73,14 +73,19 @@ const TaskListTableWrapper = ({
     data: { groupId: tableId }, // Pass groupId for handleDragEnd
   });
 
-  const handlToggleExpand = () => {
-    if (isRenaming) return;
+  const handlToggleExpand = (e: React.MouseEvent) => {
+    // Don't toggle if we're renaming or if the click came from the input
+    if (isRenaming || showRenameInput) {
+      e.stopPropagation();
+      return;
+    }
     setIsExpanded(!isExpanded);
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === ' ' && e.target !== e.currentTarget) {
-      e.preventDefault();
+    // Stop propagation for space key to prevent collapse/expand
+    if (e.key === ' ') {
+      e.stopPropagation();
     }
   };
 

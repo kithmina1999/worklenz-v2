@@ -10,24 +10,21 @@ import InfoTabFooter from './InfoTabFooter';
 import { fetchTask } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { TFunction } from 'i18next';
-
+import { subTasksApiService } from '@/api/tasks/subtasks.api.service';
+import { ISubTask } from '@/types/tasks/subTask.types';
 interface TaskDrawerInfoTabProps {
   t: TFunction;
 }
 
 const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
   const dispatch = useAppDispatch();
-  const [refreshSubTask, setRefreshSubTask] = useState<boolean>(false);
 
   const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskFormViewModel, loadingTask, selectedTaskId } = useAppSelector(
     state => state.taskDrawerReducer
   );
-
-  const handleRefresh = () => {
-    setRefreshSubTask(true);
-    setTimeout(() => setRefreshSubTask(false), 500);
-  };
+  const [subTasks, setSubTasks] = useState<ISubTask[]>([]);
+  const [loadingSubTasks, setLoadingSubTasks] = useState<boolean>(false);
 
   const fetchTaskData = () => {
     if (!loadingTask && selectedTaskId && projectId) {
@@ -68,19 +65,26 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
         <Tooltip title={t('taskInfoTab.subTasks.refreshSubTasks')} trigger={'hover'}>
           <Button
             shape="circle"
-            icon={<ReloadOutlined spin={refreshSubTask} />}
-            onClick={handleRefresh}
+            icon={<ReloadOutlined spin={loadingSubTasks} />}
+            onClick={() => fetchSubTasks()}
           />
         </Tooltip>
       ),
-      children: <SubTaskTable datasource={taskFormViewModel?.task?.sub_tasks} />,
+      children: (
+        <SubTaskTable
+          subTasks={subTasks}
+          loadingSubTasks={loadingSubTasks}
+          refreshSubTasks={() => fetchSubTasks()}
+          t={t}
+        />
+      ),
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
     {
       key: 'dependencies',
       label: <Typography.Text strong>{t('taskInfoTab.dependencies.title')}</Typography.Text>,
-      children: <DependenciesTable />,
+      children: <DependenciesTable task={taskFormViewModel?.task || {}} t={t} />,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
@@ -115,8 +119,28 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
     },
   ];
 
+  const fetchSubTasks = async () => {
+    if (!selectedTaskId || loadingSubTasks) return;
+    try {
+      setLoadingSubTasks(true);
+      const res = await subTasksApiService.getSubTasks(selectedTaskId);
+      if (res.done) {
+        setSubTasks(res.body);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingSubTasks(false);
+    }
+  };
+
   useEffect(() => {
     fetchTaskData();
+    fetchSubTasks();
+
+    return () => {
+      setSubTasks([]);
+    };
   }, [selectedTaskId, projectId]);
 
   return (

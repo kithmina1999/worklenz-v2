@@ -19,6 +19,7 @@ import TaskDrawerActivityLog from './shared/activity-log/task-drawer-activity-lo
 import TaskDrawerInfoTab from './shared/infoTab/TaskDrawerInfoTab';
 import TaskDrawerTimeLog from './shared/timeLog/task-drawer-time-log';
 import { DEFAULT_TASK_NAME } from '@/shared/constants';
+import useTaskDrawerUrlSync from '@/hooks/useTaskDrawerUrlSync';
 
 const TaskDrawer = () => {
   const { t } = useTranslation('task-drawer/task-drawer');
@@ -26,6 +27,10 @@ const TaskDrawer = () => {
   const { showTaskDrawer } = useAppSelector(state => state.taskDrawerReducer);
 
   const taskNameInputRef = useRef<InputRef>(null);
+  const isClosingManually = useRef(false);
+
+  // Use the custom hook to sync the task drawer state with the URL
+  const { clearTaskFromUrl } = useTaskDrawerUrlSync();
 
   useEffect(() => {
     if (taskNameInputRef.current?.input?.value === DEFAULT_TASK_NAME) {
@@ -36,10 +41,22 @@ const TaskDrawer = () => {
   const dispatch = useAppDispatch();
 
   const handleOnClose = () => {
+    // Set flag to indicate we're manually closing the drawer
+    isClosingManually.current = true;
+    
+    // Explicitly clear the task parameter from URL
+    clearTaskFromUrl();
+    
+    // Update the Redux state
     dispatch(setShowTaskDrawer(false));
     dispatch(setSelectedTaskId(null));
     dispatch(setTaskFormViewModel({}));
     dispatch(setTaskSubscribers([]));
+    
+    // Reset the flag after a short delay
+    setTimeout(() => {
+      isClosingManually.current = false;
+    }, 100);
   };
 
   const tabItems: TabsProps['items'] = [

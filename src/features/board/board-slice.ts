@@ -9,11 +9,13 @@ import {
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import logger from '@/utils/errorLogger';
 import { ITaskListMemberFilter } from '@/types/tasks/taskListFilters.types';
-import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { IProjectTask, ITaskAssignee } from '@/types/project/projectTasksViewModel.types';
 import { ITaskStatusViewModel } from '@/types/tasks/taskStatusGetResponse.types';
 import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
 import { ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
 import { ITaskLabel } from '@/types/label.type';
+import { ITeamMemberViewModel } from '../taskAttributes/taskMemberSlice';
+import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -142,6 +144,65 @@ export const fetchBoardTaskGroups = createAsyncThunk(
         return rejectWithValue(error.message);
       }
       return rejectWithValue('Failed to fetch task groups');
+    }
+  }
+);
+
+export const fetchBoardSubTasks = createAsyncThunk(
+  'board/fetchBoardSubTasks',
+  async (
+    { taskId, projectId }: { taskId: string; projectId: string },
+    { rejectWithValue, getState, dispatch }
+  ) => {
+    const state = getState() as { taskReducer: ITaskState };
+    const { taskReducer } = state;
+
+    // Check if the task is already expanded
+    const task = taskReducer.taskGroups.flatMap(group => group.tasks).find(t => t.id === taskId);
+
+    if (task?.show_sub_tasks) {
+      // If already expanded, just return without fetching
+      return [];
+    }
+
+    const selectedMembers = taskReducer.taskAssignees
+      .filter(member => member.selected)
+      .map(member => member.id)
+      .join(' ');
+
+    const selectedLabels = taskReducer.labels
+      .filter(label => label.selected)
+      .map(label => label.id)
+      .join(' ');
+
+    const config: ITaskListConfigV2 = {
+      id: projectId,
+      archived: taskReducer.archived,
+      group: taskReducer.groupBy,
+      field: taskReducer.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
+      order: '',
+      search: taskReducer.search || '',
+      statuses: '',
+      members: selectedMembers,
+      projects: '',
+      isSubtasksInclude: false,
+      labels: selectedLabels,
+      priorities: taskReducer.priorities.join(' '),
+      parent_task: taskId,
+    };
+    try {
+      const response = await tasksApiService.getTaskList(config);
+      // Only expand if we actually fetched subtasks
+      if (response.body.length > 0) {
+        // dispatch(toggleTaskRowExpansion(taskId));
+      }
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Sub Tasks', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch sub tasks');
     }
   }
 );
@@ -297,6 +358,56 @@ const boardSlice = createSlice({
     setBoardSearch: (state, action: PayloadAction<string>) => {
       state.search = action.payload;
     },
+
+    setBoardGroupName: (state, action: PayloadAction<{groupId: string, name: string, colorCode: string}>) => {
+      const group = state.taskGroups.find(group => group.id === action.payload.groupId);
+      if (group) {
+        group.name = action.payload.name;
+        group.color_code = action.payload.colorCode;
+      }
+    },
+
+    updateTaskAssignees: (
+      state,
+      action: PayloadAction<{
+        groupId: string;
+        taskId: string;
+        assignees: ITeamMemberViewModel[];
+        names: ITeamMemberViewModel[];
+      }>
+    ) => {
+      const { groupId, taskId, assignees, names } = action.payload;
+      const group = state.taskGroups.find(group => group.id === groupId);
+      if (group) {
+        // Find the task or its subtask
+        const task =
+          group.tasks.find(task => task.id === taskId) ||
+          group.tasks.flatMap(task => task.sub_tasks || []).find(subtask => subtask.id === taskId);
+        if (task) {
+          task.assignees = assignees as ITaskAssignee[];
+          task.names = names as InlineMember[];
+        }
+      }
+    },
+
+    updateTaskEndDate: (
+      state,
+      action: PayloadAction<{
+        task: IProjectTask;
+      }>
+    ) => {
+      const { task } = action.payload;
+
+      for (const group of state.taskGroups) {
+        const existingTask =
+          group.tasks.find(t => t.id === task.id) ||
+          group.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === task.id);
+        if (existingTask) {
+          existingTask.end_date = task.end_date;
+          break;
+        }
+      }
+    },
   },
   extraReducers: builder => {
     builder
@@ -311,7 +422,29 @@ const boardSlice = createSlice({
       .addCase(fetchBoardTaskGroups.rejected, (state, action) => {
         state.loadingGroups = false;
         state.error = action.error.message || 'Failed to fetch task groups';
-      });
+      })
+      .addCase(fetchBoardSubTasks.pending, state => {
+        state.error = null;
+      })
+      .addCase(fetchBoardSubTasks.fulfilled, (state, action: PayloadAction<IProjectTask[]>) => {
+        if (action.payload.length > 0) {
+          const taskId = action.payload[0].parent_task_id;
+          if (taskId) {
+            for (const group of state.taskGroups) {
+              const task = group.tasks.find(t => t.id === taskId);
+              if (task) {
+                task.sub_tasks = action.payload;
+                task.show_sub_tasks = true;
+                break;
+              }
+            }
+          }
+        }
+      })
+      .addCase(fetchBoardSubTasks.rejected, (state, action) => {
+        state.error = action.error.message || 'Failed to fetch sub tasks';
+      })
+      ;
   },
 });
 
@@ -333,5 +466,8 @@ export const {
   setBoardPriorities,
   setBoardStatuses,
   setBoardSearch,
+  setBoardGroupName,
+  updateTaskAssignees,
+  updateTaskEndDate,  
 } = boardSlice.actions;
 export default boardSlice.reducer;
