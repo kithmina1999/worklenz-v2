@@ -1,7 +1,7 @@
 import { ITeamInvitationViewModel } from '@/types/notifications/notifications.types';
 import { IWorklenzNotification } from '@/types/notifications/notifications.types';
 import { NotificationsDataModel } from '@/types/notifications/notifications.types';
-import { NotificationType } from '../../../types/notification.types';
+import { NotificationType } from '../../types/notification.types';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { teamsApiService } from '@/api/teams/teams.api.service';
 import { notificationsApiService } from '@/api/notifications/notifications.api.service';

@@ -93,7 +93,7 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
                 width: '125px', // Ensure the input takes full width
             }}
             inputReadOnly // Prevent manual input to avoid overflow issues
-            bordered={false} // Make the DatePicker borderless
+            variant={'borderless'} // Make the DatePicker borderless
             suffixIcon={null}
         />
     );

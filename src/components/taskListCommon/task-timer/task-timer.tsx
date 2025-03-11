@@ -1,16 +1,34 @@
-import { colors } from "@/styles/colors";
-import { PlayCircleFilled } from "@ant-design/icons";
-import { Flex, Button, Popover, Typography, Divider } from "antd/es";
+import { taskTimeLogsApiService } from '@/api/tasks/task-time-logs.api.service';
+import SingleAvatar from '@/components/common/single-avatar/single-avatar';
+import { colors } from '@/styles/colors';
+import { ITaskLogViewModel } from '@/types/tasks/task-log-view.types';
+import { calculateTimeGap } from '@/utils/calculate-time-gap';
+import logger from '@/utils/errorLogger';
+import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
+import { formatDate } from '@/utils/timeUtils';
+import { PlayCircleFilled } from '@ant-design/icons';
+import { Flex, Button, Popover, Typography, Divider, Skeleton } from 'antd/es';
+import React from 'react';
+import { useState } from 'react';
 
 interface TaskTimerProps {
   started: boolean;
   handleStartTimer: () => void;
   handleStopTimer: () => void;
   timeString: string;
-  timeTrackingLogCard: React.ReactNode;
+  taskId: string;
 }
 
-const TaskTimer = ({ started, handleStartTimer, handleStopTimer, timeString, timeTrackingLogCard }: TaskTimerProps) => {
+const TaskTimer = ({
+  started,
+  handleStartTimer,
+  handleStopTimer,
+  timeString,
+  taskId,
+}: TaskTimerProps) => {
+  const [timeLogs, setTimeLogs] = useState<ITaskLogViewModel[]>([]);
+  const [loading, setLoading] = useState(false);
+
   const renderStopIcon = () => {
     return (
       <span
@@ -22,6 +40,71 @@ const TaskTimer = ({ started, handleStartTimer, handleStopTimer, timeString, tim
         </svg>
       </span>
     );
+  };
+
+  const renderLoggedByTimer = (log: ITaskLogViewModel) => {
+    if (!log.logged_by_timer) return null;
+    return (
+      <>
+        via Timer about{' '}
+        <Typography.Text strong style={{ fontSize: 15 }}>
+          {log.logged_by_timer}
+        </Typography.Text>
+      </>
+    );
+  };
+
+  const timeTrackingLogCard = (
+    <Flex vertical style={{ width: 400, maxHeight: 350, overflowY: 'scroll' }}>
+      <Skeleton active loading={loading}>
+        {timeLogs.map(log => (
+          <React.Fragment key={log.id}>
+            <Flex gap={12} align="center">
+              <SingleAvatar avatarUrl={log.avatar_url} name={log.user_name} />
+              <Flex vertical>
+                <Typography style={{ fontSize: 15 }}>
+                  <Typography.Text strong style={{ fontSize: 15 }}>
+                    {log.user_name}&nbsp;
+                  </Typography.Text>
+                  logged&nbsp;
+                  <Typography.Text strong style={{ fontSize: 15 }}>
+                    {log.time_spent_text}
+                  </Typography.Text>{' '}
+                  {renderLoggedByTimer(log)}
+                  {calculateTimeGap(log.created_at || '')}
+                </Typography>
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                  {formatDateTimeWithLocale(log.created_at || '')}
+                </Typography.Text>
+              </Flex>
+            </Flex>
+            <Divider style={{ marginBlock: 12 }} />
+          </React.Fragment>
+        ))}
+      </Skeleton>
+    </Flex>
+  );
+
+  const getTaskLogs = async () => {
+    try {
+      setLoading(true);
+      const response = await taskTimeLogsApiService.getByTask(taskId);
+      if (response.done) {
+        setTimeLogs(response.body || []);
+      }
+    } catch (error) {
+      logger.error('Error fetching task logs', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenChange = (visible: boolean) => {
+    if (visible) {
+      getTaskLogs();
+    } else {
+      setTimeLogs([]);
+    }
   };
 
   return (
@@ -45,6 +128,7 @@ const TaskTimer = ({ started, handleStartTimer, handleStopTimer, timeString, tim
         content={timeTrackingLogCard}
         trigger="click"
         placement="bottomRight"
+        onOpenChange={handleOpenChange}
       >
         <Typography.Text style={{ cursor: 'pointer' }}>{timeString}</Typography.Text>
       </Popover>
@@ -53,4 +137,3 @@ const TaskTimer = ({ started, handleStartTimer, handleStopTimer, timeString, tim
 };
 
 export default TaskTimer;
-
