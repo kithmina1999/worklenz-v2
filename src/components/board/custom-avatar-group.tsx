@@ -10,10 +10,11 @@ type CustomAvatarGroupProps = {
 };
 
 const CustomAvatarGroup = ({ task, sectionId }: CustomAvatarGroupProps) => {
-  return task.assignees ? (
+  return (
     <Flex
       gap={4}
       align="center"
+      onClick={(e) => e.stopPropagation()}
       style={{
         borderRadius: 4,
         cursor: 'pointer',
@@ -23,21 +24,6 @@ const CustomAvatarGroup = ({ task, sectionId }: CustomAvatarGroupProps) => {
 
       <AssigneeSelector task={task} groupId={sectionId} />
     </Flex>
-  ) : (
-    <Button
-      shape="circle"
-      type="dashed"
-      size="small"
-      style={{
-        background: 'transparent',
-        boxShadow: 'none',
-        width: 26,
-        height: 26,
-      }}
-      onClick={e => e.stopPropagation()}
-    >
-      <AddMembersDropdown />
-    </Button>
   );
 };
 

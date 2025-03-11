@@ -180,9 +180,7 @@ export const fetchSubTasks = createAsyncThunk(
     const { taskReducer } = state;
 
     // Check if the task is already expanded
-    const task = taskReducer.taskGroups
-      .flatMap(group => group.tasks)
-      .find(t => t.id === taskId);
+    const task = taskReducer.taskGroups.flatMap(group => group.tasks).find(t => t.id === taskId);
 
     if (task?.show_sub_tasks) {
       // If already expanded, just return without fetching
@@ -382,9 +380,20 @@ const findTaskInGroups = (
   taskId: string
 ): { task: IProjectTask; groupId: string; index: number } | null => {
   for (const group of taskGroups) {
+    // Check main tasks
     const taskIndex = group.tasks.findIndex(t => t.id === taskId);
     if (taskIndex !== -1) {
       return { task: group.tasks[taskIndex], groupId: group.id, index: taskIndex };
+    }
+
+    // Check subtasks
+    for (const task of group.tasks) {
+      if (task.sub_tasks) {
+        const subTaskIndex = task.sub_tasks.findIndex(subtask => subtask.id === taskId);
+        if (subTaskIndex !== -1) {
+          return { task: task.sub_tasks[subTaskIndex], groupId: group.id, index: subTaskIndex };
+        }
+      }
     }
   }
   return null;
@@ -541,7 +550,10 @@ const taskSlice = createSlice({
       const { groupId, taskId, assignees } = action.payload;
       const group = state.taskGroups.find(group => group.id === groupId);
       if (group) {
-        const task = group.tasks.find(task => task.id === taskId);
+        // Find the task or its subtask
+        const task =
+          group.tasks.find(task => task.id === taskId) ||
+          group.tasks.flatMap(task => task.sub_tasks || []).find(subtask => subtask.id === taskId);
         if (task) {
           task.assignees = assignees as ITaskAssignee[];
         }
@@ -551,7 +563,12 @@ const taskSlice = createSlice({
     updateTaskLabel: (state, action: PayloadAction<ILabelsChangeResponse>) => {
       const label = action.payload;
       for (const group of state.taskGroups) {
-        const task = group.tasks.find(task => task.id === label.id);
+        // Find the task or its subtask
+        const task =
+          group.tasks.find(task => task.id === label.id) ||
+          group.tasks
+            .flatMap(task => task.sub_tasks || [])
+            .find(subtask => subtask.id === label.id);
         if (task) {
           task.labels = label.labels || [];
           task.all_labels = label.all_labels || [];
@@ -596,7 +613,9 @@ const taskSlice = createSlice({
       const { task } = action.payload;
 
       for (const group of state.taskGroups) {
-        const existingTask = group.tasks.find(t => t.id === task.id);
+        const existingTask =
+          group.tasks.find(t => t.id === task.id) ||
+          group.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === task.id);
         if (existingTask) {
           existingTask.end_date = task.end_date;
           break;
@@ -613,7 +632,9 @@ const taskSlice = createSlice({
       const { task } = action.payload;
 
       for (const group of state.taskGroups) {
-        const existingTask = group.tasks.find(t => t.id === task.id);
+        const existingTask =
+          group.tasks.find(t => t.id === task.id) ||
+          group.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === task.id);
         if (existingTask) {
           existingTask.start_date = task.start_date;
           break;
@@ -657,7 +678,9 @@ const taskSlice = createSlice({
 
     updateTaskStatusColor: (state, action: PayloadAction<{ taskId: string; color: string }>) => {
       const { taskId, color } = action.payload;
-      const task = state.tasks.find(t => t.id === taskId);
+      const task =
+        state.tasks.find(t => t.id === taskId) ||
+        state.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === taskId);
       if (task) {
         task.status_color = color;
       }
@@ -709,6 +732,26 @@ const taskSlice = createSlice({
       }
     },
 
+    updateTaskDescription: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        parent_task: string;
+        description: string;
+      }>
+    ) => {
+      const { id: taskId, description, parent_task } = action.payload;
+      for (const group of state.taskGroups) {
+        const existingTask =
+          group.tasks.find(t => t.id === taskId) ||
+          group.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === taskId);
+        if (existingTask) {
+          existingTask.description = description;
+          break;
+        }
+      }
+    },
+
     toggleTaskRowExpansion: (state, action: PayloadAction<string>) => {
       const taskId = action.payload;
       for (const group of state.taskGroups) {
@@ -735,43 +778,25 @@ const taskSlice = createSlice({
         fromIndex: number;
         toIndex: number;
         task: IProjectTask;
+        updatedSourceTasks: IProjectTask[];
+        updatedTargetTasks: IProjectTask[];
       }>
     ) => {
       return produce(state, draft => {
-        const { activeGroupId, overGroupId, fromIndex, toIndex, task } = action.payload;
+        const { activeGroupId, overGroupId, updatedSourceTasks, updatedTargetTasks } =
+          action.payload;
 
         const sourceGroup = draft.taskGroups.find(g => g.id === activeGroupId);
         const targetGroup = draft.taskGroups.find(g => g.id === overGroupId);
 
         if (!sourceGroup || !targetGroup) return;
 
-        // Remove from source group
-        const [movedTask] = sourceGroup.tasks.splice(fromIndex, 1);
+        // Simply replace the arrays with the updated ones
+        sourceGroup.tasks = updatedSourceTasks;
 
-        // If moving between groups, update the task properties based on the group type
+        // Only update target if it's different from source
         if (activeGroupId !== overGroupId) {
-          // Update task properties based on the grouping type
-          switch (draft.groupBy) {
-            case GROUP_BY_STATUS_VALUE:
-              movedTask.status = overGroupId;
-              movedTask.status_color = targetGroup.color_code;
-              break;
-            case GROUP_BY_PRIORITY_VALUE:
-              movedTask.priority = overGroupId;
-              movedTask.priority_color = targetGroup.color_code;
-              break;
-            case GROUP_BY_PHASE_VALUE:
-              movedTask.phase_id = overGroupId;
-              movedTask.phase_color = targetGroup.color_code;
-              break;
-          }
-        }
-
-        // Add to target group
-        if (activeGroupId === overGroupId) {
-          sourceGroup.tasks.splice(toIndex, 0, movedTask);
-        } else {
-          targetGroup.tasks.splice(toIndex, 0, movedTask);
+          targetGroup.tasks = updatedTargetTasks;
         }
       });
     },
@@ -900,6 +925,7 @@ export const {
   updateTaskGroupColor,
   setConvertToSubtaskDrawerOpen,
   reorderTasks,
+  updateTaskDescription,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

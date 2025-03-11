@@ -1,6 +1,6 @@
 import { Badge, Flex, Select } from 'antd';
 import './home-tasks-status-dropdown.css';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { ITaskStatus } from '@/types/status.types';
 import { useState, useEffect, useMemo } from 'react';

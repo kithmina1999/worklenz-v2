@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDroppable } from '@dnd-kit/core'; // Add this import
 
 import Flex from 'antd/es/flex';
 import Badge from 'antd/es/badge';
@@ -13,7 +14,7 @@ import { MenuProps } from 'antd/es/menu';
 import { EditOutlined, EllipsisOutlined, RetweetOutlined, RightOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import './taskListTableWrapper.css';
-import TaskListTable from './TaskListTable';
+import TaskListTable from './task-list-table';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import Collapsible from '@/components/collapsible/collapsible';
@@ -52,7 +53,6 @@ const TaskListTableWrapper = ({
   activeId,
 }: TaskListTableWrapperProps) => {
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
-  const currentSession = useAuthService().getCurrentSession();
   const { trackMixpanelEvent } = useMixpanelTracking();
   const dispatch = useAppDispatch();
   const isProjectManager = useIsProjectManager();
@@ -64,9 +64,14 @@ const TaskListTableWrapper = ({
   const [currentCategory, setCurrentCategory] = useState<string | null>(statusCategory);
 
   const { t } = useTranslation('task-list-table');
-
   const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
   const { projectId, project } = useAppSelector(state => state.projectReducer);
+
+  // Add useDroppable hook
+  const { setNodeRef, isOver } = useDroppable({
+    id: tableId,
+    data: { groupId: tableId }, // Pass groupId for handleDragEnd
+  });
 
   const handlToggleExpand = () => {
     if (isRenaming) return;
@@ -74,7 +79,6 @@ const TaskListTableWrapper = ({
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Only prevent default behavior for the collapse/expand button
     if (e.key === ' ' && e.target !== e.currentTarget) {
       e.preventDefault();
     }
@@ -89,11 +93,14 @@ const TaskListTableWrapper = ({
     };
     const res = await statusApiService.updateStatus(tableId, body, projectId);
     if (res.done) {
-      trackMixpanelEvent(evt_project_board_column_setting_click, {
-        Rename: 'Status',
-      });
+      trackMixpanelEvent(evt_project_board_column_setting_click, { Rename: 'Status' });
       if (res.body.color_code) {
-        dispatch(updateTaskGroupColor({groupId: tableId, colorCode: res.body.color_code + ALPHA_CHANNEL}));
+        dispatch(
+          updateTaskGroupColor({
+            groupId: tableId,
+            colorCode: res.body.color_code + ALPHA_CHANNEL,
+          })
+        );
       }
       dispatch(fetchStatuses(projectId));
     }
@@ -114,27 +121,17 @@ const TaskListTableWrapper = ({
       if (groupBy === IGroupBy.STATUS) {
         await updateStatus();
       } else if (groupBy === IGroupBy.PHASE) {
-        const body = {
-          id: tableId,
-          name: tableName.trim(),
-        };
-        const res = await phasesApiService.updateNameOfPhase(
-          tableId,
-          body as ITaskPhase,
-          projectId
-        );
+        const body = { id: tableId, name: tableName.trim() };
+        const res = await phasesApiService.updateNameOfPhase(tableId, body as ITaskPhase, projectId);
         if (res.done) {
-          trackMixpanelEvent(evt_project_board_column_setting_click, {
-            Rename: 'Phase',
-          });
+          trackMixpanelEvent(evt_project_board_column_setting_click, { Rename: 'Phase' });
           dispatch(fetchPhasesByProjectId(projectId));
         }
       }
     } catch (error) {
       logger.error('Error renaming:', error);
-      // Reset to original name if rename fails
       setTableName(name);
-      setShowRenameInput(true); // Keep input visible to allow retry
+      setShowRenameInput(true);
     } finally {
       setIsRenaming(false);
     }
@@ -147,9 +144,7 @@ const TaskListTableWrapper = ({
 
   const handleCategoryChange = async (categoryId: string) => {
     setCurrentCategory(categoryId);
-    trackMixpanelEvent(evt_project_board_column_setting_click, {
-      'Change category': 'Status',
-    });
+    trackMixpanelEvent(evt_project_board_column_setting_click, { 'Change category': 'Status' });
     await updateStatus(categoryId);
   };
 
@@ -180,8 +175,13 @@ const TaskListTableWrapper = ({
     },
   ].filter(Boolean) as MenuProps['items'];
 
+  const isEditable = isOwnerOrAdmin || isProjectManager;
+
+  // Original JSX wrapped in a droppable div
   return (
-    <div>
+    <div
+      ref={setNodeRef} // Attach droppable ref here
+    >
       <ConfigProvider
         wave={{ disabled: true }}
         theme={{
@@ -229,9 +229,13 @@ const TaskListTableWrapper = ({
                 </Typography.Text>
               )}
             </Button>
-            {groupBy !== IGroupBy.PRIORITY && !showRenameInput && (
+            {groupBy !== IGroupBy.PRIORITY && !showRenameInput && isEditable && (
               <Dropdown menu={{ items }}>
-                <Button icon={<EllipsisOutlined />} className="borderless-icon-btn" />
+                <Button
+                  icon={<EllipsisOutlined />}
+                  className="borderless-icon-btn"
+                  title={isEditable ? undefined : t('noPermission')}
+                />
               </Dropdown>
             )}
           </Flex>

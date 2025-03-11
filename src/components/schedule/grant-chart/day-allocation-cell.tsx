@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tooltip } from 'antd';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
 
 type DayAllocationCellProps = {

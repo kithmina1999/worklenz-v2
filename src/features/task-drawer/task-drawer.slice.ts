@@ -67,6 +67,7 @@ const taskDrawerSlice = createSlice({
       }
     },
     setTaskAssignee: (state, action: PayloadAction<IProjectTask>) => {
+      console.log('action.payload', action.payload);
       const { assignees, id: taskId, names } = action.payload;
       if (state.taskFormViewModel?.task && state.taskFormViewModel.task.id === taskId) {
         state.taskFormViewModel.task.assignees = (assignees || []).map(m => m.team_member_id);

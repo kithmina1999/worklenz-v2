@@ -13,7 +13,7 @@
 // } from 'antd';
 // import { avatarNamesMap } from '../../../shared/constants';
 // import { CaretDownOutlined, CaretRightFilled } from '@ant-design/icons';
-// import { useAppSelector } from '../../../hooks/useAppSelector';
+// import { useAppSelector } from '@/hooks/useAppSelector';
 // import './Team.css';
 // import { useDispatch } from 'react-redux';
 // import { toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';

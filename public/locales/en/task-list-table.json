@@ -56,6 +56,8 @@
     "unarchive": "Unarchive",
     "archive": "Archive",
     "convertToSubTask": "Convert to Sub task",
-    "delete": "Delete"
+    "convertToTask": "Convert to Task",
+    "delete": "Delete",
+    "searchByNameInputPlaceholder": "Search by name"
   }
 }

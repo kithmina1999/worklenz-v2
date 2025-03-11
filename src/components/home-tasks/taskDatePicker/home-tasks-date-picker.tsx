@@ -60,10 +60,10 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
         return date.calendar(null, {
             sameDay: '[Today]', 
             nextDay: '[Tomorrow]', 
-            nextWeek: 'MMM DD, YYYY', 
+            nextWeek: 'MMM DD', 
             lastDay: '[Yesterday]', 
-            lastWeek: 'MMM DD, YYYY', 
-            sameElse: 'MMM DD, YYYY',
+            lastWeek: 'MMM DD', 
+            sameElse: date.year() === dayjs().year() ? 'MMM DD' : 'MMM DD, YYYY',
         });
     };
 
@@ -84,8 +84,12 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
                         : selectedDate.isAfter(dayjs().add(1, 'day'), 'day') 
                             ? undefined
                             : '#ff4d4f' 
-                    : undefined 
+                    : undefined,
+                width: '125px', // Ensure the input takes full width
             }}
+            inputReadOnly // Prevent manual input to avoid overflow issues
+            bordered={false} // Make the DatePicker borderless
+            suffixIcon={null}
         />
     );
 };
