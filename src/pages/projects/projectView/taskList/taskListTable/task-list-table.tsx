@@ -90,7 +90,7 @@ const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
   return (
     <tr
       ref={setNodeRef}
-      style={style}
+      style={{ ...style, borderBottomWidth: document.documentElement.getAttribute('data-theme') === 'light' ? '2px' : undefined }}
       className={`task-row h-[42px] ${isDragging ? 'shadow-lg' : ''}`}
       data-is-dragging={isDragging ? 'true' : 'false'}
       data-group-id={groupId}
@@ -587,11 +587,11 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                       {updatedTask.show_sub_tasks && (
                         <>
                           {updatedTask?.sub_tasks?.map(subtask => renderTaskRow(subtask, true))}
-                          <tr>
+                            <tr>
                             <td colSpan={visibleColumns.length + 1}>
                               <AddTaskListRow groupId={tableId} parentTask={updatedTask.id} />
                             </td>
-                          </tr>
+                            </tr>
                         </>
                       )}
                     </React.Fragment>
