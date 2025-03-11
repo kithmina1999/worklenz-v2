@@ -44,7 +44,11 @@
     },
     "dependencies": {
       "title": "Dependencies",
-      "addDependency": "+ Add new dependency"
+      "addDependency": "+ Add new dependency",
+      "blockedBy": "Blocked By",
+      "searchTask": "Type to search task",
+      "noTasksFound": "No tasks found",
+      "confirmDeleteDependency": "Are you sure you want to delete?"
     },
     "attachments": {
       "title": "Attachments",

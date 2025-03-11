@@ -1,9 +1,9 @@
 import { Button, Collapse, CollapseProps, Flex, Skeleton, Tooltip, Typography, Upload } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { LoadingOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import DescriptionEditor from './DescriptionEditor';
 import SubTaskTable from './SubTaskTable';
-import DependenciesTable from './DependenciesTable';
+import DependenciesTable from './dependencies-table';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import TaskDetailsForm from './TaskDetailsForm';
 import InfoTabFooter from './InfoTabFooter';
@@ -12,6 +12,15 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { TFunction } from 'i18next';
 import { subTasksApiService } from '@/api/tasks/subtasks.api.service';
 import { ISubTask } from '@/types/tasks/subTask.types';
+import { ITaskDependency } from '@/types/tasks/task-dependency.types';
+import { taskDependenciesApiService } from '@/api/tasks/task-dependencies.api.service';
+import logger from '@/utils/errorLogger';
+import AttachmentsUpload from './AttachmentsUpload';
+import { getBase64 } from '@/utils/file-utils';
+import { ITaskAttachment, ITaskAttachmentViewModel } from '@/types/tasks/task-attachment-view-model';
+import taskAttachmentsApiService from '@/api/tasks/task-attachments.api.service';
+import AttachmentsPreview from './attachments/attachments-preview';
+
 interface TaskDrawerInfoTabProps {
   t: TFunction;
 }
@@ -25,6 +34,46 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
   );
   const [subTasks, setSubTasks] = useState<ISubTask[]>([]);
   const [loadingSubTasks, setLoadingSubTasks] = useState<boolean>(false);
+
+  const [taskDependencies, setTaskDependencies] = useState<ITaskDependency[]>([]);
+  const [loadingTaskDependencies, setLoadingTaskDependencies] = useState<boolean>(false);
+
+  const [processingUpload, setProcessingUpload] = useState(false);
+  const selectedFilesRef = useRef<File[]>([]);
+
+  const [taskAttachments, setTaskAttachments] = useState<ITaskAttachmentViewModel[]>([]);
+  const [loadingTaskAttachments, setLoadingTaskAttachments] = useState<boolean>(false);
+
+  const handleFilesSelected = (files: File[]) => {
+    console.log('files', files);
+    if (!taskFormViewModel?.task?.id || !projectId) return;
+    console.log('taskFormViewModel?.task?.id', taskFormViewModel?.task?.id);
+
+    if (!processingUpload) {
+      setProcessingUpload(true);
+
+      setTimeout(async () => {
+        const filesToUpload = [...files];
+        selectedFilesRef.current = filesToUpload;
+
+        filesToUpload.forEach(async file => {
+          const base64 = await getBase64(file);
+          const body: ITaskAttachment = {
+            file: base64 as string,
+            file_name: file.name,
+            task_id: taskFormViewModel?.task?.id || '',
+            project_id: projectId,
+            size: file.size,
+          };
+          console.log('body', body);
+          await taskAttachmentsApiService.createTaskAttachment(body);
+        });
+        setProcessingUpload(false);
+        selectedFilesRef.current = [];
+
+      }, 100);
+    }
+  };
 
   const fetchTaskData = () => {
     if (!loadingTask && selectedTaskId && projectId) {
@@ -84,7 +133,15 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
     {
       key: 'dependencies',
       label: <Typography.Text strong>{t('taskInfoTab.dependencies.title')}</Typography.Text>,
-      children: <DependenciesTable task={taskFormViewModel?.task || {}} t={t} />,
+      children: (
+        <DependenciesTable
+          task={taskFormViewModel?.task || {}}
+          t={t}
+          taskDependencies={taskDependencies}
+          loadingTaskDependencies={loadingTaskDependencies}
+          refreshTaskDependencies={() => fetchTaskDependencies()}
+        />
+      ),
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
     },
@@ -92,21 +149,12 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
       key: 'attachments',
       label: <Typography.Text strong>{t('taskInfoTab.attachments.title')}</Typography.Text>,
       children: (
-        <Upload
-          name="attachment"
-          listType="picture-card"
-          className="avatar-uploader"
-          showUploadList={false}
-        >
-          <button style={{ border: 0, background: 'none' }} type="button">
-            <Flex vertical align="center" gap={4}>
-              {loadingTask ? <LoadingOutlined /> : <PlusOutlined />}
-              <Typography.Text style={{ fontSize: 12 }}>
-                {t('taskInfoTab.attachments.chooseOrDropFileToUpload')}
-              </Typography.Text>
-            </Flex>
-          </button>
-        </Upload>
+        <Flex vertical gap={16}>
+          {taskAttachments.length > 0 && taskAttachments.map((attachment) => (
+            <AttachmentsPreview key={attachment.id} attachment={attachment} />
+          ))}
+          <AttachmentsUpload t={t} loadingTask={loadingTask} onFilesSelected={handleFilesSelected} />
+        </Flex>
       ),
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
@@ -128,18 +176,52 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
         setSubTasks(res.body);
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error fetching sub tasks:', error);
     } finally {
       setLoadingSubTasks(false);
+    }
+  };
+
+  const fetchTaskDependencies = async () => {
+    if (!selectedTaskId || loadingTaskDependencies) return;
+    try {
+      setLoadingTaskDependencies(true);
+      const res = await taskDependenciesApiService.getTaskDependencies(selectedTaskId);
+      if (res.done) {
+        setTaskDependencies(res.body);
+      }
+    } catch (error) {
+      logger.error('Error fetching task dependencies:', error);
+    } finally {
+      setLoadingTaskDependencies(false);
+    }
+  };
+
+  const fetchTaskAttachments = async () => {
+    if (!selectedTaskId || loadingTaskAttachments) return;
+    try {
+      setLoadingTaskAttachments(true);
+      const res = await taskAttachmentsApiService.getTaskAttachments(selectedTaskId);
+      if (res.done) {
+        setTaskAttachments(res.body);
+      }
+    } catch (error) {
+      logger.error('Error fetching task attachments:', error);
+    } finally {
+      setLoadingTaskAttachments(false);
     }
   };
 
   useEffect(() => {
     fetchTaskData();
     fetchSubTasks();
-
+    fetchTaskDependencies();
+    fetchTaskAttachments();
     return () => {
       setSubTasks([]);
+      setTaskDependencies([]);
+      setTaskAttachments([]);
+      selectedFilesRef.current = [];
     };
   }, [selectedTaskId, projectId]);
 
