@@ -2,6 +2,7 @@ import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import React, { useRef, useState } from 'react';
 import { TFunction } from 'i18next';
 import './attachments-upload.css'; // We'll create this CSS file next
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 interface AttachmentsUploadProps {
   t: TFunction;
@@ -18,7 +19,7 @@ const AttachmentsUpload = ({
 }: AttachmentsUploadProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
-
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const filesArray = Array.from(event.target.files);
@@ -65,6 +66,9 @@ const AttachmentsUpload = ({
           tabIndex={0} 
           role="button"
           onClick={handleClick}
+          style={{
+            backgroundColor: themeMode === 'dark' ? '#292929' : '#fafafa',
+          }}
         >
           <input 
             type="file" 

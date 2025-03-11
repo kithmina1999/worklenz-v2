@@ -22,7 +22,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #fafafa;
+  text-align: center;
 }
 
 .ant-upload-select-picture-card .ant-upload:hover {
