@@ -168,7 +168,7 @@ const DependenciesTable = ({
                     }
                   }}
                   filterOption={false}
-                  notFoundContent={t('common.noData')}
+                  notFoundContent={t('taskInfoTab.dependencies.noTasksFound')}
                 />
               </Form.Item>
             </Col>

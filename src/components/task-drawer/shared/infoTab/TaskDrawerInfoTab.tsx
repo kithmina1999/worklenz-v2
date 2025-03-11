@@ -17,9 +17,14 @@ import { taskDependenciesApiService } from '@/api/tasks/task-dependencies.api.se
 import logger from '@/utils/errorLogger';
 import AttachmentsUpload from './AttachmentsUpload';
 import { getBase64 } from '@/utils/file-utils';
-import { ITaskAttachment, ITaskAttachmentViewModel } from '@/types/tasks/task-attachment-view-model';
+import {
+  ITaskAttachment,
+  ITaskAttachmentViewModel,
+} from '@/types/tasks/task-attachment-view-model';
 import taskAttachmentsApiService from '@/api/tasks/task-attachments.api.service';
 import AttachmentsPreview from './attachments/attachments-preview';
+import AttachmentsGrid from './attachments/attachments-grid';
+import AttachmentsExample from './attachments/attachments-example';
 
 interface TaskDrawerInfoTabProps {
   t: TFunction;
@@ -44,19 +49,18 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
   const [taskAttachments, setTaskAttachments] = useState<ITaskAttachmentViewModel[]>([]);
   const [loadingTaskAttachments, setLoadingTaskAttachments] = useState<boolean>(false);
 
-  const handleFilesSelected = (files: File[]) => {
-    console.log('files', files);
+  const handleFilesSelected = async (files: File[]) => {
     if (!taskFormViewModel?.task?.id || !projectId) return;
-    console.log('taskFormViewModel?.task?.id', taskFormViewModel?.task?.id);
 
     if (!processingUpload) {
       setProcessingUpload(true);
 
-      setTimeout(async () => {
+      try {
         const filesToUpload = [...files];
         selectedFilesRef.current = filesToUpload;
 
-        filesToUpload.forEach(async file => {
+        // Upload all files and wait for all promises to complete
+        await Promise.all(filesToUpload.map(async file => {
           const base64 = await getBase64(file);
           const body: ITaskAttachment = {
             file: base64 as string,
@@ -65,13 +69,14 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
             project_id: projectId,
             size: file.size,
           };
-          console.log('body', body);
           await taskAttachmentsApiService.createTaskAttachment(body);
-        });
+        }));
+      } finally {
         setProcessingUpload(false);
         selectedFilesRef.current = [];
-
-      }, 100);
+        // Refetch attachments after all uploads are complete
+        fetchTaskAttachments();
+      }
     }
   };
 
@@ -150,10 +155,15 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
       label: <Typography.Text strong>{t('taskInfoTab.attachments.title')}</Typography.Text>,
       children: (
         <Flex vertical gap={16}>
-          {taskAttachments.length > 0 && taskAttachments.map((attachment) => (
-            <AttachmentsPreview key={attachment.id} attachment={attachment} />
-          ))}
-          <AttachmentsUpload t={t} loadingTask={loadingTask} onFilesSelected={handleFilesSelected} />
+          <AttachmentsGrid
+            attachments={taskAttachments}
+            onDelete={() => fetchTaskAttachments()}
+            onUpload={() => fetchTaskAttachments()}
+            t={t}
+            loadingTask={loadingTask}
+            uploading={processingUpload}
+            handleFilesSelected={handleFilesSelected}
+          />
         </Flex>
       ),
       style: panelStyle,

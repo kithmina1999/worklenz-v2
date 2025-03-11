@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { ITaskAttachmentViewModel } from "@/types/tasks/task-attachment-view-model";
-import { Button, Modal, Spin, Tooltip, Typography } from "antd";
-import { EyeOutlined, DownloadOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Button, Modal, Spin, Tooltip, Typography, Popconfirm, message } from "antd";
+import { EyeOutlined, DownloadOutlined, DeleteOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { attachmentsApiService } from "@/api/attachments/attachments.api.service";
 import { IconsMap } from "@/shared/constants";
 import './attachment-preview.css';
+import taskAttachmentsApiService from "@/api/tasks/task-attachments.api.service";
+import logger from "@/utils/errorLogger";
 
 interface AttachmentsPreviewProps {
   attachment: ITaskAttachmentViewModel;
@@ -14,7 +16,7 @@ interface AttachmentsPreviewProps {
 
 const AttachmentsPreview = ({ 
   attachment, 
-  onDelete, 
+  onDelete,
   isCommentAttachment = false 
 }: AttachmentsPreviewProps) => {
   const [deleting, setDeleting] = useState(false);
@@ -63,16 +65,27 @@ const AttachmentsPreview = ({
       }
     } catch (e) {
       console.error(e);
+      message.error('Failed to download file');
     } finally {
       setDownloading(false);
     }
   };
 
-  const handleDelete = (id?: string) => {
+  const handleDelete = async (id?: string) => {
     if (!id) return;
-    setDeleting(true);
-    if (onDelete) {
-      onDelete(id);
+    try {
+      setDeleting(true);
+      const response = await taskAttachmentsApiService.deleteTaskAttachment(id);
+      if (response.done) {
+        if (onDelete) {
+          onDelete(id);
+        }
+      }
+    } catch (e) {
+      logger.error('Error deleting attachment:', e);
+      message.error('Failed to delete attachment');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -142,7 +155,7 @@ const AttachmentsPreview = ({
             >
               <div className="ant-upload-list-item-info">
                 <img 
-                  src={`/assets/images/files/${getFileIcon(attachment.type)}`} 
+                  src={`/file-types/${getFileIcon(attachment.type)}`} 
                   className="file-icon" 
                   alt="" 
                 />
@@ -191,16 +204,24 @@ const AttachmentsPreview = ({
                 <DownloadOutlined />
               </Button>
 
-              <Button 
-                type="text" 
-                size="small"
-                title="Remove file"
-                onClick={() => handleDelete(attachment.id)}
-                loading={deleting}
-                className="ant-upload-list-item-card-actions-btn"
+              <Popconfirm
+                title="Delete Attachment"
+                description="Are you sure you want to delete this attachment?"
+                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                onConfirm={() => handleDelete(attachment.id)}
+                okText="Yes"
+                cancelText="No"
               >
-                <DeleteOutlined />
-              </Button>
+                <Button 
+                  type="text" 
+                  size="small"
+                  title="Remove file"
+                  loading={deleting}
+                  className="ant-upload-list-item-card-actions-btn"
+                >
+                  <DeleteOutlined />
+                </Button>
+              </Popconfirm>
             </span>
           </div>
         )}

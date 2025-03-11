@@ -1,46 +1,43 @@
 import React from 'react';
-import { Upload, Flex, Typography } from 'antd';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { Upload } from 'antd';
+import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
 import { TFunction } from 'i18next';
-import type { UploadChangeParam, UploadFile } from 'antd/es/upload/interface';
+import type { UploadProps } from 'antd';
 
 interface AttachmentsUploadProps {
   t: TFunction;
   loadingTask: boolean;
-  onFilesSelected?: (files: File[]) => void;
+  uploading: boolean;
+  onFilesSelected: (files: File[]) => void;
 }
 
-const AttachmentsUpload: React.FC<AttachmentsUploadProps> = ({ t, loadingTask, onFilesSelected }) => {
-  const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
-    // Extract files from the upload info
-    const files = info.fileList
-      .filter(file => file.originFileObj)
-      .map(file => file.originFileObj as File);
-    
-    // Pass the files to the parent component
-    if (files.length > 0 && onFilesSelected) {
-      onFilesSelected(files);
-    }
+const AttachmentsUpload = ({ 
+  t, 
+  loadingTask, 
+  uploading, 
+  onFilesSelected 
+}: AttachmentsUploadProps) => {
+  const handleBeforeUpload: UploadProps['beforeUpload'] = (file, fileList) => {
+    onFilesSelected(fileList);
+    return false; // Prevent default upload behavior
   };
 
   return (
     <Upload
-      name="attachment"
       listType="picture-card"
-      className="avatar-uploader"
       showUploadList={false}
-      onChange={handleChange}
-      beforeUpload={() => false} // Prevent auto upload
-      multiple={true}
+      beforeUpload={handleBeforeUpload}
+      disabled={loadingTask || uploading}
+      className="upload-button-container"
+      accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
+      multiple
     >
-      <button style={{ border: 0, background: 'none' }} type="button">
-        <Flex vertical align="center" gap={4}>
-          {loadingTask ? <LoadingOutlined /> : <PlusOutlined />}
-          <Typography.Text style={{ fontSize: 12 }}>
-            {t('taskInfoTab.attachments.chooseOrDropFileToUpload')}
-          </Typography.Text>
-        </Flex>
-      </button>
+      <div className="upload-button">
+        {uploading ? <LoadingOutlined spin /> : <PlusOutlined />}
+        <div className="upload-button-text">
+          {uploading ? t('taskInfoTab.attachments.uploading') : t('taskInfoTab.attachments.chooseOrDropFileToUpload')}
+        </div>
+      </div>
     </Upload>
   );
 };

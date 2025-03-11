@@ -1,34 +1,55 @@
-import { ITaskAttachmentViewModel } from "@/types/tasks/task-attachment-view-model";
-import AttachmentsPreview from "./attachments-preview";
+import { ITaskAttachmentViewModel } from '@/types/tasks/task-attachment-view-model';
+import AttachmentsPreview from './attachments-preview';
 import './attachment-preview.css';
+import type { RcFile, UploadProps } from 'antd/es/upload';
+import { TFunction } from 'i18next';
+import { ReloadOutlined } from '@ant-design/icons';
+import { message } from 'antd';
+import AttachmentsUpload from '../AttachmentsUpload';
 
 interface AttachmentsGridProps {
   attachments: ITaskAttachmentViewModel[];
   onDelete?: (id: string) => void;
+  onUpload?: (file: RcFile) => void;
   isCommentAttachment?: boolean;
+  t: TFunction;
+  loadingTask: boolean;
+  uploading: boolean;
+  handleFilesSelected: (files: File[]) => void;
 }
 
-const AttachmentsGrid = ({ 
-  attachments, 
-  onDelete, 
-  isCommentAttachment = false 
+const AttachmentsGrid = ({
+  attachments,
+  onDelete,
+  onUpload,
+  isCommentAttachment = false,
+  t,
+  loadingTask,
+  uploading,
+  handleFilesSelected,
 }: AttachmentsGridProps) => {
-  if (!attachments || attachments.length === 0) {
-    return <div>No attachments found</div>;
-  }
+  const handleUpload: UploadProps['beforeUpload'] = file => {
+    if (onUpload) {
+      onUpload(file);
+    }
+    return false; // Prevent default upload behavior
+  };
 
   return (
-    <div className="attachments-grid">
-      {attachments.map((attachment) => (
-        <AttachmentsPreview
-          key={attachment.id}
-          attachment={attachment}
-          onDelete={onDelete}
-          isCommentAttachment={isCommentAttachment}
-        />
-      ))}
+    <div className="attachments-container">
+      <div className="attachments-grid">
+        {attachments.map(attachment => (
+          <AttachmentsPreview
+            key={attachment.id}
+            attachment={attachment}
+            onDelete={onDelete}
+            isCommentAttachment={isCommentAttachment}
+          />
+        ))}
+        <AttachmentsUpload t={t} loadingTask={loadingTask} uploading={uploading} onFilesSelected={handleFilesSelected} />
+      </div>
     </div>
   );
 };
 
-export default AttachmentsGrid; 
+export default AttachmentsGrid;
