@@ -52,7 +52,7 @@
   },
   "taskTimeLogTab": {
     "title": "Time Log",
-    "addTimeLog": "+ Add new time log",
+    "addTimeLog": "Add new time log",
     "totalLogged": "Total Logged",
     "exportToExcel": "Export to Excel",
     "noTimeLogsFound": "No time logs found"
