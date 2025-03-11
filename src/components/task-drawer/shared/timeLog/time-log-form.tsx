@@ -43,11 +43,11 @@ const TimeLogForm = ({ onCancel }: { onCancel: () => void }) => {
             </Form.Item>
 
             <Form.Item name="startTime" label="Start Time">
-              <TimePicker format="mm:ss" />
+              <TimePicker format="HH:mm" />
             </Form.Item>
 
             <Form.Item name="endTime" label="End Time">
-              <TimePicker format="mm:ss" />
+              <TimePicker format="HH:mm" />
             </Form.Item>
           </Flex>
         </Form.Item>
