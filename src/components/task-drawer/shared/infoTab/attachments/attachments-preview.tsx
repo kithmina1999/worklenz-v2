@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { ITaskAttachmentViewModel } from "@/types/tasks/task-attachment-view-model";
 import { Button, Modal, Spin, Tooltip, Typography, Popconfirm, message } from "antd";
-import { EyeOutlined, DownloadOutlined, DeleteOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { EyeOutlined, DownloadOutlined, DeleteOutlined, QuestionCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import { attachmentsApiService } from "@/api/attachments/attachments.api.service";
 import { IconsMap } from "@/shared/constants";
-import './attachment-preview.css';
+import './attachments-preview.css';
 import taskAttachmentsApiService from "@/api/tasks/task-attachments.api.service";
 import logger from "@/utils/errorLogger";
 
@@ -246,21 +246,15 @@ const AttachmentsPreview = ({
           )
         ]}
       >
-        <div className="preview-container text-center position-relative">
-          <div className="loader">
-            <Spin />
-          </div>
-          
+        <div className="preview-container text-center position-relative">         
           {currentFileType === 'image' && (
             <>
-              <Spin />
               <img src={currentFileUrl || ''} className="img-fluid position-relative" alt="" />
             </>
           )}
           
           {currentFileType === 'video' && (
             <>
-              <Spin />
               <video className="position-relative" controls>
                 <source src={currentFileUrl || ''} type="video/mp4" />
               </video>
@@ -269,7 +263,6 @@ const AttachmentsPreview = ({
           
           {currentFileType === 'audio' && (
             <>
-              <Spin />
               <audio className="position-relative" controls>
                 <source src={currentFileUrl || ''} type="audio/mpeg" />
               </audio>
@@ -278,7 +271,6 @@ const AttachmentsPreview = ({
           
           {currentFileType === 'document' && (
             <>
-              <Spin />
               {currentFileUrl && (
                 <iframe 
                   src={`https://docs.google.com/viewer?url=${encodeURIComponent(currentFileUrl)}&embedded=true`}

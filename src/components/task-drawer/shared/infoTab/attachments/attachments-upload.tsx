@@ -29,7 +29,6 @@ const AttachmentsUpload = ({
       beforeUpload={handleBeforeUpload}
       disabled={loadingTask || uploading}
       className="upload-button-container"
-      accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
       multiple
     >
       <div className="upload-button">

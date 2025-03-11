@@ -5,7 +5,7 @@ import type { RcFile, UploadProps } from 'antd/es/upload';
 import { TFunction } from 'i18next';
 import { ReloadOutlined } from '@ant-design/icons';
 import { message } from 'antd';
-import AttachmentsUpload from '../AttachmentsUpload';
+import AttachmentsUpload from './attachments-upload';
 
 interface AttachmentsGridProps {
   attachments: ITaskAttachmentViewModel[];

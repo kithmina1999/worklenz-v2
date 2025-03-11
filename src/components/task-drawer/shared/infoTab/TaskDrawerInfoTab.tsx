@@ -1,6 +1,6 @@
 import { Button, Collapse, CollapseProps, Flex, Skeleton, Tooltip, Typography, Upload } from 'antd';
 import React, { useEffect, useState, useRef } from 'react';
-import { LoadingOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
+import { ReloadOutlined } from '@ant-design/icons';
 import DescriptionEditor from './DescriptionEditor';
 import SubTaskTable from './SubTaskTable';
 import DependenciesTable from './dependencies-table';
@@ -15,16 +15,13 @@ import { ISubTask } from '@/types/tasks/subTask.types';
 import { ITaskDependency } from '@/types/tasks/task-dependency.types';
 import { taskDependenciesApiService } from '@/api/tasks/task-dependencies.api.service';
 import logger from '@/utils/errorLogger';
-import AttachmentsUpload from './AttachmentsUpload';
 import { getBase64 } from '@/utils/file-utils';
 import {
   ITaskAttachment,
   ITaskAttachmentViewModel,
 } from '@/types/tasks/task-attachment-view-model';
 import taskAttachmentsApiService from '@/api/tasks/task-attachments.api.service';
-import AttachmentsPreview from './attachments/attachments-preview';
 import AttachmentsGrid from './attachments/attachments-grid';
-import AttachmentsExample from './attachments/attachments-example';
 
 interface TaskDrawerInfoTabProps {
   t: TFunction;
@@ -60,17 +57,19 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
         selectedFilesRef.current = filesToUpload;
 
         // Upload all files and wait for all promises to complete
-        await Promise.all(filesToUpload.map(async file => {
-          const base64 = await getBase64(file);
-          const body: ITaskAttachment = {
-            file: base64 as string,
-            file_name: file.name,
-            task_id: taskFormViewModel?.task?.id || '',
-            project_id: projectId,
-            size: file.size,
-          };
-          await taskAttachmentsApiService.createTaskAttachment(body);
-        }));
+        await Promise.all(
+          filesToUpload.map(async file => {
+            const base64 = await getBase64(file);
+            const body: ITaskAttachment = {
+              file: base64 as string,
+              file_name: file.name,
+              task_id: taskFormViewModel?.task?.id || '',
+              project_id: projectId,
+              size: file.size,
+            };
+            await taskAttachmentsApiService.createTaskAttachment(body);
+          })
+        );
       } finally {
         setProcessingUpload(false);
         selectedFilesRef.current = [];
