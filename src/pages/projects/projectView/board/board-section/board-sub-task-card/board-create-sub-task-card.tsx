@@ -3,47 +3,87 @@ import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { addSubtask } from '@features/board/board-slice';
+import {
+  addSubtask,
+  GROUP_BY_PHASE_VALUE,
+  GROUP_BY_PRIORITY_VALUE,
+  GROUP_BY_STATUS_VALUE,
+} from '@features/board/board-slice';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { getCurrentGroup } from '@/features/tasks/tasks.slice';
+import { useAuthService } from '@/hooks/useAuth';
+import { ITaskCreateRequest } from '@/types/tasks/task-create-request.types';
+import { useParams } from 'react-router-dom';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 type BoardCreateSubtaskCardProps = {
   sectionId: string;
-  taskId: string;
+  parentTaskId: string;
   setShowNewSubtaskCard: (x: boolean) => void;
 };
 
 const BoardCreateSubtaskCard = ({
   sectionId,
-  taskId,
+  parentTaskId,
   setShowNewSubtaskCard,
 }: BoardCreateSubtaskCardProps) => {
+  const { socket, connected } = useSocket();
+  const [creatingTask, setCreatingTask] = useState<boolean>(false);
   const [newSubtaskName, setNewSubtaskName] = useState<string>('');
 
   const cardRef = useRef<HTMLDivElement>(null);
 
-  //   localization
   const { t } = useTranslation('kanban-board');
 
-  //   get theme details from theme reducer
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { projectId } = useParams();
+  const currentSession = useAuthService().getCurrentSession();
 
   const dispatch = useAppDispatch();
 
-  // function to add task card to the top
+  const createRequestBody = (): ITaskCreateRequest | null => {
+    if (!projectId || !currentSession) return null;
+    const body: ITaskCreateRequest = {
+      project_id: projectId,
+      name: newSubtaskName,
+      reporter_id: currentSession.id,
+      team_id: currentSession.team_id,
+    };
+
+    const groupBy = getCurrentGroup();
+    if (groupBy.value === GROUP_BY_STATUS_VALUE) {
+      body.status_id = sectionId || undefined;
+    } else if (groupBy.value === GROUP_BY_PRIORITY_VALUE) {
+      body.priority_id = sectionId || undefined;
+    } else if (groupBy.value === GROUP_BY_PHASE_VALUE) {
+      body.phase_id = sectionId || undefined;
+    }
+
+    if (parentTaskId) {
+      body.parent_task_id = parentTaskId;
+    }
+    return body;
+  };
+
   const handleAddSubtask = () => {
-    if (newSubtaskName.trim()) {
-      dispatch(
-        addSubtask({
-          sectionId: sectionId,
-          taskId: taskId,
-          subtask: {
-            name: newSubtaskName.trim(),
-          },
-        })
-      );
-      setNewSubtaskName('');
-      setShowNewSubtaskCard(true);
+    if (creatingTask || !projectId || !currentSession || newSubtaskName.trim() === '' || !connected) return;
+
+    try {
+      setCreatingTask(true);
+      const body = createRequestBody();
+      if (!body) return;
+
+      socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(body));
+      socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
+        setCreatingTask(false);
+        console.log('task', task);
+      });
+    } catch (error) {
+      console.error('Error adding task:', error);
+      setCreatingTask(false);
     }
   };
 
@@ -88,3 +128,11 @@ const BoardCreateSubtaskCard = ({
 };
 
 export default BoardCreateSubtaskCard;
+function setCreatingTask(arg0: boolean) {
+  throw new Error('Function not implemented.');
+}
+
+function onNewTaskReceived(arg0: IAddNewTask) {
+  throw new Error('Function not implemented.');
+}
+
