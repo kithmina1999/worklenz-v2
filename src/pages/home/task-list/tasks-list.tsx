@@ -12,8 +12,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 
@@ -30,9 +29,7 @@ import { useGetMyTasksQuery } from '@/api/home-page/home-page.api.service';
 import { IHomeTasksModel } from '@/types/home/home-page.types';
 import './tasks-list.css';
 import HomeTasksStatusDropdown from '@/components/home-tasks/statusDropdown/home-tasks-status-dropdown';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
 import HomeTasksDatePicker from '@/components/home-tasks/taskDatePicker/home-tasks-date-picker';
-import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 const TasksList: React.FC = React.memo(() => {
   const dispatch = useAppDispatch();
