@@ -6,7 +6,6 @@ import SubTaskTable from './SubTaskTable';
 import DependenciesTable from './dependencies-table';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import TaskDetailsForm from './TaskDetailsForm';
-import InfoTabFooter from './InfoTabFooter';
 import { fetchTask } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { TFunction } from 'i18next';
@@ -22,6 +21,9 @@ import {
 } from '@/types/tasks/task-attachment-view-model';
 import taskAttachmentsApiService from '@/api/tasks/task-attachments.api.service';
 import AttachmentsGrid from './attachments/attachments-grid';
+import TaskComments from './comments/task-comments';
+import { ITaskCommentViewModel } from '@/types/tasks/task-comments.types';
+import taskCommentsApiService from '@/api/tasks/task-comments.api.service';
 
 interface TaskDrawerInfoTabProps {
   t: TFunction;
@@ -45,6 +47,9 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
 
   const [taskAttachments, setTaskAttachments] = useState<ITaskAttachmentViewModel[]>([]);
   const [loadingTaskAttachments, setLoadingTaskAttachments] = useState<boolean>(false);
+
+  const [taskComments, setTaskComments] = useState<ITaskCommentViewModel[]>([]);
+  const [loadingTaskComments, setLoadingTaskComments] = useState<boolean>(false);
 
   const handleFilesSelected = async (files: File[]) => {
     if (!taskFormViewModel?.task?.id || !projectId) return;
@@ -173,6 +178,12 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
       label: <Typography.Text strong>{t('taskInfoTab.comments.title')}</Typography.Text>,
       style: panelStyle,
       className: 'custom-task-drawer-info-collapse',
+      children: (
+        <TaskComments
+          taskId={selectedTaskId || ''}
+          t={t}
+        />
+      ),
     },
   ];
 
@@ -221,26 +232,43 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
     }
   };
 
+  const fetchTaskComments = async () => {
+    if (!selectedTaskId || loadingTaskComments) return;
+    try {
+      setLoadingTaskComments(true);
+      const res = await taskCommentsApiService.getByTaskId(selectedTaskId);
+      if (res.done) {
+        setTaskComments(res.body);
+      }
+    } catch (error) {
+      logger.error('Error fetching task comments:', error);
+    } finally {
+      setLoadingTaskComments(false);
+    }
+  };
+
   useEffect(() => {
     fetchTaskData();
     fetchSubTasks();
     fetchTaskDependencies();
     fetchTaskAttachments();
+    fetchTaskComments();
+
     return () => {
       setSubTasks([]);
       setTaskDependencies([]);
       setTaskAttachments([]);
       selectedFilesRef.current = [];
+      setTaskComments([]);
     };
   }, [selectedTaskId, projectId]);
 
   return (
     <Skeleton active loading={loadingTask}>
-      <Flex vertical justify="space-between" style={{ height: '78vh' }}>
+      <Flex vertical>
         <Collapse
           items={infoItems}
           bordered={false}
-          style={{ maxHeight: 600, overflow: 'auto' }}
           defaultActiveKey={[
             'details',
             'description',
@@ -250,7 +278,6 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
             'comments',
           ]}
         />
-        <InfoTabFooter />
       </Flex>
     </Skeleton>
   );

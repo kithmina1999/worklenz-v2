@@ -46,7 +46,14 @@ const AttachmentsGrid = ({
             isCommentAttachment={isCommentAttachment}
           />
         ))}
-        <AttachmentsUpload t={t} loadingTask={loadingTask} uploading={uploading} onFilesSelected={handleFilesSelected} />
+        {!isCommentAttachment && (
+          <AttachmentsUpload
+            t={t}
+            loadingTask={loadingTask}
+            uploading={uploading}
+            onFilesSelected={handleFilesSelected}
+          />
+        )}
       </div>
     </div>
   );
