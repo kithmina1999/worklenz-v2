@@ -1,7 +1,7 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import React, { useRef, useState } from 'react';
 import { TFunction } from 'i18next';
-import './attachments-upload.css'; // We'll create this CSS file next
+import './attachments-upload.css'; 
 import { useAppSelector } from '@/hooks/useAppSelector';
 
 interface AttachmentsUploadProps {
