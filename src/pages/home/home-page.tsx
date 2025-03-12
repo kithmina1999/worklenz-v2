@@ -19,7 +19,6 @@ import { fetchProjectCategories } from '@/features/projects/lookups/projectCateg
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
 import { fetchProjects } from '@/features/home-page/home-page.slice';
 import { createPortal } from 'react-dom';
-import { useAppSelector } from '@/hooks/useAppSelector';
 import TaskDrawer from '@/components/task-drawer/task-drawer';
 
 const DESKTOP_MIN_WIDTH = 1024;
