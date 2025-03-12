@@ -1,18 +1,26 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAction } from '@reduxjs/toolkit';
 
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import { ITaskFormViewModel } from '@/types/tasks/task.types';
+import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
 import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
 import { InlineMember } from '@/types/teamMembers/inlineMember.types';
+import { ITaskLogViewModel } from '@/types/tasks/task-log-view.types';
+
 interface ITaskDrawerState {
   selectedTaskId: string | null;
   showTaskDrawer: boolean;
   taskFormViewModel: ITaskFormViewModel | null;
   subscribers: InlineMember[];
   loadingTask: boolean;
+  timeLogEditing: {
+    isEditing: boolean;
+    logBeingEdited: ITaskLogViewModel | null;
+  };
 }
 
 const initialState: ITaskDrawerState = {
@@ -21,6 +29,10 @@ const initialState: ITaskDrawerState = {
   taskFormViewModel: null,
   subscribers: [],
   loadingTask: false,
+  timeLogEditing: {
+    isEditing: false,
+    logBeingEdited: null,
+  },
 };
 
 export const fetchTask = createAsyncThunk(
@@ -88,6 +100,12 @@ const taskDrawerSlice = createSlice({
     setTaskSubscribers: (state, action: PayloadAction<InlineMember[]>) => {
       state.subscribers = action.payload;
     },
+    setTimeLogEditing: (state, action: PayloadAction<{
+      isEditing: boolean;
+      logBeingEdited: ITaskLogViewModel | null;
+    }>) => {
+      state.timeLogEditing = action.payload;
+    },
   },
   extraReducers: builder => {
     builder.addCase(fetchTask.pending, state => {
@@ -115,5 +133,6 @@ export const {
   setTaskPriority,
   setTaskLabels,
   setTaskSubscribers,
+  setTimeLogEditing,
 } = taskDrawerSlice.actions;
 export default taskDrawerSlice.reducer;
