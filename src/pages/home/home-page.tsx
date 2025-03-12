@@ -28,7 +28,6 @@ const SIDEBAR_MAX_WIDTH = 400;
 
 const HomePage = () => {
   const dispatch = useAppDispatch();
-  const { showTaskDrawer } = useAppSelector(state => state.taskDrawerReducer);
   const isDesktop = useMediaQuery({ query: `(min-width: ${DESKTOP_MIN_WIDTH}px)` });
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
   useDocumentTitle('Home');
@@ -84,7 +83,7 @@ const HomePage = () => {
       </Col>
 
       <MainContent />
-      {showTaskDrawer && createPortal(<TaskDrawer />, document.body, 'home-task-drawer')}
+      {createPortal(<TaskDrawer />, document.body, 'home-task-drawer')}
       {createPortal(<ProjectDrawer onClose={() => {}} />, document.body, 'project-drawer')}
     </div>
   );
