@@ -19,12 +19,13 @@ import { fetchProjectCategories } from '@/features/projects/lookups/projectCateg
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
 import { fetchProjects } from '@/features/home-page/home-page.slice';
 import { createPortal } from 'react-dom';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
+import React from 'react';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const DESKTOP_MIN_WIDTH = 1024;
 const TASK_LIST_MIN_WIDTH = 500;
 const SIDEBAR_MAX_WIDTH = 400;
-
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 const HomePage = () => {
   const dispatch = useAppDispatch();
   const isDesktop = useMediaQuery({ query: `(min-width: ${DESKTOP_MIN_WIDTH}px)` });
