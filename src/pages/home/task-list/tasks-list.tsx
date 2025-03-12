@@ -12,7 +12,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -25,13 +25,14 @@ import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
 import { colors } from '@/styles/colors';
 import { setHomeTasksConfig } from '@/features/home-page/home-page.slice';
 import { IMyTask } from '@/types/home/my-tasks.types';
-import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
+import { setSelectedTaskId, setShowTaskDrawer, fetchTask } from '@/features/task-drawer/task-drawer.slice';
 import { useGetMyTasksQuery } from '@/api/home-page/home-page.api.service';
 import { IHomeTasksModel } from '@/types/home/home-page.types';
 import './tasks-list.css';
 import HomeTasksStatusDropdown from '@/components/home-tasks/statusDropdown/home-tasks-status-dropdown';
 import TaskDrawer from '@/components/task-drawer/task-drawer';
 import HomeTasksDatePicker from '@/components/home-tasks/taskDatePicker/home-tasks-date-picker';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 const TasksList: React.FC = React.memo(() => {
   const dispatch = useAppDispatch();
@@ -70,9 +71,11 @@ const TasksList: React.FC = React.memo(() => {
     refetch();
   };
 
-  useEffect(() => {
-    refetch();
-  }, [homeTasksConfig]);
+  const handleSelectTask = useCallback((task : IMyTask) => {
+    dispatch(setSelectedTaskId(task.id || ''));
+    dispatch(setShowTaskDrawer(true));
+    dispatch(fetchTask({ taskId: task.id || '', projectId: task.project_id || '' }));
+  }, [setSelectedTaskId]);
 
   const columns: TableProps<IMyTask>['columns'] = useMemo(
     () => [
@@ -91,8 +94,7 @@ const TasksList: React.FC = React.memo(() => {
                   type="text"
                   icon={<ExpandAltOutlined />}
                   onClick={() => {
-                    dispatch(setShowTaskDrawer(true));
-                    dispatch(setSelectedTaskId(record.id || null));
+                    handleSelectTask(record);
                   }}
                   style={{
                     backgroundColor: colors.transparent,
@@ -214,7 +216,6 @@ const TasksList: React.FC = React.memo(() => {
           loading={homeTasksFetching}
         />
       )}
-      {createPortal(<TaskDrawer />, document.body, 'home-task-drawer')}
     </Card>
   );
 });
