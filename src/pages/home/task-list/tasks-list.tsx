@@ -12,7 +12,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 
@@ -30,6 +30,11 @@ import { IHomeTasksModel } from '@/types/home/home-page.types';
 import './tasks-list.css';
 import HomeTasksStatusDropdown from '@/components/home-tasks/statusDropdown/home-tasks-status-dropdown';
 import HomeTasksDatePicker from '@/components/home-tasks/taskDatePicker/home-tasks-date-picker';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
+import { fetchPriorities } from '@/features/taskAttributes/taskPrioritySlice';
+import { setProjectId } from '@/features/project/project.slice';
+import { getTeamMembers } from '@/features/team-members/team-members.slice';
+
 
 const TasksList: React.FC = React.memo(() => {
   const dispatch = useAppDispatch();
@@ -68,11 +73,19 @@ const TasksList: React.FC = React.memo(() => {
     refetch();
   };
 
+  useEffect(() => {
+    dispatch(fetchLabels());
+    dispatch(fetchPriorities());
+    dispatch(getTeamMembers({ index: 0, size: 100, field: null, order: null, search: null, all: true }));
+  }, [dispatch]);
+
   const handleSelectTask = useCallback((task : IMyTask) => {
     dispatch(setSelectedTaskId(task.id || ''));
-    dispatch(setShowTaskDrawer(true));
     dispatch(fetchTask({ taskId: task.id || '', projectId: task.project_id || '' }));
-  }, [setSelectedTaskId]);
+    dispatch(setProjectId(task.project_id || ''));
+    dispatch(setShowTaskDrawer(true));
+    dispatch(setHomeTasksConfig({ ...homeTasksConfig, selected_task_id: task.id || '' }));
+  }, [dispatch, setSelectedTaskId, setShowTaskDrawer, fetchTask, homeTasksConfig]);
 
   const columns: TableProps<IMyTask>['columns'] = useMemo(
     () => [

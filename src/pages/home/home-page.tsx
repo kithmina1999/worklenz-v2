@@ -20,7 +20,6 @@ import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/pr
 import { fetchProjects } from '@/features/home-page/home-page.slice';
 import { createPortal } from 'react-dom';
 import React from 'react';
-import { useAppSelector } from '@/hooks/useAppSelector';
 
 const DESKTOP_MIN_WIDTH = 1024;
 const TASK_LIST_MIN_WIDTH = 500;
@@ -43,7 +42,6 @@ const HomePage = () => {
 
       await Promise.all(fetchPromises);
     };
-
     fetchLookups();
   }, [dispatch]);
 
