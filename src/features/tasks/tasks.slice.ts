@@ -537,10 +537,22 @@ const taskSlice = createSlice({
       const { id, name } = action.payload;
 
       for (const group of state.taskGroups) {
+        // Check main tasks
         const task = group.tasks.find(task => task.id === id);
         if (task) {
           task.name = name;
           break;
+        }
+
+        // Check subtasks
+        for (const task of group.tasks) {
+          if (task.sub_tasks) {
+            const subTask = task.sub_tasks.find(subtask => subtask.id === id);
+            if (subTask) {
+              subTask.name = name;
+              break;
+            }
+          }
         }
       }
     },
