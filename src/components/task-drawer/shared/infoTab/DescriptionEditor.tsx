@@ -17,9 +17,23 @@ const DescriptionEditor = ({ description, taskId, parentTaskId }: DescriptionEdi
   const [isHovered, setIsHovered] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
   const [content, setContent] = useState<string>(description || '');
+  const [isEditorLoading, setIsEditorLoading] = useState<boolean>(false);
   const editorRef = useRef<any>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+
+  // Preload TinyMCE script
+  useEffect(() => {
+    const preloadTinyMCE = () => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.href = '/tinymce/tinymce.min.js';
+      link.as = 'script';
+      document.head.appendChild(link);
+    };
+    
+    preloadTinyMCE();
+  }, []);
 
   const handleDescriptionChange = () => {
     if (!taskId) return;
@@ -56,6 +70,12 @@ const DescriptionEditor = ({ description, taskId, parentTaskId }: DescriptionEdi
   const handleInit = (evt: any, editor: any) => {
     editorRef.current = editor;
     editor.on('focus', () => setIsEditorOpen(true));
+    setIsEditorLoading(false);
+  };
+
+  const handleOpenEditor = () => {
+    setIsEditorOpen(true);
+    setIsEditorLoading(true);
   };
 
   const darkModeStyles = themeMode === 'dark' ? `
@@ -75,6 +95,21 @@ const DescriptionEditor = ({ description, taskId, parentTaskId }: DescriptionEdi
           minHeight: '200px',
           backgroundColor: themeMode === 'dark' ? '#1e1e1e' : '#ffffff' 
         }}>
+          {isEditorLoading && (
+            <div style={{
+              position: 'absolute',
+              zIndex: 10,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+              height: '200px',
+              backgroundColor: themeMode === 'dark' ? 'rgba(30, 30, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+              color: themeMode === 'dark' ? '#ffffff' : '#000000'
+            }}>
+              <div>Loading editor...</div>
+            </div>
+          )}
           <Editor
             tinymceScriptSrc="/tinymce/tinymce.min.js"
             value={content}
@@ -115,7 +150,7 @@ const DescriptionEditor = ({ description, taskId, parentTaskId }: DescriptionEdi
         </div>
       ) : (
         <div 
-          onClick={() => setIsEditorOpen(true)}
+          onClick={handleOpenEditor}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           style={{ 
