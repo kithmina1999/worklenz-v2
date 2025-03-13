@@ -66,6 +66,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(
     null
   );
+  const [isFormValid, setIsFormValid] = useState<boolean>(true);
 
   // Selectors
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
@@ -232,6 +233,11 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
     [form]
   );
 
+  const handleFieldsChange = (_, allFields) => {
+    const isValid = allFields.every(field => field.errors.length === 0);
+    setIsFormValid(isValid);
+  };
+
   return (
     <Drawer
       title={
@@ -265,6 +271,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
               type="primary"
               onClick={() => form.submit()}
               loading={isCreatingProject || isUpdatingProject}
+              disabled={!isFormValid}
             >
               {editMode ? t('update') : t('create')}
             </Button>
@@ -286,6 +293,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
           layout="vertical"
           onFinish={handleFormSubmit}
           initialValues={defaultFormValues}
+          onFieldsChange={handleFieldsChange}
         >
           <ProjectBasicInfo
             editMode={editMode}
@@ -359,7 +367,20 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
           <Form.Item name="man_days" label={t('estimateManDays')}>
             <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
           </Form.Item>
-          <Form.Item name="hours_per_day" label={t('hoursPerDay')}>
+          <Form.Item
+            name="hours_per_day"
+            label={t('hoursPerDay')}
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (value === undefined || (value >= 0 && value <= 24)) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error(t('hoursPerDayValidationMessage', { min: 0, max: 24 })));
+                },
+              },
+            ]}
+          >
             <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
           </Form.Item>
         </Form>
