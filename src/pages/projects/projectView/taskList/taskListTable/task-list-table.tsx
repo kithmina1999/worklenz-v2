@@ -6,7 +6,7 @@ import Tooltip from 'antd/es/tooltip';
 import Input from 'antd/es/input';
 import Typography from 'antd/es/typography';
 import Flex from 'antd/es/flex';
-import { HolderOutlined } from '@ant-design/icons';
+import { HolderOutlined, SettingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -42,7 +42,7 @@ import TaskListReporterCell from './task-list-table-cells/task-list-reporter-cel
 import TaskListDueTimeCell from './task-list-table-cells/task-list-due-time-cell/task-list-due-time-cell';
 import AssigneeSelector from '@/components/taskListCommon/assignee-selector/assignee-selector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { CustomFieldsTypes } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
+import { CustomFieldsTypes, setCustomColumnModalAttributes, toggleCustomColumnModalOpen } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 import { selectTaskIds, selectTasks } from '@/features/projects/bulkActions/bulkActionSlice';
 import StatusDropdown from '@/components/task-list-common/status-dropdown/status-dropdown';
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/priority-dropdown';
@@ -51,6 +51,7 @@ import { fetchSubTasks, reorderTasks, toggleTaskRowExpansion } from '@/features/
 import { useAuthService } from '@/hooks/useAuth';
 import ConfigPhaseButton from '@/features/projects/singleProject/phase/ConfigPhaseButton';
 import PhaseDropdown from '@/components/taskListCommon/phase-dropdown/phase-dropdown';
+import CustomColumnModal from './custom-columns/custom-column-modal/custom-column-modal';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -99,6 +100,25 @@ const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
   );
 };
 
+const CustomColumnHeader: React.FC<{
+  column: any;
+  onSettingsClick: (columnId: string) => void;
+}> = ({ column, onSettingsClick }) => {
+  console.log('column', column);
+  return (
+    <Flex align="center" justify="space-between" className="w-full">
+      <span>{column.name}</span>
+      <SettingOutlined
+        className="cursor-pointer hover:text-primary"
+        onClick={e => {
+          e.stopPropagation();
+          onSettingsClick(column.key);
+        }}
+      />
+    </Flex>
+  );
+};
+
 const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, activeId }) => {
   const { t } = useTranslation('task-list-table');
   const dispatch = useAppDispatch();
@@ -119,6 +139,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editColumnKey, setEditColumnKey] = useState<string | null>(null);
 
   const toggleTaskExpansion = (taskId: string) => {
     const task = displayTasks.find(t => t.id === taskId);
@@ -347,7 +368,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
           ),
           percentage: () => (
             <Input
-              defaultValue={`${columnObj?.previewValue.toFixed(columnObj?.decimals)}%`}
+              defaultValue={`${columnObj?.previewValue?.toFixed(columnObj?.decimals)}%`}
               style={{ padding: 0, border: 'none', background: 'transparent' }}
             />
           ),
@@ -366,12 +387,12 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
           }
 
           const operations = {
-            add: () => columnObj.firstNumericColumn + columnObj.secondNumericColumn,
-            subtract: () => columnObj.firstNumericColumn - columnObj.secondNumericColumn,
-            multiply: () => columnObj.firstNumericColumn * columnObj.secondNumericColumn,
+            add: () => columnObj?.firstNumericColumn + columnObj?.secondNumericColumn,
+            subtract: () => columnObj?.firstNumericColumn - columnObj?.secondNumericColumn,
+            multiply: () => columnObj?.firstNumericColumn * columnObj?.secondNumericColumn,
             divide: () =>
-              columnObj.secondNumericColumn !== 0
-                ? columnObj.firstNumericColumn / columnObj.secondNumericColumn
+              columnObj?.secondNumericColumn !== 0
+                ? columnObj?.firstNumericColumn / columnObj?.secondNumericColumn
                 : null,
           };
 
@@ -450,10 +471,10 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                 data-task-cell
                 onContextMenu={e => handleContextMenu(e, task)}
               >
-                {column.custom_column
+                {column.isCustomColumn && column.customColumnObj
                   ? renderCustomColumnContent(
-                      column.custom_column_obj,
-                      column.custom_column_obj.fieldType,
+                      column.customColumnObj,
+                      column.customColumnObj.fieldType,
                       task
                     )
                   : renderColumnContent(column.key, task, isSubtask)}
@@ -493,6 +514,13 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     }
   };
 
+  const handleCustomColumnSettings = (columnKey: string) => {
+    console.log('columnKey', columnKey);
+    setEditColumnKey(columnKey);
+    dispatch(setCustomColumnModalAttributes({modalType: 'edit', columnId: columnKey}));
+    dispatch(toggleCustomColumnModalOpen(true));
+  };
+
   return (
     <div className={`border-x border-b ${customBorderColor}`}>
       <SortableContext
@@ -530,9 +558,14 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                         </Flex>
                       )}
                       {column.key !== 'PHASE' &&
-                        (column.key === 'customColumn' || column.custom_column
-                          ? column.name
-                          : t(`${column.key?.replace('_', '').toLowerCase()}Column`))}
+                        (column.isCustomColumn ? (
+                          <CustomColumnHeader
+                            column={column}
+                            onSettingsClick={handleCustomColumnSettings}
+                          />
+                        ) : (
+                          t(`${column.key?.replace('_', '').toLowerCase()}Column`)
+                        ))}
                     </Flex>
                   </th>
                 ))}
@@ -602,6 +635,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         document.body,
         'task-context-menu'
       )}
+      {createPortal(<CustomColumnModal />, document.body, 'custom-column-modal')}
     </div>
   );
 };

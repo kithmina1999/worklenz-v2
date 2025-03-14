@@ -2,17 +2,15 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 import React, { useState } from 'react';
 import CustomColumnModal from './custom-column-modal';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setCustomColumnModalAttributes, toggleCustomColumnModalOpen } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
+
 const AddCustomColumnButton = () => {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
 
-  //   function to open modal
   const handleModalOpen = () => {
-    setIsModalOpen(true);
-  };
-
-  //   fuction to handle cancel
-  const handleCancel = () => {
-    setIsModalOpen(false);
+    dispatch(setCustomColumnModalAttributes({modalType: 'create', columnId: null}));
+    dispatch(toggleCustomColumnModalOpen(true));
   };
 
   return (
@@ -29,7 +27,6 @@ const AddCustomColumnButton = () => {
         />
       </Tooltip>
 
-      <CustomColumnModal modalType="create" isModalOpen={isModalOpen} handleCancel={handleCancel} />
     </>
   );
 };

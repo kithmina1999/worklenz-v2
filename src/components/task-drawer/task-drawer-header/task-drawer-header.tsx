@@ -1,5 +1,5 @@
 import { Button, Dropdown, Flex, Input, InputRef, MenuProps } from 'antd';
-import React, { ChangeEvent, useEffect, useState, useTransition } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { TFunction } from 'i18next';
 
@@ -13,6 +13,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
+import useTaskDrawerUrlSync from '@/hooks/useTaskDrawerUrlSync';
 
 type TaskDrawerHeaderProps = {
   inputRef: React.RefObject<InputRef | null>;
@@ -22,6 +23,8 @@ type TaskDrawerHeaderProps = {
 const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
   const dispatch = useAppDispatch();
   const { socket, connected } = useSocket();
+  const { clearTaskFromUrl } = useTaskDrawerUrlSync();
+  const isDeleting = useRef(false);
 
   const { taskFormViewModel, selectedTaskId } = useAppSelector(state => state.taskDrawerReducer);
   const [taskName, setTaskName] = useState<string>(taskFormViewModel?.task?.name ?? '');
@@ -37,10 +40,24 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
 
   const handleDeleteTask = async () => {
     if (!selectedTaskId) return;
+    
+    // Set flag to indicate we're deleting the task
+    isDeleting.current = true;
+    
     const res = await tasksApiService.deleteTask(selectedTaskId);
     if (res.done) {
+      // Explicitly clear the task parameter from URL
+      clearTaskFromUrl();
+      
       dispatch(setShowTaskDrawer(false));
       dispatch(setSelectedTaskId(null));
+      
+      // Reset the flag after a short delay
+      setTimeout(() => {
+        isDeleting.current = false;
+      }, 100);
+    } else {
+      isDeleting.current = false;
     }
   };
 

@@ -9,12 +9,12 @@ import useIsomorphicLayoutEffect from '@/hooks/useIsomorphicLayoutEffect';
 
 import {
   DndContext,
-  closestCenter,
   PointerSensor,
   useSensor,
   useSensors,
   DragEndEvent,
   DragStartEvent,
+  pointerWithin,
 } from '@dnd-kit/core';
 
 import { SocketEvents } from '@/shared/socket-events';
@@ -36,11 +36,13 @@ import {
   updateTaskStatus,
   updateTaskPriority,
   updateTaskEndDate,
+  updateTaskEstimation,
   updateTaskName,
   updateTaskPhase,
   updateTaskStartDate,
   IGroupBy,
   updateTaskDescription,
+  updateSubTasks,
 } from '@/features/tasks/tasks.slice';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 
@@ -60,6 +62,7 @@ import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_project_task_list_drag_and_move } from '@/shared/worklenz-analytics-events';
 import { ALPHA_CHANNEL } from '@/shared/constants';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -281,6 +284,25 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, dispatch]);
 
+  // Socket handler for task estimation updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleEstimationChange = (task: {
+      id: string;
+      parent_task: string | null;
+      estimation: number;
+    }) => {
+      dispatch(updateTaskEstimation({ task }));
+    };
+
+    socket.on(SocketEvents.TASK_TIME_ESTIMATION_CHANGE.toString(), handleEstimationChange);
+
+    return () => {
+      socket.off(SocketEvents.TASK_TIME_ESTIMATION_CHANGE.toString(), handleEstimationChange);
+    };
+  }, [socket, dispatch]);
+
   const resetTaskRowStyles = useCallback(() => {
     document.querySelectorAll<HTMLElement>('.task-row').forEach(row => {
       row.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
@@ -318,6 +340,23 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       socket.off(SocketEvents.TASK_DESCRIPTION_CHANGE.toString(), handleTaskDescriptionChange);
     };
   }, [socket, dispatch]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewTaskReceived = (data: IProjectTask) => {
+      if (!data) return;
+      
+      if (data.parent_task_id) {
+        dispatch(updateSubTasks(data));
+      }
+    };
+
+    socket.on(SocketEvents.QUICK_TASK.toString(), handleNewTaskReceived);
+
+    return () => {
+      socket.off(SocketEvents.QUICK_TASK.toString(), handleNewTaskReceived);
+    };  }, [socket, dispatch]);
 
   const handleDragEnd = useCallback(
     ({ active, over }: DragEndEvent) => {
@@ -493,7 +532,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={pointerWithin}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >

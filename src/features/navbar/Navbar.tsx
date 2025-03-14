@@ -2,23 +2,23 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Col, ConfigProvider, Flex, Menu, MenuProps } from 'antd';
+import { createPortal } from 'react-dom';
 
 import InviteTeamMembers from '../../components/common/invite-team-members/invite-team-members';
 import HelpButton from './help/HelpButton';
 import InviteButton from './invite/InviteButton';
 import MobileMenuButton from './mobileMenu/MobileMenuButton';
 import NavbarLogo from './NavbarLogo';
-import NotficationDrawer from './notification/NotficationDrawer';
-import NotificationButton from './notification/NotificationButton';
+import NotificationButton from '../../components/navbar/notifications/notifications-drawer/notification/notification-button';
 import ProfileButton from './user-profile/profile-button';
 import SwitchTeamButton from './switchTeam/SwitchTeamButton';
 import UpgradePlanButton from './upgradePlan/UpgradePlanButton';
+import NotificationDrawer from '../../components/navbar/notifications/notifications-drawer/notification/notfication-drawer';
 
 import { useResponsive } from '@/hooks/useResponsive';
 import { getJSONFromLocalStorage } from '@/utils/localStorageFunctions';
 import { navRoutes, NavRoutesType } from './navRoutes';
 import { useAuthService } from '@/hooks/useAuth';
-import { createPortal } from 'react-dom';
 
 const Navbar = () => {
   const [current, setCurrent] = useState<string>('home');
@@ -125,7 +125,7 @@ const Navbar = () => {
       </Flex>
 
       {isOwnerOrAdmin && createPortal(<InviteTeamMembers />, document.body, 'invite-team-members')}
-      {createPortal(<NotficationDrawer />, document.body, 'notification-drawer')}
+      {createPortal(<NotificationDrawer />, document.body, 'notification-drawer')}
     </Col>
   );
 };

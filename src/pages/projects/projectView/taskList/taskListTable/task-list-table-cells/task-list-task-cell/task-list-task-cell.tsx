@@ -1,10 +1,16 @@
-import { Flex, Typography, Button, Input } from 'antd';
+import { Flex, Typography, Button, Input, Tooltip } from 'antd';
 import type { InputRef } from 'antd';
 import {
   DoubleRightOutlined,
   DownOutlined,
   RightOutlined,
   ExpandAltOutlined,
+  CommentOutlined,
+  EyeOutlined,
+  PaperClipOutlined,
+  MinusCircleOutlined,
+  ScheduleOutlined,
+  RetweetOutlined,
 } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -130,11 +136,14 @@ const TaskListTaskCell = ({
   const handleTaskNameSave = () => {
     const taskName = inputRef.current?.input?.value;
     if (taskName?.trim() !== '' && connected) {
-      socket?.emit(SocketEvents.TASK_NAME_CHANGE.toString(), JSON.stringify({
-        task_id: task.id,
-        name: taskName,
-        parent_task: task.parent_task_id,
-      }));
+      socket?.emit(
+        SocketEvents.TASK_NAME_CHANGE.toString(),
+        JSON.stringify({
+          task_id: task.id,
+          name: taskName,
+          parent_task: task.parent_task_id,
+        })
+      );
       setEditTaskName(false);
     }
   };
@@ -167,7 +176,7 @@ const TaskListTaskCell = ({
             <Typography.Text
               ellipsis={{ tooltip: task.name }}
               onClick={() => setEditTaskName(true)}
-              style={{ cursor: 'pointer', width: 350 }}
+              style={{ cursor: 'pointer', width: 'auto' }}
             >
               {task.name}
             </Typography.Text>
@@ -178,7 +187,7 @@ const TaskListTaskCell = ({
               ref={inputRef}
               variant="borderless"
               value={taskName}
-              onChange={(e) => setTaskName(e.target.value)}
+              onChange={e => setTaskName(e.target.value)}
               autoFocus
               onPressEnter={handleTaskNameSave}
               style={{
@@ -191,6 +200,26 @@ const TaskListTaskCell = ({
 
         {!editTaskName &&
           renderSubtasksCountLabel(task.id || '', isSubTask, task.sub_tasks_count || 0)}
+
+        {task?.comments_count ? (
+          <CommentOutlined type="secondary" style={{ fontSize: 14 }} />
+        ) : null}
+
+        {task?.has_subscribers ? <EyeOutlined type="secondary" style={{ fontSize: 14 }} /> : null}
+
+        {task?.attachments_count ? (
+          <PaperClipOutlined type="secondary" style={{ fontSize: 14 }} />
+        ) : null}
+
+        {task?.has_dependencies ? (
+          <MinusCircleOutlined type="secondary" style={{ fontSize: 14 }} />
+        ) : null}
+
+        {task?.schedule_id ? (
+          <Tooltip title="Recurring Task">
+            <RetweetOutlined type="secondary" style={{ fontSize: 14 }} />
+          </Tooltip>
+        ) : null}
       </Flex>
 
       <div className="open-task-button">

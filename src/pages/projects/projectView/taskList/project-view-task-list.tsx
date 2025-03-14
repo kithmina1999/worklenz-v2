@@ -7,7 +7,7 @@ import TaskListFilters from './task-list-filters/task-list-filters';
 import TaskGroupWrapper from './taskListTable/task-group-wrapper/task-group-wrapper';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchTaskGroups, fetTaskListColumns } from '@/features/tasks/tasks.slice';
+import { fetchTaskGroups, fetchTaskListColumns } from '@/features/tasks/tasks.slice';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
 
@@ -32,7 +32,7 @@ const ProjectViewTaskList = () => {
       if (!loadingGroups && projectView === 'list') {
         dispatch(fetchTaskGroups(projectId));
       }
-      if (!loadingColumns) dispatch(fetTaskListColumns(projectId));
+      if (!loadingColumns) dispatch(fetchTaskListColumns(projectId));
       if (!loadingPhases) dispatch(fetchPhasesByProjectId(projectId));
     }
     if (!statusCategories.length) {
@@ -44,11 +44,9 @@ const ProjectViewTaskList = () => {
     <Flex vertical gap={16} style={{ overflowX: 'hidden' }}>
       <TaskListFilters position="list" />
 
-      {loadingGroups ? (
-        <Skeleton />
-      ) : (
+      <Skeleton active loading={loadingGroups}>
         <TaskGroupWrapper taskGroups={taskGroups} groupBy={groupBy} />
-      )}
+      </Skeleton>
     </Flex>
   );
 };
