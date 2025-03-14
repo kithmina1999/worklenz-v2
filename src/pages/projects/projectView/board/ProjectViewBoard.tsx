@@ -3,7 +3,11 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import TaskListFilters from '../taskList/task-list-filters/task-list-filters';
 import { Empty, Flex, Skeleton } from 'antd';
 import BoardSectionCardContainer from './board-section/board-section-container';
-import { fetchBoardTaskGroups, reorderTaskGroups, moveTaskBetweenGroups } from '@features/board/board-slice';
+import {
+  fetchBoardTaskGroups,
+  reorderTaskGroups,
+  moveTaskBetweenGroups,
+} from '@features/board/board-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   DndContext,
@@ -26,7 +30,7 @@ import useTabSearchParam from '@/hooks/useTabSearchParam';
 const ProjectViewBoard = () => {
   const dispatch = useAppDispatch();
   const { projectView } = useTabSearchParam();
-  
+
   const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskGroups, groupBy, loadingGroups, error } = useAppSelector(state => state.boardReducer);
   const { statusCategories, loading: loadingStatusCategories } = useAppSelector(
@@ -83,7 +87,7 @@ const ProjectViewBoard = () => {
       const activeTaskId = active.data.current?.task.id;
       const sourceGroupId = active.data.current?.sectionId;
       const targetGroupId = isOverTask ? over.data.current?.sectionId : over.id;
-      
+
       // Find the target index
       let targetIndex = -1;
       if (isOverTask) {
@@ -93,7 +97,7 @@ const ProjectViewBoard = () => {
           targetIndex = targetGroup.tasks.findIndex(task => task.id === overTaskId);
         }
       }
-      
+
       // Dispatch the action to move the task
       dispatch(
         moveTaskBetweenGroups({
@@ -123,11 +127,7 @@ const ProjectViewBoard = () => {
     <Flex vertical gap={16}>
       <TaskListFilters position={'board'} />
 
-      {loadingGroups ? (
-        <Skeleton />
-      ) : error ? (
-        <Empty />
-      ) : (
+      <Skeleton active loading={loadingGroups}>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCorners}
@@ -145,7 +145,7 @@ const ProjectViewBoard = () => {
             )}
           </DragOverlay>
         </DndContext>
-      )}
+      </Skeleton>
     </Flex>
   );
 };

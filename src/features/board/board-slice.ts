@@ -279,10 +279,19 @@ const boardSlice = createSlice({
     },
 
     deleteSection: (state, action: PayloadAction<{ sectionId: string }>) => {
-      state.taskGroups = state.taskGroups.filter(section => section.id !== action.payload.sectionId);
+      state.taskGroups = state.taskGroups.filter(
+        section => section.id !== action.payload.sectionId
+      );
     },
 
-    updateBoardTaskAssignee: (state, action: PayloadAction<{body: ITaskAssigneesUpdateResponse, sectionId: string, taskId: string}>) => {
+    updateBoardTaskAssignee: (
+      state,
+      action: PayloadAction<{
+        body: ITaskAssigneesUpdateResponse;
+        sectionId: string;
+        taskId: string;
+      }>
+    ) => {
       const section = state.taskGroups.find(sec => sec.id === action.payload.sectionId);
       if (section) {
         const task = section.tasks.find((task: any) => task.id === action.payload.taskId);
@@ -307,21 +316,21 @@ const boardSlice = createSlice({
       }>
     ) => {
       const { taskId, sourceGroupId, targetGroupId, targetIndex } = action.payload;
-      
+
       // Find source and target groups
       const sourceGroup = state.taskGroups.find(group => group.id === sourceGroupId);
       const targetGroup = state.taskGroups.find(group => group.id === targetGroupId);
-      
+
       if (!sourceGroup || !targetGroup) return;
-      
+
       // Find the task to move
       const taskIndex = sourceGroup.tasks.findIndex(task => task.id === taskId);
       if (taskIndex === -1) return;
-      
+
       // Get the task and remove it from source
       const task = { ...sourceGroup.tasks[taskIndex], status_id: targetGroupId };
       sourceGroup.tasks = sourceGroup.tasks.filter(task => task.id !== taskId);
-      
+
       // Insert task at the target position
       if (targetIndex >= 0 && targetIndex <= targetGroup.tasks.length) {
         targetGroup.tasks.splice(targetIndex, 0, task);
@@ -331,7 +340,7 @@ const boardSlice = createSlice({
       }
     },
 
-    resetBoardData: (state) => {
+    resetBoardData: state => {
       state.taskGroups = [];
       state.columns = [];
       state.loadingGroups = false;
@@ -359,11 +368,22 @@ const boardSlice = createSlice({
       state.search = action.payload;
     },
 
-    setBoardGroupName: (state, action: PayloadAction<{groupId: string, name: string, colorCode: string}>) => {
+    setBoardGroupName: (
+      state,
+      action: PayloadAction<{
+        groupId: string;
+        name: string;
+        colorCode: string;
+        colorCodeDark: string;
+        categoryId: string;
+      }>
+    ) => {
       const group = state.taskGroups.find(group => group.id === action.payload.groupId);
       if (group) {
         group.name = action.payload.name;
         group.color_code = action.payload.colorCode;
+        group.color_code_dark = action.payload.colorCodeDark;
+        group.category_id = action.payload.categoryId;
       }
     },
 
@@ -443,8 +463,7 @@ const boardSlice = createSlice({
       })
       .addCase(fetchBoardSubTasks.rejected, (state, action) => {
         state.error = action.error.message || 'Failed to fetch sub tasks';
-      })
-      ;
+      });
   },
 });
 
@@ -468,6 +487,6 @@ export const {
   setBoardSearch,
   setBoardGroupName,
   updateTaskAssignees,
-  updateTaskEndDate,  
+  updateTaskEndDate,
 } = boardSlice.actions;
 export default boardSlice.reducer;

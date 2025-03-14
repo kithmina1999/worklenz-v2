@@ -1,5 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Badge, Button, Dropdown, Flex, Input, InputRef, Popconfirm, Tooltip, Typography } from 'antd';
+import {
+  Badge,
+  Button,
+  Dropdown,
+  Flex,
+  Input,
+  InputRef,
+  Popconfirm,
+  Tooltip,
+  Typography,
+} from 'antd';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -16,7 +26,12 @@ import ChangeCategoryDropdown from '@/components/board/changeCategoryDropdown/Ch
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { deleteSection, IGroupBy, setBoardGroupName, setEditableSection } from '@features/board/board-slice';
+import {
+  deleteSection,
+  IGroupBy,
+  setBoardGroupName,
+  setEditableSection,
+} from '@features/board/board-slice';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import { useAuthService } from '@/hooks/useAuth';
 import useIsProjectManager from '@/hooks/useIsProjectManager';
@@ -98,10 +113,18 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
     };
     const res = await statusApiService.updateStatus(groupId, body, projectId);
     if (res.done) {
-      dispatch(setBoardGroupName({ groupId, name: name ?? '', colorCode: res.body.color_code ?? '' }));
+      dispatch(
+        setBoardGroupName({
+          groupId,
+          name: name ?? '',
+          colorCode: res.body.color_code ?? '',
+          colorCodeDark: res.body.color_code_dark ?? '',
+          categoryId: category,
+        })
+      );
       dispatch(fetchStatuses(projectId));
     }
-  }
+  };
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const taskName = e.target.value;
@@ -167,7 +190,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
           <Flex
             gap={8}
             onClick={() => status.id && updateStatus(status.id)}
-            style={ categoryId === status.id ? { fontWeight: 700 } : {}}
+            style={categoryId === status.id ? { fontWeight: 700 } : {}}
           >
             <Badge color={status.color_code} />
             {status.name}
@@ -185,7 +208,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
           cancelText={t('deleteConfirmationCancel')}
           onConfirm={() => dispatch(deleteSection({ sectionId: groupId }))}
         >
-          <Flex gap={8} align="center" style={{ width: '100%'}}>
+          <Flex gap={8} align="center" style={{ width: '100%' }}>
             <DeleteOutlined />
             {t('delete')}
           </Flex>
