@@ -35,8 +35,30 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
 
   const buildTotalTimeText = (timeLoggedList: ITaskLogViewModel[]) => {
     let totalLogged = 0;
+
+    const formatTime = (seconds: number): string => {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remainingSeconds = seconds % 60;
+      
+      const pad = (num: number) => num.toString().padStart(1, '0');
+      
+      if (hours >= 1) {
+        return `${pad(hours)}h ${pad(minutes)}m ${pad(remainingSeconds)}s`;
+      } else {
+        return `${pad(minutes)}m ${pad(remainingSeconds)}s`;
+      }
+    };
+
     for (const element of timeLoggedList) {
-      const timeSpentInSeconds = Number(element.time_spent || '0');
+      const timeSpentInSeconds = element.time_spent ?? 0;
+      element.time_spent_text = formatTime(timeSpentInSeconds);
+      totalLogged += timeSpentInSeconds;
+    }
+
+    setTotalTimeText(formatTime(totalLogged));
+
+<!--       const timeSpentInSeconds = Number(element.time_spent || '0');
       const hours = Math.floor(timeSpentInSeconds / 3600);
       const minutes = Math.floor((timeSpentInSeconds % 3600) / 60);
       const seconds = timeSpentInSeconds % 60;
@@ -61,7 +83,8 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
     if (totalMinutes > 0) totalPartsList.push(`${totalMinutes}m`);
     if (totalSeconds > 0 || totalPartsList.length === 0) totalPartsList.push(`${totalSeconds}s`);
     
-    setTotalTimeText(totalPartsList.join(' '));
+    setTotalTimeText(totalPartsList.join(' ')); -->
+
   };
 
   const fetchTimeLoggedList = async () => {
