@@ -131,7 +131,7 @@ export const fetchBoardTaskGroups = createAsyncThunk(
         statuses: '',
         members: selectedMembers,
         projects: '',
-        isSubtasksInclude: true,
+        isSubtasksInclude: false,
         labels: selectedLabels,
         priorities: boardReducer.priorities.join(' '),
       };

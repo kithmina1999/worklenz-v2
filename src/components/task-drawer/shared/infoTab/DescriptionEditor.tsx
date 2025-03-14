@@ -49,10 +49,13 @@ const DescriptionEditor = ({ description, taskId, parentTaskId }: DescriptionEdi
       const isClickedOutside = wrapperRef.current && !wrapperRef.current.contains(event.target as Node);
       const isClickedOutsideEditor = !document.querySelector('.tox-tinymce')?.contains(event.target as Node);
       
-      if (isClickedOutside && isClickedOutsideEditor) {
-        handleDescriptionChange();
+      // Only save and close if the editor is actually open
+      if (isEditorOpen && isClickedOutside && isClickedOutsideEditor) {
+        // Check if content has changed before saving
+        if (content !== description) {
+          handleDescriptionChange();
+        }
         setIsEditorOpen(false);
-        socket?.emit('updateTaskDescription', { taskId, description: content });
       }
     };
 
@@ -60,7 +63,7 @@ const DescriptionEditor = ({ description, taskId, parentTaskId }: DescriptionEdi
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isEditorOpen, content]);
+  }, [isEditorOpen, content, description]);
 
   const handleEditorChange = (content: string) => {
     const sanitizedContent = DOMPurify.sanitize(content);

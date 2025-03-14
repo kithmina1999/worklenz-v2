@@ -46,6 +46,7 @@ const TaskDrawer = () => {
   const handleOnClose = () => {
     // Set flag to indicate we're manually closing the drawer
     isClosingManually.current = true;
+    setActiveTab('info');
 
     // Explicitly clear the task parameter from URL
     clearTaskFromUrl();

@@ -137,7 +137,7 @@ const ProjectViewBoard = () => {
         >
           <BoardSectionCardContainer
             datasource={taskGroups}
-            group={groupBy as 'status' | 'priority' | 'phases' | 'members'}
+            group={groupBy as 'status' | 'priority' | 'phases'}
           />
           <DragOverlay>
             {activeItem?.type === 'task' && (

@@ -19,6 +19,8 @@ import {
 
 import { SocketEvents } from '@/shared/socket-events';
 import logger from '@/utils/errorLogger';
+import alertService from '@/services/alerts/alertService';
+import { tasksApiService } from '@/api/tasks/tasks.api.service';
 
 import { ITaskListGroup } from '@/types/tasks/taskList.types';
 import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
@@ -27,6 +29,7 @@ import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.ty
 import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
 import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
 import { InlineMember } from '@/types/teamMembers/inlineMember.types';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 import {
   fetchTaskAssignees,
@@ -45,10 +48,6 @@ import {
   updateSubTasks,
 } from '@/features/tasks/tasks.slice';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
-
-import TaskListTableWrapper from '@/pages/projects/projectView/taskList/taskListTable/TaskListTableWrapper';
-import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
-import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
 import {
   setStartDate,
   setTaskAssignee,
@@ -59,10 +58,14 @@ import {
   setTaskSubscribers,
 } from '@/features/task-drawer/task-drawer.slice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
+
+import TaskListTableWrapper from '@/pages/projects/projectView/taskList/taskListTable/TaskListTableWrapper';
+import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
+import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
+
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_project_task_list_drag_and_move } from '@/shared/worklenz-analytics-events';
 import { ALPHA_CHANNEL } from '@/shared/constants';
-import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -91,6 +94,15 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
   useEffect(() => {
     setGroups(taskGroups);
   }, [taskGroups]);
+
+  const resetTaskRowStyles = useCallback(() => {
+    document.querySelectorAll<HTMLElement>('.task-row').forEach(row => {
+      row.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+      row.style.cssText =
+        'opacity: 1 !important; position: relative !important; z-index: auto !important; transform: none !important;';
+      row.setAttribute('data-is-dragging', 'false');
+    });
+  }, []);
 
   // Socket handler for assignee updates
   useEffect(() => {
@@ -163,6 +175,14 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     if (!socket) return;
 
     const handleTaskStatusChange = (response: ITaskListStatusChangeResponse) => {
+      if (response.completed_deps === false) {
+        alertService.error(
+          'Task is not completed',
+          'Please complete the task dependencies before proceeding'
+        );
+        return;
+      }
+
       dispatch(updateTaskStatus(response));
       dispatch(setTaskStatus(response));
       dispatch(deselectAll());
@@ -303,25 +323,6 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, dispatch]);
 
-  const resetTaskRowStyles = useCallback(() => {
-    document.querySelectorAll<HTMLElement>('.task-row').forEach(row => {
-      row.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
-      row.style.cssText =
-        'opacity: 1 !important; position: relative !important; z-index: auto !important; transform: none !important;';
-      row.setAttribute('data-is-dragging', 'false');
-    });
-  }, []);
-
-  const handleDragStart = useCallback(({ active }: DragStartEvent) => {
-    setActiveId(active.id as string);
-
-    // Add smooth transition to the dragged item
-    const draggedElement = document.querySelector(`[data-id="${active.id}"]`);
-    if (draggedElement) {
-      (draggedElement as HTMLElement).style.transition = 'transform 0.2s ease';
-    }
-  }, []);
-
   // Socket handler for task description updates
   useEffect(() => {
     if (!socket) return;
@@ -341,12 +342,13 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     };
   }, [socket, dispatch]);
 
+  // Socket handler for new task creation
   useEffect(() => {
     if (!socket) return;
 
     const handleNewTaskReceived = (data: IProjectTask) => {
       if (!data) return;
-      
+
       if (data.parent_task_id) {
         dispatch(updateSubTasks(data));
       }
@@ -356,11 +358,32 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
     return () => {
       socket.off(SocketEvents.QUICK_TASK.toString(), handleNewTaskReceived);
-    };  
+    };
   }, [socket, dispatch]);
 
+  const handleDragStart = useCallback(({ active }: DragStartEvent) => {
+    setActiveId(active.id as string);
+
+    // Add smooth transition to the dragged item
+    const draggedElement = document.querySelector(`[data-id="${active.id}"]`);
+    if (draggedElement) {
+      (draggedElement as HTMLElement).style.transition = 'transform 0.2s ease';
+    }
+  }, []);
+
+  const checkTaskDependencyStatus = async (taskId: string, statusId: string) => {
+    if (!taskId || !statusId) return false;
+    try {
+      const res = await tasksApiService.getTaskDependencyStatus(taskId, statusId);
+      return res.done ? res.body.can_continue : false;
+    } catch (error) {
+      logger.error('Error checking task dependency status:', error);
+      return false;
+    }
+  };
+
   const handleDragEnd = useCallback(
-    ({ active, over }: DragEndEvent) => {
+    async ({ active, over }: DragEndEvent) => {
       setActiveId(null);
       if (!over) return;
 
@@ -380,8 +403,19 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       // Create a deep clone of the task to avoid reference issues
       const task = JSON.parse(JSON.stringify(sourceGroup.tasks[fromIndex]));
 
-      // Update task properties based on target group
+      // Check if task dependencies allow the move
       if (activeGroupId !== overGroupId) {
+        const canContinue = await checkTaskDependencyStatus(task.id, overGroupId);
+        if (!canContinue) {
+          alertService.error(
+            'Task is not completed',
+            'Please complete the task dependencies before proceeding'
+          );
+          resetTaskRowStyles();
+          return;
+        }
+
+        // Update task properties based on target group
         switch (groupBy) {
           case IGroupBy.STATUS:
             task.status = overGroupId;
