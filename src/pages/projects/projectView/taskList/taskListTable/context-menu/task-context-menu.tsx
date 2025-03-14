@@ -71,7 +71,12 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
       if (res.done) {
         const { id: taskId, assignees } = res.body;
         trackMixpanelEvent(evt_project_task_list_context_menu_assign_me);
-        const groupId = taskGroups.find(group => group.tasks.some(task => task.id === taskId))?.id;
+        const groupId = taskGroups.find(group => 
+          group.tasks.some(task => 
+            task.id === taskId || 
+            task.sub_tasks?.some(subtask => subtask.id === taskId)
+          )
+        )?.id;
 
         if (groupId) {
           dispatch(

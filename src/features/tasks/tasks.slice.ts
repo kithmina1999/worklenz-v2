@@ -589,13 +589,23 @@ const taskSlice = createSlice({
     ) => {
       const { groupId, taskId, assignees } = action.payload;
       const group = state.taskGroups.find(group => group.id === groupId);
-      if (group) {
-        // Find the task or its subtask
-        const task =
-          group.tasks.find(task => task.id === taskId) ||
-          group.tasks.flatMap(task => task.sub_tasks || []).find(subtask => subtask.id === taskId);
-        if (task) {
-          task.assignees = assignees as ITaskAssignee[];
+      if (!group) return;
+
+      // Try to find the task in main tasks first
+      const mainTask = group.tasks.find(task => task.id === taskId);
+      if (mainTask) {
+        mainTask.assignees = assignees as ITaskAssignee[];
+        return;
+      }
+
+      // If not found in main tasks, look for it in subtasks
+      for (const parentTask of group.tasks) {
+        if (parentTask.sub_tasks) {
+          const subTask = parentTask.sub_tasks.find(st => st.id === taskId);
+          if (subTask) {
+            subTask.assignees = assignees as ITaskAssignee[];
+            return;
+          }
         }
       }
     },
