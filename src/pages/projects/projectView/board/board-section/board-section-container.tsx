@@ -13,6 +13,7 @@ import { useAuthService } from '@/hooks/useAuth';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { updateTaskAssignees, updateTaskEndDate } from '@/features/board/board-slice';
+import useIsProjectManager from '@/hooks/useIsProjectManager';
 
 const BoardSectionCardContainer = ({
   datasource,
@@ -26,6 +27,8 @@ const BoardSectionCardContainer = ({
   const currentSession = useAuthService().getCurrentSession();
   const { taskGroups } = useAppSelector(state => state.boardReducer);
   const { loadingAssignees } = useAppSelector(state => state.taskReducer);
+  const isOwnerorAdmin = useAuthService().isOwnerOrAdmin();
+  const isProjectManager = useIsProjectManager();
 
   // Socket handler for assignee updates
   useEffect(() => {
@@ -105,7 +108,7 @@ const BoardSectionCardContainer = ({
         {datasource?.map((data: any) => <BoardSectionCard key={data.id} taskGroup={data} />)}
       </SortableContext>
 
-      {group !== 'priority' && <BoardCreateSectionCard />}
+      {(group !== 'priority' && (isOwnerorAdmin || isProjectManager)) && <BoardCreateSectionCard />}
     </Flex>
   );
 };

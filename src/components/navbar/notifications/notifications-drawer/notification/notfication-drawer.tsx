@@ -17,6 +17,7 @@ import { ITeamInvitationViewModel } from '@/types/notifications/notifications.ty
 import logger from '@/utils/errorLogger';
 import NotificationItem from './notification-item';
 import InvitationItem from './invitation-item';
+import { notificationsApiService } from '@/api/notifications/notifications.api.service';
 
 const NotificationDrawer = () => {
   const { isDrawerOpen, notificationType, notifications, invitations } = useAppSelector(
@@ -56,6 +57,16 @@ const NotificationDrawer = () => {
     } else {
       logger.error('This browser does not support notification permission.');
       return;
+    }
+  };
+
+  const markNotificationAsRead = async (id: string) => {
+    if (!id) return;
+
+    const res = await notificationsApiService.updateNotification(id);
+    if (res.done) {
+      dispatch(fetchNotifications(notificationType));
+      dispatch(fetchInvitations());
     }
   };
 
@@ -116,7 +127,7 @@ const NotificationDrawer = () => {
           <Spin />
         </div>
       )}
-      {(invitations && invitations.length > 0) && (notificationType === NOTIFICATION_OPTION_UNREAD) ? (
+      {invitations && invitations.length > 0 && notificationType === NOTIFICATION_OPTION_UNREAD ? (
         <div className="notification-list mt-3">
           {invitations.map(invitation => (
             <InvitationItem
@@ -131,7 +142,12 @@ const NotificationDrawer = () => {
       {notifications && notifications.length > 0 ? (
         <div className="notification-list mt-3">
           {notifications.map(notification => (
-            <NotificationItem key={notification.id} notification={notification} />
+            <NotificationItem
+              key={notification.id}
+              notification={notification}
+              isUnreadNotifications={notificationType === NOTIFICATION_OPTION_UNREAD}
+              markNotificationAsRead={(id) => Promise.resolve(markNotificationAsRead(id))}
+            />
           ))}
         </div>
       ) : (
