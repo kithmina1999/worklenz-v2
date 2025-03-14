@@ -363,7 +363,8 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
     return () => {
       socket.off(SocketEvents.QUICK_TASK.toString(), handleNewTaskReceived);
-    };  }, [socket, dispatch]);
+    };  
+  }, [socket, dispatch]);
 
   const handleDragEnd = useCallback(
     ({ active, over }: DragEndEvent) => {

@@ -241,7 +241,7 @@ export const fetchTaskListColumns = createAsyncThunk(
       tasksApiService.fetchTaskListColumns(projectId),
       dispatch(fetchCustomColumns(projectId))
     ]);
-    
+
     return {
       standard: standardColumns.body,
       custom: customColumns.payload
@@ -484,9 +484,9 @@ const taskSlice = createSlice({
       if (task.parent_task_id) {
         const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
         if (parentTask) {
-          if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
-          parentTask.sub_tasks.push({ ...task });
-          parentTask.sub_tasks_count = parentTask.sub_tasks.length; // Update the sub_tasks_count based on the actual length
+          // if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
+          // parentTask.sub_tasks.push({ ...task });
+          // parentTask.sub_tasks_count = parentTask.sub_tasks.length; // Update the sub_tasks_count based on the actual length
           // Ensure sub-tasks are visible when adding a new one
           parentTask.show_sub_tasks = true;
         }
@@ -893,9 +893,15 @@ const taskSlice = createSlice({
     updateSubTasks: (state, action: PayloadAction<IProjectTask>) => {
       const { parent_task_id, sub_tasks_count } = action.payload;
       for (const group of state.taskGroups) {
-        const task = group.tasks.find(t => t.id === parent_task_id);
-        if (task) {
-          task.sub_tasks_count = sub_tasks_count;
+        const parentTask = group.tasks.find(t => t.id === parent_task_id);
+        if (parentTask) {
+          if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
+          parentTask.sub_tasks.push({ ...action.payload });
+          parentTask.sub_tasks_count = parentTask.sub_tasks.length;
+          // Ensure subtasks are visible when new ones are added
+          // if (sub_tasks_count > 0) {
+          //   parentTask.show_sub_tasks = true;
+          // }
           break;
         }
       }
@@ -955,7 +961,7 @@ const taskSlice = createSlice({
       })
       .addCase(fetchTaskListColumns.fulfilled, (state, action) => {
         state.loadingColumns = false;
-        
+
         // Process standard columns
         const standardColumns = action.payload.standard;
         standardColumns.splice(1, 0, {
