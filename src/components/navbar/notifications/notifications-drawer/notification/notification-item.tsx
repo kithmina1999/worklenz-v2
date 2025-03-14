@@ -10,27 +10,25 @@ const { Text } = Typography;
 
 interface NotificationItemProps {
   notification: IWorklenzNotification;
-  isUnreadNotifications?: () => boolean;
+  isUnreadNotifications?: boolean;
   markNotificationAsRead?: (id: string) => Promise<void>;
   goToUrl?: (url: string) => void;
 }
 
-const NotificationItem = ({ 
-  notification, 
-  isUnreadNotifications = () => true,
+const NotificationItem = ({
+  notification,
+  isUnreadNotifications = true,
   markNotificationAsRead,
-  goToUrl
+  goToUrl,
 }: NotificationItemProps) => {
-  // Get theme token from Ant Design
   const { token } = theme.useToken();
   const [loading, setLoading] = useState(false);
-  
-  // Determine if we're in dark mode
-  const isDarkMode = token.colorBgContainer === '#141414' || 
-                    token.colorBgContainer.includes('dark') ||
-                    document.documentElement.getAttribute('data-theme') === 'dark';
 
-  // Function to handle notification click
+  const isDarkMode =
+    token.colorBgContainer === '#141414' ||
+    token.colorBgContainer.includes('dark') ||
+    document.documentElement.getAttribute('data-theme') === 'dark';
+
   const handleNotificationClick = (e: React.MouseEvent) => {
     if (notification.url) {
       e.preventDefault();
@@ -38,11 +36,10 @@ const NotificationItem = ({
     }
   };
 
-  // Function to handle mark as read
   const handleMarkAsRead = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!notification.id) return;
-    
+
     setLoading(true);
     try {
       await markNotificationAsRead?.(notification.id);
@@ -51,40 +48,38 @@ const NotificationItem = ({
     }
   };
 
-  // Function to create safe HTML (equivalent to [innerHTML] in Angular)
   const createSafeHtml = (html: string) => {
     return { __html: DOMPurify.sanitize(html) };
   };
 
-  // Function to calculate background color for tag (equivalent to tagBackground pipe)
   const getTagBackground = (color?: string) => {
     if (!color) return {};
-    
+
     // Create a more transparent version of the color for the background
     // This is equivalent to the color + '4d' in the Angular template
     const bgColor = `${color}4d`;
-    
+
     // For dark mode, we might need to adjust the text color for better contrast
     if (isDarkMode) {
-      return { 
+      return {
         backgroundColor: bgColor,
         color: '#ffffff',
-        borderColor: 'transparent'
+        borderColor: 'transparent',
       };
     }
-    
-    return { 
+
+    return {
       backgroundColor: bgColor,
-      borderColor: 'transparent'
+      borderColor: 'transparent',
     };
   };
 
   return (
-    <div 
-      style={{ 
-        width: 'auto', 
+    <div
+      style={{
+        width: 'auto',
         border: notification.color ? `2px solid ${notification.color}4d` : undefined,
-        cursor: notification.url ? 'pointer' : 'default'
+        cursor: notification.url ? 'pointer' : 'default',
       }}
       onClick={handleNotificationClick}
       className="ant-notification-notice worklenz-notification rounded-4"
@@ -99,31 +94,26 @@ const NotificationItem = ({
           </div>
 
           {/* Message with HTML content */}
-          <div 
-            className="mb-1" 
-            dangerouslySetInnerHTML={createSafeHtml(notification.message)}
-          />
-          
+          <div className="mb-1" dangerouslySetInnerHTML={createSafeHtml(notification.message)} />
+
           {/* Project tag */}
           {notification.project && (
             <div>
-              <Tag style={getTagBackground(notification.color)}>
-                {notification.project}
-              </Tag>
+              <Tag style={getTagBackground(notification.color)}>{notification.project}</Tag>
             </div>
           )}
         </div>
 
         {/* Footer with mark as read button and timestamp */}
         <div className="d-flex align-items-baseline justify-content-between mt-1">
-          {isUnreadNotifications() && markNotificationAsRead && (
-            <Button 
+          {isUnreadNotifications && markNotificationAsRead && (
+            <Button
               loading={loading}
-              type="link" 
-              size="small" 
+              type="link"
+              size="small"
               shape="round"
               className="p-0"
-              onClick={handleMarkAsRead}
+              onClick={e => handleMarkAsRead(e)}
             >
               <u>Mark as read</u>
             </Button>
