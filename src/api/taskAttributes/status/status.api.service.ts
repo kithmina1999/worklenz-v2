@@ -28,7 +28,7 @@ export const statusApiService = {
     currentProjectId: string
   ): Promise<IServerResponse<ITaskStatus>> => {
     const q = toQueryString({ current_project_id: currentProjectId });
-    const response = await apiClient.post<IServerResponse<ITaskStatus>>(`${rootUrl}?${q}`, body);
+    const response = await apiClient.post<IServerResponse<ITaskStatus>>(`${rootUrl}${q}`, body);
     return response.data;
   },
 
