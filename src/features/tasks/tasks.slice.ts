@@ -510,23 +510,27 @@ const taskSlice = createSlice({
       const { taskId, index } = action.payload;
 
       for (const group of state.taskGroups) {
-        const taskIndex = index ?? group.tasks.findIndex(t => t.id === taskId);
-        if (taskIndex === -1) continue;
-
-        const task = group.tasks[taskIndex];
-        if (task.is_sub_task) {
-          const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
-          if (parentTask?.sub_tasks) {
-            const subTaskIndex = parentTask.sub_tasks.findIndex(t => t.id === task.id);
+        // Try to find task in subtasks first
+        let found = false;
+        for (const parentTask of group.tasks) {
+          if (parentTask.sub_tasks) {
+            const subTaskIndex = parentTask.sub_tasks.findIndex(st => st.id === taskId);
             if (subTaskIndex !== -1) {
-              parentTask.sub_tasks_count = Math.max((parentTask.sub_tasks_count || 0) - 1, 0);
               parentTask.sub_tasks.splice(subTaskIndex, 1);
+              parentTask.sub_tasks_count = Math.max((parentTask.sub_tasks_count || 0) - 1, 0);
+              found = true;
+              break;
             }
           }
-        } else {
-          group.tasks.splice(taskIndex, 1);
         }
-        break;
+        if (found) break;
+
+        // If not found in subtasks, try main tasks
+        const taskIndex = index ?? group.tasks.findIndex(t => t.id === taskId);
+        if (taskIndex !== -1) {
+          group.tasks.splice(taskIndex, 1);
+          break;
+        }
       }
     },
 
