@@ -45,6 +45,8 @@ import ImportTaskTemplate from '@/components/task-templates/import-task-template
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 import { toggleProjectMemberDrawer } from '@/features/projects/singleProject/members/projectMembersSlice';
 import useIsProjectManager from '@/hooks/useIsProjectManager';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
+import { fetchBoardTaskGroups } from '@/features/board/board-slice';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
@@ -53,6 +55,7 @@ const ProjectViewHeader = () => {
   const currentSession = useAuthService().getCurrentSession();
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
   const isProjectManager = useIsProjectManager();
+  const { tab } = useTabSearchParam();
 
   const { socket } = useSocket();
 
@@ -65,10 +68,31 @@ const ProjectViewHeader = () => {
   const [creatingTask, setCreatingTask] = useState(false);
 
   const handleRefresh = () => {
-    if (projectId) {
+    if (!projectId) return;
+
+    switch (tab) {
+      case 'tasks-list':
       dispatch(fetchTaskGroups(projectId));
+      break;
+      case 'board':
+      dispatch(fetchBoardTaskGroups(projectId));
+      break;
+      case 'project-insights-member-overview':
+      dispatch(fetchProjectData(projectId));
+      break;
+      case 'all-attachments':
+      // dispatch(fetchAttachments());
+      break;
+      case 'members':
+      // dispatch(fetchMembersData());
+      break;
+      case 'updates':
+      // dispatch(fetchUpdates(projectId));
+      break;
+      default:
+      break;
     }
-  };
+};
 
   const handleSubscribe = () => {
     if (selectedProject?.id) {

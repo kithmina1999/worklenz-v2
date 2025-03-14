@@ -8,7 +8,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { colors } from '@/styles/colors';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { StarFilled } from '@ant-design/icons';
-import { Button, ConfigProvider } from 'antd';
+import { Button, ConfigProvider, Tooltip } from 'antd';
 import { TFunction } from 'i18next';
 import { useCallback, useMemo } from 'react';
 
@@ -38,17 +38,19 @@ export const ProjectRateCell: React.FC<{
 
   return (
     <ConfigProvider wave={{ disabled: true }}>
-      <Button
-        type="text"
-        className="borderless-icon-btn"
-        style={{ backgroundColor: colors.transparent }}
-        shape="circle"
-        icon={<StarFilled style={{ color: checkIconColor, fontSize: '20px' }} />}
-        onClick={(e) => {
-          e.stopPropagation();
-          handleFavorite();
-        }}
-      />
+      <Tooltip title={record.favorite ? 'Remove from favorites' : 'Add to favourites'}>
+        <Button
+          type="text"
+          className="borderless-icon-btn"
+          style={{ backgroundColor: colors.transparent }}
+          shape="circle"
+          icon={<StarFilled style={{ color: checkIconColor, fontSize: '20px' }} />}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleFavorite();
+          }}
+        />
+      </Tooltip>
     </ConfigProvider>
   );
 };
