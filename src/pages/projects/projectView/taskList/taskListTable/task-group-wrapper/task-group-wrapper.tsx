@@ -63,6 +63,7 @@ import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_project_task_list_drag_and_move } from '@/shared/worklenz-analytics-events';
 import { ALPHA_CHANNEL } from '@/shared/constants';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import alertService from '@/services/alerts/alertService';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -163,6 +164,12 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     if (!socket) return;
 
     const handleTaskStatusChange = (response: ITaskListStatusChangeResponse) => {
+      console.log('response', response);
+      if (response.completed_deps === false) {
+        alertService.error('Task is not completed', 'Please complete the task dependencies before proceeding');
+        return;
+      }
+
       dispatch(updateTaskStatus(response));
       dispatch(setTaskStatus(response));
       dispatch(deselectAll());
