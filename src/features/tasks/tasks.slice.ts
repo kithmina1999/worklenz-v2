@@ -483,13 +483,13 @@ const taskSlice = createSlice({
       // Handle subtask addition
       if (task.parent_task_id) {
         const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
-        if (parentTask) {
+        // if (parentTask) {
           // if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
           // parentTask.sub_tasks.push({ ...task });
           // parentTask.sub_tasks_count = parentTask.sub_tasks.length; // Update the sub_tasks_count based on the actual length
           // Ensure sub-tasks are visible when adding a new one
-          parentTask.show_sub_tasks = true;
-        }
+          // parentTask.show_sub_tasks = true;
+        // }
       } else {
         // Handle main task addition
         if (insert) {
@@ -905,17 +905,16 @@ const taskSlice = createSlice({
     },
 
     updateSubTasks: (state, action: PayloadAction<IProjectTask>) => {
-      const { parent_task_id, sub_tasks_count } = action.payload;
+      const { parent_task_id } = action.payload;
       for (const group of state.taskGroups) {
         const parentTask = group.tasks.find(t => t.id === parent_task_id);
         if (parentTask) {
-          if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
+          if (!parentTask.sub_tasks) {
+            parentTask.sub_tasks = [];
+          }
           parentTask.sub_tasks.push({ ...action.payload });
-          parentTask.sub_tasks_count = parentTask.sub_tasks.length;
-          // Ensure subtasks are visible when new ones are added
-          // if (sub_tasks_count > 0) {
-          //   parentTask.show_sub_tasks = true;
-          // }
+          // Always update sub_tasks_count based on actual subtasks array length
+          parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
           break;
         }
       }
