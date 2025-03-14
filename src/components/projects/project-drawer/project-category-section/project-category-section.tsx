@@ -62,6 +62,16 @@ const ProjectCategorySection = ({ categories, form, t, disabled }: ProjectCatego
   const handleAddCategoryItem = async (category: string) => {
     if (!category.trim()) return;
     try {
+      const existingCategory = categoryOptions.find(
+        option => option.label?.toLowerCase() === category.toLowerCase()
+      );
+  
+      if (existingCategory) {
+        form.setFieldValue('category_id', existingCategory.value);
+        setCategoryText('');
+        setIsAddCategoryInputShow(false);
+        return;
+      }
       setCreating(true);
       const newCategory = {
         name: category,
