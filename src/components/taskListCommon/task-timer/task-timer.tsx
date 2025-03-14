@@ -53,34 +53,51 @@ const TaskTimer = ({
       </>
     );
   };
+  const formatTimeSpent = (timeSpent: string): string => {
+    // Convert string to number, default to 0 if invalid
+    const seconds = parseInt(timeSpent, 10) || 0;
+    
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+  
+    // Pad numbers with leading zeros if needed
+    const pad = (num: number) => num.toString().padStart(1, '0');
+  
+    if (hours >= 1) {
+      return `${pad(hours)}h ${pad(minutes)}m ${pad(remainingSeconds)}s`;
+    } else {
+      return `${pad(minutes)}m ${pad(remainingSeconds)}s`;
+    }
+  };
 
   const timeTrackingLogCard = (
-    <Flex vertical style={{ width: 400, maxHeight: 350, overflowY: 'scroll' }}>
+    <Flex vertical style={{ width: '100%', maxWidth: 400, maxHeight: 350, overflowY: 'scroll' }}>
       <Skeleton active loading={loading}>
-        {timeLogs.map(log => (
-          <React.Fragment key={log.id}>
-            <Flex gap={12} align="center">
-              <SingleAvatar avatarUrl={log.avatar_url} name={log.user_name} />
-              <Flex vertical>
-                <Typography style={{ fontSize: 15 }}>
-                  <Typography.Text strong style={{ fontSize: 15 }}>
-                    {log.user_name}&nbsp;
-                  </Typography.Text>
-                  logged&nbsp;
-                  <Typography.Text strong style={{ fontSize: 15 }}>
-                    {log.time_spent_text}
-                  </Typography.Text>{' '}
-                  {renderLoggedByTimer(log)}
-                  {calculateTimeGap(log.created_at || '')}
-                </Typography>
-                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                  {formatDateTimeWithLocale(log.created_at || '')}
-                </Typography.Text>
-              </Flex>
-            </Flex>
-            <Divider style={{ marginBlock: 12 }} />
-          </React.Fragment>
-        ))}
+      {timeLogs.map(log => (
+        <React.Fragment key={log.id}>
+        <Flex gap={12} align="center" wrap="wrap">
+          <SingleAvatar avatarUrl={log.avatar_url} name={log.user_name} />
+          <Flex vertical style={{ flex: 1, minWidth: 0 }}>
+          <Typography style={{ fontSize: 15, wordBreak: 'break-word' }}>
+            <Typography.Text strong style={{ fontSize: 15 }}>
+            {log.user_name}&nbsp;
+            </Typography.Text>
+            logged&nbsp;
+            <Typography.Text strong style={{ fontSize: 15 }}>
+            {formatTimeSpent(log.time_spent?.toString() || '0')}
+            </Typography.Text>{' '}
+            {renderLoggedByTimer(log)}
+            {calculateTimeGap(log.created_at || '')}
+          </Typography>
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            {formatDateTimeWithLocale(log.created_at || '')}
+          </Typography.Text>
+          </Flex>
+        </Flex>
+        <Divider style={{ marginBlock: 12 }} />
+        </React.Fragment>
+      ))}
       </Skeleton>
     </Flex>
   );
