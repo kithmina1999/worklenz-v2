@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ant-design/colors": "^7.1.0",
+    "@ant-design/compatible": "^5.1.4",
     "@ant-design/icons": "^5.4.0",
     "@ant-design/pro-components": "^2.7.19",
     "@bitnoi.se/react-scheduler": "^0.3.1",

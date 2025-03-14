@@ -7,6 +7,8 @@ import { IconsMap } from "@/shared/constants";
 import './attachments-preview.css';
 import taskAttachmentsApiService from "@/api/tasks/task-attachments.api.service";
 import logger from "@/utils/errorLogger";
+import taskCommentsApiService from "@/api/tasks/task-comments.api.service";
+import { useAppSelector } from "@/hooks/useAppSelector";
 
 interface AttachmentsPreviewProps {
   attachment: ITaskAttachmentViewModel;
@@ -19,6 +21,7 @@ const AttachmentsPreview = ({
   onDelete,
   isCommentAttachment = false 
 }: AttachmentsPreviewProps) => {
+  const { selectedTaskId } = useAppSelector(state => state.taskDrawerReducer);
   const [deleting, setDeleting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [currentFileUrl, setCurrentFileUrl] = useState<string | null>(null);
@@ -72,13 +75,21 @@ const AttachmentsPreview = ({
   };
 
   const handleDelete = async (id?: string) => {
-    if (!id) return;
+    if (!id || !selectedTaskId) return;
     try {
       setDeleting(true);
-      const response = await taskAttachmentsApiService.deleteTaskAttachment(id);
-      if (response.done) {
-        if (onDelete) {
-          onDelete(id);
+
+      if (isCommentAttachment) {
+        const res = await taskCommentsApiService.deleteAttachment(id, selectedTaskId);
+        if (res.done) {
+          document.dispatchEvent(new Event('task-comment-update'));
+        }
+      } else {
+        const res = await taskAttachmentsApiService.deleteTaskAttachment(id);
+        if (res.done) {
+          if (onDelete) {
+            onDelete(id);
+          }
         }
       }
     } catch (e) {

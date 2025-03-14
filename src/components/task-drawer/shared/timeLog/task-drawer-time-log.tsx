@@ -6,6 +6,8 @@ import { TFunction } from 'i18next';
 import EmptyListPlaceholder from '@/components/EmptyListPlaceholder';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setTimeLogEditing } from '@/features/task-drawer/task-drawer.slice';
 import TimeLogForm from './time-log-form';
 import TimeLogList from './time-log-list';
 import { taskTimeLogsApiService } from '@/api/tasks/task-time-logs.api.service';
@@ -21,10 +23,10 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
   const [timeLoggedList, setTimeLoggedList] = useState<ITaskLogViewModel[]>([]);
   const [totalTimeText, setTotalTimeText] = useState<string>('0m 0s');
   const [loading, setLoading] = useState<boolean>(false);
-  const [isAddTimelogFormShow, setIsTimeLogFormShow] = useState<boolean>(false);
-
+  
+  const dispatch = useAppDispatch();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const { selectedTaskId, taskFormViewModel } = useAppSelector(state => state.taskDrawerReducer);
+  const { selectedTaskId, taskFormViewModel, timeLogEditing } = useAppSelector(state => state.taskDrawerReducer);
 
   const { started, timeString, handleStartTimer, handleStopTimer } = useTaskTimer(
     selectedTaskId || '',
@@ -66,6 +68,25 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
     await fetchTimeLoggedList();
   };
 
+  const handleAddTimeLog = () => {
+    dispatch(setTimeLogEditing({
+      isEditing: true,
+      logBeingEdited: null
+    }));
+  };
+
+  const handleCancelTimeLog = () => {
+    dispatch(setTimeLogEditing({
+      isEditing: false,
+      logBeingEdited: null
+    }));
+  };
+
+  const handleExportToExcel = () => {
+    if (!selectedTaskId) return;
+    taskTimeLogsApiService.exportToExcel(selectedTaskId);
+  };
+
   useEffect(() => {
     fetchTimeLoggedList();
   }, [selectedTaskId]);
@@ -83,7 +104,7 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
               handleStopTimer={handleTimerStop}
               timeString={timeString}
             />
-            <Button size="small" icon={<DownloadOutlined />}>
+            <Button size="small" icon={<DownloadOutlined />} onClick={handleExportToExcel}>
               {t('taskTimeLogTab.exportToExcel')}
             </Button>
           </Flex>
@@ -91,7 +112,10 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
         <Divider style={{ marginBlock: 8 }} />
         {timeLoggedList.length > 0 ? (
           <Skeleton active loading={loading}>
-            <TimeLogList timeLoggedList={timeLoggedList} />
+            <TimeLogList 
+              timeLoggedList={timeLoggedList} 
+              onRefresh={fetchTimeLoggedList}
+            />
           </Skeleton>
         ) : (
           <Flex vertical gap={8} align="center">
@@ -100,7 +124,7 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
               type="primary"
               icon={<PlusOutlined />}
               style={{ width: 'fit-content' }}
-              onClick={() => setIsTimeLogFormShow(true)}
+              onClick={handleAddTimeLog}
             >
               {t('taskTimeLogTab.addTimeLog')}
             </Button>
@@ -108,7 +132,7 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
         )}
       </Flex>
 
-      {!isAddTimelogFormShow && timeLoggedList.length > 0 && (
+      {!timeLogEditing.isEditing && timeLoggedList.length > 0 && (
         <Flex
           gap={8}
           vertical
@@ -137,14 +161,20 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
             type="primary"
             icon={<PlusOutlined />}
             style={{ width: '100%' }}
-            onClick={() => setIsTimeLogFormShow(true)}
+            onClick={handleAddTimeLog}
           >
-            Add Timelog
+            {t('taskTimeLogTab.addTimeLog')}
           </Button>
         </Flex>
       )}
 
-      {isAddTimelogFormShow && <TimeLogForm onCancel={() => setIsTimeLogFormShow(false)} />}
+      {timeLogEditing.isEditing && (
+        <TimeLogForm 
+          onCancel={handleCancelTimeLog} 
+          initialValues={timeLogEditing.logBeingEdited || undefined}
+          mode={timeLogEditing.logBeingEdited ? 'edit' : 'create'}
+        />
+      )}
     </Flex>
   );
 };
