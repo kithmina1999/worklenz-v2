@@ -74,7 +74,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
 }) => {
   const { trackMixpanelEvent } = useMixpanelTracking();
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
-  const isProjectMember = useIsProjectManager();
+  const isProjectManager = useIsProjectManager();
   const [isEditable, setIsEditable] = useState(false);
   const [isEllipsisActive, setIsEllipsisActive] = useState(false);
   const inputRef = useRef<InputRef>(null);
@@ -97,7 +97,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
   }, [isEditable]);
 
   useEffect(() => {
-    if (editableSectionId === groupId) {
+    if (editableSectionId === groupId && (isProjectManager || isOwnerOrAdmin)) {
       setIsEditable(true);
       dispatch(setEditableSection(null));
     }
@@ -234,7 +234,9 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
         gap={8}
         align="center"
         style={{ cursor: 'pointer' }}
-        onClick={() => setIsEditable(true)}
+        onClick={() => {
+          if (isProjectManager || isOwnerOrAdmin) setIsEditable(true);
+        }}
       >
         <Flex
           align="center"
@@ -294,7 +296,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
           <PlusOutlined />
         </Button>
 
-        {(isOwnerOrAdmin || isProjectMember) && (
+        {(isOwnerOrAdmin || isProjectManager) && (
           <Dropdown
             overlayClassName="todo-threedot-dropdown"
             trigger={['click']}

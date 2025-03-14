@@ -1,21 +1,37 @@
 import { BellOutlined } from '@ant-design/icons';
-import { Button, Tooltip } from 'antd';
+import { Badge, Button, Tooltip } from 'antd';
 import { toggleDrawer } from '@features/navbar/notificationSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const NotificationButton = () => {
   const dispatch = useAppDispatch();
-
-  // localization
+  const { notifications, invitations } = useAppSelector(state => state.notificationReducer);
   const { t } = useTranslation('navbar');
+
+  const hasNotifications = () => {
+    return notifications.length > 0 || invitations.length > 0;
+  };
+
+  const notificationCount = () => {
+    return notifications.length + invitations.length;
+  };
 
   return (
     <Tooltip title={t('notificationTooltip')} trigger={'hover'}>
       <Button
         style={{ height: '62px', width: '60px' }}
         type="text"
-        icon={<BellOutlined style={{ fontSize: 20 }} />}
+        icon={
+          hasNotifications() ? (
+            <Badge count={notificationCount()}>
+              <BellOutlined style={{ fontSize: 20 }} />
+            </Badge>
+          ) : (
+            <BellOutlined style={{ fontSize: 20 }} />
+          )
+        }
         onClick={() => dispatch(toggleDrawer())}
       />
     </Tooltip>
