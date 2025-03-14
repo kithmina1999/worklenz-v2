@@ -35,16 +35,28 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
 
   const buildTotalTimeText = (timeLoggedList: ITaskLogViewModel[]) => {
     let totalLogged = 0;
+
+    const formatTime = (seconds: number): string => {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remainingSeconds = seconds % 60;
+      
+      const pad = (num: number) => num.toString().padStart(1, '0');
+      
+      if (hours >= 1) {
+        return `${pad(hours)}h ${pad(minutes)}m ${pad(remainingSeconds)}s`;
+      } else {
+        return `${pad(minutes)}m ${pad(remainingSeconds)}s`;
+      }
+    };
+
     for (const element of timeLoggedList) {
-      const timeSpentInSeconds = Number(element.time_spent || '0');
-      const minutes = Math.floor(timeSpentInSeconds / 60);
-      const seconds = timeSpentInSeconds % 60;
-      element.time_spent_text = `${minutes}m ${seconds}s`;
+      const timeSpentInSeconds = element.time_spent ?? 0;
+      element.time_spent_text = formatTime(timeSpentInSeconds);
       totalLogged += timeSpentInSeconds;
     }
-    const totalMinutes = Math.floor(totalLogged / 60);
-    const totalSeconds = totalLogged % 60;
-    setTotalTimeText(`${totalMinutes}m ${totalSeconds}s`);
+
+    setTotalTimeText(formatTime(totalLogged));
   };
 
   const fetchTimeLoggedList = async () => {

@@ -53,10 +53,7 @@ const TaskTimer = ({
       </>
     );
   };
-  const formatTimeSpent = (timeSpent: string): string => {
-    // Convert string to number, default to 0 if invalid
-    const seconds = parseInt(timeSpent, 10) || 0;
-    
+  const formatTimeSpent = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
@@ -85,7 +82,7 @@ const TaskTimer = ({
             </Typography.Text>
             logged&nbsp;
             <Typography.Text strong style={{ fontSize: 15 }}>
-            {formatTimeSpent(log.time_spent?.toString() || '0')}
+            {formatTimeSpent(log.time_spent || 0)}
             </Typography.Text>{' '}
             {renderLoggedByTimer(log)}
             {calculateTimeGap(log.created_at || '')}
