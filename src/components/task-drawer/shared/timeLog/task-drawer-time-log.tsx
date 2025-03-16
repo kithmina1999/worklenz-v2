@@ -58,32 +58,32 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
 
     setTotalTimeText(formatTime(totalLogged));
 
-<!--       const timeSpentInSeconds = Number(element.time_spent || '0');
-      const hours = Math.floor(timeSpentInSeconds / 3600);
-      const minutes = Math.floor((timeSpentInSeconds % 3600) / 60);
-      const seconds = timeSpentInSeconds % 60;
+    //   const timeSpentInSeconds = Number(element.time_spent || '0');
+    //   const hours = Math.floor(timeSpentInSeconds / 3600);
+    //   const minutes = Math.floor((timeSpentInSeconds % 3600) / 60);
+    //   const seconds = timeSpentInSeconds % 60;
       
-      // Format individual time log text
-      const timePartsList = [];
-      if (hours > 0) timePartsList.push(`${hours}h`);
-      if (minutes > 0) timePartsList.push(`${minutes}m`);
-      if (seconds > 0 || timePartsList.length === 0) timePartsList.push(`${seconds}s`);
-      element.time_spent_text = timePartsList.join(' ');
+    //   // Format individual time log text
+    //   const timePartsList = [];
+    //   if (hours > 0) timePartsList.push(`${hours}h`);
+    //   if (minutes > 0) timePartsList.push(`${minutes}m`);
+    //   if (seconds > 0 || timePartsList.length === 0) timePartsList.push(`${seconds}s`);
+    //   element.time_spent_text = timePartsList.join(' ');
       
-      totalLogged += timeSpentInSeconds;
-    }
+    //   totalLogged += timeSpentInSeconds;
+    // }
   
-    // Format total time text
-    const totalHours = Math.floor(totalLogged / 3600);
-    const totalMinutes = Math.floor((totalLogged % 3600) / 60);
-    const totalSeconds = totalLogged % 60;
+    // // Format total time text
+    // const totalHours = Math.floor(totalLogged / 3600);
+    // const totalMinutes = Math.floor((totalLogged % 3600) / 60);
+    // const totalSeconds = totalLogged % 60;
   
-    const totalPartsList = [];
-    if (totalHours > 0) totalPartsList.push(`${totalHours}h`);
-    if (totalMinutes > 0) totalPartsList.push(`${totalMinutes}m`);
-    if (totalSeconds > 0 || totalPartsList.length === 0) totalPartsList.push(`${totalSeconds}s`);
+    // const totalPartsList = [];
+    // if (totalHours > 0) totalPartsList.push(`${totalHours}h`);
+    // if (totalMinutes > 0) totalPartsList.push(`${totalMinutes}m`);
+    // if (totalSeconds > 0 || totalPartsList.length === 0) totalPartsList.push(`${totalSeconds}s`);
     
-    setTotalTimeText(totalPartsList.join(' ')); -->
+    // setTotalTimeText(totalPartsList.join(' '));
 
   };
 
