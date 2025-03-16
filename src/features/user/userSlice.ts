@@ -7,7 +7,8 @@ const sessionData = getUserSession();
 const initialState: ILocalSession = {
   id: sessionData?.id || '',
   name: sessionData?.name || '',
-  email: sessionData?.email || '',
+  email: sessionData?.email || '',  
+  avatar_url: sessionData?.avatar_url || '',
 };
 
 const userSlice = createSlice({

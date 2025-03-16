@@ -1,6 +1,6 @@
 import { Button, Dropdown } from 'antd';
-import { useAppSelector } from '../../hooks/useAppSelector';
-import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { ILanguageType, setLanguage } from './localesSlice';
 
 const LanguageSelector = () => {

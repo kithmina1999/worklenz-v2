@@ -6,6 +6,8 @@ import { TFunction } from 'i18next';
 import EmptyListPlaceholder from '@/components/EmptyListPlaceholder';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setTimeLogEditing } from '@/features/task-drawer/task-drawer.slice';
 import TimeLogForm from './time-log-form';
 import TimeLogList from './time-log-list';
 import { taskTimeLogsApiService } from '@/api/tasks/task-time-logs.api.service';
@@ -21,10 +23,10 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
   const [timeLoggedList, setTimeLoggedList] = useState<ITaskLogViewModel[]>([]);
   const [totalTimeText, setTotalTimeText] = useState<string>('0m 0s');
   const [loading, setLoading] = useState<boolean>(false);
-  const [isAddTimelogFormShow, setIsTimeLogFormShow] = useState<boolean>(false);
-
+  
+  const dispatch = useAppDispatch();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const { selectedTaskId, taskFormViewModel } = useAppSelector(state => state.taskDrawerReducer);
+  const { selectedTaskId, taskFormViewModel, timeLogEditing } = useAppSelector(state => state.taskDrawerReducer);
 
   const { started, timeString, handleStartTimer, handleStopTimer } = useTaskTimer(
     selectedTaskId || '',
@@ -33,16 +35,56 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
 
   const buildTotalTimeText = (timeLoggedList: ITaskLogViewModel[]) => {
     let totalLogged = 0;
+
+    const formatTime = (seconds: number): string => {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remainingSeconds = seconds % 60;
+      
+      const pad = (num: number) => num.toString().padStart(1, '0');
+      
+      if (hours >= 1) {
+        return `${pad(hours)}h ${pad(minutes)}m ${pad(remainingSeconds)}s`;
+      } else {
+        return `${pad(minutes)}m ${pad(remainingSeconds)}s`;
+      }
+    };
+
     for (const element of timeLoggedList) {
-      const timeSpentInSeconds = Number(element.time_spent || '0');
-      const minutes = Math.floor(timeSpentInSeconds / 60);
-      const seconds = timeSpentInSeconds % 60;
-      element.time_spent_text = `${minutes}m ${seconds}s`;
+      const timeSpentInSeconds = element.time_spent ?? 0;
+      element.time_spent_text = formatTime(timeSpentInSeconds);
       totalLogged += timeSpentInSeconds;
     }
-    const totalMinutes = Math.floor(totalLogged / 60);
-    const totalSeconds = totalLogged % 60;
-    setTotalTimeText(`${totalMinutes}m ${totalSeconds}s`);
+
+    setTotalTimeText(formatTime(totalLogged));
+
+    //   const timeSpentInSeconds = Number(element.time_spent || '0');
+    //   const hours = Math.floor(timeSpentInSeconds / 3600);
+    //   const minutes = Math.floor((timeSpentInSeconds % 3600) / 60);
+    //   const seconds = timeSpentInSeconds % 60;
+      
+    //   // Format individual time log text
+    //   const timePartsList = [];
+    //   if (hours > 0) timePartsList.push(`${hours}h`);
+    //   if (minutes > 0) timePartsList.push(`${minutes}m`);
+    //   if (seconds > 0 || timePartsList.length === 0) timePartsList.push(`${seconds}s`);
+    //   element.time_spent_text = timePartsList.join(' ');
+      
+    //   totalLogged += timeSpentInSeconds;
+    // }
+  
+    // // Format total time text
+    // const totalHours = Math.floor(totalLogged / 3600);
+    // const totalMinutes = Math.floor((totalLogged % 3600) / 60);
+    // const totalSeconds = totalLogged % 60;
+  
+    // const totalPartsList = [];
+    // if (totalHours > 0) totalPartsList.push(`${totalHours}h`);
+    // if (totalMinutes > 0) totalPartsList.push(`${totalMinutes}m`);
+    // if (totalSeconds > 0 || totalPartsList.length === 0) totalPartsList.push(`${totalSeconds}s`);
+    
+    // setTotalTimeText(totalPartsList.join(' '));
+
   };
 
   const fetchTimeLoggedList = async () => {
@@ -66,6 +108,25 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
     await fetchTimeLoggedList();
   };
 
+  const handleAddTimeLog = () => {
+    dispatch(setTimeLogEditing({
+      isEditing: true,
+      logBeingEdited: null
+    }));
+  };
+
+  const handleCancelTimeLog = () => {
+    dispatch(setTimeLogEditing({
+      isEditing: false,
+      logBeingEdited: null
+    }));
+  };
+
+  const handleExportToExcel = () => {
+    if (!selectedTaskId) return;
+    taskTimeLogsApiService.exportToExcel(selectedTaskId);
+  };
+
   useEffect(() => {
     fetchTimeLoggedList();
   }, [selectedTaskId]);
@@ -77,13 +138,13 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
           <Typography.Text type="secondary">{t('taskTimeLogTab.totalLogged')}: {totalTimeText}</Typography.Text>
           <Flex gap={8} align="center">
             <TaskTimer
+              taskId={selectedTaskId || ''}
               started={started}
               handleStartTimer={handleStartTimer}
               handleStopTimer={handleTimerStop}
               timeString={timeString}
-              timeTrackingLogCard={<div>Time Tracking Log</div>}
             />
-            <Button size="small" icon={<DownloadOutlined />}>
+            <Button size="small" icon={<DownloadOutlined />} onClick={handleExportToExcel}>
               {t('taskTimeLogTab.exportToExcel')}
             </Button>
           </Flex>
@@ -91,7 +152,10 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
         <Divider style={{ marginBlock: 8 }} />
         {timeLoggedList.length > 0 ? (
           <Skeleton active loading={loading}>
-            <TimeLogList timeLoggedList={timeLoggedList} />
+            <TimeLogList 
+              timeLoggedList={timeLoggedList} 
+              onRefresh={fetchTimeLoggedList}
+            />
           </Skeleton>
         ) : (
           <Flex vertical gap={8} align="center">
@@ -100,7 +164,7 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
               type="primary"
               icon={<PlusOutlined />}
               style={{ width: 'fit-content' }}
-              onClick={() => setIsTimeLogFormShow(true)}
+              onClick={handleAddTimeLog}
             >
               {t('taskTimeLogTab.addTimeLog')}
             </Button>
@@ -108,7 +172,7 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
         )}
       </Flex>
 
-      {!isAddTimelogFormShow && timeLoggedList.length > 0 && (
+      {!timeLogEditing.isEditing && timeLoggedList.length > 0 && (
         <Flex
           gap={8}
           vertical
@@ -137,14 +201,20 @@ const TaskDrawerTimeLog = ({ t }: TaskDrawerTimeLogProps) => {
             type="primary"
             icon={<PlusOutlined />}
             style={{ width: '100%' }}
-            onClick={() => setIsTimeLogFormShow(true)}
+            onClick={handleAddTimeLog}
           >
-            Add Timelog
+            {t('taskTimeLogTab.addTimeLog')}
           </Button>
         </Flex>
       )}
 
-      {isAddTimelogFormShow && <TimeLogForm onCancel={() => setIsTimeLogFormShow(false)} />}
+      {timeLogEditing.isEditing && (
+        <TimeLogForm 
+          onCancel={handleCancelTimeLog} 
+          initialValues={timeLogEditing.logBeingEdited || undefined}
+          mode={timeLogEditing.logBeingEdited ? 'edit' : 'create'}
+        />
+      )}
     </Flex>
   );
 };

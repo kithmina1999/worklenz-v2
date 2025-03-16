@@ -18,5 +18,7 @@
     "apply": "Aplicar",
     "createLabel": "+ Crear etiqueta",
     "hitEnterToCreate": "Presione Enter para crear",
-    "pendingInvitation": "Invitación Pendiente"
+    "pendingInvitation": "Invitación Pendiente",
+    "noMatchingLabels": "No hay etiquetas coincidentes",
+    "noLabels": "Sin etiquetas"
 }

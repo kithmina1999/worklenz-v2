@@ -10,7 +10,6 @@ import { getProject, setProjectId, setProjectView } from '@/features/project/pro
 import { fetchStatuses, resetStatuses } from '@/features/taskAttributes/taskStatusSlice';
 import { projectsApiService } from '@/api/projects/projects.api.service';
 import { colors } from '@/styles/colors';
-import { tabItems } from '@/lib/project/projectViewConstants';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import ProjectViewHeader from './project-view-header';
 import './project-view.css';
@@ -18,6 +17,7 @@ import { resetTaskListData } from '@/features/tasks/tasks.slice';
 import { resetBoardData } from '@/features/board/board-slice';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
+import { tabItems } from '@/lib/project/project-view-constants';
 
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
 const StatusDrawer = React.lazy(
@@ -66,12 +66,18 @@ const ProjectView = () => {
     if (res.done) {
       setPinnedTab(itemKey);
       tabItems.forEach(item => {
-        item.isPinned = item.key === itemKey;
+        if (item.key === itemKey) {
+          item.isPinned = true;
+        } else {
+          item.isPinned = false;
+        }
       });
 
       navigate({
         pathname: `/worklenz/projects/${projectId}`,
-        search: new URLSearchParams({ pinned_tab: itemKey }).toString(),
+        search: new URLSearchParams({ 
+          tab: activeTab,
+          pinned_tab: itemKey }).toString(),
       });
     }
   };
@@ -120,9 +126,9 @@ const ProjectView = () => {
                   />
                 )
               }
-              onClick={(e) => {
-                e.stopPropagation()
-                pinToDefaultTab(item.key)
+              onClick={e => {
+                e.stopPropagation();
+                pinToDefaultTab(item.key);
               }}
             />
           </ConfigProvider>

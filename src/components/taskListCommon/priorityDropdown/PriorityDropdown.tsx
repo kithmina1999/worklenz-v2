@@ -6,7 +6,7 @@ import './priorityDropdown.css';
 import { colors } from '../../../styles/colors';
 import { TaskPriorityType } from '../../../types/task.types';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { getPriorityColor } from '../../../utils/getPriorityColors';
 
 type PriorityDropdownProps = {

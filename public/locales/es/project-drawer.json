@@ -36,5 +36,6 @@
   "add": "Agregar",
   "asClient": "como cliente",
   "createClient": "Crear cliente",
-  "searchInputPlaceholder": "Busca por nombre o email"
+  "searchInputPlaceholder": "Busca por nombre o email",
+  "hoursPerDayValidationMessage": "Las horas por día deben ser un número entre 1 y 24"
 }

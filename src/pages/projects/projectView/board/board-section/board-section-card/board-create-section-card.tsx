@@ -6,24 +6,116 @@ import { nanoid } from '@reduxjs/toolkit';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { addBoardSectionCard } from '@features/board/board-slice';
+import { addBoardSectionCard, fetchBoardTaskGroups, IGroupBy } from '@features/board/board-slice';
+import { statusApiService } from '@/api/taskAttributes/status/status.api.service';
+import { ITaskStatusCreateRequest } from '@/types/tasks/task-status-create-request';
+import { createStatus, fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
+import { ALPHA_CHANNEL } from '@/shared/constants';
 
 const BoardCreateSectionCard = () => {
   const { t } = useTranslation('kanban-board');
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const { projectId } = useAppSelector((state) => state.projectReducer);
+  const groupBy = useAppSelector((state) => state.boardReducer.groupBy);
+  const { statusCategories, status: existingStatuses } = useAppSelector((state) => state.taskStatusReducer);
 
   const dispatch = useAppDispatch();
 
-  const handleAddSection = () => {
-    dispatch(
-      addBoardSectionCard({
-        id: nanoid(),
-        name: 'Untitled section',
-        colorCode: '#d8d7d8',
-        colorCodeDark: '#989898',
-      })
-    );
+  const getUniqueSectionName = (baseName: string): string => {
+    // Check if the base name already exists
+    const existingNames = existingStatuses.map(status => status.name?.toLowerCase());
+    
+    if (!existingNames.includes(baseName.toLowerCase())) {
+      return baseName;
+    }
+    
+    // If the base name exists, add a number suffix
+    let counter = 1;
+    let newName = `${baseName} ${counter}`;
+    
+    while (existingNames.includes(newName.toLowerCase())) {
+      counter++;
+      newName = `${baseName} ${counter}`;
+    }
+    
+    return newName;
+  };
+
+  const handleAddSection = async () => {
+    const sectionId = nanoid();
+    const baseNameSection = 'Untitled section';
+    const sectionName = getUniqueSectionName(baseNameSection);
+    
+    if (groupBy === IGroupBy.STATUS && projectId) {
+      // Find the "To do" category
+      const todoCategory = statusCategories.find(category => 
+        category.name?.toLowerCase() === 'to do' || 
+        category.name?.toLowerCase() === 'todo'
+      );
+      
+      if (todoCategory && todoCategory.id) {
+        // Create a new status
+        const body = {
+          name: sectionName,
+          project_id: projectId,
+          category_id: todoCategory.id,
+        };
+        
+        try {
+          // Create the status
+          const response = await dispatch(createStatus({ body, currentProjectId: projectId })).unwrap();
+          
+          if (response.done && response.body) {
+            // Add the section to the board with the created status ID
+            dispatch(
+              addBoardSectionCard({
+                id: response.body.id || sectionId,
+                name: sectionName,
+                colorCode: (response.body.color_code || todoCategory.color_code || '#d8d7d8') + ALPHA_CHANNEL,
+                colorCodeDark: '#989898',
+              })
+            );
+            
+            // Refresh the board to show the new section
+            dispatch(fetchBoardTaskGroups(projectId));
+            // Refresh statuses
+            dispatch(fetchStatuses(projectId));
+          }
+        } catch (error) {
+          console.error('Failed to create status:', error);
+          // Fallback to just adding a section card if status creation fails
+          dispatch(
+            addBoardSectionCard({
+              id: sectionId,
+              name: sectionName,
+              colorCode: '#d8d7d8',
+              colorCodeDark: '#989898',
+            })
+          );
+        }
+      } else {
+        // Fallback if "To do" category not found
+        dispatch(
+          addBoardSectionCard({
+            id: sectionId,
+            name: sectionName,
+            colorCode: '#d8d7d8',
+            colorCodeDark: '#989898',
+          })
+        );
+      }
+    } else {
+      // For non-status grouping, just add a section card
+      dispatch(
+        addBoardSectionCard({
+          id: sectionId,
+          name: sectionName,
+          colorCode: '#d8d7d8',
+          colorCodeDark: '#989898',
+        })
+      );
+    }
   };
 
   return (

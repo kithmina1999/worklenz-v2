@@ -67,7 +67,7 @@ const NotifyMemberSelector = ({ task, t }: NotifyMemberSelectorProps) => {
   };
 
   const getSubscribers = async () => {
-    if (!task.id) return;
+    if (!task || !task.id) return;
     try {
       const response = await tasksApiService.getSubscribers(task.id);
       if (response.done) {

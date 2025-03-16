@@ -58,6 +58,8 @@ import LabelsDropdown from './components/LabelsDropdown';
 import { sortTeamMembers } from '@/utils/sort-team-members';
 import logger from '@/utils/errorLogger';
 import ConvertToSubtaskDrawer from '@/components/task-list-common/convert-to-subtask-drawer/convert-to-subtask-drawer';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
+import { useAuthService } from '@/hooks/useAuth';
 
 interface ITaskAssignee {
   id: string;
@@ -72,6 +74,9 @@ const TaskListBulkActionsBar = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('tasks/task-table-bulk-actions');
   const { trackMixpanelEvent } = useMixpanelTracking();
+
+  // Add permission hooks near other hooks
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
   // loading state
   const [loading, setLoading] = useState(false);
@@ -334,19 +339,22 @@ const TaskListBulkActionsBar = () => {
 
   const applyLabels = async () => {
     if (!projectId) return;
-
     try {
       setUpdatingLabels(true);
       const body: IBulkTasksLabelsRequest = {
         tasks: selectedTaskIdsList,
         labels: selectedLabels,
-        text: createLabelText.trim() !== '' ? createLabelText.trim() : null,
+        text: selectedLabels.length > 0 ? null : createLabelText.trim() !== '' ? createLabelText.trim() : null,
       };
       const res = await taskListBulkActionsApiService.assignLabels(body, projectId);
       if (res.done) {
         trackMixpanelEvent(evt_project_task_list_bulk_update_labels);
         dispatch(deselectAll());
         dispatch(fetchTaskGroups(projectId));
+        dispatch(fetchLabels()); // Fallback: refetch all labels
+        dispatch(fetchTaskGroups(projectId));
+        setCreateLabelText('');
+        setSelectedLabels([]);
       }
     } catch (error) {
       logger.error('Error updating labels:', error);
@@ -366,6 +374,7 @@ const TaskListBulkActionsBar = () => {
       onCreateLabelTextChange={value => setCreateLabelText(value)}
       onApply={applyLabels}
       t={t}
+      loading={updatingLabels}
     />
   );
 
@@ -486,24 +495,26 @@ const TaskListBulkActionsBar = () => {
           </Tooltip>
         </Flex>
 
-        <Tooltip title={t('moreOptions')} getPopupContainer={() => moreOptionsRef.current!}>
-          <div ref={moreOptionsRef}>
-            <Dropdown
-              trigger={['click']}
-              menu={{
-                items: [
-                  {
-                    key: '1',
-                    label: t('createTaskTemplate'),
-                    onClick: () => setShowDrawer(true),
-                  },
-                ],
-              }}
-            >
-              <Button icon={<MoreOutlined />} className="borderless-icon-btn" style={buttonStyle} />
-            </Dropdown>
-          </div>
-        </Tooltip>
+        {isOwnerOrAdmin && (
+          <Tooltip title={t('moreOptions')} getPopupContainer={() => moreOptionsRef.current!}>
+            <div ref={moreOptionsRef}>
+              <Dropdown
+                trigger={['click']}
+                menu={{
+                  items: [
+                    {
+                      key: '1',
+                      label: t('createTaskTemplate'),
+                      onClick: () => setShowDrawer(true),
+                    },
+                  ],
+                }}
+              >
+                <Button icon={<MoreOutlined />} className="borderless-icon-btn" style={buttonStyle} />
+              </Dropdown>
+            </div>
+          </Tooltip>
+        )}
 
         <Tooltip title={t('deselectAll')} getPopupContainer={() => deselectAllRef.current!}>
           <div ref={deselectAllRef}>
@@ -528,7 +539,7 @@ const TaskListBulkActionsBar = () => {
           'create-task-template'
         )}
         {createPortal(
-          <ConvertToSubtaskDrawer t={t} />,
+          <ConvertToSubtaskDrawer />,
           document.body,
           'convert-to-subtask-modal'
         )}

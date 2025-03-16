@@ -2,7 +2,7 @@ import { Button, Flex } from 'antd';
 import AddMembersDropdown from '@/components/add-members-dropdown/add-members-dropdown';
 import Avatars from '../avatars/avatars';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import AssigneeSelector from '../taskListCommon/assignee-selector/assignee-selector';
+import BoardAssigneeSelector from './board-assignee-selector/board-assignee-selector';
 
 type CustomAvatarGroupProps = {
   task: IProjectTask;
@@ -10,34 +10,20 @@ type CustomAvatarGroupProps = {
 };
 
 const CustomAvatarGroup = ({ task, sectionId }: CustomAvatarGroupProps) => {
-  return task.assignees ? (
+  return (
     <Flex
       gap={4}
       align="center"
+      onClick={(e) => e.stopPropagation()}
       style={{
         borderRadius: 4,
         cursor: 'pointer',
       }}
     >
-      <Avatars members={task.names || []} />
+      <Avatars members={task?.names || []} />
 
-      <AssigneeSelector task={task} groupId={sectionId} />
+      <BoardAssigneeSelector task={task} groupId={sectionId} />
     </Flex>
-  ) : (
-    <Button
-      shape="circle"
-      type="dashed"
-      size="small"
-      style={{
-        background: 'transparent',
-        boxShadow: 'none',
-        width: 26,
-        height: 26,
-      }}
-      onClick={e => e.stopPropagation()}
-    >
-      <AddMembersDropdown />
-    </Button>
   );
 };
 

@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { useGetMyTasksQuery } from "@/api/home-page/home-page.api.service";
+import { getUserSession } from "@/utils/session-helper";
 
 // Extend dayjs with the calendar plugin
 dayjs.extend(calendar);
@@ -31,7 +32,7 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
     useEffect(() => {
         setSelectedDate(record.end_date ? dayjs(record.end_date) : null);
         refetch();
-    }, [record.end_date,homeTasksConfig]);
+    }, [record.end_date, homeTasksConfig]);
 
     useEffect(() => {
         socket?.on(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleChangeReceived);
@@ -40,15 +41,19 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
             socket?.removeListener(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleChangeReceived);
             socket?.removeListener(SocketEvents.TASK_STATUS_CHANGE.toString(), handleChangeReceived);
         };
-    }, [record.end_date,connected]);
+    }, [record.end_date, connected]);
 
-    const handleEndDateChanged = (value: Dayjs | null, taskId: string) => {
+    const handleEndDateChanged = (value: Dayjs | null, task: IProjectTask) => {
         setSelectedDate(value);
-        if (!taskId) return;
+        if (!task.id) return;
 
         const body = {
-            task_id: taskId,
+            task_id: task.id,
             end_date: value?.format('YYYY-MM-DD'),
+            parent_task: task.parent_task_id,
+            time_zone: getUserSession()?.timezone_name
+                ? getUserSession()?.timezone_name
+                : Intl.DateTimeFormat().resolvedOptions().timeZone,
         };
         socket?.emit(SocketEvents.TASK_END_DATE_CHANGE.toString(), JSON.stringify(body));
     };
@@ -58,12 +63,12 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
         if (!date) return '';
 
         return date.calendar(null, {
-            sameDay: '[Today]', 
-            nextDay: '[Tomorrow]', 
-            nextWeek: 'MMM DD, YYYY', 
-            lastDay: '[Yesterday]', 
-            lastWeek: 'MMM DD, YYYY', 
-            sameElse: 'MMM DD, YYYY',
+            sameDay: '[Today]',
+            nextDay: '[Tomorrow]',
+            nextWeek: 'MMM DD',
+            lastDay: '[Yesterday]',
+            lastWeek: 'MMM DD',
+            sameElse: date.year() === dayjs().year() ? 'MMM DD' : 'MMM DD, YYYY',
         });
     };
 
@@ -75,17 +80,21 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
             }
             placeholder={t('tasks.dueDatePlaceholder')}
             value={selectedDate}
-            onChange={value => handleEndDateChanged(value || null, record.id || '')}
+            onChange={value => handleEndDateChanged(value || null, record || null)}
             format={(value) => getFormattedDate(value)} // Dynamically format the displayed value
-            style={{ 
-                color: selectedDate 
-                    ? selectedDate.isSame(dayjs(), 'day') || selectedDate.isSame(dayjs().add(1, 'day'), 'day') 
-                        ? '#52c41a' 
-                        : selectedDate.isAfter(dayjs().add(1, 'day'), 'day') 
+            style={{
+                color: selectedDate
+                    ? selectedDate.isSame(dayjs(), 'day') || selectedDate.isSame(dayjs().add(1, 'day'), 'day')
+                        ? '#52c41a'
+                        : selectedDate.isAfter(dayjs().add(1, 'day'), 'day')
                             ? undefined
-                            : '#ff4d4f' 
-                    : undefined 
+                            : '#ff4d4f'
+                    : undefined,
+                width: '125px', // Ensure the input takes full width
             }}
+            inputReadOnly // Prevent manual input to avoid overflow issues
+            variant={'borderless'} // Make the DatePicker borderless
+            suffixIcon={null}
         />
     );
 };

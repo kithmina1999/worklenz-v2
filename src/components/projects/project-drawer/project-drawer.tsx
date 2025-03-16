@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
+  Alert,
   Button,
   DatePicker,
   Divider,
@@ -27,7 +28,7 @@ import {
 } from '@/api/projects/projects.v1.api.service';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { projectColors } from '@/lib/project/projectConstants';
+import { projectColors } from '@/lib/project/project-constants';
 import { setProject, setProjectId } from '@/features/project/project.slice';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
@@ -65,6 +66,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(
     null
   );
+  const [isFormValid, setIsFormValid] = useState<boolean>(true);
 
   // Selectors
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
@@ -148,7 +150,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         form.resetFields();
         dispatch(toggleProjectDrawer());
         if (!editMode) {
-          navigate(`/worklenz/projects/${response.data.body.id}`);
+          navigate(`/worklenz/projects/${response.data.body.id}?tab=tasks-list&pinned_tab=tasks-list`);
         }
         refetchProjects();
       } else {
@@ -231,6 +233,11 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
     [form]
   );
 
+  const handleFieldsChange = (_, allFields) => {
+    const isValid = allFields.every(field => field.errors.length === 0);
+    setIsFormValid(isValid);
+  };
+
   return (
     <Drawer
       title={
@@ -264,6 +271,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
               type="primary"
               onClick={() => form.submit()}
               loading={isCreatingProject || isUpdatingProject}
+              disabled={!isFormValid}
             >
               {editMode ? t('update') : t('create')}
             </Button>
@@ -271,12 +279,21 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         </Flex>
       }
     >
+      {!isEditable && (
+        <Alert
+          message={t('noPermission')}
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
       <Skeleton active paragraph={{ rows: 12 }} loading={projectLoading}>
         <Form
           form={form}
           layout="vertical"
           onFinish={handleFormSubmit}
           initialValues={defaultFormValues}
+          onFieldsChange={handleFieldsChange}
         >
           <ProjectBasicInfo
             editMode={editMode}
@@ -350,7 +367,20 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
           <Form.Item name="man_days" label={t('estimateManDays')}>
             <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
           </Form.Item>
-          <Form.Item name="hours_per_day" label={t('hoursPerDay')}>
+          <Form.Item
+            name="hours_per_day"
+            label={t('hoursPerDay')}
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (value === undefined || (value >= 0 && value <= 24)) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error(t('hoursPerDayValidationMessage', { min: 0, max: 24 })));
+                },
+              },
+            ]}
+          >
             <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
           </Form.Item>
         </Form>

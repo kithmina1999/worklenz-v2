@@ -7,6 +7,8 @@ import accountSetupRoute from './account-setup-routes';
 import reportingRoutes from './reporting-routes';
 import { useAuthService } from '@/hooks/useAuth';
 import { AuthenticatedLayout } from '@/layouts/AuthenticatedLayout';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import NotFoundPage from '@/pages/404-page/404-page';
 
 interface GuardProps {
   children: React.ReactNode;
@@ -79,15 +81,16 @@ const adminRoutes = wrapRoutes(reportingRoutes, AdminGuard);
 const setupRoutes = wrapRoutes([accountSetupRoute], SetupGuard);
 
 const router = createBrowserRouter([
-  ...publicRoutes,
   {
-    element: <AuthenticatedLayout />,
+    element: <ErrorBoundary><AuthenticatedLayout /></ErrorBoundary>,
+    errorElement: <ErrorBoundary><NotFoundPage /></ErrorBoundary>,
     children: [
       ...protectedMainRoutes,
       ...adminRoutes,
       ...setupRoutes,
     ],
   },
+  ...publicRoutes,
 ]);
 
 export default router;

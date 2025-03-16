@@ -1,6 +1,6 @@
 import { Button, Checkbox, Col, Drawer, Form, Input, Row } from 'antd';
 import React, { ReactHTMLElement, useEffect, useState } from 'react';
-import { useAppSelector } from '../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { fetchDateList, fetchTeamData, getWorking, toggleSettingsDrawer, updateSettings, updateWorking } from './scheduleSlice';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
