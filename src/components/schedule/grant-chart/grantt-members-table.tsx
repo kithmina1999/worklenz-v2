@@ -1,6 +1,6 @@
 import { Badge, Button, Flex, Tooltip } from 'antd';
 import React, { useCallback } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import CustomAvatar from '../../CustomAvatar';
 import { fetchMemberProjects, toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
 import { CaretDownOutlined, CaretRightFilled } from '@ant-design/icons';

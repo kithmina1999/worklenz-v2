@@ -56,7 +56,7 @@ import adminCenterReducer from '@features/admin-center/admin-center.slice';
 
 // Features
 import dateReducer from '@features/date/dateSlice';
-import notificationReducer from '@features/navbar/notification/notificationSlice';
+import notificationReducer from '@/features/navbar/notificationSlice';
 import buttonReducer from '@features/actionSetup/buttonSlice';
 import scheduleReducer from '../features/schedule/scheduleSlice';
 

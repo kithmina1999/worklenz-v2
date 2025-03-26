@@ -20,6 +20,7 @@ import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service
 import { ITaskLabel, ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
 import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
 import { produce } from 'immer';
+import { tasksCustomColumnsService } from '@/api/tasks/tasks-custom-columns.service';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -75,6 +76,8 @@ interface ITaskState {
   members: string[];
   activeTimers: Record<string, number | null>;
   convertToSubtaskDrawerOpen: boolean;
+  customColumns: ITaskListColumn[];
+  customColumnValues: Record<string, Record<string, any>>;
 }
 
 const initialState: ITaskState = {
@@ -98,6 +101,8 @@ const initialState: ITaskState = {
   members: [],
   activeTimers: {},
   convertToSubtaskDrawerOpen: false,
+  customColumns: [],
+  customColumnValues: {},
 };
 
 export const COLUMN_KEYS = {
@@ -180,9 +185,7 @@ export const fetchSubTasks = createAsyncThunk(
     const { taskReducer } = state;
 
     // Check if the task is already expanded
-    const task = taskReducer.taskGroups
-      .flatMap(group => group.tasks)
-      .find(t => t.id === taskId);
+    const task = taskReducer.taskGroups.flatMap(group => group.tasks).find(t => t.id === taskId);
 
     if (task?.show_sub_tasks) {
       // If already expanded, just return without fetching
@@ -231,11 +234,18 @@ export const fetchSubTasks = createAsyncThunk(
   }
 );
 
-export const fetTaskListColumns = createAsyncThunk(
+export const fetchTaskListColumns = createAsyncThunk(
   'tasks/fetTaskListColumns',
-  async (projectId: string) => {
-    const response = await tasksApiService.fetchTaskListColumns(projectId);
-    return response.body;
+  async (projectId: string, { dispatch }) => {
+    const [standardColumns, customColumns] = await Promise.all([
+      tasksApiService.fetchTaskListColumns(projectId),
+      dispatch(fetchCustomColumns(projectId))
+    ]);
+
+    return {
+      standard: standardColumns.body,
+      custom: customColumns.payload
+    };
   }
 );
 
@@ -382,13 +392,40 @@ const findTaskInGroups = (
   taskId: string
 ): { task: IProjectTask; groupId: string; index: number } | null => {
   for (const group of taskGroups) {
+    // Check main tasks
     const taskIndex = group.tasks.findIndex(t => t.id === taskId);
     if (taskIndex !== -1) {
       return { task: group.tasks[taskIndex], groupId: group.id, index: taskIndex };
     }
+
+    // Check subtasks
+    for (const task of group.tasks) {
+      if (task.sub_tasks) {
+        const subTaskIndex = task.sub_tasks.findIndex(subtask => subtask.id === taskId);
+        if (subTaskIndex !== -1) {
+          return { task: task.sub_tasks[subTaskIndex], groupId: group.id, index: subTaskIndex };
+        }
+      }
+    }
   }
   return null;
 };
+
+export const fetchCustomColumns = createAsyncThunk(
+  'tasks/fetchCustomColumns',
+  async (projectId: string, { rejectWithValue }) => {
+    try {
+      const response = await tasksCustomColumnsService.getCustomColumns(projectId);
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Custom Columns', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch custom columns');
+    }
+  }
+);
 
 const taskSlice = createSlice({
   name: 'taskReducer',
@@ -446,13 +483,13 @@ const taskSlice = createSlice({
       // Handle subtask addition
       if (task.parent_task_id) {
         const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
-        if (parentTask) {
-          parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
-          if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
-          parentTask.sub_tasks.push({ ...task });
+        // if (parentTask) {
+          // if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
+          // parentTask.sub_tasks.push({ ...task });
+          // parentTask.sub_tasks_count = parentTask.sub_tasks.length; // Update the sub_tasks_count based on the actual length
           // Ensure sub-tasks are visible when adding a new one
-          parentTask.show_sub_tasks = true;
-        }
+          // parentTask.show_sub_tasks = true;
+        // }
       } else {
         // Handle main task addition
         if (insert) {
@@ -473,23 +510,27 @@ const taskSlice = createSlice({
       const { taskId, index } = action.payload;
 
       for (const group of state.taskGroups) {
-        const taskIndex = index ?? group.tasks.findIndex(t => t.id === taskId);
-        if (taskIndex === -1) continue;
-
-        const task = group.tasks[taskIndex];
-        if (task.is_sub_task) {
-          const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
-          if (parentTask?.sub_tasks) {
-            const subTaskIndex = parentTask.sub_tasks.findIndex(t => t.id === task.id);
+        // Try to find task in subtasks first
+        let found = false;
+        for (const parentTask of group.tasks) {
+          if (parentTask.sub_tasks) {
+            const subTaskIndex = parentTask.sub_tasks.findIndex(st => st.id === taskId);
             if (subTaskIndex !== -1) {
-              parentTask.sub_tasks_count = Math.max((parentTask.sub_tasks_count || 0) - 1, 0);
               parentTask.sub_tasks.splice(subTaskIndex, 1);
+              parentTask.sub_tasks_count = Math.max((parentTask.sub_tasks_count || 0) - 1, 0);
+              found = true;
+              break;
             }
           }
-        } else {
-          group.tasks.splice(taskIndex, 1);
         }
-        break;
+        if (found) break;
+
+        // If not found in subtasks, try main tasks
+        const taskIndex = index ?? group.tasks.findIndex(t => t.id === taskId);
+        if (taskIndex !== -1) {
+          group.tasks.splice(taskIndex, 1);
+          break;
+        }
       }
     },
 
@@ -500,10 +541,22 @@ const taskSlice = createSlice({
       const { id, name } = action.payload;
 
       for (const group of state.taskGroups) {
+        // Check main tasks
         const task = group.tasks.find(task => task.id === id);
         if (task) {
           task.name = name;
           break;
+        }
+
+        // Check subtasks
+        for (const task of group.tasks) {
+          if (task.sub_tasks) {
+            const subTask = task.sub_tasks.find(subtask => subtask.id === id);
+            if (subTask) {
+              subTask.name = name;
+              break;
+            }
+          }
         }
       }
     },
@@ -540,10 +593,23 @@ const taskSlice = createSlice({
     ) => {
       const { groupId, taskId, assignees } = action.payload;
       const group = state.taskGroups.find(group => group.id === groupId);
-      if (group) {
-        const task = group.tasks.find(task => task.id === taskId);
-        if (task) {
-          task.assignees = assignees as ITaskAssignee[];
+      if (!group) return;
+
+      // Try to find the task in main tasks first
+      const mainTask = group.tasks.find(task => task.id === taskId);
+      if (mainTask) {
+        mainTask.assignees = assignees as ITaskAssignee[];
+        return;
+      }
+
+      // If not found in main tasks, look for it in subtasks
+      for (const parentTask of group.tasks) {
+        if (parentTask.sub_tasks) {
+          const subTask = parentTask.sub_tasks.find(st => st.id === taskId);
+          if (subTask) {
+            subTask.assignees = assignees as ITaskAssignee[];
+            return;
+          }
         }
       }
     },
@@ -551,7 +617,12 @@ const taskSlice = createSlice({
     updateTaskLabel: (state, action: PayloadAction<ILabelsChangeResponse>) => {
       const label = action.payload;
       for (const group of state.taskGroups) {
-        const task = group.tasks.find(task => task.id === label.id);
+        // Find the task or its subtask
+        const task =
+          group.tasks.find(task => task.id === label.id) ||
+          group.tasks
+            .flatMap(task => task.sub_tasks || [])
+            .find(subtask => subtask.id === label.id);
         if (task) {
           task.labels = label.labels || [];
           task.all_labels = label.all_labels || [];
@@ -596,7 +667,9 @@ const taskSlice = createSlice({
       const { task } = action.payload;
 
       for (const group of state.taskGroups) {
-        const existingTask = group.tasks.find(t => t.id === task.id);
+        const existingTask =
+          group.tasks.find(t => t.id === task.id) ||
+          group.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === task.id);
         if (existingTask) {
           existingTask.end_date = task.end_date;
           break;
@@ -613,9 +686,30 @@ const taskSlice = createSlice({
       const { task } = action.payload;
 
       for (const group of state.taskGroups) {
-        const existingTask = group.tasks.find(t => t.id === task.id);
+        const existingTask =
+          group.tasks.find(t => t.id === task.id) ||
+          group.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === task.id);
         if (existingTask) {
           existingTask.start_date = task.start_date;
+          break;
+        }
+      }
+    },
+
+    updateTaskEstimation: (
+      state,
+      action: PayloadAction<{
+        task: IProjectTask;
+      }>
+    ) => {
+      const { task } = action.payload;
+
+      for (const group of state.taskGroups) {
+        const existingTask =
+          group.tasks.find(t => t.id === task.id) ||
+          group.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === task.id);
+        if (existingTask) {
+          existingTask.total_time_string = task.total_time_string;
           break;
         }
       }
@@ -657,7 +751,9 @@ const taskSlice = createSlice({
 
     updateTaskStatusColor: (state, action: PayloadAction<{ taskId: string; color: string }>) => {
       const { taskId, color } = action.payload;
-      const task = state.tasks.find(t => t.id === taskId);
+      const task =
+        state.tasks.find(t => t.id === taskId) ||
+        state.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === taskId);
       if (task) {
         task.status_color = color;
       }
@@ -709,6 +805,26 @@ const taskSlice = createSlice({
       }
     },
 
+    updateTaskDescription: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        parent_task: string;
+        description: string;
+      }>
+    ) => {
+      const { id: taskId, description, parent_task } = action.payload;
+      for (const group of state.taskGroups) {
+        const existingTask =
+          group.tasks.find(t => t.id === taskId) ||
+          group.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === taskId);
+        if (existingTask) {
+          existingTask.description = description;
+          break;
+        }
+      }
+    },
+
     toggleTaskRowExpansion: (state, action: PayloadAction<string>) => {
       const taskId = action.payload;
       for (const group of state.taskGroups) {
@@ -740,7 +856,8 @@ const taskSlice = createSlice({
       }>
     ) => {
       return produce(state, draft => {
-        const { activeGroupId, overGroupId, updatedSourceTasks, updatedTargetTasks } = action.payload;
+        const { activeGroupId, overGroupId, updatedSourceTasks, updatedTargetTasks } =
+          action.payload;
 
         const sourceGroup = draft.taskGroups.find(g => g.id === activeGroupId);
         const targetGroup = draft.taskGroups.find(g => g.id === overGroupId);
@@ -749,12 +866,58 @@ const taskSlice = createSlice({
 
         // Simply replace the arrays with the updated ones
         sourceGroup.tasks = updatedSourceTasks;
-        
+
         // Only update target if it's different from source
         if (activeGroupId !== overGroupId) {
           targetGroup.tasks = updatedTargetTasks;
         }
       });
+    },
+
+    addCustomColumn: (state, action: PayloadAction<ITaskListColumn>) => {
+      console.log('action.payload', action.payload);
+      state.customColumns.push(action.payload);
+      // Also add to columns array to maintain visibility
+      state.columns.push({
+        ...action.payload,
+        pinned: true // New columns are visible by default
+      });
+    },
+
+    updateCustomColumn: (state, action: PayloadAction<{ key: string; column: ITaskListColumn }>) => {
+      const { key, column } = action.payload;
+      const index = state.customColumns.findIndex(col => col.key === key);
+      if (index !== -1) {
+        state.customColumns[index] = column;
+        // Update in columns array as well
+        const colIndex = state.columns.findIndex(col => col.key === key);
+        if (colIndex !== -1) {
+          state.columns[colIndex] = { ...column, pinned: state.columns[colIndex].pinned };
+        }
+      }
+    },
+
+    deleteCustomColumn: (state, action: PayloadAction<string>) => {
+      const key = action.payload;
+      state.customColumns = state.customColumns.filter(col => col.key !== key);
+      // Remove from columns array as well
+      state.columns = state.columns.filter(col => col.key !== key);
+    },
+
+    updateSubTasks: (state, action: PayloadAction<IProjectTask>) => {
+      const { parent_task_id } = action.payload;
+      for (const group of state.taskGroups) {
+        const parentTask = group.tasks.find(t => t.id === parent_task_id);
+        if (parentTask) {
+          if (!parentTask.sub_tasks) {
+            parentTask.sub_tasks = [];
+          }
+          parentTask.sub_tasks.push({ ...action.payload });
+          // Always update sub_tasks_count based on actual subtasks array length
+          parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
+          break;
+        }
+      }
     },
   },
 
@@ -805,21 +968,33 @@ const taskSlice = createSlice({
         state.loadingAssignees = false;
         state.error = action.error.message || 'Failed to fetch task assignees';
       })
-      .addCase(fetTaskListColumns.pending, state => {
+      .addCase(fetchTaskListColumns.pending, state => {
         state.loadingColumns = true;
         state.error = null;
       })
-      .addCase(fetTaskListColumns.fulfilled, (state, action) => {
+      .addCase(fetchTaskListColumns.fulfilled, (state, action) => {
         state.loadingColumns = false;
-        action.payload.splice(1, 0, {
+
+        // Process standard columns
+        const standardColumns = action.payload.standard;
+        standardColumns.splice(1, 0, {
           key: 'TASK',
           name: 'Task',
           index: 1,
           pinned: true,
         });
-        state.columns = action.payload;
+        // Process custom columns
+        const customColumns = (action.payload as { custom: any[] }).custom.map((col: any) => ({
+          ...col,
+          isCustom: true,
+          pinned: true // Default custom columns to visible
+        }));
+
+        // Merge columns
+        state.columns = [...standardColumns, ...customColumns];
+        state.customColumns = customColumns;
       })
-      .addCase(fetTaskListColumns.rejected, (state, action) => {
+      .addCase(fetchTaskListColumns.rejected, (state, action) => {
         state.loadingColumns = false;
         state.error = action.error.message || 'Failed to fetch task list columns';
       })
@@ -849,6 +1024,24 @@ const taskSlice = createSlice({
       .addCase(updateColumnVisibility.pending, state => {
         state.loadingColumns = true;
         state.error = null;
+      })
+      .addCase(fetchCustomColumns.pending, state => {
+        state.loadingColumns = true;
+        state.error = null;
+      })
+      .addCase(fetchCustomColumns.fulfilled, (state, action) => {
+        state.loadingColumns = false;
+        state.customColumns = action.payload;
+        // Add custom columns to the columns array
+        const customColumnsForVisibility = action.payload.map(col => ({
+          ...col,
+          pinned: true // Make custom columns visible by default
+        }));
+        state.columns = [...state.columns, ...customColumnsForVisibility];
+      })
+      .addCase(fetchCustomColumns.rejected, (state, action) => {
+        state.loadingColumns = false;
+        state.error = action.error.message || 'Failed to fetch custom columns';
       });
   },
 });
@@ -874,6 +1067,7 @@ export const {
   updateTaskPriority,
   updateTaskEndDate,
   updateTaskStartDate,
+  updateTaskEstimation,
   updateTaskTimeTracking,
   toggleTaskRowExpansion,
   resetTaskListData,
@@ -881,6 +1075,11 @@ export const {
   updateTaskGroupColor,
   setConvertToSubtaskDrawerOpen,
   reorderTasks,
+  updateTaskDescription,
+  addCustomColumn,
+  updateCustomColumn,
+  deleteCustomColumn,
+  updateSubTasks,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

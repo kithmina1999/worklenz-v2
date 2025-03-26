@@ -13,8 +13,8 @@ import {
   Typography,
 } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleProjectMemberDrawer } from '../../../features/projects/singleProject/members/projectMembersSlice';
 import CustomAvatar from '../../CustomAvatar';
 import { colors } from '../../../styles/colors';

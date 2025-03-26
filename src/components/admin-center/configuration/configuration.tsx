@@ -1,7 +1,7 @@
 import { Button, Card, Col, Divider, Form, Input, notification, Row, Select } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RootState } from '../../../app/store';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { IBillingConfigurationCountry } from '@/types/admin-center/country.types';
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import { IBillingConfiguration } from '@/types/admin-center/admin-center.types';

@@ -3,7 +3,7 @@ import React from 'react';
 import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const UpgradePlanButton = () => {
   // localization

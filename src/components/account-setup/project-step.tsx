@@ -68,7 +68,7 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
       if (res.done && res.body.id) {
         toggleTemplateSelector(false);
         trackMixpanelEvent(evt_account_setup_template_complete);
-        navigate(`/worklenz/projects/${res.body.id}`);
+        navigate(`/worklenz/projects/${res.body.id}?tab=tasks-list&pinned_tab=tasks-list`);
       }
     } catch (error) {
       logger.error('createFromTemplate', error);

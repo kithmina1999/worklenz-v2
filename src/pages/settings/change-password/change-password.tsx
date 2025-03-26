@@ -1,7 +1,7 @@
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { Button, Card, Form, Input, notification, Row, Typography } from 'antd';
 import React, { useState } from 'react';
-import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { profileSettingsApiService } from '@/api/settings/profile/profile-settings.api.service';
 
 const ChangePassword: React.FC = () => {

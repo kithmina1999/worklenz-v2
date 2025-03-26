@@ -1,6 +1,6 @@
 import { AutoComplete, Button, Drawer, Flex, Form, message, Select, Spin, Typography } from 'antd';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleInviteMemberDrawer } from '../../../features/settings/member/memberSlice';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useCallback } from 'react';

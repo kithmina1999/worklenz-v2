@@ -13,11 +13,11 @@ import {
   Typography,
 } from 'antd';
 import React, { useRef, useState } from 'react';
-import { healthStatusData, projectColors, statusData } from '../../../lib/project/projectConstants';
+import { healthStatusData, projectColors, statusData } from '../../../lib/project/project-constants';
 import { PlusCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { colors } from '../../../styles/colors';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { ProjectType } from '../../../types/project.types';
 import { nanoid } from '@reduxjs/toolkit';
 import { createProject, toggleDrawer, toggleUpdatedrawer } from '../projectSlice';

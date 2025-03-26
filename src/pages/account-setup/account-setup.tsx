@@ -161,7 +161,7 @@ const AccountSetup: React.FC = () => {
       const res = await profileSettingsApiService.setupAccount(model);
       if (res.done && res.body.id) {
         trackMixpanelEvent(skip ? evt_account_setup_skip_invite : evt_account_setup_complete);
-        navigate(`/worklenz/projects/${res.body.id}`);
+        navigate(`/worklenz/projects/${res.body.id}?tab=tasks-list&pinned_tab=tasks-list`);
       }
     } catch (error) {
       logger.error('completeAccountSetup', error);
